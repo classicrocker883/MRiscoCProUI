@@ -2552,7 +2552,11 @@
   #define HAS_AUTO_COOLER_FAN 1
 #endif
 
-#if ANY(HAS_AUTO_FAN_0, HAS_AUTO_FAN_1, HAS_AUTO_FAN_2, HAS_AUTO_FAN_3, HAS_AUTO_FAN_4, HAS_AUTO_FAN_5, HAS_AUTO_FAN_6, HAS_AUTO_FAN_7, HAS_AUTO_CHAMBER_FAN, HAS_AUTO_COOLER_FAN)
+#if ANY(HAS_AUTO_FAN_0, HAS_AUTO_FAN_1, HAS_AUTO_FAN_2, HAS_AUTO_FAN_3, HAS_AUTO_FAN_4, HAS_AUTO_FAN_5, HAS_AUTO_FAN_6, HAS_AUTO_FAN_7)
+  #define HAS_AUTO_EXTRUDER_FAN 1
+#endif
+
+#if ANY(HAS_AUTO_EXTRUDER_FAN, HAS_AUTO_CHAMBER_FAN, HAS_AUTO_COOLER_FAN)
   #define HAS_AUTO_FAN 1
   #define _FANOVERLAP(I,T) (T##_AUTO_FAN_PIN == E##I##_AUTO_FAN_PIN)
   #if HAS_AUTO_CHAMBER_FAN
@@ -2568,6 +2572,15 @@
       #define AUTO_COOLER_IS_E 1
     #endif
     #undef _COFANOVERLAP
+  #endif
+#endif
+
+#if !HAS_AUTO_FAN
+  #ifdef AUTO_FAN_MENU
+    #undef AUTO_FAN_MENU
+  #endif
+  #ifdef AUTO_FAN_EDITABLE
+    #undef AUTO_FAN_EDITABLE
   #endif
 #endif
 
@@ -2635,6 +2648,13 @@
     #endif
   #else
     #undef CONTROLLER_FAN_TRIGGER_TEMP
+  #endif
+#else
+  #ifdef CONTROLLER_FAN_MENU
+    #undef CONTROLLER_FAN_MENU
+  #endif
+  #ifdef CONTROLLER_FAN_EDITABLE
+    #undef CONTROLLER_FAN_EDITABLE
   #endif
 #endif
 
@@ -2748,13 +2768,27 @@
     #define FAN_MAX_PWM 255
   #endif
   #if FAN_MIN_PWM == 0 && FAN_MAX_PWM == 255
-    #define CALC_FAN_SPEED(f) (f ?: FAN_OFF_PWM)
+    #define CALC_FAN_SPEED(f) ((f) ?: FAN_OFF_PWM)
   #else
-    #define CALC_FAN_SPEED(f) (f ? map(f, 1, 255, FAN_MIN_PWM, FAN_MAX_PWM) : FAN_OFF_PWM)
+    #define CALC_FAN_SPEED(f) ((f) ? map(f, 1, 255, FAN_MIN_PWM, FAN_MAX_PWM) : FAN_OFF_PWM)
+  #endif
+  #if ENABLED(USE_CONTROLLER_FAN)
+    #ifndef CONTROLLERFAN_SPEED_MAX
+      #define CONTROLLERFAN_SPEED_MAX FAN_MAX_PWM
+    #endif
+    #if CONTROLLERFAN_SPEED_MIN == 0 && FAN_MAX_PWM == 255
+      #define CALC_CONTROLLER_FAN_SPEED(f) ((f) ?: FAN_OFF_PWM)
+    #else
+      #define CALC_CONTROLLER_FAN_SPEED(f) ((f) ? map(f, 1, 255, CONTROLLERFAN_SPEED_MIN, CONTROLLERFAN_SPEED_MAX) : FAN_OFF_PWM)
+    #endif
   #endif
 #endif
 
 // Fan Kickstart
+#if FAN_KICKSTART_TIME && NONE(HAS_FAN, USE_CONTROLLER_FAN)
+  #undef FAN_KICKSTART_TIME
+#endif
+
 #if FAN_KICKSTART_TIME && !defined(FAN_KICKSTART_POWER)
   #define FAN_KICKSTART_POWER 180
 #endif

@@ -585,7 +585,8 @@
   //#define CONTROLLER_FAN2_PIN -1          // Set a custom pin for second controller fan
   //#define CONTROLLER_FAN_USE_Z_ONLY       // With this option only the Z axis is considered
   //#define CONTROLLER_FAN_IGNORE_Z         // Ignore Z stepper. Useful when stepper timeout is disabled.
-  #define CONTROLLERFAN_SPEED_MIN         0 // (0-255) Minimum speed. (If set below this value the fan is turned off.)
+  #define CONTROLLERFAN_SPEED_MIN        40 // (0-255) Minimum speed. (If set below this value the fan is turned off.)
+  #define CONTROLLERFAN_SPEED_MAX       127 // (0-255) Maximum speed. (Use only for a specific hardware build, or with non default PWM Scale, needs testing with other builds)
   #define CONTROLLERFAN_SPEED_ACTIVE    255 // (0-255) Active speed, used when any motor is enabled
   #define CONTROLLERFAN_SPEED_IDLE        0 // (0-255) Idle speed, used when motors are disabled
   #define CONTROLLERFAN_IDLE_TIME        60 // (seconds) Extra time to keep the fan running after disabling motors
@@ -596,9 +597,9 @@
   // Use TEMP_SENSOR_SOC as a trigger for enabling the controller fan
   //#define CONTROLLER_FAN_MIN_SOC_TEMP 40  // (°C) Turn on the fan if the SoC reaches this temperature
 
-  //#define CONTROLLER_FAN_EDITABLE         // Enable M710 configurable settings
+  #define CONTROLLER_FAN_EDITABLE           // Enable M710 configurable settings (472 bytes of flash)
   #if ENABLED(CONTROLLER_FAN_EDITABLE)
-    #define CONTROLLER_FAN_MENU             // Enable the Controller Fan submenu
+    #define CONTROLLER_FAN_MENU             // Enable the Controller Fan submenu (456 bytes of flash)
   #endif
 #endif
 
@@ -608,9 +609,15 @@
  * gets it spinning reliably for a short time before setting the requested speed.
  * (Does not work on Sanguinololu with FAN_SOFT_PWM.)
  */
-//#define FAN_KICKSTART_TIME  100  // (ms)
-//#define FAN_KICKSTART_POWER 180  // 64-255
+#define FAN_KICKSTART_TIME  100             // (ms)
+#define FAN_KICKSTART_POWER 180             // 64-255
 
+#if FAN_KICKSTART_TIME
+  #define FAN_KICKSTART_EDITABLE            // Enable M711 configurable settings (320 bytes of flash)
+  #if ENABLED(FAN_KICKSTART_EDITABLE)
+    #define FAN_KICKSTART_MENU              // Enable the Fan Kickstart submenu  (384 bytes of flash)
+  #endif
+#endif
 // Some coolers may require a non-zero "off" state.
 //#define FAN_OFF_PWM  1
 
@@ -704,6 +711,11 @@
 #define CHAMBER_AUTO_FAN_SPEED 255
 #define COOLER_AUTO_FAN_TEMPERATURE 18
 #define COOLER_AUTO_FAN_SPEED 255
+
+#define AUTO_FAN_EDITABLE             // Enable M712 configurable settings     (320 bytes of flash)
+#if ENABLED(AUTO_FAN_EDITABLE)
+  #define AUTO_FAN_MENU               // Enable the Extruder Auto Fans submenu (104 bytes of flash)
+#endif
 
 /**
  * Hotend Cooling Fans tachometers

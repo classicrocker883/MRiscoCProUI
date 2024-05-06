@@ -113,6 +113,10 @@
   #include "../feature/spindle_laser.h"
 #endif
 
+#if ENABLED(FAN_KICKSTART_EDITABLE)
+  #include "../feature/kickstart.h"
+#endif
+
 // Delay for delivery of first block to the stepper ISR, if the queue contains 2 or
 // fewer movements. The delay is measured in milliseconds, and must be less than 250ms
 #define BLOCK_DELAY_NONE         0U
@@ -1313,6 +1317,19 @@ void Planner::recalculate(const_float_t safe_exit_speed_sqr) {
   #if FAN_KICKSTART_TIME
 
     void Planner::kickstart_fan(uint8_t (&fan_speed)[FAN_COUNT], const millis_t &ms, const uint8_t f) {
+      #if ENABLED(FAN_KICKSTART_EDITABLE)
+      if (!kickstart.settings.enabled) return;
+
+      static millis_t fan_kick_end[FAN_COUNT] = { 0 };
+      if (fan_speed[f] > FAN_OFF_PWM) {
+        if (fan_kick_end[f] == 0) {
+          fan_kick_end[f] = ms + kickstart.settings.duration_ms;
+          fan_speed[f] = kickstart.settings.speed;
+        }
+        else if (PENDING(ms, fan_kick_end[f]))
+          fan_speed[f] = kickstart.settings.speed;
+      }
+      #else
       static millis_t fan_kick_end[FAN_COUNT] = { 0 };
       if (fan_speed[f] > FAN_OFF_PWM) {
         if (fan_kick_end[f] == 0) {
@@ -1322,6 +1339,7 @@ void Planner::recalculate(const_float_t safe_exit_speed_sqr) {
         else if (PENDING(ms, fan_kick_end[f]))
           fan_speed[f] = FAN_KICKSTART_POWER;
       }
+      #endif
       else
         fan_kick_end[f] = 0;
     }

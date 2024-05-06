@@ -143,6 +143,10 @@
 
 #include "../feature/controllerfan.h"
 
+#include "../feature/kickstart.h"
+
+#include "../feature/autofans.h"
+
 #if ENABLED(CASE_LIGHT_ENABLE)
   #include "../feature/caselight.h"
 #endif
@@ -446,6 +450,16 @@ typedef struct SettingsDataStruct {
   // Controller fan settings
   //
   controllerFan_settings_t controllerFan_settings;      // M710
+
+  //
+  // Fan Kickstart settings
+  //
+  kickstart_settings_t kickstart_settings;              // M711
+
+  //
+  // Auto Fans settings
+  //
+  autofans_settings_t autofans_settings;                // M712
 
   //
   // POWER_LOSS_RECOVERY
@@ -1329,6 +1343,32 @@ void MarlinSettings::postprocess() {
         constexpr controllerFan_settings_t cfs = controllerFan_defaults;
       #endif
       EEPROM_WRITE(cfs);
+    }
+
+    //
+    // Fan Kickstart
+    //
+    {
+      _FIELD_TEST(kickstart_settings);
+      #if ENABLED(FAN_KICKSTART_EDITABLE)
+        const kickstart_settings_t &fks = kickstart.settings;
+      #else
+        constexpr kickstart_settings_t fks = kickstart_defaults;
+      #endif
+      EEPROM_WRITE(fks);
+    }
+
+    //
+    // Auto Fans
+    //
+    {
+      _FIELD_TEST(autofans_settings);
+      #if ENABLED(AUTO_FAN_EDITABLE)
+        const autofans_settings_t &eauto = autofans.settings;
+      #else
+        constexpr autofans_settings_t eauto = autofans_defaults;
+      #endif
+      EEPROM_WRITE(eauto);
     }
 
     //
@@ -2422,6 +2462,26 @@ void MarlinSettings::postprocess() {
         _FIELD_TEST(controllerFan_settings);
         EEPROM_READ(cfs);
         TERN_(CONTROLLER_FAN_EDITABLE, if (!validating) controllerFan.settings = cfs);
+      }
+
+      //
+      // Fan Kickstart
+      //
+      {
+        kickstart_settings_t fks = { 0 };
+        _FIELD_TEST(kickstart_settings);
+        EEPROM_READ(fks);
+        TERN_(FAN_KICKSTART_EDITABLE, if (!validating) kickstart.settings = fks);
+      }
+
+      //
+      // Auto Fans
+      //
+      {
+        autofans_settings_t eauto = { 0 };
+        _FIELD_TEST(autofans_settings);
+        EEPROM_READ(eauto);
+        TERN_(AUTO_FAN_EDITABLE, if (!validating) autofans.settings = eauto);
       }
 
       //
@@ -3661,6 +3721,16 @@ void MarlinSettings::reset() {
   TERN_(USE_CONTROLLER_FAN, controllerFan.reset());
 
   //
+  // Fan Kickstart
+  //
+  TERN_(FAN_KICKSTART_EDITABLE, kickstart.reset());
+
+  //
+  // Auto Fans
+  //
+  TERN_(AUTO_FAN_EDITABLE, autofans.reset());
+
+  //
   // Power-Loss Recovery
   //
   #if ENABLED(POWER_LOSS_RECOVERY)
@@ -4058,6 +4128,16 @@ void MarlinSettings::reset() {
     // Controller Fan
     //
     TERN_(CONTROLLER_FAN_EDITABLE, gcode.M710_report(forReplay));
+
+    //
+    // Fan Kickstart
+    //
+    TERN_(FAN_KICKSTART_EDITABLE, gcode.M711_report(forReplay));
+
+    //
+    // Auto Fans
+    //
+    TERN_(AUTO_FAN_EDITABLE, gcode.M712_report(forReplay));
 
     //
     // Power-Loss Recovery
