@@ -29,10 +29,8 @@
 
 #if HAS_MESH
   #define PROUI_MESH_EDIT     // Add a menu to edit mesh inset + points
-  #if ENABLED(PROUI_MESH_EDIT)
-    #define Z_OFFSET_MIN -3.0 // (mm)
-    #define Z_OFFSET_MAX  3.0 // (mm)
-  #endif
+  #define Z_OFFSET_MIN -3.0 // (mm)
+  #define Z_OFFSET_MAX  3.0 // (mm)
 #endif
 
 #if ENABLED(HYBRID_THRESHOLD)

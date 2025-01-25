@@ -3348,7 +3348,7 @@ void MarlinSettings::postprocess() {
     // live at the very end of the eeprom
     const uint16_t MarlinSettings::meshes_end = persistentStore.capacity() - 129;
 
-    uint16_t MarlinSettings::meshes_start_index() {
+    uint32_t MarlinSettings::meshes_start_index() {
       // Pad the end of configuration data so it can float up
       // or down a little bit without disrupting the mesh data
       return (datasize() + EEPROM_OFFSET + 32) & 0xFFF8;
@@ -4034,11 +4034,7 @@ void MarlinSettings::reset() {
   // DWIN ProUI User Data
   //
   TERN_(DWIN_LCD_PROUI, DWIN_SetDataDefaults());
-  /*#if PROUI_EX
-    ProEx.LoadSettings();
-  #elif ENABLED(DWIN_LCD_PROUI)
-    DWIN_SetDataDefaults();
-  #endif*/
+
   //
   // Model Predictive Control
   //
