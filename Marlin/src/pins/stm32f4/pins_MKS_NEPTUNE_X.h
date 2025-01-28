@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2022 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2024 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -21,27 +21,32 @@
  */
 #pragma once
 
-/**
- * SAMD21 HAL developed by Bart Meijer (brupje)
- * Based on SAMD51 HAL by Giuliano Zaro (AKA GMagician)
- */
+#define ALLOW_STM32DUINO
+#include "env_validate.h"
 
-/**
- * SAMD21 Default SPI Pins
- *
- *         SS    SCK   MISO   MOSI
- *       +-------------------------+
- *  SPI  | 53    52     50     51  |
- *  SPI1 | 83    81     80     82  |
- *       +-------------------------+
- * Any pin can be used for Chip Select (SD_SS_PIN)
- */
-#ifndef SD_SCK_PIN
-  #define SD_SCK_PIN    38
+#if HOTENDS > 2 || E_STEPPERS > 2
+  #error "MKS Neptune X supports up to 2 hotends / E steppers."
 #endif
-#ifndef SD_MISO_PIN
-  #define SD_MISO_PIN   36
+
+#define BOARD_INFO_NAME "MKS Neptune X"
+
+//
+// Software SPI pins for TMC2130 stepper drivers
+// This board only supports SW SPI for stepper drivers
+//
+#if HAS_TMC_SPI && DISABLED(TMC_USE_SW_SPI)
+  #warning "TMC_USE_SW_SPI is required for MKS Neptune X with TMC drivers."
 #endif
-#ifndef SD_MOSI_PIN
-  #define SD_MOSI_PIN   37
+#if ENABLED(TMC_USE_SW_SPI)
+  #ifndef TMC_SW_MOSI
+    #define TMC_SW_MOSI                     PD14
+  #endif
+  #ifndef TMC_SW_MISO
+    #define TMC_SW_MISO                     PD1
+  #endif
+  #ifndef TMC_SW_SCK
+    #define TMC_SW_SCK                      PD0
+  #endif
 #endif
+
+#include "pins_MKS_NEPTUNE_X_common.h"

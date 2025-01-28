@@ -607,7 +607,7 @@
 // #define USE_UHS3_USB
 // #define DISABLE_DUE_SD_MMC
 // #define USE_OTG_USB_HOST
-// #define USB_CS_PIN    SDSS
+// #define USB_CS_PIN    SD_SS_PIN
 // #define USB_INTR_PIN  SD_DETECT_PIN
 // #define SD_FIRMWARE_UPDATE
 // #define SD_FIRMWARE_UPDATE_EEPROM_ADDR    0x1FF
