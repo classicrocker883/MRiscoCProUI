@@ -10,7 +10,7 @@ on:
 jobs:
   Build-Default-A:            # Default for Aquila
     name: Build Default Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [GD32,N32]
@@ -91,7 +91,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-A:            # MM EX for Aquila
     name: Build MM EX Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [GD32,N32]
@@ -172,7 +172,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-A:            # UBL EX for Aquila
     name: Build UBL EX Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [GD32,N32]
@@ -274,7 +274,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-A:            # UBL EX T5 Speedy for Aquila
     name: Build UBL EX T5 Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [GD32,N32]
@@ -371,7 +371,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-IND-A:            # UBL EX IND for Aquila X3/S2
     name: Build UBL EX IND Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [GD32,N32]
@@ -464,7 +464,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-IND-T5-A:            # UBL EX IND T5 Speedy for Aquila X3/S2
     name: Build UBL EX IND T5 Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [GD32,N32]
@@ -552,7 +552,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX-A:            # BLT EX for Aquila
     name: Build BLT EX Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [GD32,N32]
@@ -651,7 +651,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-SKR-A:            # UBL EX for Aquila, SKR Mini
     name: Build UBL EX SKR Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [V3_0,V2_0,V3_0_1]
@@ -747,7 +747,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-SKR-A:            # MM EX for Aquila, SKR Mini
     name: Build MM EX SKR Files A
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [V3_0,V2_0,V3_0_1]
@@ -832,7 +832,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-Default-A4:            # Default for Aquila 427
     name: Build Default Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -914,7 +914,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-A4:            # MM EX for Aquila 427
     name: Build MM EX Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -996,7 +996,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-A4:            # UBL EX for Aquila 427
     name: Build UBL EX Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -1094,7 +1094,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-A4:            # UBL EX T5 Speedy for Aquila 427
     name: Build UBL EX T5 Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -1187,7 +1187,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX-A4:            # BLT EX for Aquila 427
     name: Build BLT EX Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -1279,7 +1279,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-IND-A4:            # UBL EX for Aquila X3/S2 427
     name: Build UBL EX IND Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -1353,7 +1353,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-LCD-Probe-A4:            # CR10 LCD w/Probe for Aquila 427
     name: Build LCD Probe Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -1453,7 +1453,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-LCD-Default-MM-A4:            # CR10 LCD Default/MM for Aquila 427
     name: Build LCD Default/MM Files A4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]

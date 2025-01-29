@@ -41,10 +41,17 @@
  * here we define this default string as the date where the latest release
  * version was tagged.
  */
-//#define STRING_DISTRIBUTION_DATE "2025-01-01"
+//#define STRING_DISTRIBUTION_DATE "2025-01-27"
 
 #define STRING_DISTRIBUTION_DATE __DATE__
 #define STRING_DISTRIBUTION_TIME __TIME__
+
+/**
+ * The protocol for communication to the host. Protocol indicates communication
+ * standards such as the use of ASCII, "echo:" and "error:" line prefixes, etc.
+ * (Other behaviors are given by the firmware version and capabilities report.)
+ */
+//#define PROTOCOL_VERSION "1.0"
 
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.

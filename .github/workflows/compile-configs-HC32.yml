@@ -10,7 +10,7 @@ on:
 jobs:
   Build-Default:
     name: Build Default Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -82,7 +82,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX:
     name: Build MM EX Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -162,7 +162,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-PROUI-EX:
     name: Build UBL ProUI/ProUI-EX Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -249,7 +249,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-IS:
     name: Build UBL IS Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         inshape: [true]
@@ -326,7 +326,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX:
     name: Build BLT EX Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         inshape: [true,false]
@@ -403,7 +403,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-C2-Default-MM:            # CR10 LCD C2 Default/MM
     name: Build C2 Default/MM Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         abl: [MM,Default]
