@@ -171,7 +171,7 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
   const bool was = gcode.set_autoreport_paused(true);
 
   IF_DISABLED(DWIN_LCD_PROUI, constexpr) uint8_t eachsp = 1 + 6 + 1, // [-3.567]
-                    twixt = eachsp * (GRID_MAX_POINTS_X) - 9 * 2;    // Leading 4sp, Coordinates 9sp each
+                       twixt = eachsp * (GRID_MAX_POINTS_X) - 9 * 2; // Leading 4sp, Coordinates 9sp each
 
   const bool human = !(map_type & 0x3), csv = map_type == 1, lcd = map_type == 2, comp = map_type & 0x4;
 

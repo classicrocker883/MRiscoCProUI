@@ -10,7 +10,7 @@ on:
 jobs:
   Build-Default-E:            # Default for Ender-3
     name: Build Default Files E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -87,7 +87,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-E:            # MM EX for Ender-3
     name: Build MM EX Files E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -164,7 +164,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-E:            # UBL EX for Ender-3
     name: Build UBL EX Files E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -257,7 +257,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-E:            # UBL EX T5 Speedy for Ender-3
     name: Build UBL EX T5 Files E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -345,7 +345,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-S1-UBL-EX-E:            # UBL EX for Ender-3S1
     name: Build S1 UBL EX Files E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [F4,F1]
@@ -427,7 +427,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX-E:            # BLT EX for Ender-3
     name: Build BLT EX Files E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -514,7 +514,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-Default-E4:            # Default for Ender-3
     name: Build Default Files E4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -595,7 +595,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-E4:            # MM EX for Ender-3
     name: Build MM EX Files E4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -676,7 +676,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-E4:            # UBL EX for Ender-3
     name: Build UBL EX Files E4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -773,7 +773,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-E4:            # UBL EX T5 Speedy for Ender-3
     name: Build UBL EX T5 Files E4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -865,7 +865,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX-E4:            # BLT EX for Ender-3
     name: Build BLT EX Files E4
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         chip: [427,422]
@@ -956,7 +956,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-E3-FREE-RUNS:            # UBL EX for Ender-3 E3 Free-runs
     name: Build UBL EX E3 Free-runs Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -1049,7 +1049,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-E3-FREE-RUNS:            # UBL EX T5 Speedy for Ender-3 E3 Free-runs
     name: Build UBL EX T5 E3 Free-runs Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]
@@ -1137,7 +1137,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-E3-FREE-RUNS:            # MM EX for Ender-3 E3 Free-runs
     name: Build MM EX E3 Free-runs Files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         temp: [true,false]

@@ -2163,7 +2163,7 @@ void DWIN_SetDataDefaults() {
       const uint8_t _def[] = DEF_TBOPT;
       for (uint8_t i = 0; i < TBMaxOpt; ++i) PRO_data.TBopt[i] = _def[i];
     #endif
-    ProEx.SetData();///
+    ProEx.SetData();
   #else
     #if HAS_BED_PROBE
       HMI_data.zprobefeedslow = DEF_Z_PROBE_FEEDRATE_SLOW;
@@ -2190,11 +2190,9 @@ void DWIN_CopySettingsTo(char * const buff) {
 void DWIN_CopySettingsFrom(PGM_P const buff) {
   DEBUG_ECHOLNPGM("DWIN_CopySettingsFrom");
   memcpy(&HMI_data, buff, sizeof(HMI_data_t));
-  TERN_(PROUI_EX, memcpy(&PRO_data, buff + sizeof(HMI_data_t), sizeof(PRO_data_t));)
   #if PROUI_EX
-    ProEx.SetData();
-    //memcpy(&PRO_data, buff + sizeof(HMI_data_t), sizeof(PRO_data_t));
-    //ProEx.LoadSettings();
+    memcpy(&PRO_data, buff + sizeof(HMI_data_t), sizeof(PRO_data_t));
+    ProEx.LoadSettings();
   #elif ENABLED(MESH_BED_LEVELING)
     SetData();
   #endif
