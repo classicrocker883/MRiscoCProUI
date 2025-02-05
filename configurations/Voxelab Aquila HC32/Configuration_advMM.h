@@ -1904,7 +1904,7 @@
     //#define USE_OTG_USB_HOST
 
     #if DISABLED(USE_OTG_USB_HOST)
-      #define USB_CS_PIN    SDSS
+      #define USB_CS_PIN    SD_SS_PIN
       #define USB_INTR_PIN  SD_DETECT_PIN
     #endif
   #endif

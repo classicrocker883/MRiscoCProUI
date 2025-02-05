@@ -14,7 +14,7 @@
 #       The fallback branch is bugfix-2.1.x.
 #
 
-import os, subprocess, sys, urllib.request
+import os, subprocess, sys, urllib.request, urllib.error
 
 def get_current_branch():
   try:
@@ -56,7 +56,7 @@ def main():
   if branch.startswith("2025-"):
     branch = branch
   else:
-    branch = "2025-January"
+    branch = "2025-February"
 
   if len(sys.argv) > 1:
     arg = sys.argv[1]
