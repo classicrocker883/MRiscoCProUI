@@ -1639,7 +1639,7 @@ void unified_bed_leveling::smart_mesh_fill() {
         }
 
         if (abort_flag) break;
-        zig_zag ^= true;
+        FLIP(zig_zag);
       }
     }
     probe.stow();

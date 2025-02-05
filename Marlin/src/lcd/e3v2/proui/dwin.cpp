@@ -1337,7 +1337,7 @@ void EachMomentUpdate() {
 
   if (ELAPSED(ms, next_var_update_ms)) {
     next_var_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
-    blink ^= true;
+    FLIP(blink);
     update_variable();
     switch(checkkey) {
       #if HAS_ESDIAG
@@ -2509,7 +2509,7 @@ void ApplyMove() {
   void SetBaud250K() { queue.inject(F("M575B250")); }
   void SetBaudRate() {
     Toggle_Chkb_Line(HMI_data.Baud250K);
-    if (HMI_data.Baud250K) { SetBaud250K(); } else { SetBaud115K(); }
+    HMI_data.Baud250K ? SetBaud250K() : SetBaud115K();
   }
 #endif
 

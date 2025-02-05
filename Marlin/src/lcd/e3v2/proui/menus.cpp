@@ -84,7 +84,7 @@ void Show_Chkb_Line(const bool checked) {
 }
 
 void Toggle_Chkb_Line(bool &checked) {
-  checked ^= true;
+  FLIP(checked);
   Show_Chkb_Line(checked);
 }
 
