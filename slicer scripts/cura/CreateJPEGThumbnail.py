@@ -201,7 +201,7 @@ class CreateJPEGThumbnail(Script):
             if max_size != -1:
                 if encoded_snapshot and len(encoded_snapshot) > max_size:
                     Logger.log("d", f"Image size of {len(encoded_snapshot)} is larger than {max_size}")
-                    finder = QualityFinder(lambda quality: len(self._encodeSnapshot(snapshot, quality=quality)), target_size=max_size)
+                    finder = QualityFinder(lambda quality: len(self._encodeSnapshot(snapshot, quality=quality) or ""), target_size=max_size)
                     # quality ranges from 95 (best) to 1 (worst)
                     qualities = list(range(1, 95 + 1))
                     index = binary_search(qualities, finder.compare_quality)
