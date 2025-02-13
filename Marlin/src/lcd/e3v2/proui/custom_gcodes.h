@@ -22,4 +22,23 @@
  #pragma once
 
 void custom_gcode(const int16_t codenum);
-void custom_gcode_report(const bool forReplay=true);
+#if PROUI_EX
+  void custom_gcode_report(const bool forReplay=true);
+#endif
+void CError();
+#if HAS_CUSTOM_COLORS
+  void C11();
+#endif
+#if ENABLED(PROUI_ITEM_TRAM)
+  void C35();
+#endif
+void C108();
+#if HAS_GCODE_PREVIEW
+  void C250();
+#endif
+#if HAS_LOCKSCREEN
+  void C510();
+#endif
+#if DEBUG_DWIN
+  void C997();
+#endif

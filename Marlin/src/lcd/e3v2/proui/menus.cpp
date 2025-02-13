@@ -149,9 +149,9 @@ void DrawItemEdit(const bool selected) {
   switch (checkkey) {
     case SetIntNoDraw:  if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
     case SetInt:
-    case SetPInt:       DWINUI::Draw_Signed_Int(HMI_data.Text_Color, bcolor, iNum , VALX, MBASE(CurrentMenu->line()) - 1, MenuData.Value); break;
+    case SetPInt:   DWINUI::Draw_Signed_Int(HMI_data.Text_Color, bcolor, iNum , VALX, MBASE(CurrentMenu->line()) - 1, MenuData.Value); break;
     case SetFloat:
-    case SetPFloat:     DWINUI::Draw_Signed_Float(HMI_data.Text_Color, bcolor, iNum, MenuData.dp, VALX - 2 * DWINUI::fontWidth(), MBASE(CurrentMenu->line()), MenuData.Value / POW(10, MenuData.dp)); break;
+    case SetPFloat: DWINUI::Draw_Signed_Float(HMI_data.Text_Color, bcolor, iNum, MenuData.dp, VALX - 2 * DWINUI::fontWidth(), MBASE(CurrentMenu->line()), MenuData.Value / POW(10, MenuData.dp)); break;
     default: break;
   }
 }
