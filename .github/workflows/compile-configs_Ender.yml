@@ -38,10 +38,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -116,10 +117,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -196,10 +198,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -289,10 +292,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -377,10 +381,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -461,10 +466,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -549,10 +555,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -631,10 +638,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -715,10 +723,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -812,10 +821,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -905,10 +915,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -997,10 +1008,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1090,10 +1102,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1178,10 +1191,11 @@ jobs:
       uses: actions/setup-python@v5.4.0
       with:
         python-version: '3.13'
+        architecture: 'x64'
         check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |

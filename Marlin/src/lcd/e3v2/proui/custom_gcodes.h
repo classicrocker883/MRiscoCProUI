@@ -19,7 +19,7 @@
  *
  */
 
- #pragma once
+#pragma once
 
 void custom_gcode(const int16_t codenum);
 #if PROUI_EX
