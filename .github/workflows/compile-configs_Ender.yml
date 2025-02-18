@@ -10,7 +10,7 @@ on:
 jobs:
   Build-Default-E:            # Default for Ender-3
     name: Build Default Files E
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -35,12 +35,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -87,7 +89,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-E:            # MM EX for Ender-3
     name: Build MM EX Files E
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -96,7 +98,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -112,12 +114,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -164,7 +168,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-E:            # UBL EX for Ender-3
     name: Build UBL EX Files E
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -175,7 +179,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -191,12 +195,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -257,7 +263,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-E:            # UBL EX T5 Speedy for Ender-3
     name: Build UBL EX T5 Files E
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -267,7 +273,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -283,12 +289,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -345,7 +353,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-S1-UBL-EX-E:            # UBL EX for Ender-3S1
     name: Build S1 UBL EX Files E
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         chip: [F4,F1]
@@ -354,7 +362,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -370,12 +378,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -427,7 +437,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX-E:            # BLT EX for Ender-3
     name: Build BLT EX Files E
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -437,7 +447,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -453,12 +463,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -514,7 +526,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-Default-E4:            # Default for Ender-3
     name: Build Default Files E4
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         chip: [427,422]
@@ -524,7 +536,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -540,12 +552,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -595,7 +609,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-E4:            # MM EX for Ender-3
     name: Build MM EX Files E4
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         chip: [427,422]
@@ -605,7 +619,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -621,12 +635,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -676,7 +692,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-E4:            # UBL EX for Ender-3
     name: Build UBL EX Files E4
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         chip: [427,422]
@@ -688,7 +704,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -704,12 +720,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -773,7 +791,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-E4:            # UBL EX T5 Speedy for Ender-3
     name: Build UBL EX T5 Files E4
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         chip: [427,422]
@@ -784,7 +802,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -800,12 +818,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -865,7 +885,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX-E4:            # BLT EX for Ender-3
     name: Build BLT EX Files E4
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         chip: [427,422]
@@ -876,7 +896,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -892,12 +912,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -956,7 +978,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-E3-FREE-RUNS:            # UBL EX for Ender-3 E3 Free-runs
     name: Build UBL EX E3 Free-runs Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -967,7 +989,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -983,12 +1005,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1049,7 +1073,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-EX-T5-E3-FREE-RUNS:            # UBL EX T5 Speedy for Ender-3 E3 Free-runs
     name: Build UBL EX T5 E3 Free-runs Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -1059,7 +1083,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1075,12 +1099,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1137,7 +1163,7 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX-E3-FREE-RUNS:            # MM EX for Ender-3 E3 Free-runs
     name: Build MM EX E3 Free-runs Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
@@ -1146,7 +1172,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1162,12 +1188,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |

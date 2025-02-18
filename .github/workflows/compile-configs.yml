@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -36,12 +36,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -101,7 +103,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -117,12 +119,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -184,7 +188,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -200,12 +204,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -285,7 +291,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -301,12 +307,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -382,7 +390,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -398,12 +406,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -474,7 +484,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -490,12 +500,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -564,7 +576,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -580,12 +592,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -660,7 +674,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -676,12 +690,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -755,7 +771,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -771,12 +787,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -842,7 +860,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -858,12 +876,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -924,7 +944,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -940,12 +960,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1008,7 +1030,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1024,12 +1046,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1105,7 +1129,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1121,12 +1145,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1198,7 +1224,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1214,12 +1240,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1287,7 +1315,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1303,12 +1331,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1364,7 +1394,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1380,12 +1410,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |
@@ -1463,7 +1495,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
@@ -1479,12 +1511,14 @@ jobs:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.13'
+        architecture: 'x64'
+        check-latest: true
     - name: Install PlatformIO
       run: |
-        python3 -m pip install --upgrade pip wheel platformio
+        pip install --upgrade pip wheel platformio
     - name: Run PlatformIO
       id: build_configs
       run: |

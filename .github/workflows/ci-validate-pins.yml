@@ -40,10 +40,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Select Python 3.11
-      uses: actions/setup-python@v5.3.0
+    - name: Select Python 3.13
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
         architecture: 'x64'
 
     - name: Validate all pins files

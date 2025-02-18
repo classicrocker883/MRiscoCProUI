@@ -74,6 +74,7 @@ uint32_t PrintJobRecovery::sdpos[BUFSIZE];
   #include "fwretract.h"
 #endif
 
+/// TODO: PROCESS_SUBCOMMANDS_NOW and DEBUG_ECHOLNPGM need work
 #define DEBUG_OUT ENABLED(DEBUG_POWER_LOSS_RECOVERY)
 #include "../core/debug_out.h"
 
@@ -598,11 +599,11 @@ void PrintJobRecovery::resume() {
   PROCESS_SUBCOMMANDS_NOW(TS(
     F("G1F3000X"), p_float_t(resume_pos.x, 3), F("Y"), p_float_t(resume_pos.y, 3)
   ));
-  DEBUG_ECHOLNPGM("Move XY: ",cmd);
+  DEBUG_ECHOLNPGM("Move XY: ", cmd);
 
   // Move back down to the saved Z for printing
   PROCESS_SUBCOMMANDS_NOW(TS(F("G1F600Z"), p_float_t(z_print, 3)));
-  DEBUG_ECHOLNPGM("Move Z: ",cmd);
+  DEBUG_ECHOLNPGM("Move Z: ", cmd);
 
   // Restore the feedrate and percentage
   PROCESS_SUBCOMMANDS_NOW(TS(F("G1F"), info.feedrate));
@@ -613,7 +614,7 @@ void PrintJobRecovery::resume() {
 
   // Restore E position with G92.9
   PROCESS_SUBCOMMANDS_NOW(TS(F("G92.9E"), p_float_t(resume_pos.e, 3)));
-  DEBUG_ECHOLNPGM("Extruder: ",cmd);
+  DEBUG_ECHOLNPGM("Extruder: ", cmd);
 
   #if ENABLED(CANCEL_OBJECTS)
     cancelable.state = info.cancel_state;
