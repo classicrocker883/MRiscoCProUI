@@ -148,7 +148,8 @@ void BedLevelToolsClass::mesh_reset() {
 float BedLevelToolsClass::get_max_value() {
   float max = -(__FLT_MAX__);
   GRID_LOOP(x, y) {
-    const float z = bedlevel.z_values[x][y]; if (!isnan(z)) NOLESS(max, z);
+    const float z = bedlevel.z_values[x][y];
+    if (!isnan(z)) NOLESS(max, z);
   }
   return max;
 }
@@ -156,7 +157,8 @@ float BedLevelToolsClass::get_max_value() {
 float BedLevelToolsClass::get_min_value() {
   float min = __FLT_MAX__;
   GRID_LOOP(x, y) {
-    const float z = bedlevel.z_values[x][y]; if (!isnan(z)) NOMORE(min, z);
+    const float z = bedlevel.z_values[x][y];
+    if (!isnan(z)) NOMORE(min, z);
   }
   return min;
 }

@@ -4259,20 +4259,20 @@ void Draw_MaxAccel_Menu() {
       MENU_ITEM(ICON_Homing, MSG_AUTO_HOME, onDrawMenuItem, AutoHome);
       MENU_ITEM(ICON_AxisD, MSG_MOVE_NOZZLE_TO_BED, onDrawMenuItem, SetMoveZto0);
       EDIT_ITEM(ICON_Fade, MSG_XATC_UPDATE_Z_OFFSET, onDrawPFloat2Menu, SetZOffset, &BABY_Z_VAR);
+
+      DWINUI::Draw_Icon(ICON_Info, ICOX, 100 + 3 * MLINE);
+      DWINUI::Draw_CenteredString(263, "For Best Results:\n");
+      DWINUI::Draw_Icon(ICON_HotendTemp, ICOX + 206, 100 + 3 * MLINE);
+
+      DWINUI::Draw_Icon(ICON_More, ICOX - 2, 92 + 4 * MLINE);
+      DWINUI::Draw_CenteredString(308, "Have Nozzle Touch Bed");
+      DWINUI::Draw_Icon(ICON_Cancel, ICOX + 206, 92 + 4 * MLINE);
+      DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(4 + 2), 240);
+
+      if (!axis_is_trusted(Z_AXIS)) { LCD_MESSAGE(MSG_POSITION_UNKNOWN_Z); }
+      else { LCD_MESSAGE(MSG_CENTER_NOZZLE); }
     }
     UpdateMenu(ZOffsetWizMenu);
-
-    DWINUI::Draw_Icon(ICON_Info, ICOX, 100 + 3 * MLINE);
-    DWINUI::Draw_CenteredString(263, "For Best Results:\n");
-    DWINUI::Draw_Icon(ICON_HotendTemp, ICOX + 206, 100 + 3 * MLINE);
-
-    DWINUI::Draw_Icon(ICON_More, ICOX - 2, 92 + 4 * MLINE);
-    DWINUI::Draw_CenteredString(308, "Have Nozzle Touch Bed");
-    DWINUI::Draw_Icon(ICON_Cancel, ICOX + 206, 92 + 4 * MLINE);
-    DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(4 + 2), 240);
-
-    if (!axis_is_trusted(Z_AXIS)) { LCD_MESSAGE(MSG_POSITION_UNKNOWN_Z); }
-    else { LCD_MESSAGE(MSG_CENTER_NOZZLE); }
   }
 #endif
 

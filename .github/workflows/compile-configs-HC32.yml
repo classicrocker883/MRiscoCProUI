@@ -10,33 +10,33 @@ on:
 jobs:
   Build-Default:
     name: Build Default Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
         inshape: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.0.4
       with:
-        node-version: 16
+        node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.2.0
       with:
-        python-version: '3.11'
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -71,8 +71,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload A Release Asset
-      uses: classicrocker883/upload-a-release-asset@latest
+    - name: Upload Release Asset
+      uses: tanyagray/action-upload-release-asset@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -82,33 +82,33 @@ jobs:
         asset_content_type: application/x-binary
   Build-MM-EX:
     name: Build MM EX Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
         inshape: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.0.4
       with:
-        node-version: 16
+        node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.2.0
       with:
-        python-version: '3.11'
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -151,8 +151,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload A Release Asset
-      uses: classicrocker883/upload-a-release-asset@latest
+    - name: Upload Release Asset
+      uses: tanyagray/action-upload-release-asset@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -162,34 +162,34 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-PROUI-EX:
     name: Build UBL ProUI/ProUI-EX Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         temp: [true,false]
         pro: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.0.4
       with:
-        node-version: 16
+        node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.2.0
       with:
-        python-version: '3.11'
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -238,8 +238,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload A Release Asset
-      uses: classicrocker883/upload-a-release-asset@latest
+    - name: Upload Release Asset
+      uses: tanyagray/action-upload-release-asset@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -249,33 +249,33 @@ jobs:
         asset_content_type: application/x-binary
   Build-UBL-IS:
     name: Build UBL IS Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         inshape: [true]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.0.4
       with:
-        node-version: 16
+        node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.2.0
       with:
-        python-version: '3.11'
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -315,8 +315,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload A Release Asset
-      uses: classicrocker883/upload-a-release-asset@latest
+    - name: Upload Release Asset
+      uses: tanyagray/action-upload-release-asset@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -326,33 +326,33 @@ jobs:
         asset_content_type: application/x-binary
   Build-BLT-EX:
     name: Build BLT EX Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         inshape: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.0.4
       with:
-        node-version: 16
+        node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.2.0
       with:
-        python-version: '3.11'
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -392,8 +392,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload A Release Asset
-      uses: classicrocker883/upload-a-release-asset@latest
+    - name: Upload Release Asset
+      uses: tanyagray/action-upload-release-asset@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -403,34 +403,34 @@ jobs:
         asset_content_type: application/x-binary
   Build-C2-Default-MM:            # CR10 LCD C2 Default/MM
     name: Build C2 Default/MM Files
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         abl: [MM,Default]
         temp: [true,false]
         inshape: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.2
+    - uses: actions/checkout@v4.2.0
     - name: Setup node
-      uses: actions/setup-node@v4.1.0
+      uses: actions/setup-node@v4.0.4
       with:
-        node-version: 16
+        node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.0.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.3.0
+      uses: actions/setup-python@v5.2.0
       with:
-        python-version: '3.11'
+        python-version: '3.10'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -472,8 +472,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload A Release Asset
-      uses: classicrocker883/upload-a-release-asset@latest
+    - name: Upload Release Asset
+      uses: tanyagray/action-upload-release-asset@main
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
