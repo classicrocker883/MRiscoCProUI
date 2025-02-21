@@ -41,9 +41,9 @@ if __name__ == '__main__':
         if os.path.exists(outputDir):
             raise RuntimeError("Output directory '%s' already exists." % (outputDir))
 
-        print('Splitting %s into dir %s' % (filename, outputDir))
+        print("Splitting %s into dir %s" % (filename, outputDir))
         ico = DWIN_ICO.DWIN_ICO_File()
         ico.splitFile(filename, outputDir)
 
     except Exception as e:
-        print('Error: ', e)
+        print("Error: ", e)

@@ -23,13 +23,13 @@ def extend_dict(d: dict, k: tuple):
         d[k[0]][k[1]][k[2]] = {}
 
 grouping_patterns = [
-    re.compile(r"^([XYZIJKUVW]|[XYZ]2|Z[34]|E[0-7])$"),
-    re.compile(r"^AXIS\d$"),
-    re.compile(r"^(MIN|MAX)$"),
-    re.compile(r"^[0-8]$"),
-    re.compile(r"^HOTEND[0-7]$"),
-    re.compile(r"^(HOTENDS|BED|PROBE|COOLER)$"),
-    re.compile(r"^[XYZIJKUVW]M(IN|AX)$")
+    re.compile(r'^([XYZIJKUVW]|[XYZ]2|Z[34]|E[0-7])$'),
+    re.compile(r'^AXIS\d$'),
+    re.compile(r'^(MIN|MAX)$'),
+    re.compile(r'^[0-8]$'),
+    re.compile(r'^HOTEND[0-7]$'),
+    re.compile(r'^(HOTENDS|BED|PROBE|COOLER)$'),
+    re.compile(r'^[XYZIJKUVW]M(IN|AX)$')
 ]
 
 # If the indexed part of the option name matches a pattern
@@ -110,19 +110,19 @@ def extract_files(filekey):
 
     # Parsing states
     class Parse:
-        NORMAL         = 0  # No condition yet
-        BLOCK_COMMENT  = 1  # Looking for the end of the block comment
-        EOL_COMMENT    = 2  # EOL comment started, maybe add the next comment?
-        SLASH_COMMENT  = 3  # Block-like comment, starting with aligned //
-        GET_SENSORS    = 4  # Gathering temperature sensor options
-        ERROR          = 9  # Syntax error
+        NORMAL        = 0  # No condition yet
+        BLOCK_COMMENT = 1  # Looking for the end of the block comment
+        EOL_COMMENT   = 2  # EOL comment started, maybe add the next comment?
+        SLASH_COMMENT = 3  # Block-like comment, starting with aligned //
+        GET_SENSORS   = 4  # Gathering temperature sensor options
+        ERROR         = 9  # Syntax error
 
     # A JSON object to store the data
     sch_out = {key: {} for key in filekey.values()}
     # Regex for #define NAME [VALUE] [COMMENT] with sanitized line
-    defgrep = re.compile(r"^(//)?\s*(#define)\s+([A-Za-z0-9_]+)\s*(.*?)\s*(//.+)?$")
+    defgrep = re.compile(r'^(//)?\s*(#define)\s+([A-Za-z0-9_]+)\s*(.*?)\s*(//.+)?$')
     # Pattern to match a float value
-    flt = r"[-+]?\s*(\d+\.|\d*\.\d+)([eE][-+]?\d+)?[fF]?"
+    flt = r'[-+]?\s*(\d+\.|\d*\.\d+)([eE][-+]?\d+)?[fF]?'
     # Start with unknown state
     state = Parse.NORMAL
     # Serial ID
@@ -186,12 +186,12 @@ def extract_files(filekey):
                 # - The line starts with '======' so just skip it.
                 #
                 def use_comment(c, opt, sec, bufref):
-                    """
+                    '''
                     c       - The comment line to parse
                     opt     - Options JSON string to return (if not updated)
                     sec     - Section to return (if not updated)
                     bufref  - The comment buffer to add to
-                    """
+                    '''
                     sc = c.strip()          # Strip for special patterns
                     if sc.startswith(":"):  # If the comment starts with : then it has magic JSON
                         d = sc[1:].strip()  # Strip the leading : and spaces
@@ -208,7 +208,7 @@ def extract_files(filekey):
                         else:
                             opt = sc[1:].strip()  # Some literal value not in a JSON container?
                     else:
-                        m = re.match(r"@section\s*(.+)", sc)  # Start a new section?
+                        m = re.match(r'@section\s*(.+)', sc)  # Start a new section?
                         if m:
                             sec = m[1]
                         elif not sc.startswith("========"):
@@ -239,11 +239,11 @@ def extract_files(filekey):
                         state = Parse.NORMAL
 
                     # Strip the leading '* ' from block comments
-                    cline = re.sub(r"^\* ?", "", cline)
+                    cline = re.sub(r'^\* ?', '', cline)
 
                     # Collect temperature sensors
                     if state == Parse.GET_SENSORS:
-                        sens = re.match(r"^\s*(-?\d+)\s*:\s*(.+)$", cline)
+                        sens = re.match(r'^\s*(-?\d+)\s*:\s*(.+)$', cline)
                         if sens:
                             s2 = sens[2].replace("'", "''")
                             options_json += f"{sens[1]}:'{sens[1]} - {s2}', "
@@ -251,7 +251,7 @@ def extract_files(filekey):
                     elif state == Parse.BLOCK_COMMENT:
 
                         # Look for temperature sensors
-                        if re.match(r"temperature sensors.*:", cline, re.IGNORECASE):
+                        if re.match(r'temperature sensors.*:', cline, re.IGNORECASE):
                             state, cline = Parse.GET_SENSORS, "Temperature Sensors"
 
                         options_json, section = use_comment(cline, options_json, section, comment_buff)
@@ -259,7 +259,7 @@ def extract_files(filekey):
                 # For the normal state we're looking for any non-blank line
                 elif state == Parse.NORMAL:
                     # Skip a commented define when evaluating comment opening
-                    st = 2 if re.match(r"^//\s*#define", line) else 0
+                    st = 2 if re.match(r'^//\s*#define', line) else 0
                     cpos1 = line.find("/*")      # Start a block comment on the line?
                     cpos2 = line.find("//", st)  # Start an end of line comment on the line?
 
@@ -288,7 +288,7 @@ def extract_files(filekey):
 
                         if state == Parse.BLOCK_COMMENT:
                             # Strip leading '*' from block comments
-                            cline = re.sub(r"^\* ?", "", cline)
+                            cline = re.sub(r'^\* ?', '', cline)
                         else:
                             # Expire end-of-line options after first use
                             if cline.startswith(":"):
@@ -307,8 +307,8 @@ def extract_files(filekey):
                     def atomize(s):
                         if (
                             s == ""
-                            or re.match(r"^[A-Za-z0-9_]*(\([^)]+\))?$", s)
-                            or re.match(r"^[A-Za-z0-9_]+ == \d+?$", s)
+                            or re.match(r'^[A-Za-z0-9_]*(\([^)]+\))?$', s)
+                            or re.match(r'^[A-Za-z0-9_]+ == \d+?$', s)
                         ):
                             return s
                         return f"({s})"
@@ -348,11 +348,7 @@ def extract_files(filekey):
                     elif defmatch is not None:
 
                         # Get the match groups into vars
-                        enabled, define_name, val = (
-                            defmatch[1] is None,
-                            defmatch[3],
-                            defmatch[4]
-                        )
+                        enabled, define_name, val = (defmatch[1] is None, defmatch[3], defmatch[4])
 
                         # Increment the serial ID
                         sid += 1
@@ -360,96 +356,34 @@ def extract_files(filekey):
                         # Create a new dictionary for the current #define
                         define_info = {
                             "section": section,
-                            "name": define_name,
+                            "name"   : define_name,
                             "enabled": enabled,
-                            "line": line_start,
-                            "sid": sid
+                            "line"   : line_start,
+                            "sid"    : sid
                         }
 
                         # Type is based on the value
-                        value_type = (
-                            "switch"
-                            if val == ""
-                            else (
-                                "int"
-                                if re.match(r"^[-+]?\s*\d+$", val)
-                                else (
-                                    "ints"
-                                    if re.match(
-                                        r"^([-+]?\s*\d+)(\s*,\s*[-+]?\s*\d+)+$", val
-                                    )
-                                    else (
-                                        "floats"
-                                        if re.match(rf"({flt}(\s*,\s*{flt})+)", val)
-                                        else (
-                                            "float"
-                                            if re.match(f"^({flt})$", val)
-                                            else (
-                                                "string"
-                                                if val[0] == '"'
-                                                else (
-                                                    "char"
-                                                    if val[0] == "'"
-                                                    else (
-                                                        "bool"
-                                                        if val in ("true", "false")
-                                                        else (
-                                                            "state"
-                                                            if val in ("HIGH", "LOW")
-                                                            else (
-                                                                "enum"
-                                                                if re.match(
-                                                                    r"^[A-Za-z0-9_]{3,}$",
-                                                                    val,
-                                                                )
-                                                                else (
-                                                                    "int[]"
-                                                                    if re.match(
-                                                                        r"^{\s*[-+]?\s*\d+(\s*,\s*[-+]?\s*\d+)*\s*}$",
-                                                                        val,
-                                                                    )
-                                                                    else (
-                                                                        "float[]"
-                                                                        if re.match(
-                                                                            r"^{{\s*{flt}(\s*,\s*{flt})*\s*}}$",
-                                                                            val,
-                                                                        )
-                                                                        else (
-                                                                            "array"
-                                                                            if val[0]
-                                                                            == "{"
-                                                                            else ""
-                                                                        )
-                                                                    )
-                                                                )
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
+                        value_type = \
+                             'switch'  if val == '' \
+                        else 'int'     if re.match(r'^[-+]?\s*\d+$', val) \
+                        else 'ints'    if re.match(r'^([-+]?\s*\d+)(\s*,\s*[-+]?\s*\d+)+$', val) \
+                        else 'floats'  if re.match(rf"({flt}(\s*,\s*{flt})+)", val) \
+                        else 'float'   if re.match(f"^({flt})$", val) \
+                        else 'string'  if val[0] == '"' \
+                        else 'char'    if val[0] == "'" \
+                        else 'bool'    if val in ('true', 'false') \
+                        else 'state'   if val in ('HIGH', 'LOW') \
+                        else 'enum'    if re.match(r'^[A-Za-z0-9_]{3,}$', val) \
+                        else 'int[]'   if re.match(r'^{\s*[-+]?\s*\d+(\s*,\s*[-+]?\s*\d+)*\s*}$', val) \
+                        else 'float[]' if re.match(r'^{{\s*{flt}(\s*,\s*{flt})*\s*}}$', val) \
+                        else 'array'   if val[0] == '{' \
+                        else ''
 
-                        val = (
-                            (val == "true")
-                            if value_type == "bool"
-                            else (
-                                int(val)
-                                if value_type == "int"
-                                else (
-                                    val.replace("f", "")
-                                    if value_type == "floats"
-                                    else (
-                                        float(val.replace("f", ""))
-                                        if value_type == "float"
-                                        else val
-                                    )
-                                )
-                            )
-                        )
+                        val = (val == 'true')           if value_type == 'bool' \
+                        else int(val)                   if value_type == 'int' \
+                        else val.replace('f','')        if value_type == 'floats' \
+                        else float(val.replace('f','')) if value_type == 'float' \
+                        else val
 
                         if val != "":
                             define_info["value"] = val
@@ -473,7 +407,7 @@ def extract_files(filekey):
                                 comment_buff = []
 
                             # If the comment specifies units, add that to the info
-                            units = re.match(r"^\(([^)]+)\)", full_comment)
+                            units = re.match(r'^\(([^)]+)\)', full_comment)
                             if units:
                                 units = units[1]
                                 if units in ("s", "sec"):

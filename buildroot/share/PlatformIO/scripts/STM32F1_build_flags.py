@@ -36,7 +36,6 @@ else:
     # Extra script for stm32f1-maple.ini build_flags
 
     import pioutil
-
     if pioutil.is_pio_build():
         pioutil.env.Append(
             ARFLAGS=["rcs"],

@@ -48,10 +48,10 @@ def apply_opt(name, val, conf=None):
                 found = True
                 # For boolean options un/comment the define
                 if val in ("on", "", None):
-                    newline = re.sub(r"^(\s*)//+\s*(#define)(\s{1,3})?(\s*)", r"\1\2 \4", line)
+                    newline = re.sub(r'^(\s*)//+\s*(#define)(\s{1,3})?(\s*)', r'\1\2 \4', line)
                 elif val == "off":
                     # TODO: Comment more lines in a multi-line define with \ continuation
-                    newline = re.sub(r"^(\s*)(#define)(\s{1,3})?(\s*)", r"\1//\2 \4", line)
+                    newline = re.sub(r'^(\s*)(#define)(\s{1,3})?(\s*)', r'\1//\2 \4', line)
                 else:
                     # For options with values, enable and set the value
                     addsp = "" if match[5] else " "
@@ -112,7 +112,7 @@ def apply_opt(name, val, conf=None):
 # Everything in the named sections. Section hint for exceptions may be added.
 def disable_all_options():
     # Create a regex to match the option and capture parts of the line
-    regex = re.compile(r"^(\s*)(#define\s+)([A-Z0-9_]+\b)(\s?)(\s*)(.*?)(\s*)(//.*)?$", re.IGNORECASE)
+    regex = re.compile(r'^(\s*)(#define\s+)([A-Z0-9_]+\b)(\s?)(\s*)(.*?)(\s*)(//.*)?$', re.IGNORECASE)
 
     # Disable all enabled options in both Config files
     for file in ("Configuration.h", "Configuration_adv.h"):
@@ -135,7 +135,7 @@ def disable_all_options():
                 found = True
                 # Comment out the define
                 # TODO: Comment more lines in a multi-line define with \ continuation
-                lines[i] = re.sub(r"^(\s*)(#define)(\s{1,3})?(\s*)", r"\1//\2 \4", line)
+                lines[i] = re.sub(r'^(\s*)(#define)(\s{1,3})?(\s*)', r'\1//\2 \4', line)
                 blab(f"Disable {name}")
 
         # If the option was found, write the modified lines

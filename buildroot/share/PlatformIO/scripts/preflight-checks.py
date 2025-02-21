@@ -14,25 +14,25 @@ if pioutil.is_pio_build():
         with ppath.open() as file:
 
             if sys.platform == "win32":
-                envregex = r"(?:env|win):"
+                envregex = r'(?:env|win):'
             elif sys.platform == "darwin":
-                envregex = r"(?:env|mac|uni):"
+                envregex = r'(?:env|mac|uni):'
             elif sys.platform == "linux":
-                envregex = r"(?:env|lin|uni):"
+                envregex = r'(?:env|lin|uni):'
             else:
-                envregex = r"(?:env):"
+                envregex = r'(?:env):'
 
-            r = re.compile(r"if\s+MB\((.+)\)")
+            r = re.compile(r'if\s+MB\((.+)\)')
             if board.startswith("BOARD_"):
                 board = board[6:]
 
             for line in file:
                 mbs = r.findall(line)
-                if mbs and board in re.split(r",\s*", mbs[0]):
+                if mbs and board in re.split(r',\s*', mbs[0]):
                     line = file.readline()
-                    found_envs = re.match(r"\s*#include .+" + envregex, line)
+                    found_envs = re.match(r'\s*#include .+' + envregex, line)
                     if found_envs:
-                        envlist = re.findall(envregex + r"(\w+)", line)
+                        envlist = re.findall(envregex + r'(\w+)', line)
                         return ["env:" + s for s in envlist]
         return []
 
@@ -156,14 +156,8 @@ if pioutil.is_pio_build():
         #
         # Check FILAMENT_RUNOUT_SCRIPT has a %c parammeter when required
         #
-        if (
-            "FILAMENT_RUNOUT_SENSOR" in env["MARLIN_FEATURES"]
-            and "NUM_RUNOUT_SENSORS" in env["MARLIN_FEATURES"]
-        ):
-            if (
-                env["MARLIN_FEATURES"]["NUM_RUNOUT_SENSORS"].isdigit()
-                and int(env["MARLIN_FEATURES"]["NUM_RUNOUT_SENSORS"]) > 1
-            ):
+        if ("FILAMENT_RUNOUT_SENSOR" in env["MARLIN_FEATURES"] and "NUM_RUNOUT_SENSORS" in env["MARLIN_FEATURES"]):
+            if (env["MARLIN_FEATURES"]["NUM_RUNOUT_SENSORS"].isdigit() and int(env["MARLIN_FEATURES"]["NUM_RUNOUT_SENSORS"]) > 1):
                 if "FILAMENT_RUNOUT_SCRIPT" in env["MARLIN_FEATURES"]:
                     frs = env["MARLIN_FEATURES"]["FILAMENT_RUNOUT_SCRIPT"]
                     if "M600" in frs and "%c" not in frs:

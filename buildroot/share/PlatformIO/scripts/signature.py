@@ -8,7 +8,7 @@ from pathlib import Path
 from functools import reduce
 
 def enabled_defines(filepath):
-    """
+    '''
     Return all enabled #define items from a given C header file in a dictionary.
     A "#define" in a multi-line comment could produce a false positive if it's not
     preceded by a non-space character (like * in a multi-line comment).
@@ -31,10 +31,10 @@ def enabled_defines(filepath):
     We end up with the actual configured state,
     better than what the config files say. You can then use the
     resulting config.ini to produce more exact configuration files.
-    """
+    '''
     outdict = {}
     section = "user"
-    spatt = re.compile(r".*@section +([-a-zA-Z0-9_\s]+)$")  # @section ...
+    spatt = re.compile(r'.*@section +([-a-zA-Z0-9_\s]+)$')  # @section ...
 
     f = open(filepath, encoding="utf8").read().split("\n")
 
@@ -86,7 +86,6 @@ def compress_file(filepath, storedname, outpath):
     ) as zipf:
         zipf.write(filepath, arcname=storedname)
 
-
 ignore = (
     "CONFIGURATION_H_VERSION",
     "CONFIGURATION_ADV_H_VERSION",
@@ -94,17 +93,16 @@ ignore = (
     "CONFIG_EXPORT"
 )
 
-
 #
 # Compute a build signature and/or export the configuration
 #
 def compute_build_signature(env):
-    """
+    '''
     Compute the build signature by extracting all configuration settings and
     building a unique reversible signature that can be included in the binary.
     The signature can be reversed to get a 1:1 equivalent configuration file.
     Used by common-dependencies.py after filtering build files by feature.
-    """
+    '''
     if "BUILD_SIGNATURE" in env:
         return
     env.Append(BUILD_SIGNATURE=1)
@@ -157,7 +155,7 @@ def compute_build_signature(env):
     build_output = run_preprocessor(env)
 
     # Dumb regex to filter out some dumb macros
-    r = re.compile(r"\(+(\s*-*\s*_.*)\)+")
+    r = re.compile(r'\(+(\s*-*\s*_.*)\)+')
 
     # Extract all the #define lines in the build output as key/value pairs
     build_defines = {}
@@ -194,10 +192,7 @@ def compute_build_signature(env):
         if key.endswith("_T_DECLARED"):
             continue
         # Remove keys that are not in the #define list in the Configuration list
-        if key not in conf_names + [
-            "DETAILED_BUILD_VERSION",
-            "STRING_DISTRIBUTION_DATE"
-        ]:
+        if key not in conf_names + ["DETAILED_BUILD_VERSION", "STRING_DISTRIBUTION_DATE"]:
             continue
         # Add to a new dictionary for simplicity
         cleaned_build_defines[key] = build_defines[key]
@@ -214,9 +209,9 @@ def compute_build_signature(env):
                     continue
                 val = cleaned_build_defines[key]
                 real_config[header][key] = {
-                    "file": header,
-                    "name": key,
-                    "value": val,
+                    "file"   : header,
+                    "name"   : key,
+                    "value"  : val,
                     "section": conf_defines[header][key]["section"]
                 }
 
@@ -544,7 +539,7 @@ def compute_build_signature(env):
                         sections[sect][name] = ddict
 
             # Get all sections as a list of strings, with spaces and dashes replaced by underscores
-            long_list = [re.sub(r"[- ]+", "_", x).lower() for x in sections.keys()]
+            long_list = [re.sub(r'[- ]+', "_", x).lower() for x in sections.keys()]
             # Make comma-separated lists of sections with 64 characters or less
             sec_lines = []
             while len(long_list):
@@ -565,7 +560,7 @@ def compute_build_signature(env):
         config_ini = build_path / "config.ini"
         with config_ini.open("w") as outfile:
             filegrp = {
-                "Configuration.h": "config:basic",
+                "Configuration.h"    : "config:basic",
                 "Configuration_adv.h": "config:advanced"
             }
             vers = build_defines["CONFIGURATION_H_VERSION"]
@@ -627,7 +622,7 @@ f"""#
                 # Loop through the sections
                 for skey in sorted(sections):
                     # print(f"  skey: {skey}")
-                    sani = re.sub(r"[- ]+", "_", skey).lower()
+                    sani = re.sub(r'[- ]+', "_", skey).lower()
                     outfile.write(f"\n[config:{sani}]\n")
                     opts = sections[skey]
                     opts_keys = sorted(opts.keys(), key=lambda x: optsort(x, optorder))
@@ -664,7 +659,7 @@ f"""#
         config_h = Path("Marlin", "Config-export.h")
         with config_h.open("w") as outfile:
             filegrp = {
-                "Configuration.h": "config:basic",
+                "Configuration.h"    : "config:basic",
                 "Configuration_adv.h": "config:advanced"
             }
             vers = build_defines["CONFIGURATION_H_VERSION"]
@@ -750,12 +745,10 @@ f"""#
                 try:
                     import yaml
                 except ImportError:
-                    env.Execute(
-                        env.VerboseAction(
-                            '$PYTHONEXE -m pip install "pyyaml"',
-                            "Installing YAML for schema.yml export"
-                        )
-                    )
+                    env.Execute(env.VerboseAction(
+                        '$PYTHONEXE -m pip install "pyyaml"',
+                        "Installing YAML for schema.yml export"
+                    ))
                     import yaml
                 schema.dump_yaml(conf_schema, build_path / "schema.yml")
 
@@ -794,12 +787,8 @@ f"""#
 
             # Append the source code version and date
             json_data["VERSION"] = {
-                "DETAILED_BUILD_VERSION": cleaned_build_defines[
-                    "DETAILED_BUILD_VERSION"
-                ],
-                "STRING_DISTRIBUTION_DATE": cleaned_build_defines[
-                    "STRING_DISTRIBUTION_DATE"
-                ]
+                "DETAILED_BUILD_VERSION"  : cleaned_build_defines["DETAILED_BUILD_VERSION"],
+                "STRING_DISTRIBUTION_DATE": cleaned_build_defines["STRING_DISTRIBUTION_DATE"]
             }
             try:
                 curver = subprocess.check_output(["git", "describe", "--match=NeVeRmAtCh", "--always"]).strip()
@@ -840,8 +829,7 @@ f"""#
 
 if __name__ == "__main__":
     # Build required. From command line just explain usage.
-    print(
-          "*** THIS SCRIPT USED BY common-dependencies.py ***\n\n"
+    print("*** THIS SCRIPT USED BY common-dependencies.py ***\n\n"
         + "Current options for config and schema export:\n"
         + " - marlin_config.json  : Build Marlin with CONFIG_EXPORT 1 or 101. (Use CONFIGURATION_EMBEDDING for 'mc.zip')\n"
         + " - config.ini          : Build Marlin with CONFIG_EXPORT 2 or 102.\n"

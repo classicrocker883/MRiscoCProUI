@@ -31,11 +31,7 @@ if pioutil.is_pio_build():
     # This is useful to keep two live versions: a debug version and a release version,
     # for flashing when upload is not done automatically by jlink/stlink.
     # Without this, PIO needs to recompile everything twice for any small change.
-    if env.GetBuildType() == "debug" and env.get("UPLOAD_PROTOCOL") not in [
-        "jlink",
-        "stlink",
-        "custom"
-    ]:
+    if env.GetBuildType() == "debug" and env.get("UPLOAD_PROTOCOL") not in ["jlink", "stlink", "custom"]:
         env["BUILD_DIR"] = "$PROJECT_BUILD_DIR/$PIOENV/debug"
 
         def on_program_ready(source, target, env):

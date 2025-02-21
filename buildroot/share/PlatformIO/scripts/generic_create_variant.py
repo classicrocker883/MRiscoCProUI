@@ -34,7 +34,7 @@ if pioutil.is_pio_build():
     else:
         spec = PackageSpec(platform_packages[0])
         if spec.uri and "@" in spec.uri:
-            platform_name = re.sub(r"@.+", "", spec.uri)
+            platform_name = re.sub(r'@.+', "", spec.uri)
         else:
             platform_name = spec.name
 

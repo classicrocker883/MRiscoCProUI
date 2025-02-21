@@ -65,20 +65,8 @@ if pioutil.is_pio_build():
             from datetime import datetime
             from os import path
 
-            _newtarget = Path(
-                target[0].dir.path,
-                datetime.now().strftime(
-                    new_name.replace("{date}", "%Y%m%d").replace("{time}", "%H%M%S")
-                )
-            )
-            _newsource = Path(
-                source[0].dir.path,
-                datetime.now().strftime(
-                    new_name.replace("{date}", "%Y%m%d")
-                    .replace("{time}", "%H%M%S")
-                    .replace(".bin", ".elf")
-                )
-            )
+            _newtarget = Path(target[0].dir.path, datetime.now().strftime(new_name.replace("{date}", "%Y%m%d").replace("{time}", "%H%M%S")))
+            _newsource = Path(source[0].dir.path, datetime.now().strftime(new_name.replace("{date}", "%Y%m%d").replace("{time}", "%H%M%S").replace(".bin", ".elf")))
             BIN_NAME = Path(target[0].path).replace(_newtarget)
             ELF_NAME = Path(source[0].path).replace(_newsource)
             env["PROGNAME"] = path.splitext(_newtarget)[0]
