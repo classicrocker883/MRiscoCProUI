@@ -29,7 +29,7 @@ def addCompressedData(input_file, output_file):
             c_footer = True
 
         if c_data_section:
-            cleaned = re.sub(r"\s|,|\n", "", line)
+            cleaned = re.sub(r'\s|,|\n', "", line)
             as_list = cleaned.split("0x")
             as_list.pop(0)
             raw_data += [int(x, 16) for x in as_list]
