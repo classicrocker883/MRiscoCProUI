@@ -3441,7 +3441,9 @@ void MarlinSettings::postprocess() {
 
       #if ENABLED(DWIN_LCD_PROUI)
         if (bedLevelTools.meshValidate()) {
-          ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), slot);
+          if (init_eeprom() || persistentStore.access_finish()) {
+            ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), slot);
+          }
         }
         else {
           status = true;
