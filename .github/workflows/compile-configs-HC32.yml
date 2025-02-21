@@ -252,7 +252,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        inshape: [true]
         bmp: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
@@ -282,9 +281,8 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if ($IS); then ISTMP=-IS; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=HC32${MPTMP}_UBL${ISTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=HC32${MPTMP}_UBL-IS$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -292,10 +290,11 @@ jobs:
         cp configurations/Voxelab\ Aquila\ HC32/Configuration_advUBL.h Marlin/Configuration_adv.h
         cp configurations/Voxelab\ Aquila\ HC32/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
-        if ($IS); then STEMP=; fi;
-        sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-        sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-        sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define INPUT_SHAPING_X/#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define INPUT_SHAPING_Y/#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define INPUT_SHAPING_Z/#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define POWER_LOSS_RECOVERY/\/\/#define POWER_LOSS_RECOVERY/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define PROUI_ITEM_PLR/\/\/#define PROUI_ITEM_PLR/" Marlin/Configuration.h
         if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
         sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
         sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
@@ -308,7 +307,6 @@ jobs:
         mkdir temp
         mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
       env:
-        IS: ${{ matrix.inshape }}
         BMP: ${{ matrix.bmp }}
     - name: Get release
       id: get_release
