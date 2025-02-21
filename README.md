@@ -1,12 +1,16 @@
 # Professional Firmware for the Voxelab Aquila and Creality Ender-3 3D Printers
 **_<sup>(or any other compatible 3D Printer)</sup>_**
 
-![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)
-![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)
-![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)
-[![Aquila Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases/latest)
-![HC32 Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs-HC32.yml/badge.svg)
+![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)  
+![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)  
+![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)  
+[![Aquila Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases/latest)  
+![HC32 Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs-HC32.yml/badge.svg)  
 ![Ender Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs_Ender.yml/badge.svg)
+
+### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about *this* firmware and the features it provides
+
+<br>
 
 **Don't forget to checkout the [thingiverse](https://www.thingiverse.com/classicrocker883/designs) models I've designed:**
 
@@ -180,6 +184,8 @@ ProUI is a Marlin based firmware maintained by [@mriscoc](https://github.com/mri
 The fork for H32|HC32 firmware is maintained by [@shadow578](https://github.com/shadow578)
 
 Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
+
+<br>
 
 ## Star History
 

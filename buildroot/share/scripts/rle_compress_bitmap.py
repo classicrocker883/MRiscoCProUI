@@ -34,7 +34,7 @@ def addCompressedData(input_file, output_file):
             c_footer = True
 
         if c_data_section:
-            cleaned = re.sub(r"\s|,|\n", "", line)
+            cleaned = re.sub(r'\s|,|\n', "", line)
             mat = re.match(r'(0b|B)[01]{8}', cleaned)
             if mat:
                 as_list = cleaned.split(mat[1])
@@ -181,11 +181,11 @@ def addCompressedData(input_file, output_file):
     checkdata = bitwise_rle_decode(isext, rledata)
     for i in range(0, len(checkdata)):
         if raw_data[i] != checkdata[i]:
-            print(f'Data mismatch at byte offset {i} (should be {raw_data[i]} but got {checkdata[i]})')
+            print(f"Data mismatch at byte offset {i} (should be {raw_data[i]} but got {checkdata[i]})")
             break
 
 if len(sys.argv) <= 2:
-    print('Usage: rle_compress_bitmap.py INPUT_FILE OUTPUT_FILE')
+    print("Usage: rle_compress_bitmap.py INPUT_FILE OUTPUT_FILE")
     exit(1)
 
 output_h = sys.argv[2]

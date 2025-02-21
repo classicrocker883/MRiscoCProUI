@@ -90,7 +90,7 @@ class DWIN_ICO_File():
             count += 1
 
     def _splitEntryData(self, infile, outDir):
-        print('Splitting Entry Data...')
+        print("Splitting Entry Data...")
         if 0 == len(self.entries):
             raise RuntimeError('.ico file is not loaded yet')
 
@@ -111,7 +111,7 @@ class DWIN_ICO_File():
                 blob = infile.read(entry.length)
                 outfile.write(blob)
                 # Seek file position, read length bytes, and write to new output file.
-                print('(%3d: width=%3d height=%3d offset=%6d len=%4d) ... %s' %
+                print("(%3d: width=%3d height=%3d offset=%6d len=%4d) ... %s" %
                       (count, entry.width, entry.height, entry.offset, entry.length, os.path.basename(outfilename)))
 
             count += 1
@@ -127,17 +127,17 @@ class DWIN_ICO_File():
         """
         self.entries = [Entry() for i in range(0,256)]
         # 1. Scan icon directory and record all valid files
-        print('Scanning icon directory', iconDir)
+        print("Scanning icon directory", iconDir)
         count = 0
         for dirEntry in os.scandir(iconDir):
             if not dirEntry.is_file():
-                print('...Ignoring', dirEntry.path)
+                print("...Ignoring", dirEntry.path)
                 continue
             # process each file:
             try:
                 index = int(dirEntry.name[0:3])
                 if not (0 <= index <= 255):
-                    print('...Ignoring invalid index on', dirEntry.path)
+                    print("...Ignoring invalid index on", dirEntry.path)
                     continue
                 # dirEntry.path is iconDir/name
                 w,h = getJpegResolution(dirEntry.path)
@@ -149,16 +149,16 @@ class DWIN_ICO_File():
                 e.filename = dirEntry.path
                 count += 1
             except Exception as e:
-                print('Whoops: ', e)
+                print("Whoops: ", e)
                 pass
-        print('...Scanned %d icon files' % (count))
+        print("...Scanned %d icon files" % (count))
 
         # 2. Scan over valid header entries and update offsets
         self._updateHeaderOffsets()
 
         # 3. Write out header to .ico file, the append each icon file
         self._combineAndWriteIcoFile(filename)
-        print('Scanning done. %d icons included.' % (count))
+        print("Scanning done. %d icons included." % (count))
 
     def _updateHeaderOffsets(self):
         """Iterate over all header entries and update their offsets.
@@ -170,7 +170,7 @@ class DWIN_ICO_File():
                 continue
             e.offset = offset
             offset += e.length
-            # print('%03d: (%d x %d) len=%d off=%d' %
+            # print("%03d: (%d x %d) len=%d off=%d" %
             #      (i, e.width, e.height, e.length, e.offset))
 
     def _combineAndWriteIcoFile(self, filename):

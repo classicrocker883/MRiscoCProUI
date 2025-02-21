@@ -18,27 +18,27 @@ jobs:
         temp: [true,false]
         tjc: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -80,8 +80,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -99,27 +99,27 @@ jobs:
         temp: [true,false]
         tjc: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -161,8 +161,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -182,27 +182,27 @@ jobs:
         t13: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -223,15 +223,16 @@ jobs:
         cp configurations/Voxelab\ Aquila/UBL/Configuration_adv.h Marlin/Configuration_adv.h
         cp configurations/Voxelab\ Aquila/UBL/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = ${AQUILA_VER}F103RC_voxelab_maple/" platformio.ini
-        if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+        if ($IS); then STEMP=; CTEMP='\/\/'; else STEMP='\/\/'; CTEMP=; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
         sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
         sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define EXTENDED_CAPABILITIES_REPORT/${CTEMP}#define EXTENDED_CAPABILITIES_REPORT/" Marlin/Configuration_adv.h
         if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define SHOW_SPEED_IND/${PTEMP}#define SHOW_SPEED_IND/" Marlin/Configuration.h
-        if [[ $IS && $TP ]]; then
+        if [ "$IS" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
         sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
         fi;
@@ -263,8 +264,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -283,27 +284,27 @@ jobs:
         tjc: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -323,15 +324,16 @@ jobs:
         cp configurations/Voxelab\ Aquila/UBL/Configuration_adv.h Marlin/Configuration_adv.h
         cp configurations/Voxelab\ Aquila/UBL/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = ${AQUILA_VER}F103RC_voxelab_maple/" platformio.ini
-        if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+        if ($IS); then STEMP=; CTEMP='\/\/'; else STEMP='\/\/'; CTEMP=; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
         sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
         sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define EXTENDED_CAPABILITIES_REPORT/${CTEMP}#define EXTENDED_CAPABILITIES_REPORT/" Marlin/Configuration_adv.h
         if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define SHOW_SPEED_IND/${PTEMP}#define SHOW_SPEED_IND/" Marlin/Configuration.h
-        if [[ $IS && $TP ]]; then
+        if [ "$IS" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
         sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
         fi;
@@ -360,8 +362,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -380,27 +382,27 @@ jobs:
         tjc: [true,false]
         t13: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -430,7 +432,7 @@ jobs:
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define HAS_CUSTOM_COLORS 1/${PTEMP}#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
-        if [[ $IS && $TP ]]; then
+        if [ "$IS" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
         fi;
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
@@ -453,8 +455,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -472,27 +474,27 @@ jobs:
         temp: [true,false]
         tjc: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -521,7 +523,7 @@ jobs:
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define HAS_CUSTOM_COLORS 1/${PTEMP}#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
-        if [[ $IS && $TP ]]; then
+        if [ "$IS" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
         fi;
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
@@ -541,8 +543,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -562,27 +564,27 @@ jobs:
         tjc: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -612,7 +614,7 @@ jobs:
         if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
-        if [[ $IS && $TP && $EX ]]; then
+        if [ "$IS" = true ] && [ "$TP" = true ] && [ "$EX" = true ]; then
         sed -i "s/.*#define HAS_CGCODE 1/\/\/#define HAS_CGCODE 1/" Marlin/Configuration.h
         fi;
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
@@ -640,8 +642,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -658,27 +660,27 @@ jobs:
         tjc: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -736,8 +738,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -753,27 +755,27 @@ jobs:
         chip: [V3_0,V2_0,V3_0_1]
         tjc: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -821,8 +823,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -840,27 +842,27 @@ jobs:
         temp: [true,false]
         tjc: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -903,8 +905,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -922,27 +924,27 @@ jobs:
         temp: [true,false]
         tjc: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -985,8 +987,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -1006,27 +1008,27 @@ jobs:
         t13: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -1083,8 +1085,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -1103,27 +1105,27 @@ jobs:
         tjc: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -1176,8 +1178,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -1196,27 +1198,27 @@ jobs:
         tjc: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -1268,8 +1270,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -1285,27 +1287,27 @@ jobs:
         chip: [427,422]
         tjc: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -1342,8 +1344,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -1362,27 +1364,27 @@ jobs:
         temp: [true,false]
         bmp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -1442,8 +1444,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
@@ -1461,27 +1463,27 @@ jobs:
         inshape: [true,false]
         temp: [true,false]
     steps:
-    - uses: actions/checkout@v4.2.0
+    - uses: actions/checkout@v4.2.2
     - name: Setup node
-      uses: actions/setup-node@v4.0.4
+      uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.0.2
+      uses: actions/cache@v4.2.1
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - name: Set up Python
-      uses: actions/setup-python@v5.2.0
+      uses: actions/setup-python@v5.4.0
       with:
-        python-version: '3.10'
+        python-version: '3.12'
     - name: Install PlatformIO
       run: |
         python3 -m pip install --upgrade pip wheel platformio
@@ -1530,8 +1532,8 @@ jobs:
       uses: bruceadams/get-release@v1.3.2
       env:
         GITHUB_TOKEN: ${{ github.token }}
-    - name: Upload Release Asset
-      uses: tanyagray/action-upload-release-asset@main
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:

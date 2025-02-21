@@ -12,4 +12,4 @@ with open(yaml_file) as f:
     github_configuration = yaml.safe_load(f)
 
 # Print out the test platforms
-print(' '.join(github_configuration['jobs']['test_builds']['strategy']['matrix']['test-platform']))
+print(" ".join(github_configuration['jobs']['test_builds']['strategy']['matrix']['test-platform']))

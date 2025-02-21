@@ -67,6 +67,6 @@ if "MARLIN_FEATURES" in env:
 
    # Copy correct library file
    if prouiex:
-      print('ProUI extension detected')
+      print("ProUI extension detected")
       libdestfile = libpath+arch+'libproui_'+lev+'.a'
       shutil.copy(libdestfile, libfile)

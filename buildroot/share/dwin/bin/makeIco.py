@@ -46,4 +46,4 @@ if __name__ == '__main__':
         ico.createFile(iconDir, filename)
 
     except Exception as e:
-        print('Error: ', e)
+        print("Error: ", e)
