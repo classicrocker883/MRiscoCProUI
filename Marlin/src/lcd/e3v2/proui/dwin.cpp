@@ -3220,7 +3220,11 @@ void ReturnToPreviousMenu() {
   if (PreviousMenu == FileMenu)         return Draw_Print_File_Menu();
   if (PreviousMenu == PrepareMenu)      return Draw_Prepare_Menu();
   #if HAS_TOOLBAR
-    else if (CurrentMenu == ZOffsetWizMenu) { DWIN_ResetStatusLine(); Goto_Main_Menu(); return Goto_ToolBar(); }
+    else if (CurrentMenu == ZOffsetWizMenu) {
+      DWIN_ResetStatusLine();
+      Goto_Main_Menu();
+      return Goto_ToolBar();
+    }
   #endif
 }
 

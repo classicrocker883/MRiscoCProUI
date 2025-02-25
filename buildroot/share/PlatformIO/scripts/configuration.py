@@ -288,7 +288,7 @@ if __name__ == "__main__":
     #
     # From command line use the given file name
     #
-    import sys, os
+    import sys, os.path
     args = sys.argv[1:]
     if len(args) > 0:
         if args[0].endswith(".ini"):
