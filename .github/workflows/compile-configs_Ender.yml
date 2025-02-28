@@ -8,8 +8,8 @@ on:
     types: [prereleased]
 
 jobs:
-  Build-Default-E:            # Default for Ender-3
-    name: Build Default Files E
+  Build-Default-GD32-E:            # Default for Ender-3 GD32
+    name: Build Default GD32 Files E
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -85,8 +85,8 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-MM-EX-E:            # MM EX for Ender-3
-    name: Build MM EX Files E
+  Build-MM-EX-GD32-E:            # MM EX for Ender-3 GD32
+    name: Build MM EX GD32 Files E
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -162,8 +162,8 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-UBL-EX-E:            # UBL EX for Ender-3
-    name: Build UBL EX Files E
+  Build-UBL-EX-GD32-E:            # UBL EX for Ender-3 GD32
+    name: Build UBL EX GD32 Files E
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -255,8 +255,8 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-UBL-EX-T5-E:            # UBL EX T5 Speedy for Ender-3
-    name: Build UBL EX T5 Files E
+  Build-UBL-EX-GD32-T5-E:            # UBL EX T5 Speedy for Ender-3 GD32
+    name: Build UBL EX GD32 T5 Files E
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -343,8 +343,96 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-S1-UBL-EX-E:            # UBL EX for Ender-3S1
+  Build-S1-UBL-EX-E:            # UBL EX for Ender-3S1 Sprite
     name: Build S1 UBL EX Files E
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip: [F4,F1]
+        tjc: [true,false]
+        t13: [true,false]
+        bmp: [true,false]
+    steps:
+    - uses: actions/checkout@v4.2.2
+    - name: Setup node
+      uses: actions/setup-node@v4.2.0
+      with:
+        node-version: 20
+    - name: Cache pip
+      uses: actions/cache@v4.2.1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Cache PlatformIO
+      uses: actions/cache@v4.2.1
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Set up Python
+      uses: actions/setup-python@v5.4.0
+      with:
+        python-version: '3.12'
+    - name: Install PlatformIO
+      run: |
+        python3 -m pip install --upgrade pip wheel platformio
+    - name: Run PlatformIO
+      id: build_configs
+      run: |
+        if [ "$ENDER_VER" = F4 ]; then EVTMP="-F4"; DENV="STM32F401RC_creality"; DBORD='CREALITY_V24S1_301F4'; else EVTMP="-F1"; DENV="STM32F103RC_creality"; DBORD='CREALITY_V24S1_301'; fi;
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+        echo "filename=${DTMP}Ender-S1${EVTMP}${TTMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        > Marlin/Configuration.h
+        > Marlin/Configuration_adv.h
+        > Marlin/Version.h
+        cp configurations/Creality\ Ender/S1/UBL/Configuration.h Marlin/Configuration.h
+        cp configurations/Creality\ Ender/S1/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Creality\ Ender/S1/UBL/Version.h Marlin/Version.h
+        sed -i "s/default_envs =.*/default_envs = ${DENV}/" platformio.ini
+        sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+        if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        if ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+        sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80,80,400,${DSMP} }/" Marlin/Configuration.h
+        if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
+        sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+        sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
+        sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
+        sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
+        sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+        sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+        sed -i "s/.*#define HAS_ESDIAG 1/${MPDEMP}#define HAS_ESDIAG 1/" Marlin/Configuration.h
+        sed -i "s/.*#define PROUI_ITEM_PLOT/${MPDEMP}#define PROUI_ITEM_PLOT/" Marlin/Configuration.h
+        sed -i "s/.*#define PROUI_ITEM_TRAM/${MPDEMP}#define PROUI_ITEM_TRAM/" Marlin/Configuration.h
+        sed -i "s/.*#define FWRETRACT/${MPDEMP}#define FWRETRACT/" Marlin/Configuration_adv.h
+        pio run
+        mkdir temp
+        mv .pio/build/${DENV}/*.bin temp/build.bin
+      env:
+        ENDER_VER: ${{ matrix.chip }}
+        TJC: ${{ matrix.tjc }}
+        T13: ${{ matrix.t13 }}
+        BMP: ${{ matrix.bmp }}
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        asset_path: temp/build.bin
+        asset_name: ${{ steps.build_configs.outputs.filename }}
+        asset_content_type: application/x-binary
+  Build-S1-UBL-EX-T5-E:            # UBL EX for Ender-3S1 Spider Speedy
+    name: Build S1 UBL EX T5 Files E
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -382,7 +470,7 @@ jobs:
         if [ "$ENDER_VER" = F4 ]; then EVTMP="-F4"; DENV="STM32F401RC_creality"; DBORD='CREALITY_V24S1_301F4'; else EVTMP="-F1"; DENV="STM32F103RC_creality"; DBORD='CREALITY_V24S1_301'; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Ender-S1${EVTMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender-S1${EVTMP}_SPDY5${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -393,6 +481,7 @@ jobs:
         sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
         if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 5/" Marlin/Configuration.h
         if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
         sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
         sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
@@ -425,8 +514,8 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-BLT-EX-E:            # BLT EX for Ender-3
-    name: Build BLT EX Files E
+  Build-BLT-EX-GD32-E:            # BLT EX for Ender-3 GD32
+    name: Build BLT EX GD32 Files E
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -512,7 +601,7 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-Default-E4:            # Default for Ender-3
+  Build-Default-E4:            # Default for Ender-3 4.2.7, 4.2.2
     name: Build Default Files E4
     runs-on: ubuntu-latest
     strategy:
@@ -593,7 +682,7 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-MM-EX-E4:            # MM EX for Ender-3
+  Build-MM-EX-E4:            # MM EX for Ender-3 4.2.7, 4.2.2
     name: Build MM EX Files E4
     runs-on: ubuntu-latest
     strategy:
@@ -674,7 +763,7 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-UBL-EX-E4:            # UBL EX for Ender-3
+  Build-UBL-EX-E4:            # UBL EX for Ender-3 4.2.7, 4.2.2
     name: Build UBL EX Files E4
     runs-on: ubuntu-latest
     strategy:
@@ -771,7 +860,7 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-UBL-EX-T5-E4:            # UBL EX T5 Speedy for Ender-3
+  Build-UBL-EX-T5-E4:            # UBL EX T5 Speedy for Ender-3 4.2.7, 4.2.2
     name: Build UBL EX T5 Files E4
     runs-on: ubuntu-latest
     strategy:
@@ -863,7 +952,7 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
-  Build-BLT-EX-E4:            # BLT EX for Ender-3
+  Build-BLT-EX-E4:            # BLT EX for Ender-3 4.2.7, 4.2.2
     name: Build BLT EX Files E4
     runs-on: ubuntu-latest
     strategy:
