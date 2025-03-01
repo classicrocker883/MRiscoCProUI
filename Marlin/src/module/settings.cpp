@@ -2097,9 +2097,6 @@ void MarlinSettings::postprocess() {
           EEPROM_READ(planner.max_jerk);
         #else
           for (uint8_t q = LOGICAL_AXES; q--;) EEPROM_READ(dummyf);
-          #if HAS_LINEAR_E_JERK
-            EEPROM_READ(dummyf);
-          #endif
         #endif
 
         EEPROM_READ(TERN(CLASSIC_JERK, dummyf, planner.junction_deviation_mm));
