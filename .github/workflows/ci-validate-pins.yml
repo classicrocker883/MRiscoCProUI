@@ -8,14 +8,14 @@ name: CI - Validate Pins Files
 on:
   pull_request:
     branches:
-    - 2025-February
+    - 2025-March
     # Cannot be enabled on 2.1.x until it contains the unit test framework
     #- 2.1.x
     paths:
     - 'Marlin/src/pins/*/**'
   push:
     branches:
-    - 2025-February
+    - 2025-March
     # Cannot be enabled on 2.1.x until it contains the unit test framework
     #- 2.1.x
     paths:
@@ -33,7 +33,7 @@ jobs:
       uses: actions/checkout@v4.2.2
 
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}

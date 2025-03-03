@@ -24,14 +24,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -105,14 +105,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -188,14 +188,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -290,14 +290,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -388,14 +388,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -480,14 +480,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -570,14 +570,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -666,14 +666,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -761,14 +761,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -848,14 +848,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -930,14 +930,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -1014,14 +1014,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -1111,14 +1111,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -1204,14 +1204,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -1293,14 +1293,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -1370,14 +1370,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
@@ -1469,14 +1469,14 @@ jobs:
       with:
         node-version: 20
     - name: Cache pip
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.1
+      uses: actions/cache@v4.2.2
       with:
         path: ~/.platformio
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}

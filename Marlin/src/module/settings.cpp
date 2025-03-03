@@ -235,6 +235,9 @@ typedef struct SettingsDataStruct {
 
   xyze_float_t planner_max_jerk;                        // M205 XYZE  planner.max_jerk
   float planner_junction_deviation_mm;                  // M205 J     planner.junction_deviation_mm
+  #if HAS_LINEAR_E_JERK
+    float planner_max_e_jerk[DISTINCT_E];
+  #endif
 
   //
   // Home Offset
@@ -941,8 +944,7 @@ void MarlinSettings::postprocess() {
         const xyze_pos_t planner_max_jerk = LOGICAL_AXIS_ARRAY(10, 10, 10, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4);
         EEPROM_WRITE(planner_max_jerk);
         #if HAS_LINEAR_E_JERK
-          dummyf = float(DEFAULT_EJERK);
-          EEPROM_WRITE(dummyf);
+          EEPROM_WRITE(planner.max_e_jerk[DISTINCT_E]);
         #endif
       #endif
 
@@ -2101,12 +2103,10 @@ void MarlinSettings::postprocess() {
           EEPROM_READ(planner.max_jerk);
         #else
           for (uint8_t q = LOGICAL_AXES; q--;) EEPROM_READ(dummyf);
-          #if HAS_LINEAR_E_JERK
-            EEPROM_READ(dummyf);
-          #endif
         #endif
 
         EEPROM_READ(TERN(CLASSIC_JERK, dummyf, planner.junction_deviation_mm));
+        TERN_(HAS_LINEAR_E_JERK, EEPROM_READ(planner.max_e_jerk[DISTINCT_E]));
       }
 
       //
