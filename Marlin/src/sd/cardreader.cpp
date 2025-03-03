@@ -838,7 +838,7 @@ void CardReader::removeFile(const char * const name) {
     SERIAL_ECHOLNPGM("Deletion failed (read-only), File: ", fname, ".");
   #else
     if (file.remove(itsDirPtr, fname)) {
-      SERIAL_ECHOLNPGM("File deleted:", fname);
+      SERIAL_ECHOLNPGM("File deleted: ", fname);
       sdpos = 0;
       TERN_(SDCARD_SORT_ALPHA, presort());
     }
