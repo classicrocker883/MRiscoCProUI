@@ -75,14 +75,16 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 
 There is a *MarlinSimulator.exe* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
-To create your own MarlinSimulator with your own build, start by changing in Configuration.h **MOTHERBOARD** to *BOARD_SIMULATED*, also disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`, and then in platformio.ini **default_envs =** change to *simulator_windows*. The MarlinSimulator can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.
+The MarlinSimulator can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.  
+To create your own MarlinSimulator with your own build, start by changing in **Configuration.h** `MOTHERBOARD` to `BOARD_SIMULATED`, also disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`, and then in **platformio.ini** change `default_envs = simulator_windows`.
 
-Then you have to extract **SDL2-devel-2.30.5-mingw.zip** from /**docs**.
-You can either copy/paste the files directly, or install them.
+Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.  
+Or for the latest releast go to [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for the latest **SDL2** version (**NOT** *SDL3*)  
+You can *either* copy/paste the files directly, or install them.  
+It's recommended to install them, but if you have any issues, then try copy/paste method.
 
-32-bit files are in \i686-w64-mingw32
-64-bit files are in \x86_64-w64-mingw32
-Navigate to the SDL2 directory in an *MSYS2 MINGW64* terminal (Run as Administrator):
+#### Install Files
+Navigate to the extracted SDL2 directory in an *MSYS2* or *bash* terminal (Run as Administrator):
 
 To install SDL for native (32-bit) development:
 >     make native
@@ -90,17 +92,39 @@ To install SDL for native (32-bit) development:
 To install SDL for cross-compiling development:
 >     make cross
 
-Recommended for 64-bit - If you receive an error, then try the following:
+It's recommended to do both `make native` and `make cross`.
+
+For 64-bit - If you receive an error, then try the following:
 >     make install-package arch=x86_64-w64-mingw32 prefix=/usr
 
-You may have to first Build so the directory can be created, but you can:
-**Copy** the contents of ~\SDL2-2.30.5\x86_64-w64-mingw32\include\SDL2\\* into the directory ~\.pio\libdeps\simulator_windows\\**imgui**
--OR-
-**Copy** the just folder ~\SDL2-2.30.5\x86_64-w64-mingw32\include\\**SDL2** into the directory ~\.pio\libdeps\\*simulator_windows*
+When compiling, if you receive:  
+`error: the value of 'HMI_data' is not usable in a constant expression`  
+and/or  
+`note: 'HMI_data' was not declared 'constexpr'`  
+Then you must go to:  
+**.pio\libdeps\simulator_windows\MarlinSimUI\src\MarlinSimulator\hardware\KinematicSystem.cpp**
+
+Change the following:
+```diff
+- constexpr bool extruder_invert_dir[EXTRUDERS] = {
+
++ const bool extruder_invert_dir[EXTRUDERS] = {
+```
+
+#### Copy/Paste Files
+You may have to first Build so the directory can be created, but you can:  
+**Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\SDL2\\*, paste into the directory ~\.pio\libdeps\simulator_windows\\**imgui**  
+-OR-  
+**Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory ~\.pio\libdeps\\*simulator_windows*
 
 Once all that is done, just Build like you would normally and *MarlinSimulator.exe* will be created.
 
 For MacOS or Linux, you're on your own...sorry.
+
+#### Using MarlinSimulator.exe
+- Under `SD Card`, under `Components` on the right side, select or load an image
+- Select Serial Monitor(1)
+- Use like a normal terminal, enter `G28` to watch it Home
 
 <br>
 
@@ -119,10 +143,10 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 
 ## Donations
 
-Thank you for your support.
-Please consider making a donation, as large or as small and as often as you'd like.
-[Ko-fi](https://ko-fi.com/classicrocker883)
-[Venmo](https://venmo.com/u/andrewleduc88)
+Thank you for your support.  
+Please consider making a donation, as large or as small and as often as you'd like.  
+[Ko-fi](https://ko-fi.com/classicrocker883)  
+[Venmo](https://venmo.com/u/andrewleduc88)  
 [Paypal](https://www.paypal.com/paypalme/andrewleduc)
 
 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal**
