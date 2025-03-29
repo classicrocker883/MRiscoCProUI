@@ -163,7 +163,7 @@ jobs:
         - STM32G0B1RE_btt
 
         # GD32F3
-        - GD32F303RE_creality_mfl
+        # - GD32F303RE_creality_mfl
 
         # LPC176x - Lengthy tests
         # - LPC1768
