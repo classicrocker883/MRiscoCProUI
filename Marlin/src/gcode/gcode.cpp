@@ -259,11 +259,11 @@ void GcodeSuite::get_destination_from_command() {
 }
 
 /**
- * Dwell waits immediately. It does not synchronize. Use M400 instead of G4
+ * Dwell waits immediately. It does not synchronize.
  */
-void GcodeSuite::dwell(millis_t time) {
-  time += millis();
-  while (PENDING(millis(), time)) idle();
+void GcodeSuite::dwell(const millis_t time) {
+  const millis_t startMillis = millis();
+  while (FUTURE(startMillis, time)) idle();
 }
 
 /**
@@ -967,6 +967,10 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
 
       #if ENABLED(SD_ABORT_ON_ENDSTOP_HIT)
         case 540: M540(); break;                                  // M540: Set abort on endstop hit for SD printing
+      #endif
+
+      #if ENABLED(CONFIGURABLE_MACHINE_NAME)
+        case 550: M550(); break;                                  // M550: Set machine name
       #endif
 
       #if HAS_ETHERNET
