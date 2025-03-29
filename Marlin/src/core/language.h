@@ -321,6 +321,7 @@
 #define STR_FILAMENT_RUNOUT_SENSOR          "Filament runout sensor"
 #define STR_DRIVER_STEPPING_MODE            "Driver stepping mode"
 #define STR_STEPPER_DRIVER_CURRENT          "Stepper driver current"
+#define STR_HOMING_CURRENT                  "Homing Current (mA)"
 #define STR_TMC_STEALTH                     "StealthChop"
 #define STR_HYBRID_THRESHOLD                "Hybrid Threshold"
 #define STR_STALLGUARD_THRESHOLD            "StallGuard Threshold"

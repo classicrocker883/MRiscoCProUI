@@ -646,7 +646,7 @@ namespace LanguageNarrow_ru {
   LSTR MSG_TMC_ENHYBRID_THRS                = _UxGT("* Гибридный режим");
   LSTR MSG_TMC_HOMING_THRS                  = _UxGT("Чувствительность");
   LSTR MSG_TMC_STEPPING_MODE                = _UxGT("Режим драйвера");
-  LSTR MSG_TMC_STEALTH_ENABLED              = _UxGT("Тихий режим вкл");
+  LSTR MSG_TMC_STEALTHCHOP                  = _UxGT("Тихий режим вкл");
 
   LSTR MSG_SERVICE_RESET                    = _UxGT("Сброс");
   LSTR MSG_SERVICE_IN                       = _UxGT(" в:");

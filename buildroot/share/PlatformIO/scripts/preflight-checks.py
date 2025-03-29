@@ -96,14 +96,8 @@ if pioutil.is_pio_build():
         # Make sure board is compatible with the build environment. Skip for _test,
         # since the board is manipulated as each unit test is executed.
         if not result and build_env != "STM32F103RE_creality":
-            err = (
-                "Error: Build environment '%s' is incompatible with %s. Use one of these environments: %s"
-                % (
-                    build_env,
-                    motherboard,
-                    ", ".join([e[4:] for e in board_envs if e.startswith("env:")])
-                )
-            )
+            err = "Error: Build environment '%s' is incompatible with %s. Use one of these environments: %s" % \
+                  ( build_env, motherboard, ", ".join([e[4:] for e in board_envs if e.startswith("env:")]))
             raise SystemExit(err)
 
         #
