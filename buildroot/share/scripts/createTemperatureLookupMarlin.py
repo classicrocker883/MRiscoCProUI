@@ -27,13 +27,14 @@ import sys, getopt
 ZERO   = 273.15                             # zero point of Kelvin scale
 VADC   = 5                                  # ADC voltage
 VCC    = 5                                  # supply voltage
-ARES   = pow(2,10)                          # 10 Bit ADC resolution
+ARES   = pow(2, 10)                         # 10 Bit ADC resolution
 VSTEP  = VADC / ARES                        # ADC voltage resolution
 TMIN   = 0                                  # lowest temperature in table
 TMAX   = 350                                # highest temperature in table
 
 class Thermistor:
     "Class to do the thermistor maths"
+
     def __init__(self, rp, t1, r1, t2, r2, t3, r3):
         l1 = log(r1)
         l2 = log(r2)
@@ -44,8 +45,8 @@ class Thermistor:
         x = (y2 - y1) / (l2 - l1)
         y = (y3 - y1) / (l3 - l1)
         c = (y - x) / ((l3 - l2) * (l1 + l2 + l3))
-        b = x - c * (l1**2 + l2**2 + l1*l2)
-        a = y1 - (b + l1**2 *c)*l1
+        b = x - c * (l1**2 + l2**2 + l1 * l2)
+        a = y1 - (b + l1**2 * c) * l1
 
         if c < 0:
             print("//////////////////////////////////////////////////////////////////////////////////////")
@@ -59,7 +60,7 @@ class Thermistor:
 
     def resol(self, adc):
         "Convert ADC reading into a resolution"
-        res = self.temp(adc)-self.temp(adc+1)
+        res = self.temp(adc) - self.temp(adc + 1)
         return res
 
     def voltage(self, adc):
@@ -74,14 +75,14 @@ class Thermistor:
     def temp(self, adc):
         "Convert ADC reading into a temperature in Celsius"
         l = log(self.resist(adc))
-        Tinv = self.c1 + self.c2*l + self.c3* l**3 # inverse temperature
-        return (1/Tinv) - ZERO              # temperature
+        Tinv = self.c1 + self.c2 * l + self.c3 * l**3  # inverse temperature
+        return (1 / Tinv) - ZERO                       # temperature
 
     def adc(self, temp):
         "Convert temperature into a ADC reading"
-        x = (self.c1 - (1.0 / (temp+ZERO))) / (2*self.c3)
-        y = sqrt((self.c2 / (3*self.c3))**3 + x**2)
-        r = exp((y-x)**(1.0/3) - (y+x)**(1.0/3))
+        x = (self.c1 - (1.0 / (temp + ZERO))) / (2 * self.c3)
+        y = sqrt((self.c2 / (3 * self.c3)) ** 3 + x**2)
+        r = exp((y - x) ** (1.0 / 3) - (y + x) ** (1.0 / 3))
         return (r / (self.rp + r)) * ARES
 
 def main(argv):
@@ -109,15 +110,15 @@ def main(argv):
         elif opt == "--rp":
             rp = int(arg)
         elif opt == "--t1":
-            arg =  arg.split(':')
+            arg = arg.split(":")
             t1 = float(arg[0])
             r1 = float(arg[1])
         elif opt == "--t2":
-            arg =  arg.split(':')
+            arg = arg.split(":")
             t2 = float(arg[0])
             r2 = float(arg[1])
         elif opt == "--t3":
-            arg =  arg.split(':')
+            arg = arg.split(":")
             t3 = float(arg[0])
             r3 = float(arg[1])
         elif opt == "--num-temps":
@@ -141,12 +142,16 @@ def main(argv):
 
     for temp in temps:
         adc = t.adc(temp)
-        print("    { OV(%7.2f), %4s }%s // v=%.3f\tr=%.3f\tres=%.3f degC/count" % (adc , temp, \
-                        ',' if temp != temps[-1] else ' ', \
-                        t.voltage(adc), \
-                        t.resist( adc), \
-                        t.resol(  adc) \
-                    ))
+        print("    { OV(%7.2f), %4s }%s // v=%.3f\tr=%.3f\tres=%.3f degC/count" %
+              (
+               adc,
+               temp,
+               ',' if temp != temps[-1] else ' ',
+               t.voltage(adc),
+               t.resist( adc),
+               t.resol(  adc)
+              )
+             )
     print("};")
 
 def usage():

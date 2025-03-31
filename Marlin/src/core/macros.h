@@ -263,16 +263,23 @@
 #define TERN( O,A,B)        _TERN(_ENA_1(O),B,A)    // OPTION ? 'A' : 'B'
 #define TERN0(O,A)          _TERN(_ENA_1(O),0,A)    // OPTION ? 'A' : '0'
 #define TERN1(O,A)          _TERN(_ENA_1(O),1,A)    // OPTION ? 'A' : '1'
-#define TERN_(O,A)          _TERN(_ENA_1(O),,A)     // OPTION ? 'A' : '<nul>'
+#define _TERN(E,V...)       __TERN(_CAT(T_,E),V)    // Prepend 'T_' to get 'T_0' or 'T_1'
+#define __TERN(T,V...)      ___TERN(_CAT(_NO,T),V)  // Prepend '_NO' to get '_NOT_0' or '_NOT_1'
+#define ___TERN(P,V...)     THIRD(P,V)              // If first argument has a comma, A. Else B.
 #define IF_DISABLED(O,A)    TERN(O,,A)
+
+// "Ternary" that emits or omits the given content
+#define EMIT(V...) V
+#define OMIT(...)
+#define TERN_(O,A)          _TERN(_ENA_1(O),OMIT,EMIT)(A) // OPTION ? 'A' : '<nul>'
 
 // Macros to conditionally emit array items and function arguments
 #define _OPTARG( A...)      , A
 #define _OPTCODE(A)         A;
 #define _OPTITEM(A...)      A,
-#define OPTARG( O,A...)     TERN_(O,DEFER4(_OPTARG)(A))  // , A
-#define OPTCODE(O,A)        TERN_(O,DEFER4(_OPTCODE)(A)) // A;
-#define OPTITEM(O,A...)     TERN_(O,DEFER4(_OPTITEM)(A)) // A,
+#define OPTARG( O,A...)     TERN_(O,DEFER(_OPTARG)(A))  // , A
+#define OPTCODE(O,A)        TERN_(O,DEFER(_OPTCODE)(A)) // A;
+#define OPTITEM(O,A...)     TERN_(O,DEFER(_OPTITEM)(A)) // A,
 
 // Macros to avoid operations that aren't always optimized away (e.g., 'f + 0.0' and 'f * 1.0').
 // Compiler flags -fno-signed-zeros -ffinite-math-only also cover 'f * 1.0', 'f - f', etc.

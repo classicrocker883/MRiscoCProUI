@@ -3648,16 +3648,16 @@ void Draw_Tune_Menu() {
 
 #if HAS_TRINAMIC_CONFIG
 
-  #if AXIS_IS_TMC(X)
+  #if X_IS_TRINAMIC
     void SetXTMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperX.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(Y)
+  #if Y_IS_TRINAMIC
     void SetYTMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperY.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(Z)
+  #if Z_IS_TRINAMIC
     void SetZTMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperZ.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(E0)
+  #if E0_IS_TRINAMIC
     void SetETMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperE0.refresh_stepper_current(); }); }
   #endif
 
@@ -3679,18 +3679,10 @@ void Draw_Tune_Menu() {
     checkkey = Menu;
     if (SET_MENU(TrinamicConfigMenu, MSG_TMC_DRIVERS, 5 PLUS_TERN0(STEALTHCHOP_MENU, 4) PLUS_TERN0(HYBRID_THRESHOLD_MENU, 4))) {
       BACK_ITEM(ReturnToPreviousMenu);
-      #if AXIS_IS_TMC(X)
-        EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ACURRENT, onDrawPIntMenu, SetXTMCCurrent, &stepperX.val_mA);
-      #endif
-      #if AXIS_IS_TMC(Y)
-        EDIT_ITEM(ICON_TMCYSet, MSG_TMC_BCURRENT, onDrawPIntMenu, SetYTMCCurrent, &stepperY.val_mA);
-      #endif
-      #if AXIS_IS_TMC(Z)
-        EDIT_ITEM(ICON_TMCZSet, MSG_TMC_CCURRENT, onDrawPIntMenu, SetZTMCCurrent, &stepperZ.val_mA);
-      #endif
-      #if AXIS_IS_TMC(E0)
-        EDIT_ITEM(ICON_TMCESet, MSG_TMC_ECURRENT, onDrawPIntMenu, SetETMCCurrent, &stepperE0.val_mA);
-      #endif
+      TERN_(X_IS_TRINAMIC,  EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ACURRENT, onDrawPIntMenu, SetXTMCCurrent, &stepperX.val_mA));
+      TERN_(Y_IS_TRINAMIC,  EDIT_ITEM(ICON_TMCYSet, MSG_TMC_BCURRENT, onDrawPIntMenu, SetYTMCCurrent, &stepperY.val_mA));
+      TERN_(Z_IS_TRINAMIC,  EDIT_ITEM(ICON_TMCZSet, MSG_TMC_CCURRENT, onDrawPIntMenu, SetZTMCCurrent, &stepperZ.val_mA));
+      TERN_(E0_IS_TRINAMIC, EDIT_ITEM(ICON_TMCESet, MSG_TMC_ECURRENT, onDrawPIntMenu, SetETMCCurrent, &stepperE0.val_mA));
 
       #if ENABLED(STEALTHCHOP_MENU)
         TERN_(X_HAS_STEALTHCHOP,  EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ASTEALTH, onDrawChkbMenu, SetXTMCStealth, &stepperX.stored.stealthChop_enabled));

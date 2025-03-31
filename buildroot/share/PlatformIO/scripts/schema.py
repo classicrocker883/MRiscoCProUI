@@ -72,7 +72,7 @@ def group_options(schema):
 def load_boards():
     bpath = Path("Marlin/src/core/boards.h")
     if bpath.is_file():
-        with bpath.open() as bfile:
+        with bpath.open(encoding='utf-8') as bfile:
             boards = []
             for line in bfile:
                 if line.startswith("#define BOARD_"):
@@ -186,12 +186,12 @@ def extract_files(filekey):
                 # - The line starts with '======' so just skip it.
                 #
                 def use_comment(c, opt, sec, bufref):
-                    '''
+                    """
                     c       - The comment line to parse
                     opt     - Options JSON string to return (if not updated)
                     sec     - Section to return (if not updated)
                     bufref  - The comment buffer to add to
-                    '''
+                    """
                     sc = c.strip()          # Strip for special patterns
                     if sc.startswith(":"):  # If the comment starts with : then it has magic JSON
                         d = sc[1:].strip()  # Strip the leading : and spaces
@@ -239,7 +239,7 @@ def extract_files(filekey):
                         state = Parse.NORMAL
 
                     # Strip the leading '* ' from block comments
-                    cline = re.sub(r'^\* ?', '', cline)
+                    cline = re.sub(r'^\* ?', "", cline)
 
                     # Collect temperature sensors
                     if state == Parse.GET_SENSORS:
@@ -288,7 +288,7 @@ def extract_files(filekey):
 
                         if state == Parse.BLOCK_COMMENT:
                             # Strip leading '*' from block comments
-                            cline = re.sub(r'^\* ?', '', cline)
+                            cline = re.sub(r'^\* ?', "", cline)
                         else:
                             # Expire end-of-line options after first use
                             if cline.startswith(":"):
@@ -348,7 +348,11 @@ def extract_files(filekey):
                     elif defmatch is not None:
 
                         # Get the match groups into vars
-                        enabled, define_name, val = (defmatch[1] is None, defmatch[3], defmatch[4])
+                        enabled, define_name, val = (
+                            defmatch[1] is None,
+                            defmatch[3],
+                            defmatch[4],
+                        )
 
                         # Increment the serial ID
                         sid += 1
@@ -364,25 +368,25 @@ def extract_files(filekey):
 
                         # Type is based on the value
                         value_type = \
-                             'switch'  if val == '' \
-                        else 'int'     if re.match(r'^[-+]?\s*\d+$', val) \
-                        else 'ints'    if re.match(r'^([-+]?\s*\d+)(\s*,\s*[-+]?\s*\d+)+$', val) \
-                        else 'floats'  if re.match(rf"({flt}(\s*,\s*{flt})+)", val) \
-                        else 'float'   if re.match(f"^({flt})$", val) \
-                        else 'string'  if val[0] == '"' \
-                        else 'char'    if val[0] == "'" \
-                        else 'bool'    if val in ('true', 'false') \
-                        else 'state'   if val in ('HIGH', 'LOW') \
-                        else 'enum'    if re.match(r'^[A-Za-z0-9_]{3,}$', val) \
-                        else 'int[]'   if re.match(r'^{\s*[-+]?\s*\d+(\s*,\s*[-+]?\s*\d+)*\s*}$', val) \
-                        else 'float[]' if re.match(r'^{{\s*{flt}(\s*,\s*{flt})*\s*}}$', val) \
-                        else 'array'   if val[0] == '{' \
-                        else ''
+                             "switch"  if val == '' \
+                        else "int"     if re.match(r'^[-+]?\s*\d+$', val) \
+                        else "ints"    if re.match(r'^([-+]?\s*\d+)(\s*,\s*[-+]?\s*\d+)+$', val) \
+                        else "floats"  if re.match(rf"({flt}(\s*,\s*{flt})+)", val) \
+                        else "float"   if re.match(f"^({flt})$", val) \
+                        else "string"  if val[0] == '"' \
+                        else "char"    if val[0] == "'" \
+                        else "bool"    if val in ("true", "false") \
+                        else "state"   if val in ("HIGH", "LOW") \
+                        else "enum"    if re.match(r'^[A-Za-z0-9_]{3,}$', val) \
+                        else "int"   if re.match(r'^{\s*[-+]?\s*\d+(\s*,\s*[-+]?\s*\d+)*\s*}$', val) \
+                        else "float" if re.match(r'^{{\s*{flt}(\s*,\s*{flt})*\s*}}$', val) \
+                        else "array"   if val[0] == "{" \
+                        else ""
 
-                        val = (val == 'true')           if value_type == 'bool' \
-                        else int(val)                   if value_type == 'int' \
-                        else val.replace('f','')        if value_type == 'floats' \
-                        else float(val.replace('f','')) if value_type == 'float' \
+                        val = (val == "true")            if value_type == "bool" \
+                        else int(val)                    if value_type == "int" \
+                        else val.replace("f", "")        if value_type == "floats" \
+                        else float(val.replace("f", "")) if value_type == "float" \
                         else val
 
                         if val != "":
