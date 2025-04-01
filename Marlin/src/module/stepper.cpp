@@ -3665,7 +3665,7 @@ void Stepper::report_positions() {
         #if ANY_PIN(MOTOR_CURRENT_PWM_XY, MOTOR_CURRENT_PWM_X, MOTOR_CURRENT_PWM_Y, MOTOR_CURRENT_PWM_I, MOTOR_CURRENT_PWM_J, MOTOR_CURRENT_PWM_K, MOTOR_CURRENT_PWM_U, MOTOR_CURRENT_PWM_V, MOTOR_CURRENT_PWM_W)
           case 0:
         #endif
-        #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
+        #if HAS_MOTOR_CURRENT_PWM_Z
           case 1:
         #endif
         #if HAS_MOTOR_CURRENT_PWM_E
@@ -3684,7 +3684,7 @@ void Stepper::report_positions() {
   #if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
 
     void Stepper::set_digipot_current(const uint8_t driver, const int16_t current) {
-      if (WITHIN(driver, 0, MOTOR_CURRENT_COUNT - 1))
+      if (WITHIN(driver, 0, COUNT(motor_current_setting) - 1))
         motor_current_setting[driver] = current; // update motor_current_setting
 
       if (!initialized) return;
@@ -3730,7 +3730,7 @@ void Stepper::report_positions() {
             #endif
             break;
           case 1:
-            #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
+            #if HAS_MOTOR_CURRENT_PWM_Z
               _WRITE_CURRENT_PWM(Z);
             #endif
             break;
@@ -3795,7 +3795,7 @@ void Stepper::report_positions() {
         #if PIN_EXISTS(MOTOR_CURRENT_PWM_W)
           INIT_CURRENT_PWM(W);
         #endif
-        #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
+        #if HAS_MOTOR_CURRENT_PWM_Z
           INIT_CURRENT_PWM(Z);
         #endif
         #if PIN_EXISTS(MOTOR_CURRENT_PWM_E)
