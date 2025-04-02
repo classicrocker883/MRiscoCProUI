@@ -6,7 +6,6 @@
 # will be picked up by PlatformIO just like any other variant.
 #
 import pioutil, re
-
 marlin_variant_pattern = re.compile("marlin_.*")
 if pioutil.is_pio_build():
     import shutil, marlin
@@ -27,7 +26,7 @@ if pioutil.is_pio_build():
 
     if len(platform_packages) == 0:
         framewords = {
-            "Ststm32Platform": "framework-arduinoststm32",
+            "Ststm32Platform" : "framework-arduinoststm32",
             "AtmelavrPlatform": "framework-arduino-avr"
         }
         platform_name = framewords[platform.__class__.__name__]
@@ -47,8 +46,8 @@ if pioutil.is_pio_build():
     #
     board = env.BoardConfig()
     variant = board.get("build.variant")
-    # mcu_type = board.get("build.mcu")[:-2]
-    # series = mcu_type[:7].upper() + "xx"
+    #mcu_type = board.get("build.mcu")[:-2]
+    #series = mcu_type[:7].upper() + "xx"
 
     # Make sure the local variant sub-folder exists
     if marlin_variant_pattern.match(str(variant).lower()):

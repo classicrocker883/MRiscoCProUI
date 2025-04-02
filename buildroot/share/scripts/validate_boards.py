@@ -3,7 +3,6 @@
 # buildroot/share/scripts/validate_boards.py
 # Assert standards for boards.h and pins.h
 #
-
 import sys, re
 
 do_log = False
@@ -19,28 +18,28 @@ def warn(board, msg):
     print(f"[WARNING] {board:30} {msg}")
 
 def bshort(board):
-    return board.replace('BOARD_', '')
+    return board.replace("BOARD_", "")
 
 #
 # Run standards checks on boards.h and pins.h
 #
 def boards_checks(argv):
     ERRS = 0
-    src_file = 'Marlin/src/core/boards.h'
+    src_file = "Marlin/src/core/boards.h"
 
     scnt = 0
     for arg in argv:
-        if arg == '-v':
+        if arg == "-v":
             global do_log
             do_log = True
         elif scnt == 0:
             src_file = arg
             scnt += 1
 
-    logmsg('Checking boards file:', src_file)
+    logmsg("Checking boards file:", src_file)
 
     # Open the file
-    with open(src_file, 'r', encoding='utf-8') as f:
+    with open(src_file, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     # Get the board names and numbers
@@ -57,10 +56,10 @@ def boards_checks(argv):
     last_number, last_groun = (-1, -1)
 
     for board, number, comment in boards:
-        logmsg('Checking:', board)
+        logmsg("Checking:", board)
         group = int(number / 100)
         if not re.match(r'^BOARD_\w+$', board):
-            err(board, 'is not of the form BOARD_NAME')
+            err(board, "is not of the form BOARD_NAME")
             ERRS += 1
         if number != last_number + 1:
             if int(number / 100) != int(last_number / 100):
@@ -71,11 +70,11 @@ def boards_checks(argv):
                 err(board, f"is {number} but previous board is {last_number}")
                 ERRS += 1
         if not comment:
-            err(board, ' has no comment')
+            err(board, " has no comment")
             ERRS += 1
         else:
             cshor = bshort(board)
-            cbore = cshor.replace('_', '')
+            cbore = cshor.replace("_", "")
             if comment == board or comment == cshor or comment == cbore:
                 warn(board, f"comment needs more detail")
         last_number = number
@@ -85,19 +84,19 @@ def boards_checks(argv):
     # Validate that pins.h has all the boards mentioned in it
     #
     pins_boards = []
-    with open('Marlin/src/pins/pins.h', 'r', encoding='utf-8') as f:
+    with open("Marlin/src/pins/pins.h", "r", encoding="utf-8") as f:
         lines = f.readlines()
         if_count = 0
         for line in lines:
             m = re.search(r'#(if|elif)\s+MB\(([^)]+)\)', line)
             if not m: continue
-            if (m.group(1) == 'if'):
+            if m.group(1) == "if":
                 if_count += 1
                 if if_count == 3: break
             if if_count == 2:
-                mb_items = m.group(2).split(',')
+                mb_items = m.group(2).split(",")
                 for board in mb_items:
-                    pins_boards.append('BOARD_' + board.strip())
+                    pins_boards.append("BOARD_" + board.strip())
 
     # Check that the list from boards.h matches the list from pins.h
     boards_boards = [b[0] for b in boards]

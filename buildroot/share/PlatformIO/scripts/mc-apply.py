@@ -15,9 +15,7 @@
 #    -h, --help   show this help message and exit
 #    --opt        Output as an option setting script.
 #
-import json, sys, os
-import config
-import argparse
+import json, sys, os, config, argparse
 
 def report_version(conf):
     if "VERSION" in conf:
@@ -27,8 +25,7 @@ def report_version(conf):
 def write_opt_file(conf, outpath="Marlin/apply_config.sh"):
     with open(outpath, "w", encoding="utf-8") as outfile:
         for key, val in conf.items():
-            if key in ("__INITIAL_HASH", "VERSION"):
-                continue
+            if key in ("__INITIAL_HASH", "VERSION"): continue
 
             # Other keys are assumed to be configs
             if not type(val) is dict:
@@ -46,7 +43,6 @@ def write_opt_file(conf, outpath="Marlin/apply_config.sh"):
             outfile.write("\n".join(lines))
 
         print("Config script written to: " + outpath)
-
 
 def back_up_config(name):
     # Back up the existing file before modifying it
@@ -67,8 +63,7 @@ def back_up_config(name):
 
 def apply_config(conf):
     for key in conf:
-        if key in ("__INITIAL_HASH", "VERSION"):
-            continue
+        if key in ("__INITIAL_HASH", "VERSION"): continue
 
         back_up_config(key)
 

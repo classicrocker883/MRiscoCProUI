@@ -4,7 +4,6 @@
 #
 import pioutil
 if pioutil.is_pio_build():
-
     import marlin, os
 
     env = pioutil.env

@@ -22,7 +22,7 @@ def set(file_path, define_name, value):
     modified = False
     for i in range(len(content)):
         # Regex to match the desired pattern
-        match = re.match(r"^(\s*)(/*)(\s*)(#define\s+{})\s+(.*?)\s*(//.*)?$".format(re.escape(define_name)), content[i])
+        match = re.match(r'^(\s*)(/*)(\s*)(#define\s+{})\s+(.*?)\s*(//.*)?$'.format(re.escape(define_name)), content[i])
         if match:
             modified = True
             comm = "" if match[6] is None else " " + match[6]
@@ -72,7 +72,7 @@ def enable(file_path, define_name, enable=True):
         content = f.readlines()
 
     # Prepare the regex
-    regex = re.compile(r"^(\s*)(/*)(\s*)(#define\s+{}\b.*?)(\s*//.*)?$".format(re.escape(define_name)))
+    regex = re.compile(r'^(\s*)(/*)(\s*)(#define\s+{}\b.*?)(\s*//.*)?$'.format(re.escape(define_name)))
 
     # Find the define in the file and uncomment or comment it
     found = False

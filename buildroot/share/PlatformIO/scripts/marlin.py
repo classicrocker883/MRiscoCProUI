@@ -4,7 +4,6 @@
 #
 import shutil
 from pathlib import Path
-
 from SCons.Script import DefaultEnvironment
 env = DefaultEnvironment()
 
@@ -48,8 +47,7 @@ def encrypt_mks(source, target, env, new_name):
 
     # If FIRMWARE_BIN is defined by config, override all
     mf = env["MARLIN_FEATURES"]
-    if "FIRMWARE_BIN" in mf:
-        new_name = mf["FIRMWARE_BIN"]
+    if "FIRMWARE_BIN" in mf: new_name = mf["FIRMWARE_BIN"]
 
     fwpath = Path(target[0].path)
     fwfile = fwpath.open("rb")
