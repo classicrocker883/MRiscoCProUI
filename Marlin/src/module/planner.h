@@ -493,7 +493,7 @@ class Planner {
         static float max_e_jerk[DISTINCT_E];          // Calculated from junction_deviation_mm
       #endif
     #else // CLASSIC_JERK
-      // (mm/s^2) M205 XYZE - The largest speed change requiring no acceleration.
+      // (mm/s^2) M205 XYZ(E) - The largest speed change requiring no acceleration.
       static xyze_pos_t max_jerk;
     #endif
 

@@ -1443,28 +1443,28 @@ void Stepper::apply_directions() {
         int32_t C = bezier_C;
 
          __asm__ __volatile__(
-          ".syntax unified" "\n\t"              // is to prevent CM0,CM1 non-unified syntax
-          A("lsrs  %[ahi],%[alo],#1")           // a  = F << 31      1 cycles
-          A("lsls  %[alo],%[alo],#31")          //                   1 cycles
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f *= t            5 cycles [fhi:flo=64bits]
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
-          A("lsrs  %[flo],%[fhi],#1")           //                   1 cycles [31bits]
-          A("smlal %[alo],%[ahi],%[flo],%[C]")  // a+=(f>>33)*C;     5 cycles
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
-          A("lsrs  %[flo],%[fhi],#1")           //                   1 cycles [31bits]
-          A("smlal %[alo],%[ahi],%[flo],%[B]")  // a+=(f>>33)*B;     5 cycles
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
-          A("lsrs  %[flo],%[fhi],#1")           // f>>=33;           1 cycles [31bits]
-          A("smlal %[alo],%[ahi],%[flo],%[A]")  // a+=(f>>33)*A;     5 cycles
-          A("lsrs  %[alo],%[ahi],#6")           // a>>=38            1 cycles
+          ".syntax unified" "\n\t"             // is to prevent CM0,CM1 non-unified syntax
+          A("lsrs  %[ahi],%[alo],#1")          // a  = F << 31      1 cycles
+          A("lsls  %[alo],%[alo],#31")         //                   1 cycles
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f *= t            5 cycles [fhi:flo=64bits]
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
+          A("lsrs  %[flo],%[fhi],#1")          //                   1 cycles [31bits]
+          A("smlal %[alo],%[ahi],%[flo],%[C]") // a+=(f>>33)*C;     5 cycles
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
+          A("lsrs  %[flo],%[fhi],#1")          //                   1 cycles [31bits]
+          A("smlal %[alo],%[ahi],%[flo],%[B]") // a+=(f>>33)*B;     5 cycles
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
+          A("lsrs  %[flo],%[fhi],#1")          // f>>=33;           1 cycles [31bits]
+          A("smlal %[alo],%[ahi],%[flo],%[A]") // a+=(f>>33)*A;     5 cycles
+          A("lsrs  %[alo],%[ahi],#6")          // a>>=38            1 cycles
           : [alo]"+r"( alo ) ,
             [flo]"+r"( flo ) ,
             [fhi]"+r"( fhi ) ,
             [ahi]"+r"( ahi ) ,
-            [A]"+r"( A ) ,  // <== NOTE: Even if A, B, C, and t registers are INPUT ONLY
-            [B]"+r"( B ) ,  //  GCC does bad optimizations on the code if we list them as
-            [C]"+r"( C ) ,  //  such, breaking this function. So, to avoid that problem,
-            [t]"+r"( t )    //  we list all registers as input-outputs.
+            [A]"+r"( A ) , // <== NOTE: Even if A, B, C, and t registers are INPUT ONLY
+            [B]"+r"( B ) , //  GCC does bad optimizations on the code if we list them as
+            [C]"+r"( C ) , //  such, breaking this function. So, to avoid that problem,
+            [t]"+r"( t )   //  we list all registers as input-outputs.
           :
           : "cc"
         );

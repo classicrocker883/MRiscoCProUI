@@ -333,7 +333,7 @@ class FilamentSensorBase {
         #else
           UNUSED(extruder);
         #endif
-        return !!runout_states;                   // Any extruder ran out
+        return !!runout_states; // Any extruder ran out
       }
 
     public:
