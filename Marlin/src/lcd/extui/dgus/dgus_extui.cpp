@@ -43,7 +43,7 @@ namespace ExtUI {
   void onIdle() { screen.loop(); }
 
   void onPrinterKilled(FSTR_P const error, FSTR_P const) {
-    screen.sendInfoScreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET), true, true, true, true);
+    screen.sendInfoScreen(GET_TEXT_F(MSG_HALTED), error, FPSTR(NUL_STR), GET_TEXT_F(MSG_PLEASE_RESET));
     screen.gotoScreen(DGUS_SCREEN_KILL);
     while (!screen.loop());  // Wait while anything is left to be sent
   }
@@ -75,13 +75,11 @@ namespace ExtUI {
   }
 
   // For fancy LCDs include an icon ID, message, and translated button title
-  void onUserConfirmRequired(const int icon, const char * const cstr, FSTR_P const fBtn) {
+  void onUserConfirmRequired(const int, const char * const cstr, FSTR_P const) {
     onUserConfirmRequired(cstr);
-    UNUSED(icon); UNUSED(fBtn);
   }
-  void onUserConfirmRequired(const int icon, FSTR_P const fstr, FSTR_P const fBtn) {
+  void onUserConfirmRequired(const int, FSTR_P const fstr, FSTR_P const) {
     onUserConfirmRequired(fstr);
-    UNUSED(icon); UNUSED(fBtn);
   }
 
   #if ENABLED(ADVANCED_PAUSE_FEATURE)

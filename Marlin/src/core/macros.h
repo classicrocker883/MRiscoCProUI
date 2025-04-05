@@ -168,17 +168,17 @@
 #define NOT(x) IS_PROBE(_CAT(_NOT_, x)) //   NOT('0') gets '1'. Anything else gets '0'.
 #define _BOOL(x) NOT(NOT(x))            // _BOOL('0') gets '0'. Anything else gets '1'.
 
-#define _END_OF_ARGUMENTS_() 0
-#define HAS_ARGS(V...) _BOOL(FIRST(_END_OF_ARGUMENTS_ V)())
-
 #define _IF_ELSE(TF) _CAT(_IF_, TF)
 #define IF_ELSE(TF) _IF_ELSE(_BOOL(TF))
 
-#define _IF_1_ELSE(...)
-#define _IF_0_ELSE(V...) V
+#define EMIT(V...) V
+#define OMIT(...)
 
-#define _IF_1(V...) V _IF_1_ELSE
-#define _IF_0(...)    _IF_0_ELSE
+#define _IF_1(V...) V OMIT
+#define _IF_0(...)    EMIT
+
+#define _END_OF_ARGUMENTS_() 0
+#define HAS_ARGS(V...) _BOOL(FIRST(_END_OF_ARGUMENTS_ V)())
 
 // Simple Inline IF Macros, friendly to use in other macro definitions
 #define IF(O, A, B) ((O) ? (A) : (B))
@@ -269,8 +269,6 @@
 #define IF_DISABLED(O,A)    TERN(O,,A)
 
 // "Ternary" that emits or omits the given content
-#define EMIT(V...) V
-#define OMIT(...)
 #define TERN_(O,A)          _TERN(_ENA_1(O),OMIT,EMIT)(A) // OPTION ? 'A' : '<nul>'
 
 // Macros to conditionally emit array items and function arguments
