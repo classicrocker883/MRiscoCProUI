@@ -493,7 +493,7 @@ class Planner {
         static float max_e_jerk[DISTINCT_E];          // Calculated from junction_deviation_mm
       #endif
     #else // CLASSIC_JERK
-      // (mm/s^2) M205 XYZE - The largest speed change requiring no acceleration.
+      // (mm/s^2) M205 XYZ(E) - The largest speed change requiring no acceleration.
       static xyze_pos_t max_jerk;
     #endif
 
@@ -817,7 +817,11 @@ class Planner {
     FORCE_INLINE static uint8_t nonbusy_movesplanned() { return block_dec_mod(block_buffer_head, block_buffer_nonbusy); }
 
     // Remove all blocks from the buffer
-    FORCE_INLINE static void clear_block_buffer() { block_buffer_nonbusy = block_buffer_head = block_buffer_tail = 0; }
+    FORCE_INLINE static void clear_block_buffer() {
+      block_buffer_tail = 0;
+      block_buffer_head = 0;
+      block_buffer_nonbusy = 0;
+    }
 
     // Check if movement queue is full
     FORCE_INLINE static bool is_full() { return block_buffer_tail == next_block_index(block_buffer_head); }

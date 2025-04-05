@@ -29,7 +29,7 @@ def run_preprocessor(env, fn=None):
     cmd = ['"' + cxx + '"']
 
     # Build flags from board.json
-    # if 'BOARD' in env:
+    #if 'BOARD' in env:
     #   cmd += [env.BoardConfig().get("build.extra_flags")]
     for s in build_flags["CPPDEFINES"]:
         if isinstance(s, tuple):
@@ -88,7 +88,7 @@ def search_compiler(env):
         if ppath.match(env["PROJECT_PACKAGES_DIR"] + "/**/bin"):
             for gpath in ppath.glob(gcc_exe):
                 # Skip '*-elf-g++' (crosstool-NG) except for xtensa32/xtensa-esp32
-                if not gpath.stem.endswith('-elf-g++') or "xtensa" in str(gpath):
+                if not gpath.stem.endswith("-elf-g++") or "xtensa" in str(gpath):
                     gccpath = str(gpath.resolve())
                     break
 

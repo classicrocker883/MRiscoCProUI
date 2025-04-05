@@ -1443,28 +1443,28 @@ void Stepper::apply_directions() {
         int32_t C = bezier_C;
 
          __asm__ __volatile__(
-          ".syntax unified" "\n\t"              // is to prevent CM0,CM1 non-unified syntax
-          A("lsrs  %[ahi],%[alo],#1")           // a  = F << 31      1 cycles
-          A("lsls  %[alo],%[alo],#31")          //                   1 cycles
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f *= t            5 cycles [fhi:flo=64bits]
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
-          A("lsrs  %[flo],%[fhi],#1")           //                   1 cycles [31bits]
-          A("smlal %[alo],%[ahi],%[flo],%[C]")  // a+=(f>>33)*C;     5 cycles
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
-          A("lsrs  %[flo],%[fhi],#1")           //                   1 cycles [31bits]
-          A("smlal %[alo],%[ahi],%[flo],%[B]")  // a+=(f>>33)*B;     5 cycles
-          A("umull %[flo],%[fhi],%[fhi],%[t]")  // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
-          A("lsrs  %[flo],%[fhi],#1")           // f>>=33;           1 cycles [31bits]
-          A("smlal %[alo],%[ahi],%[flo],%[A]")  // a+=(f>>33)*A;     5 cycles
-          A("lsrs  %[alo],%[ahi],#6")           // a>>=38            1 cycles
+          ".syntax unified" "\n\t"             // is to prevent CM0,CM1 non-unified syntax
+          A("lsrs  %[ahi],%[alo],#1")          // a  = F << 31      1 cycles
+          A("lsls  %[alo],%[alo],#31")         //                   1 cycles
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f *= t            5 cycles [fhi:flo=64bits]
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
+          A("lsrs  %[flo],%[fhi],#1")          //                   1 cycles [31bits]
+          A("smlal %[alo],%[ahi],%[flo],%[C]") // a+=(f>>33)*C;     5 cycles
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
+          A("lsrs  %[flo],%[fhi],#1")          //                   1 cycles [31bits]
+          A("smlal %[alo],%[ahi],%[flo],%[B]") // a+=(f>>33)*B;     5 cycles
+          A("umull %[flo],%[fhi],%[fhi],%[t]") // f>>=32; f*=t      5 cycles [fhi:flo=64bits]
+          A("lsrs  %[flo],%[fhi],#1")          // f>>=33;           1 cycles [31bits]
+          A("smlal %[alo],%[ahi],%[flo],%[A]") // a+=(f>>33)*A;     5 cycles
+          A("lsrs  %[alo],%[ahi],#6")          // a>>=38            1 cycles
           : [alo]"+r"( alo ) ,
             [flo]"+r"( flo ) ,
             [fhi]"+r"( fhi ) ,
             [ahi]"+r"( ahi ) ,
-            [A]"+r"( A ) ,  // <== NOTE: Even if A, B, C, and t registers are INPUT ONLY
-            [B]"+r"( B ) ,  //  GCC does bad optimizations on the code if we list them as
-            [C]"+r"( C ) ,  //  such, breaking this function. So, to avoid that problem,
-            [t]"+r"( t )    //  we list all registers as input-outputs.
+            [A]"+r"( A ) , // <== NOTE: Even if A, B, C, and t registers are INPUT ONLY
+            [B]"+r"( B ) , //  GCC does bad optimizations on the code if we list them as
+            [C]"+r"( C ) , //  such, breaking this function. So, to avoid that problem,
+            [t]"+r"( t )   //  we list all registers as input-outputs.
           :
           : "cc"
         );
@@ -3665,7 +3665,7 @@ void Stepper::report_positions() {
         #if ANY_PIN(MOTOR_CURRENT_PWM_XY, MOTOR_CURRENT_PWM_X, MOTOR_CURRENT_PWM_Y, MOTOR_CURRENT_PWM_I, MOTOR_CURRENT_PWM_J, MOTOR_CURRENT_PWM_K, MOTOR_CURRENT_PWM_U, MOTOR_CURRENT_PWM_V, MOTOR_CURRENT_PWM_W)
           case 0:
         #endif
-        #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
+        #if HAS_MOTOR_CURRENT_PWM_Z
           case 1:
         #endif
         #if HAS_MOTOR_CURRENT_PWM_E
@@ -3684,7 +3684,7 @@ void Stepper::report_positions() {
   #if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
 
     void Stepper::set_digipot_current(const uint8_t driver, const int16_t current) {
-      if (WITHIN(driver, 0, MOTOR_CURRENT_COUNT - 1))
+      if (WITHIN(driver, 0, COUNT(motor_current_setting) - 1))
         motor_current_setting[driver] = current; // update motor_current_setting
 
       if (!initialized) return;
@@ -3730,7 +3730,7 @@ void Stepper::report_positions() {
             #endif
             break;
           case 1:
-            #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
+            #if HAS_MOTOR_CURRENT_PWM_Z
               _WRITE_CURRENT_PWM(Z);
             #endif
             break;
@@ -3795,7 +3795,7 @@ void Stepper::report_positions() {
         #if PIN_EXISTS(MOTOR_CURRENT_PWM_W)
           INIT_CURRENT_PWM(W);
         #endif
-        #if PIN_EXISTS(MOTOR_CURRENT_PWM_Z)
+        #if HAS_MOTOR_CURRENT_PWM_Z
           INIT_CURRENT_PWM(Z);
         #endif
         #if PIN_EXISTS(MOTOR_CURRENT_PWM_E)

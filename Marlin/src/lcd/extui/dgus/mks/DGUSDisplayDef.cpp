@@ -180,7 +180,7 @@ const uint16_t MKSList_Tool[] PROGMEM = {
   0x0000
 };
 
-const uint16_t MKSList_EXTRUE[] PROGMEM = {
+const uint16_t MKSList_EXTRUDE[] PROGMEM = {
   // E Temp
   REPEAT(EXTRUDERS, MKSLIST_E_ITEM)
   // HB Temp
@@ -265,7 +265,7 @@ const uint16_t MKSList_TempOnly[] PROGMEM = {
   0x0000
 };
 
-const uint16_t MKSList_Pluse[] PROGMEM = {
+const uint16_t MKSList_Pulse[] PROGMEM = {
   // E Temp
   REPEAT(EXTRUDERS, MKSLIST_E_ITEM)
   // HB Temp
@@ -273,7 +273,7 @@ const uint16_t MKSList_Pluse[] PROGMEM = {
   // FAN
   VP_Fan0_Percentage,
 
-  // Pluse
+  // Steps/mm
   VP_X_STEP_PER_MM,
   VP_Y_STEP_PER_MM,
   VP_Z_STEP_PER_MM,
@@ -291,7 +291,7 @@ const uint16_t MKSList_MaxSpeed[] PROGMEM = {
   // FAN
   VP_Fan0_Percentage,
 
-  // Pluse
+  // Max Speed
   VP_X_MAX_SPEED,
   VP_Y_MAX_SPEED,
   VP_Z_MAX_SPEED,
@@ -463,16 +463,16 @@ const struct VPMapping VPMap[] PROGMEM = {
   { MKSLCD_SCREEN_HOME, MKSList_Home },                       // Home, Page 1
   { MKSLCD_SCREEN_SETTING, MKSList_Setting },                 // Setting, Page 2
   { MKSLCD_SCREEM_TOOL, MKSList_Tool },                       // Page 3
-  { MKSLCD_SCREEN_EXTRUDE_P1, MKSList_EXTRUE },               // Page 4
-  { MKSLCD_SCREEN_EXTRUDE_P2, MKSList_EXTRUE },               // Page 11
-  { MKSLCD_PAUSE_SETTING_EX, MKSList_EXTRUE },                // Page 57
-  { MKSLCD_PAUSE_SETTING_EX2, MKSList_EXTRUE },               // Page 61
+  { MKSLCD_SCREEN_EXTRUDE_P1, MKSList_EXTRUDE },              // Page 4
+  { MKSLCD_SCREEN_EXTRUDE_P2, MKSList_EXTRUDE },              // Page 11
+  { MKSLCD_PAUSE_SETTING_EX, MKSList_EXTRUDE },               // Page 57
+  { MKSLCD_PAUSE_SETTING_EX2, MKSList_EXTRUDE },              // Page 61
   { MKSLCD_SCREEN_LEVEL, MKSList_LEVEL },                     // Page 5
   { MKSLCD_SCREEN_MOVE, MKSList_MOVE },                       // Page 6
   { MKSLCD_SCREEN_PRINT, MKSList_Print },                     // Page 7
   { MKSLCD_SCREEN_PAUSE, MKSList_Print },                     // Page 26
   { MKSLCD_SCREEN_CHOOSE_FILE, MKSList_SD_File },             // Page 15
-  { MKSLCD_SCREEN_MOTOR_PLUSE, MKSList_Pluse },               // Page 51
+  { MKSLCD_SCREEN_MOTOR_PULSE, MKSList_Pulse },               // Page 51
   { MKSLCD_SCREEN_MOTOR_SPEED, MKSList_MaxSpeed },            // Page 55
   { MKSLCD_SCREEN_MOTOR_ACC_MAX, MKSList_MaxAcc },            // Page 53
   { MKSLCD_SCREEN_LEVEL_DATA, MKSList_Level_Point },          // Page 48
@@ -522,7 +522,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
   VPHELPER(VP_MOVE_DISTANCE, &manualMoveStep, screen.getManualMovestep, nullptr),
 
-  VPHELPER(VP_MOTOR_LOCK_UNLOK, nullptr, screen.handleManualMove, nullptr),
+  VPHELPER(VP_MOTOR_LOCK_UNLOCK, nullptr, screen.handleManualMove, nullptr),
   VPHELPER(VP_LEVEL_POINT, nullptr, screen.manualAssistLeveling, nullptr),
 
   #if ENABLED(POWER_LOSS_RECOVERY)
@@ -545,7 +545,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #if HAS_HOTEND
     VPHELPER(VP_T_E0_Is, &thermalManager.temp_hotend[0].celsius, nullptr, screen.sendFloatAsLongValueToDisplay<0>),
     VPHELPER(VP_T_E0_Set, &thermalManager.temp_hotend[0].target, screen.handleTemperatureChanged, screen.sendWordValueToDisplay),
-    VPHELPER(VP_Flowrate_E0, &planner.flow_percentage[ExtUI::extruder_t::E0], screen.handleFlowRateChanged, screen.sendWordValueToDisplay),
+    VPHELPER(VP_Flowrate_E0, &planner.flow_percentage[0], screen.handleFlowRateChanged, screen.sendWordValueToDisplay),
     VPHELPER(VP_EPos, &destination.e, nullptr, screen.sendFloatAsLongValueToDisplay<2>),
     VPHELPER(VP_MOVE_E0, nullptr, screen.handleManualExtrude, nullptr),
     VPHELPER(VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, screen.handleHeaterControl, nullptr),
@@ -570,7 +570,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #if HAS_MULTI_HOTEND
     VPHELPER(VP_T_E1_Is, &thermalManager.temp_hotend[1].celsius, nullptr, screen.sendFloatAsLongValueToDisplay<0>),
     VPHELPER(VP_T_E1_Set, &thermalManager.temp_hotend[1].target, screen.handleTemperatureChanged, screen.sendWordValueToDisplay),
-    VPHELPER(VP_Flowrate_E1, &planner.flow_percentage[ExtUI::extruder_t::E1], screen.handleFlowRateChanged, screen.sendWordValueToDisplay),
+    VPHELPER(VP_Flowrate_E1, &planner.flow_percentage[1], screen.handleFlowRateChanged, screen.sendWordValueToDisplay),
     VPHELPER(VP_MOVE_E1, nullptr, screen.handleManualExtrude, nullptr),
     VPHELPER(VP_E1_CONTROL, &thermalManager.temp_hotend[1].target, screen.handleHeaterControl, nullptr),
     VPHELPER(VP_E1_STATUS, &thermalManager.temp_hotend[1].target, nullptr, screen.sendHeaterStatusToDisplay),

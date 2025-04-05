@@ -1,8 +1,6 @@
-import argparse, sys, os, time, random, serial
+import argparse, sys, os, time, random, serial, MarlinBinaryProtocol
 from SCons.Script import DefaultEnvironment
 env = DefaultEnvironment()
-
-import MarlinBinaryProtocol
 
 #-----------------#
 # Upload Callback #
@@ -155,7 +153,7 @@ def Upload(source, target, env):
     upload_firmware_source_path = (os.path.join(env["PROJECT_BUILD_DIR"], env["PIOENV"], f"{env['PROGNAME']}.bin") if "PROGNAME" in env else str(source[0]))
                                                     # Source firmware filename
     upload_speed = env["UPLOAD_SPEED"] if "UPLOAD_SPEED" in env else 115200
-                                                    # baud rate of serial connection
+                                                    # Baud rate of serial connection
     upload_port = _GetUploadPort(env)               # Serial port to use
 
     # Set local upload params
@@ -287,7 +285,7 @@ def Upload(source, target, env):
             float(upload_error_ratio),
             int(upload_timeout)
         )
-        # echologger = MarlinBinaryProtocol.EchoProtocol(protocol)
+        #echologger = MarlinBinaryProtocol.EchoProtocol(protocol)
         protocol.connect()
         # Mark the rollback (delete broken transfer) from this point on
         rollback = True

@@ -130,9 +130,11 @@
   #endif
 #endif
 
-// Juntion deviation limits
-#define MIN_JD_MM 0.001f
-#define MAX_JD_MM TERN(LIN_ADVANCE, 0.3f, 0.5f)
+// Junction deviation limits
+#if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
+  #define MIN_JD_MM 0.01f
+  #define MAX_JD_MM TERN(LIN_ADVANCE, 0.3f, 0.5f)
+#endif
 
 #if HAS_TRINAMIC_CONFIG
   #define MIN_TMC_CURRENT 100
@@ -3085,12 +3087,12 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
   #if HAS_HOTEND
     void SetMaxJerkE() { HMI_value.axis = E_AXIS; SetFloatOnClick(min_jerk_edit_values.e, max_jerk_edit_values.e, UNITFDIGITS, planner.max_jerk.e, ApplyMaxJerk); }
   #endif
-#elif HAS_JUNCTION_DEVIATION
+#elif ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
   void ApplyJDmm() { TERN_(LIN_ADVANCE, planner.recalculate_max_e_jerk();) }
   void SetJDmm() { SetPFloatOnClick(MIN_JD_MM, MAX_JD_MM, 3, ApplyJDmm); }
 #endif
 
-#if ENABLED(LIN_ADVANCE)
+#if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
   void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
 #endif
 
@@ -3723,10 +3725,10 @@ void Draw_Motion_Menu() {
     #if ENABLED(SHAPING_MENU)
       MENU_ITEM(ICON_InputShaping, MSG_INPUT_SHAPING, onDrawSubMenu, Draw_InputShaping_Menu);
     #endif
-    #if HAS_JUNCTION_DEVIATION
+    #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
-    #if ENABLED(LIN_ADVANCE)
+    #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)

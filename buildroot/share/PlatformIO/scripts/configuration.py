@@ -7,10 +7,8 @@ import re, shutil, configparser, datetime
 from pathlib import Path
 
 verbose = 0
-
 def blab(str, level=1):
-    if verbose >= level:
-        print(f"[config] {str}")
+    if verbose >= level: print(f"[config] {str}")
 
 def config_path(cpath):
     return Path("Marlin", cpath)
@@ -18,8 +16,7 @@ def config_path(cpath):
 # Apply a single name = on/off ; name = value ; etc.
 # TODO: Limit to the given (optional) configuration
 def apply_opt(name, val, conf=None):
-    if name == "lcd":
-        name, val = val, "on"
+    if name == "lcd": name, val = val, "on"
 
     # Create a regex to match the option and capture parts of the line
     # 1: Indentation
@@ -31,10 +28,7 @@ def apply_opt(name, val, conf=None):
     # 7: Option value
     # 8: Whitespace after value
     # 9: End comment
-    regex = re.compile(
-        rf"^(\s*)(//\s*)?(#define\s+)({name}\b)(\s?)(\s*)(.*?)(\s*)(//.*)?$",
-        re.IGNORECASE
-    )
+    regex = re.compile(rf"^(\s*)(//\s*)?(#define\s+)({name}\b)(\s?)(\s*)(.*?)(\s*)(//.*)?$", re.IGNORECASE)
 
     # Find and enable and/or update all matches
     for file in ("Configuration.h", "Configuration_adv.h"):
@@ -55,15 +49,7 @@ def apply_opt(name, val, conf=None):
                 else:
                     # For options with values, enable and set the value
                     addsp = "" if match[5] else " "
-                    newline = (
-                          match[1]
-                        + match[3]
-                        + match[4]
-                        + match[5]
-                        + addsp
-                        + val
-                        + match[6]
-                    )
+                    newline = (match[1] + match[3] + match[4] + match[5] + addsp + val + match[6])
                     if match[9]:
                         sp = match[8] if match[8] else " "
                         newline += sp + match[9]
@@ -82,7 +68,7 @@ def apply_opt(name, val, conf=None):
         prefix = ""
         if val == "off":
             prefix, val = "//", ""  # Item doesn't appear in config dump
-            # val = "false"         # Item appears in config dump
+            #val = "false"          # Item appears in config dump
 
         # Uppercase the option unless already mixed/uppercase
         added = name.upper() if name.islower() else name
@@ -128,10 +114,8 @@ def disable_all_options():
                     "CONFIGURATION_H_VERSION",
                     "CONFIGURATION_ADV_H_VERSION",
                     "CONFIG_EXAMPLES_DIR"
-                ):
-                    continue
-                if name.startswith("_"):
-                    continue
+                ): continue
+                if name.startswith("_"): continue
                 found = True
                 # Comment out the define
                 # TODO: Comment more lines in a multi-line define with \ continuation
@@ -139,20 +123,16 @@ def disable_all_options():
                 blab(f"Disable {name}")
 
         # If the option was found, write the modified lines
-        if found:
-            fullpath.write_text("\n".join(lines), encoding="utf-8")
+        if found: fullpath.write_text("\n".join(lines), encoding="utf-8")
 
 # Fetch configuration files from GitHub given the path.
 # Return True if any files were fetched.
 def fetch_example(url):
-    if url.endswith("/"):
-        url = url[:-1]
+    if url.endswith("/"): url = url[:-1]
     if not url.startswith("http"):
         brch = "HEAD"
-        if "@" in url:
-            url, brch = map(str.strip, url.split("@"))
-        if url == "configurations":
-            url = "Andrew427"
+        if "@" in url: url, brch = map(str.strip, url.split("@"))
+        if url == "configurations": url = "Andrew427"
         url = f"https://raw.githubusercontent.com/classicrocker883/MRiscoCProUI/{brch}/configurations/{url}"
     url = url.replace("%", "%25").replace(" ", "%20")
 
@@ -182,8 +162,7 @@ def fetch_example(url):
             shutil.move("wgot", config_path(fn))
             gotfile = True
 
-    if Path("wgot").exists():
-        shutil.rmtree("wgot")
+    if Path("wgot").exists(): shutil.rmtree("wgot")
 
     return gotfile
 
@@ -250,8 +229,7 @@ def apply_config_ini(cp):
         # For a key ending in .ini load and parse another .ini file
         if ckey.endswith(".ini"):
             sect = "base"
-            if "@" in ckey:
-                sect, ckey = map(str.strip, ckey.split("@"))
+            if "@" in ckey: sect, ckey = map(str.strip, ckey.split("@"))
             cp2 = configparser.ConfigParser()
             cp2.read(config_path(ckey), encoding="utf-8")
             apply_sections(cp2, sect)
@@ -273,13 +251,10 @@ def apply_config_ini(cp):
         #
         # if ckey == '[flatten]':
         #   write_flat_configs()
-
         if ckey == "[disable]":
             disable_all_options()
-
         elif ckey == "all":
             apply_sections(cp)
-
         else:
             # Apply keyed sections after external files are done
             apply_sections(cp, "config:" + ckey)

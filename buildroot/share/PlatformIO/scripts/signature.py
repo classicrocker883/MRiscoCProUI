@@ -77,13 +77,7 @@ def get_file_sha256sum(filepath):
 #
 import zipfile
 def compress_file(filepath, storedname, outpath):
-    with zipfile.ZipFile(
-        outpath,
-        "w",
-        compression=zipfile.ZIP_DEFLATED,
-        allowZip64=False,
-        compresslevel=9
-    ) as zipf:
+    with zipfile.ZipFile(outpath, "w", compression=zipfile.ZIP_DEFLATED, allowZip64=False, compresslevel=9) as zipf:
         zipf.write(filepath, arcname=storedname)
 
 ignore = (
@@ -103,8 +97,7 @@ def compute_build_signature(env):
     The signature can be reversed to get a 1:1 equivalent configuration file.
     Used by common-dependencies.py after filtering build files by feature.
     """
-    if "BUILD_SIGNATURE" in env:
-        return
+    if "BUILD_SIGNATURE" in env: return
     env.Append(BUILD_SIGNATURE=1)
 
     build_path = Path(env["PROJECT_BUILD_DIR"], env["PIOENV"])
@@ -164,36 +157,28 @@ def compute_build_signature(env):
         key_val = line[8:].strip().decode().split(" ")
         key, value = key_val[0], " ".join(key_val[1:])
         # Ignore values starting with two underscore, since it's low level
-        if len(key) > 2 and key[0:2] == "__":
-            continue
+        if len(key) > 2 and key[0:2] == "__": continue
         # Ignore values containing parentheses (likely a function macro)
-        if "(" in key and ")" in key:
-            continue
+        if "(" in key and ")" in key: continue
         # Then filter dumb values
-        if r.match(value):
-            continue
-
+        if r.match(value): continue
         build_defines[key] = value if len(value) else ""
 
     #
     # Continue to gather data for CONFIGURATION_EMBEDDING or CONFIG_EXPORT
     #
     is_embed = "CONFIGURATION_EMBEDDING" in build_defines
-    if not (is_embed or "CONFIG_EXPORT" in build_defines):
-        return
+    if not (is_embed or "CONFIG_EXPORT" in build_defines): return
 
     # Filter out useless macros from the output
     cleaned_build_defines = {}
     for key in build_defines:
         # Remove all boards now
-        if key.startswith("BOARD_") and key != "BOARD_INFO_NAME":
-            continue
+        if key.startswith("BOARD_") and key != "BOARD_INFO_NAME": continue
         # Remove all keys ending by "_T_DECLARED" as it's a copy of extraneous system stuff
-        if key.endswith("_T_DECLARED"):
-            continue
+        if key.endswith("_T_DECLARED"): continue
         # Remove keys that are not in the #define list in the Configuration list
-        if key not in conf_names + ["DETAILED_BUILD_VERSION", "STRING_DISTRIBUTION_DATE"]:
-            continue
+        if key not in conf_names + ["DETAILED_BUILD_VERSION", "STRING_DISTRIBUTION_DATE"]: continue
         # Add to a new dictionary for simplicity
         cleaned_build_defines[key] = build_defines[key]
 
@@ -205,8 +190,7 @@ def compute_build_signature(env):
         real_config[header] = {}
         for key in cleaned_build_defines:
             if key in conf_defines[header]:
-                if key[0:2] == "__":
-                    continue
+                if key[0:2] == "__": continue
                 val = cleaned_build_defines[key]
                 real_config[header][key] = {
                     "file"   : header,
@@ -216,10 +200,8 @@ def compute_build_signature(env):
                 }
 
     def tryint(key):
-        try:
-            return int(build_defines[key])
-        except:
-            return 0
+        try: return int(build_defines[key])
+        except: return 0
 
     # Get the CONFIG_EXPORT value and do an extended dump if > 100
     # For example, CONFIG_EXPORT 102 will make a 'config.ini' with a [config:] group for each schema @section
@@ -406,8 +388,7 @@ def compute_build_signature(env):
     # Get sections using the schema class
     #
     if extended_dump and config_dump in (2, 5):
-        if not conf_schema:
-            exit(1)
+        if not conf_schema: exit(1)
 
         # Start with a preferred @section ordering
         preorder = (
@@ -498,14 +479,12 @@ def compute_build_signature(env):
         # Group options by schema @section
         for header in real_config:
             for name in real_config[header]:
-                # print(f"  name: {name}")
-                if name in ignore:
-                    continue
+                #print(f"  name: {name}")
+                if name in ignore: continue
                 ddict = real_config[header][name]
-                # print(f"   real_config[{header}][{name}]:", ddict)
+                #print(f"   real_config[{header}][{name}]:", ddict)
                 sect = ddict["section"]
-                if sect not in sections:
-                    sections[sect] = {}
+                if sect not in sections: sections[sect] = {}
                 sections[sect][name] = ddict
 
     #
@@ -521,20 +500,18 @@ def compute_build_signature(env):
             # Extended export will dump config options by section
 
             # We'll use Schema class to get the sections
-            if not conf_schema:
-                exit(1)
+            if not conf_schema: exit(1)
 
             # Then group options by schema @section
             sections = {}
             for header in real_config:
                 for name in real_config[header]:
-                    # print(f"  name: {name}")
+                    #print(f"  name: {name}")
                     if name not in ignore:
                         ddict = real_config[header][name]
-                        # print(f"   real_config[{header}][{name}]:", ddict)
+                        #print(f"   real_config[{header}][{name}]:", ddict)
                         sect = ddict["section"]
-                        if sect not in sections:
-                            sections[sect] = {}
+                        if sect not in sections: sections[sect] = {}
                         sections[sect][name] = ddict
 
             # Get all sections as a list of strings, with spaces and dashes replaced by underscores
@@ -547,17 +524,15 @@ def compute_build_signature(env):
                     line += long_list.pop(0) + ", "
                 sec_lines.append(line.strip())
             sec_lines[-1] = sec_lines[-1][:-1]  # Remove the last comma
-
         else:
             sec_lines = ["all"]
 
         # Build the ini_use_config item
         sec_list = ini_fmt.format("ini_use_config", sec_lines[0])
-        for line in sec_lines[1:]:
-            sec_list += "\n" + ext_fmt.format("", line)
+        for line in sec_lines[1:]: sec_list += "\n" + ext_fmt.format("", line)
 
         config_ini = build_path / "config.ini"
-        with config_ini.open("w") as outfile:
+        with config_ini.open("w", encoding="utf-8") as outfile:
             filegrp = {
                 "Configuration.h"    : "config:basic",
                 "Configuration_adv.h": "config:advanced"
@@ -613,40 +588,32 @@ f"""#
 #
 {sec_list}
 {ini_fmt.format('ini_config_vers', vers)}
-"""
-            )
+"""         )
 
             if extended_dump:
-
                 # Loop through the sections
                 for skey in sorted(sections):
-                    # print(f"  skey: {skey}")
+                    #print(f"  skey: {skey}")
                     sani = re.sub(r'[- ]+', "_", skey).lower()
                     outfile.write(f"\n[config:{sani}]\n")
                     opts = sections[skey]
                     opts_keys = sorted(opts.keys(), key=lambda x: optsort(x, optorder))
                     for name in opts_keys:
-                        if name in ignore:
-                            continue
+                        if name in ignore: continue
                         val = opts[name]["value"]
-                        if val == "":
-                            val = "on"
-                        # print(f"  {name} = {val}")
+                        if val == "": val = "on"
+                        #print(f"  {name} = {val}")
                         outfile.write(ini_fmt.format(name.lower(), val) + "\n")
-
             else:
-
                 # Standard export just dumps config:basic and config:advanced sections
                 for header in real_config:
                     outfile.write(f"\n[{filegrp[header]}]\n")
                     opts = real_config[header]
                     opts_keys = sorted(opts.keys(), key=lambda x: optsort(x, optorder))
                     for name in opts_keys:
-                        if name in ignore:
-                            continue
+                        if name in ignore: continue
                         val = opts[name]["value"]
-                        if val == "":
-                            val = "on"
+                        if val == "": val = "on"
                         outfile.write(ini_fmt.format(name.lower(), val) + "\n")
 
     #
@@ -654,9 +621,8 @@ f"""#
     #
     if config_dump == 5:
         print(yellow + "Generating Config-export.h ...")
-
         config_h = Path("Marlin", "Config-export.h")
-        with config_h.open("w") as outfile:
+        with config_h.open("w", encoding="utf-8") as outfile:
             filegrp = {
                 "Configuration.h"    : "config:basic",
                 "Configuration_adv.h": "config:advanced"
@@ -664,7 +630,8 @@ f"""#
             vers = build_defines["CONFIGURATION_H_VERSION"]
             dt_string = datetime.utcnow().strftime("%Y-%m-%d at %H:%M:%S")
 
-            out_text = f"""/**
+            out_text = \
+f"""/**
  * Config.h - Marlin Firmware distilled configuration
  * Usage: Place this file in the 'Marlin' folder with the name 'Config.h'.
  *
@@ -688,24 +655,23 @@ f"""#
                 ("Tmc", "TMC"),
                 ("Tpara", "TPARA")
             )
+
             define_fmt = "#define {0:40} {1}"
             if extended_dump:
                 # Loop through the sections
                 for skey in sections:
-                    # print(f"  skey: {skey}")
+                    #print(f"  skey: {skey}")
                     opts = sections[skey]
                     headed = False
                     opts_keys = sorted(opts.keys(), key=lambda x: optsort(x, optorder))
                     for name in opts_keys:
-                        if name in ignore:
-                            continue
+                        if name in ignore: continue
                         val = opts[name]["value"]
                         if not headed:
                             head = reduce(lambda s, r: s.replace(*r), subs, skey.title())
                             out_text += f"\n//\n// {head}\n//\n"
                             headed = True
                         out_text += define_fmt.format(name, val).strip() + "\n"
-
             else:
                 # Dump config options in just two sections, by file
                 for header in real_config:
@@ -713,18 +679,15 @@ f"""#
                     opts = real_config[header]
                     opts_keys = sorted(opts.keys(), key=lambda x: optsort(x, optorder))
                     for name in opts_keys:
-                        if name in ignore:
-                            continue
+                        if name in ignore: continue
                         val = opts[name]["value"]
                         out_text += define_fmt.format(name, val).strip() + "\n"
-
             outfile.write(out_text)
 
     #
     # CONFIG_EXPORT 3 = schema.json, 13 = schema_grouped.json, 4 = schema.yml
     #
     if config_dump in (3, 4, 13):
-
         if conf_schema:
             #
             # 3 = schema.json
@@ -756,8 +719,7 @@ f"""#
     # Skip if an identical JSON file was already present.
     #
     if not same_hash and config_dump == 1:
-        with marlin_json.open('w') as outfile:
-
+        with marlin_json.open("w", encoding="utf-8") as outfile:
             json_data = {}
             if extended_dump:
                 print(yellow + "Extended dump ...")
@@ -765,17 +727,15 @@ f"""#
                     confs = real_config[header]
                     json_data[header] = {}
                     for name in confs:
-                        if name in ignore:
-                            continue
+                        if name in ignore: continue
                         c = confs[name]
                         s = c["section"]
-                        if s not in json_data[header]:
-                            json_data[header][s] = {}
+                        if s not in json_data[header]: json_data[header][s] = {}
                         json_data[header][s][name] = c["value"]
             else:
                 for header in real_config:
                     conf = real_config[header]
-                    # print(f"real_config[{header}]", conf)
+                    #print(f"real_config[{header}]", conf)
                     for name in conf:
                         if name in ignore: continue
                         json_data[name] = conf[name]["value"]
@@ -803,8 +763,7 @@ f"""#
         return
 
     # Compress the JSON file as much as we can
-    if not same_hash:
-        compress_file(marlin_json, json_name, marlin_zip)
+    if not same_hash: compress_file(marlin_json, json_name, marlin_zip)
 
     # Generate a C source file containing the entire ZIP file as an array
     with open("Marlin/src/mczip.h", "wb") as result_file:
@@ -818,10 +777,8 @@ f"""#
         for b in (build_path / "mc.zip").open("rb").read():
             result_file.write(b" 0x%02X," % b)
             count += 1
-            if count % 16 == 0:
-                result_file.write(b"\n ")
-        if count % 16:
-            result_file.write(b"\n")
+            if count % 16 == 0: result_file.write(b"\n ")
+        if count % 16: result_file.write(b"\n")
         result_file.write(b"};\n")
 
 if __name__ == "__main__":

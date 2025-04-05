@@ -393,6 +393,7 @@ jobs:
         cp configurations/Creality\ Ender/S1/UBL/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = ${DENV}/" platformio.ini
         sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+        sed -i 's/.*#define CUSTOM_MACHINE_NAME.*/#define CUSTOM_MACHINE_NAME "Ender3S1-${ENDER_VER}"/' Marlin/Configuration.h
         if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         if ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
@@ -479,6 +480,7 @@ jobs:
         cp configurations/Creality\ Ender/S1/UBL/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = ${DENV}/" platformio.ini
         sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+        sed -i 's/.*#define CUSTOM_MACHINE_NAME.*/#define CUSTOM_MACHINE_NAME "Ender3S1-${ENDER_VER}"/' Marlin/Configuration.h
         if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 5/" Marlin/Configuration.h

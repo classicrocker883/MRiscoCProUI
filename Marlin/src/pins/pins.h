@@ -871,7 +871,7 @@
 //
 
 #elif MB(CREALITY_CR4NS)
-  #include "stm32f1/pins_CREALITY_CR4NS.h"          // STM32F1                              env:STM32F103RE_creality env:STM32F103RE_creality_maple
+  #include "stm32f1/pins_CREALITY_CR4NS.h"          // STM32F1, GD32F3                      env:GD32F303RE_creality_mfl env:STM32F103RE_creality env:STM32F103RE_creality_maple env:GD32F303RE_creality_maple env:GD32F303RC_creality_maple
 
 //
 // ARM Cortex-M7

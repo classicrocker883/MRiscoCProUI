@@ -25,6 +25,9 @@
 
 enum DGUS_ScreenID : uint8_t;
 
+enum MKS_Choose : uint8_t { MKS_Language_Choose, MKS_Language_NoChoose };
+enum MKS_Language : uint8_t { MKS_SimpleChinese, MKS_English };
+
 class DGUSScreenHandlerMKS : public DGUSScreenHandler {
 public:
   DGUSScreenHandlerMKS() = default;
@@ -53,7 +56,7 @@ public:
   #if ENABLED(PREVENT_COLD_EXTRUSION)
     static void handleGetExMinTemp(DGUS_VP_Variable &var, void *val_ptr);
   #endif
-  static void languageDisplay(uint8_t var);
+  static void updateDisplayLanguage();
   static void tmcChangeConfig(DGUS_VP_Variable &var, void *val_ptr);
   static void getTurnOffCtrl(DGUS_VP_Variable &var, void *val_ptr);
   static void languagePInit();
@@ -104,9 +107,6 @@ public:
 
   static bool loop();
 };
-
-enum MKS_Choose : uint8_t { MKS_Language_Choose, MKS_Language_NoChoose };
-enum MKS_Language : uint8_t { MKS_SimpleChinese, MKS_English };
 
 extern MKS_Language mks_language_index;
 extern bool DGUSAutoTurnOff;
