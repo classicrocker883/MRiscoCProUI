@@ -8,15 +8,15 @@ https://en.wikipedia.org/wiki/Steinhart-Hart_equation
 The main use is for Arduino programs that read data from the circuit board described here:
 https://reprap.org/wiki/Temperature_Sensor_v2.0
 
-Usage: python createTemperatureLookupMarlin.py [options]
+usage: python createTemperatureLookupMarlin.py [options]
 
-Options:
-  -h, --help        Show this help
-  --rp=...          Pull-up resistor
-  --t1=ttt:rrr      Low temperature temperature:resistance point (around 25 degC)
-  --t2=ttt:rrr      Middle temperature temperature:resistance point (around 150 degC)
-  --t3=ttt:rrr      High temperature temperature:resistance point (around 250 degC)
-  --num-temps=...   The number of temperature points to calculate (default: 36)
+options:
+  -h, --help        show this help message and exit
+  --rp=...          pull-up resistor
+  --t1=ttt:rrr      low temperature temperature:resistance point (around 25 degC)
+  --t2=ttt:rrr      middle temperature temperature:resistance point (around 150 degC)
+  --t3=ttt:rrr      high temperature temperature:resistance point (around 250 degC)
+  --num-temps=...   the number of temperature points to calculate (default: 36)
 """
 from __future__ import print_function, division
 from math import *
@@ -86,14 +86,14 @@ class Thermistor:
 
 def main(argv):
     "Default values"
-    t1 = 25                                 # Low temperature in Kelvin (25 degC)
-    r1 = 100000                             # Resistance at low temperature (10 kOhm)
-    t2 = 150                                # Middle temperature in Kelvin (150 degC)
-    r2 = 1641.9                             # Resistance at middle temperature (1.6 KOhm)
-    t3 = 250                                # High temperature in Kelvin (250 degC)
-    r3 = 226.15                             # Resistance at high temperature (226.15 Ohm)
-    rp = 4700                               # Pull-up resistor (4.7 kOhm)
-    num_temps = 36                          # Number of entries for look-up table
+    t1 = 25         # Low temperature in Kelvin (25 degC)
+    r1 = 100000     # Resistance at low temperature (10 kOhm)
+    t2 = 150        # Middle temperature in Kelvin (150 degC)
+    r2 = 1641.9     # Resistance at middle temperature (1.6 KOhm)
+    t3 = 250        # High temperature in Kelvin (250 degC)
+    r3 = 226.15     # Resistance at high temperature (226.15 Ohm)
+    rp = 4700       # Pull-up resistor (4.7 kOhm)
+    num_temps = 36  # Number of entries for look-up table
 
     try:
         opts, args = getopt.getopt(argv, "h", ["help", "rp=", "t1=", "t2=", "t3=", "num-temps="])

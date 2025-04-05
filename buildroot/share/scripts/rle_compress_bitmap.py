@@ -4,7 +4,7 @@ Bitwise RLE compress a Marlin mono DOGM bitmap.
 Input: An existing Marlin Marlin mono DOGM bitmap .cpp or .h file.
 Output: A new file with the original and compressed data.
 
-Usage: rle_compress_bitmap.py INPUT_FILE OUTPUT_FILE
+usage: rle_compress_bitmap.py INPUT_FILE OUTPUT_FILE
 """
 import sys, struct, re
 
@@ -190,7 +190,7 @@ def addCompressedData(input_file, output_file):
             break
 
 if len(sys.argv) <= 2:
-    print("Usage: rle_compress_bitmap.py INPUT_FILE OUTPUT_FILE")
+    print("usage: rle_compress_bitmap.py INPUT_FILE OUTPUT_FILE")
     exit(1)
 
 output_h = sys.argv[2]
