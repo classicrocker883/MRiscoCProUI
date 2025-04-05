@@ -4,14 +4,14 @@ mc-apply.py
 
   Apply firmware configuration from a JSON file (marlin_config.json).
 
-  Usage: mc-apply.py [-h] [--opt] [config_file]
+  usage: mc-apply.py [-h] [--opt] [config_file]
 
-  Positional arguments:
+  positional arguments:
     config_file  Path to the configuration file.
 
-  Optional arguments:
+  optional arguments:
     -h, --help   show this help message and exit
-    --opt        Output as an option setting script.
+    --opt        output as an option setting script
 """
 import json, sys, os, config, argparse
 
@@ -73,8 +73,8 @@ def apply_config(conf):
 
 def main():
     parser = argparse.ArgumentParser(description="Process Marlin firmware configuration.")
-    parser.add_argument("--opt", action="store_true", help="Output as an option setting script.")
-    parser.add_argument("config_file", nargs="?", default="marlin_config.json", help="Path to the configuration file.")
+    parser.add_argument("--opt", action="store_true", help="output as an option setting script")
+    parser.add_argument("config_file", nargs="?", default="marlin_config.json", help="Path to the configuration file")
 
     args = parser.parse_args()
 

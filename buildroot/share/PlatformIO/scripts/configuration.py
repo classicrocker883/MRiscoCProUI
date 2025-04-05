@@ -3,7 +3,7 @@
 # configuration.py
 # Apply options from config.ini to the existing Configuration headers
 #
-import re, shutil, configparser, datetime
+import re, os, shutil, configparser, datetime
 from pathlib import Path
 
 verbose = 0
@@ -145,8 +145,6 @@ def fetch_example(url):
         blab("Couldn't find curl or wget", -1)
         return False
 
-    import os
-
     # Reset configurations to default
     os.system("git checkout HEAD Marlin/*.h")
 
@@ -269,7 +267,7 @@ if __name__ == "__main__":
         if args[0].endswith(".ini"):
             ini_file = args[0]
         else:
-            print("Usage: %s <.ini file>" % os.path.basename(sys.argv[0]))
+            print("usage: %s <.ini file>" % os.path.basename(sys.argv[0]))
     else:
         ini_file = config_path("config.ini")
 

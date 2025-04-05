@@ -633,7 +633,7 @@ f"""#
             out_text = \
 f"""/**
  * Config.h - Marlin Firmware distilled configuration
- * Usage: Place this file in the 'Marlin' folder with the name 'Config.h'.
+ * usage: Place this file in the 'Marlin' folder with the name 'Config.h'.
  *
  * Exported by Marlin build on {dt_string}.
  */
