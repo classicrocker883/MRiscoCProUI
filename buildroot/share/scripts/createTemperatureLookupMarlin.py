@@ -143,7 +143,7 @@ def main(argv):
         adc = t.adc(temp)
         print("    { OV(%7.2f), %4s }%s // v=%.3f\tr=%.3f\tres=%.3f degC/count" %
             (adc, temp,
-            ',' if temp != temps[-1] else ' ',
+            "," if temp != temps[-1] else " ",
             t.voltage(adc), t.resist(adc), t.resol(adc))
         )
     print("};")

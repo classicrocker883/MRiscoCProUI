@@ -45,7 +45,8 @@ if "MARLIN_FEATURES" in env:
         arch = "gd32f10/"
         print("GD32F1 Architecture detected")
     else:
-        exit(NotImplementedError("Error: Can't detect the correct architecture"))
+        print(NotImplementedError("Error: Can't detect the correct architecture"))
+        exit(1)
 
     # Select correct leveling system
     if marlin_manualmesh:

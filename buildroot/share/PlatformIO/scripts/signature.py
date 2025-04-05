@@ -77,13 +77,7 @@ def get_file_sha256sum(filepath):
 #
 import zipfile
 def compress_file(filepath, storedname, outpath):
-    with zipfile.ZipFile(
-        outpath,
-        "w",
-        compression=zipfile.ZIP_DEFLATED,
-        allowZip64=False,
-        compresslevel=9
-    ) as zipf:
+    with zipfile.ZipFile(outpath, "w", compression=zipfile.ZIP_DEFLATED, allowZip64=False, compresslevel=9) as zipf:
         zipf.write(filepath, arcname=storedname)
 
 ignore = (
@@ -597,7 +591,6 @@ f"""#
 """         )
 
             if extended_dump:
-
                 # Loop through the sections
                 for skey in sorted(sections):
                     #print(f"  skey: {skey}")
@@ -612,7 +605,6 @@ f"""#
                         #print(f"  {name} = {val}")
                         outfile.write(ini_fmt.format(name.lower(), val) + "\n")
             else:
-
                 # Standard export just dumps config:basic and config:advanced sections
                 for header in real_config:
                     outfile.write(f"\n[{filegrp[header]}]\n")

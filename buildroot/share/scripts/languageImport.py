@@ -92,7 +92,8 @@ for row in reader:
 from pathlib import Path
 Path.mkdir(Path(OUTDIR), exist_ok=True)
 
-FILEHEADER = """/**
+FILEHEADER = \
+"""/**
  * Marlin 3D Printer Firmware
  * Copyright (c) 2023 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *

@@ -1,20 +1,18 @@
 #!/usr/bin/env python
-#
-# mc-apply.py
-#
-#  Apply firmware configuration from a JSON file (marlin_config.json).
-#
-#  usage: mc-apply.py [-h] [--opt] [config_file]
-#
-#  Process Marlin firmware configuration.
-#
-#  positional arguments:
-#    config_file  Path to the configuration file.
-#
-#  optional arguments:
-#    -h, --help   show this help message and exit
-#    --opt        Output as an option setting script.
-#
+"""
+mc-apply.py
+
+  Apply firmware configuration from a JSON file (marlin_config.json).
+
+  Usage: mc-apply.py [-h] [--opt] [config_file]
+
+  Positional arguments:
+    config_file  Path to the configuration file.
+
+  Optional arguments:
+    -h, --help   show this help message and exit
+    --opt        Output as an option setting script.
+"""
 import json, sys, os, config, argparse
 
 def report_version(conf):

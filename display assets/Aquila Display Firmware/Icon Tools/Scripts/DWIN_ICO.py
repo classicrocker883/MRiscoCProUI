@@ -53,7 +53,6 @@
 # * One exception is number 39: that header entry is blank, and dwin.h
 #   does not define a name for 39. This is specially handled to
 #   prevent reordering stock icons.
-
 import os, struct
 from PIL import Image
 
@@ -66,7 +65,7 @@ def getJpegResolution(jpegFile):
 
 class DWIN_ICO_File:
     def __init__(self):
-        self.entries = []  # list of header entries
+        self.entries = []  # List of header entries
 
     def splitFile(self, filename, outDir):
         if not filename[-4:].lower() == ".ico":
@@ -79,14 +78,14 @@ class DWIN_ICO_File:
     def _parseHeader(self, infile):
         maxEntries = 256
         count = 0
-        # icon_nums = _iconNames.keys()
+        #icon_nums = _iconNames.keys()
         while count < maxEntries:
             rawBytes = infile.read(16)
             entry = Entry()
             entry.parseRawData(rawBytes)
-            # check that it is valid: is offset nonzero?
+            # Check that it is valid: is offset nonzero?
             # Special case: treat missing numbers as valid
-            # if (entry.offset > 0) or count not in icon_nums:
+            #if (entry.offset > 0) or count not in icon_nums:
             self.entries.append(entry)
             count += 1
 
@@ -95,11 +94,11 @@ class DWIN_ICO_File:
         if 0 == len(self.entries):
             raise RuntimeError(".ico file is not loaded yet")
 
-        # check for output dir:
+        # Check for output dir:
         if not os.path.exists(outDir):
             os.mkdir(outDir)
 
-        # keep a count
+        # Keep a count
         count = 0
         for entry in self.entries:
             # Skip any empty entries. (Special handling of 39.)
@@ -219,7 +218,6 @@ class Entry:
     Entry objects record resolution and size information
     about each icon stored in an ICO file.
     """
-
     __slots__ = ("width", "height", "offset", "length", "filename")
 
     def __init__(self, w=0, h=0, length=0, offset=0, filename=None):
@@ -247,7 +245,7 @@ class Entry:
         """
         len21 = self.length % 65536
         len3  = self.length // 65536
-        rawdata = struct.pack('>HHLBHBBBBB',
+        rawdata = struct.pack(">HHLBHBBBBB",
                               self.width,
                               self.height,
                               self.offset,
@@ -257,16 +255,16 @@ class Entry:
         return rawdata
 
 _iconNames = {
-    0: "LOGO_Creality",
-    1: "Print_0",
-    2: "Print_1",
-    3: "Prepare_0",
-    4: "Prepare_1",
-    5: "Control_0",
-    6: "Control_1",
-    7: "Leveling_0",
-    8: "Leveling_1",
-    9: "HotendTemp",
+     0: "LOGO_Creality",
+     1: "Print_0",
+     2: "Print_1",
+     3: "Prepare_0",
+     4: "Prepare_1",
+     5: "Control_0",
+     6: "Control_1",
+     7: "Leveling_0",
+     8: "Leveling_1",
+     9: "HotendTemp",
     10: "BedTemp",
     11: "Speed",
     12: "Zoffset",
@@ -349,20 +347,20 @@ _iconNames = {
     89: "Confirm_E",
     90: "Info_0",
     91: "Info_1",
-    # 92 : "DegreesC",
+    #92: "DegreesC",
     93: "Printer_0",
-    # 94 : "Printer_1",
-    200: "Checkbox_F",
-    201: "Checkbox_T",
-    202: "Fade",
-    203: "Mesh",
-    204: "Tilt",
-    205: "Brightness",
-    206: "Probe",
-    249: "AxisD",
-    250: "AxisBR",
-    251: "AxisTR",
-    252: "AxisBL",
-    253: "AxisTL",
-    254: "AxisC"
+    #94: "Printer_1",
+   200: "Checkbox_F",
+   201: "Checkbox_T",
+   202: "Fade",
+   203: "Mesh",
+   204: "Tilt",
+   205: "Brightness",
+   206: "Probe",
+   249: "AxisD",
+   250: "AxisBR",
+   251: "AxisTR",
+   252: "AxisBL",
+   253: "AxisTL",
+   254: "AxisC"
 }

@@ -71,7 +71,7 @@ def group_options(schema):
 def load_boards():
     bpath = Path("Marlin/src/core/boards.h")
     if bpath.is_file():
-        with bpath.open(encoding='utf-8') as bfile:
+        with bpath.open(encoding="utf-8") as bfile:
             boards = []
             for line in bfile:
                 if line.startswith("#define BOARD_"):
@@ -305,8 +305,7 @@ def extract_files(filekey):
                             s == ""
                             or re.match(r'^[A-Za-z0-9_]*(\([^)]+\))?$', s)
                             or re.match(r'^[A-Za-z0-9_]+ == \d+?$', s)
-                        ):
-                            return s
+                        ): return s
                         return f"({s})"
 
                     #
@@ -487,7 +486,7 @@ def main():
         def inargs(c): return len(set(args) & set(c)) > 0
 
         # Help / Unknown option
-        unk = not inargs(["some", "json", "jsons", "group", "yml", "yaml"])
+        unk = not inargs(["some", "json", "jsons", "group", "yml", "yaml", "-h", "--help"])
         if unk: print(f"Unknown option: '{args[0]}'")
         if inargs(["-h", "--help"]) or unk:
             print("Usage: schema.py [some|json|jsons|group|yml|yaml]...")
