@@ -233,10 +233,10 @@ constexpr uint16_t VP_E1_STATUS = 0x3412;
 constexpr uint16_t VP_MOVE_OPTION = 0x3500;
 
 // // PIDs
-// constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment , uint16_t , 0~1638.4
+// constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment, uint16_t, 0~1638.4
 // constexpr uint16_t VP_E0_PID_I = 0x3702;
 // constexpr uint16_t VP_E0_PID_D = 0x3704;
-// constexpr uint16_t VP_E1_PID_P = 0x3706; // at the moment , uint16_t , 0~1638.4
+// constexpr uint16_t VP_E1_PID_P = 0x3706; // at the moment, uint16_t, 0~1638.4
 // constexpr uint16_t VP_E1_PID_I = 0x3708;
 // constexpr uint16_t VP_E1_PID_D = 0x370A;
 // constexpr uint16_t VP_BED_PID_P = 0x3710;
@@ -339,7 +339,7 @@ constexpr uint16_t SP_T_Bed_Set   = 0x5040;
   constexpr uint16_t VP_Y_HOME                        = 0x2338;
   constexpr uint16_t VP_Z_HOME                        = 0x233A;
 
-  // Fan Control Buttons , switch between "off" and "on"
+  // Fan Control Buttons, switch between "off" and "on"
   constexpr uint16_t VP_FAN0_CONTROL                  = 0x2350;
   constexpr uint16_t VP_FAN1_CONTROL                  = 0x2352;
   constexpr uint16_t VP_FAN2_CONTROL                  = 0x2354;
@@ -391,7 +391,7 @@ constexpr uint16_t SP_T_Bed_Set   = 0x5040;
   constexpr uint16_t VP_FAN3_STATUS                   = 0x2716;
 
   // Step per mm
-  constexpr uint16_t VP_X_STEP_PER_MM                 = 0x2900;   // at the moment , uint16_t , 0~1638.4
+  constexpr uint16_t VP_X_STEP_PER_MM                 = 0x2900;   // at the moment, uint16_t, 0~1638.4
   constexpr uint16_t VP_Y_STEP_PER_MM                 = 0x2904;
   constexpr uint16_t VP_Z_STEP_PER_MM                 = 0x2908;
   constexpr uint16_t VP_E0_STEP_PER_MM                = 0x2910;
@@ -498,10 +498,10 @@ constexpr uint16_t SP_T_Bed_Set   = 0x5040;
   constexpr uint16_t VP_PrintTime_S                   = 0x3504;
 
   // PIDs
-  constexpr uint16_t VP_E0_PID_P                      = 0x3700; // at the moment , uint16_t , 0~1638.4
+  constexpr uint16_t VP_E0_PID_P                      = 0x3700; // at the moment, uint16_t, 0~1638.4
   constexpr uint16_t VP_E0_PID_I                      = 0x3702;
   constexpr uint16_t VP_E0_PID_D                      = 0x3704;
-  constexpr uint16_t VP_E1_PID_P                      = 0x3706; // at the moment , uint16_t , 0~1638.4
+  constexpr uint16_t VP_E1_PID_P                      = 0x3706; // at the moment, uint16_t, 0~1638.4
   constexpr uint16_t VP_E1_PID_I                      = 0x3708;
   constexpr uint16_t VP_E1_PID_D                      = 0x370A;
   constexpr uint16_t VP_BED_PID_P                     = 0x3710;
@@ -534,7 +534,7 @@ constexpr uint16_t SP_T_Bed_Set   = 0x5040;
   constexpr uint16_t VP_Z_PARK_POS                    = 0x3904;
 
   /* -------------------------------0x4000-0x4FFF------------------------------- */
-  // Heater Control Buttons , triged between "cool down" and "heat PLA" state
+  // Heater Control Buttons, triged between "cool down" and "heat PLA" state
   constexpr uint16_t VP_E0_CONTROL                    = 0x4010;
   constexpr uint16_t VP_E1_CONTROL                    = 0x4012;
   //constexpr uint16_t VP_E2_CONTROL = 0x2214;
@@ -555,7 +555,7 @@ constexpr uint16_t SP_T_Bed_Set   = 0x5040;
   //constexpr uint16_t VP_E0_FILAMENT_LOAD_UNLOAD     = 0x4030;
   //constexpr uint16_t VP_E1_FILAMENT_LOAD_UNLOAD     = 0x4032;
 
-  // Settings store , reset
+  // Settings store, reset
 
   // Level data
   constexpr uint16_t VP_Level_Point_One_X             = 0x4100;

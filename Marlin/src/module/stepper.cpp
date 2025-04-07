@@ -751,10 +751,10 @@ void Stepper::apply_directions() {
    * overflows on the evaluation of the Bézier curve, means we can use
    *
    *   t: unsigned Q0.32 (0 <= t < 1) |range 0 to 0xFFFFFFFF unsigned
-   *   A:   signed Q24.7 ,            |range = +/- 250000 * 6 * 128 = +/- 192000000 = 0x0B71B000 | 28 bits + sign
-   *   B:   signed Q24.7 ,            |range = +/- 250000 *15 * 128 = +/- 480000000 = 0x1C9C3800 | 29 bits + sign
-   *   C:   signed Q24.7 ,            |range = +/- 250000 *10 * 128 = +/- 320000000 = 0x1312D000 | 29 bits + sign
-   *   F:   signed Q24.7 ,            |range = +/- 250000     * 128 =      32000000 = 0x01E84800 | 25 bits + sign
+   *   A:   signed Q24.7,             |range = +/- 250000 * 6 * 128 = +/- 192000000 = 0x0B71B000 | 28 bits + sign
+   *   B:   signed Q24.7,             |range = +/- 250000 *15 * 128 = +/- 480000000 = 0x1C9C3800 | 29 bits + sign
+   *   C:   signed Q24.7,             |range = +/- 250000 *10 * 128 = +/- 320000000 = 0x1312D000 | 29 bits + sign
+   *   F:   signed Q24.7,             |range = +/- 250000     * 128 =      32000000 = 0x01E84800 | 25 bits + sign
    *
    * The trapezoid generator state contains the following information, that we will use to create and evaluate
    * the Bézier curve:
@@ -812,19 +812,19 @@ void Stepper::apply_directions() {
    *        int32_t B = bezier_B;
    *        int32_t C = bezier_C;
    *
-   *        lsrs(ahi, alo, 1);          // a  = F << 31
-   *        lsls(alo, alo, 31);         //
-   *        umull(flo, fhi, fhi, t);    // f *= t
-   *        umull(flo, fhi, fhi, t);    // f>>=32; f*=t
-   *        lsrs(flo, fhi, 1);          //
-   *        smlal(alo, ahi, flo, C);    // a+=(f>>33)*C
-   *        umull(flo, fhi, fhi, t);    // f>>=32; f*=t
-   *        lsrs(flo, fhi, 1);          //
-   *        smlal(alo, ahi, flo, B);    // a+=(f>>33)*B
-   *        umull(flo, fhi, fhi, t);    // f>>=32; f*=t
-   *        lsrs(flo, fhi, 1);          // f>>=33;
-   *        smlal(alo, ahi, flo, A);    // a+=(f>>33)*A;
-   *        lsrs(alo, ahi, 6);          // a>>=38
+   *        lsrs(ahi, alo, 1);       // a  = F << 31
+   *        lsls(alo, alo, 31);      //
+   *        umull(flo, fhi, fhi, t); // f *= t
+   *        umull(flo, fhi, fhi, t); // f>>=32; f*=t
+   *        lsrs(flo, fhi, 1);       //
+   *        smlal(alo, ahi, flo, C); // a+=(f>>33)*C
+   *        umull(flo, fhi, fhi, t); // f>>=32; f*=t
+   *        lsrs(flo, fhi, 1);       //
+   *        smlal(alo, ahi, flo, B); // a+=(f>>33)*B
+   *        umull(flo, fhi, fhi, t); // f>>=32; f*=t
+   *        lsrs(flo, fhi, 1);       // f>>=33;
+   *        smlal(alo, ahi, flo, A); // a+=(f>>33)*A;
+   *        lsrs(alo, ahi, 6);       // a>>=38
    *
    *        return alo;
    *      }
@@ -848,10 +848,10 @@ void Stepper::apply_directions() {
    *     So, the resulting range of the coefficients are:
    *
    *       t: unsigned (0 <= t < 1) |range 0 to 0xFFFFFF unsigned
-   *       A:   signed Q24 , range = 250000 * 6 = 1500000 = 0x16E360 | 21 bits
-   *       B:   signed Q24 , range = 250000 *15 = 3750000 = 0x393870 | 22 bits
-   *       C:   signed Q24 , range = 250000 *10 = 2500000 = 0x1312D0 | 21 bits
-   *       F:   signed Q24 , range = 250000     =  250000 = 0x0ED090 | 20 bits
+   *       A:   signed Q24,         |range = 250000 * 6 = 1500000 = 0x16E360 | 21 bits
+   *       B:   signed Q24,         |range = 250000 *15 = 3750000 = 0x393870 | 22 bits
+   *       C:   signed Q24,         |range = 250000 *10 = 2500000 = 0x1312D0 | 21 bits
+   *       F:   signed Q24,         |range = 250000     =  250000 = 0x0ED090 | 20 bits
    *
    *    And for each curve, estimate its coefficients with:
    *
@@ -893,31 +893,31 @@ void Stepper::apply_directions() {
    *          return bezier_F;
    *
    *        uint16_t t;
-   *        umul24x24to16hi(t, bezier_AV, curr_step);   // t: Range 0 - 1^16 = 16 bits
+   *        umul24x24to16hi(t, bezier_AV, curr_step); // t: Range 0 - 1^16 = 16 bits
    *        uint16_t f = t;
-   *        umul16x16to16hi(f, f, t);                   // Range 16 bits (unsigned)
-   *        umul16x16to16hi(f, f, t);                   // Range 16 bits : f = t^3  (unsigned)
-   *        uint24_t acc = bezier_F;                    // Range 20 bits (unsigned)
+   *        umul16x16to16hi(f, f, t);                 // Range 16 bits (unsigned)
+   *        umul16x16to16hi(f, f, t);                 // Range 16 bits : f = t^3  (unsigned)
+   *        uint24_t acc = bezier_F;                  // Range 20 bits (unsigned)
    *        if (A_negative) {
    *          uint24_t v;
-   *          umul16x24to24hi(v, f, bezier_C);          // Range 21bits
+   *          umul16x24to24hi(v, f, bezier_C);        // Range 21bits
    *          acc -= v;
-   *          umul16x16to16hi(f, f, t);                 // Range 16 bits : f = t^4  (unsigned)
-   *          umul16x24to24hi(v, f, bezier_B);          // Range 22bits
+   *          umul16x16to16hi(f, f, t);               // Range 16 bits : f = t^4  (unsigned)
+   *          umul16x24to24hi(v, f, bezier_B);        // Range 22bits
    *          acc += v;
-   *          umul16x16to16hi(f, f, t);                 // Range 16 bits : f = t^5  (unsigned)
-   *          umul16x24to24hi(v, f, bezier_A);          // Range 21bits + 15 = 36bits (plus sign)
+   *          umul16x16to16hi(f, f, t);               // Range 16 bits : f = t^5  (unsigned)
+   *          umul16x24to24hi(v, f, bezier_A);        // Range 21bits + 15 = 36bits (plus sign)
    *          acc -= v;
    *        }
    *        else {
    *          uint24_t v;
-   *          umul16x24to24hi(v, f, bezier_C);          // Range 21bits
+   *          umul16x24to24hi(v, f, bezier_C);        // Range 21bits
    *          acc += v;
-   *          umul16x16to16hi(f, f, t);                 // Range 16 bits : f = t^4  (unsigned)
-   *          umul16x24to24hi(v, f, bezier_B);          // Range 22bits
+   *          umul16x16to16hi(f, f, t);               // Range 16 bits : f = t^4  (unsigned)
+   *          umul16x24to24hi(v, f, bezier_B);        // Range 22bits
    *          acc -= v;
-   *          umul16x16to16hi(f, f, t);                 // Range 16 bits : f = t^5  (unsigned)
-   *          umul16x24to24hi(v, f, bezier_A);          // Range 21bits + 15 = 36bits (plus sign)
+   *          umul16x16to16hi(f, f, t);               // Range 16 bits : f = t^5  (unsigned)
+   *          umul16x24to24hi(v, f, bezier_A);        // Range 21bits + 15 = 36bits (plus sign)
    *          acc += v;
    *        }
    *        return acc;
@@ -1457,14 +1457,14 @@ void Stepper::apply_directions() {
           A("lsrs  %[flo],%[fhi],#1")          // f>>=33;           1 cycles [31bits]
           A("smlal %[alo],%[ahi],%[flo],%[A]") // a+=(f>>33)*A;     5 cycles
           A("lsrs  %[alo],%[ahi],#6")          // a>>=38            1 cycles
-          : [alo]"+r"( alo ) ,
-            [flo]"+r"( flo ) ,
-            [fhi]"+r"( fhi ) ,
-            [ahi]"+r"( ahi ) ,
-            [A]"+r"( A ) , // <== NOTE: Even if A, B, C, and t registers are INPUT ONLY
-            [B]"+r"( B ) , //  GCC does bad optimizations on the code if we list them as
-            [C]"+r"( C ) , //  such, breaking this function. So, to avoid that problem,
-            [t]"+r"( t )   //  we list all registers as input-outputs.
+          : [alo]"+r"( alo ),
+            [flo]"+r"( flo ),
+            [fhi]"+r"( fhi ),
+            [ahi]"+r"( ahi ),
+            [A]"+r"( A ), // <== NOTE: Even if A, B, C, and t registers are INPUT ONLY
+            [B]"+r"( B ), //  GCC does bad optimizations on the code if we list them as
+            [C]"+r"( C ), //  such, breaking this function. So, to avoid that problem,
+            [t]"+r"( t )  //  we list all registers as input-outputs.
           :
           : "cc"
         );
@@ -1475,21 +1475,21 @@ void Stepper::apply_directions() {
         // For non ARM targets, we provide a fallback implementation. Really doubt it
         // will be useful, unless the processor is fast and 32bit
 
-        uint32_t t = bezier_AV * curr_step;               // t: Range 0 - 1^32 = 32 bits
+        uint32_t t = bezier_AV * curr_step;              // t: Range 0 - 1^32 = 32 bits
         uint64_t f = t;
-        f *= t;                                           // Range 32*2 = 64 bits (unsigned)
-        f >>= 32;                                         // Range 32 bits  (unsigned)
-        f *= t;                                           // Range 32*2 = 64 bits  (unsigned)
-        f >>= 32;                                         // Range 32 bits : f = t^3  (unsigned)
-        int64_t acc = (int64_t) bezier_F << 31;           // Range 63 bits (signed)
-        acc += ((uint32_t) f >> 1) * (int64_t) bezier_C;  // Range 29bits + 31 = 60bits (plus sign)
-        f *= t;                                           // Range 32*2 = 64 bits
-        f >>= 32;                                         // Range 32 bits : f = t^3  (unsigned)
-        acc += ((uint32_t) f >> 1) * (int64_t) bezier_B;  // Range 29bits + 31 = 60bits (plus sign)
-        f *= t;                                           // Range 32*2 = 64 bits
-        f >>= 32;                                         // Range 32 bits : f = t^3  (unsigned)
-        acc += ((uint32_t) f >> 1) * (int64_t) bezier_A;  // Range 28bits + 31 = 59bits (plus sign)
-        acc >>= (31 + 7);                                 // Range 24bits (plus sign)
+        f *= t;                                          // Range 32*2 = 64 bits (unsigned)
+        f >>= 32;                                        // Range 32 bits  (unsigned)
+        f *= t;                                          // Range 32*2 = 64 bits  (unsigned)
+        f >>= 32;                                        // Range 32 bits : f = t^3  (unsigned)
+        int64_t acc = (int64_t) bezier_F << 31;          // Range 63 bits (signed)
+        acc += ((uint32_t) f >> 1) * (int64_t) bezier_C; // Range 29bits + 31 = 60bits (plus sign)
+        f *= t;                                          // Range 32*2 = 64 bits
+        f >>= 32;                                        // Range 32 bits : f = t^3  (unsigned)
+        acc += ((uint32_t) f >> 1) * (int64_t) bezier_B; // Range 29bits + 31 = 60bits (plus sign)
+        f *= t;                                          // Range 32*2 = 64 bits
+        f >>= 32;                                        // Range 32 bits : f = t^3  (unsigned)
+        acc += ((uint32_t) f >> 1) * (int64_t) bezier_A; // Range 28bits + 31 = 59bits (plus sign)
+        acc >>= (31 + 7);                                // Range 24bits (plus sign)
         return (int32_t) acc;
 
       #endif
@@ -1525,7 +1525,7 @@ HAL_STEP_TIMER_ISR() {
 
 void Stepper::isr() {
 
-  static hal_timer_t nextMainISR = 0;  // Interval until the next main Stepper Pulse phase (0 = Now)
+  static hal_timer_t nextMainISR = 0; // Interval until the next main Stepper Pulse phase (0 = Now)
 
   // Program timer compare for the maximum period, so it does NOT
   // flag an interrupt while this ISR is running - So changes from small
@@ -1539,7 +1539,7 @@ void Stepper::isr() {
   uint8_t max_loops = 10;
 
   #if ENABLED(FT_MOTION)
-    static uint32_t ftMotion_nextAuxISR = 0U;  // Storage for the next ISR of the auxilliary tasks.
+    static uint32_t ftMotion_nextAuxISR = 0U; // Storage for the next ISR of the auxilliary tasks.
     const bool using_ftMotion = ftMotion.cfg.active;
   #else
     constexpr bool using_ftMotion = false;
@@ -1554,9 +1554,9 @@ void Stepper::isr() {
     #if ENABLED(FT_MOTION)
 
       if (using_ftMotion) {
-        if (!nextMainISR) {               // Main ISR is ready to fire during this iteration?
-          nextMainISR = FTM_MIN_TICKS;    // Set to minimum interval (a limit on the top speed)
-          ftMotion_stepper();             // Run FTM Stepping
+        if (!nextMainISR) {            // Main ISR is ready to fire during this iteration?
+          nextMainISR = FTM_MIN_TICKS; // Set to minimum interval (a limit on the top speed)
+          ftMotion_stepper();          // Run FTM Stepping
           // Define 2.5 msec task for auxilliary functions.
           if (!ftMotion_nextAuxISR) {
             TERN_(BABYSTEPPING, if (babystep.has_steps()) babystepping_isr());
@@ -1576,21 +1576,21 @@ void Stepper::isr() {
 
     if (!using_ftMotion) {
 
-      TERN_(HAS_ZV_SHAPING, shaping_isr());               // Do Shaper stepping, if needed
+      TERN_(HAS_ZV_SHAPING, shaping_isr());              // Do Shaper stepping, if needed
 
-      if (!nextMainISR) pulse_phase_isr();                // 0 = Do coordinated axes Stepper pulses
+      if (!nextMainISR) pulse_phase_isr();               // 0 = Do coordinated axes Stepper pulses
 
       #if ENABLED(LIN_ADVANCE)
-        if (!nextAdvanceISR) {                            // 0 = Do Linear Advance E Stepper pulses
+        if (!nextAdvanceISR) {                           // 0 = Do Linear Advance E Stepper pulses
           advance_isr();
           nextAdvanceISR = la_interval;
         }
-        else if (nextAdvanceISR > la_interval)            // Start/accelerate LA steps if necessary
+        else if (nextAdvanceISR > la_interval)           // Start/accelerate LA steps if necessary
           nextAdvanceISR = la_interval;
       #endif
 
       #if ENABLED(BABYSTEPPING)
-        const bool is_babystep = (nextBabystepISR == 0);  // 0 = Do Babystepping (XY)Z pulses
+        const bool is_babystep = (nextBabystepISR == 0); // 0 = Do Babystepping (XY)Z pulses
         if (is_babystep) nextBabystepISR = babystepping_isr();
       #endif
 
@@ -1599,24 +1599,24 @@ void Stepper::isr() {
 
       // ^== Time critical. NOTHING besides pulse generation should be above here!!!
 
-      if (!nextMainISR) nextMainISR = block_phase_isr();  // Manage acc/deceleration, get next block
+      if (!nextMainISR) nextMainISR = block_phase_isr(); // Manage acc/deceleration, get next block
 
       #if ENABLED(BABYSTEPPING)
-        if (is_babystep)                                  // Avoid ANY stepping too soon after baby-stepping
-          NOLESS(nextMainISR, (BABYSTEP_TICKS) / 8);      // FULL STOP for 125µs after a baby-step
+        if (is_babystep)                                 // Avoid ANY stepping too soon after baby-stepping
+          NOLESS(nextMainISR, (BABYSTEP_TICKS) / 8);     // FULL STOP for 125µs after a baby-step
 
-        if (nextBabystepISR != BABYSTEP_NEVER)            // Avoid baby-stepping too close to axis Stepping
+        if (nextBabystepISR != BABYSTEP_NEVER)           // Avoid baby-stepping too close to axis Stepping
           NOLESS(nextBabystepISR, nextMainISR / 2);
           /// TODO: Only look at axes enabled for baby-stepping
       #endif
 
       // Get the interval to the next ISR call
-      interval = _MIN(nextMainISR, uint32_t(HAL_TIMER_TYPE_MAX));         // Time until the next Pulse / Block phase
-      TERN_(INPUT_SHAPING_X, NOMORE(interval, ShapingQueue::peek_x()));   // Time until next input shaping echo for X
-      TERN_(INPUT_SHAPING_Y, NOMORE(interval, ShapingQueue::peek_y()));   // Time until next input shaping echo for Y
-      TERN_(INPUT_SHAPING_Z, NOMORE(interval, ShapingQueue::peek_z()));   // Time until next input shaping echo for Z
-      TERN_(LIN_ADVANCE, NOMORE(interval, nextAdvanceISR));               // Come back early for Linear Advance?
-      TERN_(BABYSTEPPING, NOMORE(interval, nextBabystepISR));             // Come back early for Babystepping?
+      interval = _MIN(nextMainISR, uint32_t(HAL_TIMER_TYPE_MAX));       // Time until the next Pulse / Block phase
+      TERN_(INPUT_SHAPING_X, NOMORE(interval, ShapingQueue::peek_x())); // Time until next input shaping echo for X
+      TERN_(INPUT_SHAPING_Y, NOMORE(interval, ShapingQueue::peek_y())); // Time until next input shaping echo for Y
+      TERN_(INPUT_SHAPING_Z, NOMORE(interval, ShapingQueue::peek_z())); // Time until next input shaping echo for Z
+      TERN_(LIN_ADVANCE, NOMORE(interval, nextAdvanceISR));             // Come back early for Linear Advance?
+      TERN_(BABYSTEPPING, NOMORE(interval, nextBabystepISR));           // Come back early for Babystepping?
 
       //
       // Compute remaining time for each ISR phase
