@@ -134,7 +134,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
               state->regData[13].v += 4;
 
-              UnwPrintd3("  r%d = 0x%08x\n", r, state->regData[r].v);
+              UnwPrintd3("  r%d=0x%08x\n", r, state->regData[r].v);
             }
           }
         }
@@ -146,7 +146,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
           for (r = 15; r >= 0; r--) {
             if (rList & (0x1 << r)) {
-              UnwPrintd4("\n  r%d = 0x%08x\t; %s", r, state->regData[r].v, M_Origin2Str(state->regData[r].o));
+              UnwPrintd4("\n  r%d=0x%08x\t; %s", r, state->regData[r].v, M_Origin2Str(state->regData[r].o));
 
               state->regData[13].v -= 4;
 
@@ -164,7 +164,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
         /* Store to memory: PUSH */
         UnwPrintd2("PUSH {R%d}\n", r);
-        UnwPrintd4("\n  r%d = 0x%08x\t; %s", r, state->regData[r].v, M_Origin2Str(state->regData[r].o));
+        UnwPrintd4("\n  r%d=0x%08x\t; %s", r, state->regData[r].v, M_Origin2Str(state->regData[r].o));
 
         state->regData[13].v -= 4;
 
@@ -226,7 +226,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
         state->regData[13].v += 4;
 
-        UnwPrintd3("  r%d = 0x%08x\n", r, state->regData[r].v);
+        UnwPrintd3("  r%d=0x%08x\n", r, state->regData[r].v);
       }
       /*
        * TBB / TBH
@@ -277,7 +277,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
         uint32_t imm32 = (S << 24) | (I1 << 23) | (I2 << 22) |(imm10 << 12) | (imm11 << 1);
         if (S) imm32 |= 0xFE000000;
 
-        UnwPrintd2("B %d \n", imm32);
+        UnwPrintd2("B %d\n", imm32);
 
         /* Update PC */
         state->regData[15].v += imm32;
@@ -317,7 +317,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
         uint32_t imm32 = (S << 24) | (I1 << 23) | (I2 << 22) |(imm10 << 12) | (imm11 << 1);
         if (S) imm32 |= 0xFE000000;
 
-        UnwPrintd2("BL %d \n", imm32);
+        UnwPrintd2("BL %d\n", imm32);
 
         /* Never taken, as we are unwinding the stack */
         if (0) {
@@ -392,7 +392,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
       }
       /*
        * PC-relative load
-       *  LDR Rd,[PC, #+/-imm]
+       *  LDR Rd, [PC, #+/-imm]
        */
       else if ((instr & 0xFF7F) == 0xF85F) {
         uint8_t  rt    = (instr2 & 0xF000) >> 12;
@@ -405,7 +405,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
         if (A) address += imm12;
         else address -= imm12;
 
-        UnwPrintd4("LDR r%d,[PC #%c0x%08x]", rt, A?'+':'-', address);
+        UnwPrintd4("LDR r%d,[PC#%c0x%08x]", rt, A ? '+' : '-', address);
 
         if (!UnwMemReadRegister(state, address, &state->regData[rt]))
           return UNWIND_DREAD_W_FAIL;
@@ -413,7 +413,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
       /*
        * LDR immediate.
        *  We are only interested when destination is PC.
-       *  LDR Rt,[Rn, #n]
+       *  LDR Rt, [Rn, #n]
        */
       else if ((instr & 0xFFF0) == 0xF8D0) {
         uint8_t     rn = (instr  & 0xF);
@@ -433,9 +433,9 @@ UnwResult UnwStartThumb(UnwState * const state) {
       /*
        * LDR immediate
        *  We are only interested when destination is PC.
-       *  LDR Rt,[Rn, #-n]
-       *  LDR Rt,[Rn], #+/-n]
-       *  LDR Rt,[Rn, #+/-n]!
+       *  LDR Rt, [Rn, #-n]
+       *  LDR Rt, [Rn], #+/-n]
+       *  LDR Rt, [Rn, #+/-n]!
        */
       else if ((instr & 0xFFF0) == 0xF850 && (instr2 & 0x0800) == 0x0800) {
         uint8_t     rn = (instr  & 0xF);
@@ -460,7 +460,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
       /*
        * LDR (register).
        *  We are interested in the form
-       *   ldr  Rt, [Rn, Rm, lsl #x]
+       *   LDR  Rt, [Rn, Rm, lsl #x]
        *  Where Rt is PC, Rn value is known, Rm is not known or unknown
        */
       else if ((instr & 0xFFF0) == 0xF850 && (instr2 & 0x0FC0) == 0x0000) {
@@ -549,11 +549,11 @@ UnwResult UnwStartThumb(UnwState * const state) {
       uint8_t rd = (instr & 0x0007);
 
       /* Print decoding */
-      UnwPrintd6("%s r%d, r%d, %c%d\t;",op ? "SUB" : "ADD",rd, rs,I ? '#' : 'r',rn);
-      UnwPrintd5("r%d %s, r%d %s",rd, M_Origin2Str(state->regData[rd].o),rs, M_Origin2Str(state->regData[rs].o));
+      UnwPrintd6("%s r%d,r%d,%c%d\t;", op ? "SUB" : "ADD", rd, rs, I ? '#' : 'r', rn);
+      UnwPrintd5("r%d,%s,r%d,%s", rd, M_Origin2Str(state->regData[rd].o), rs, M_Origin2Str(state->regData[rs].o));
       if (!I) {
 
-        UnwPrintd3(", r%d %s", rn, M_Origin2Str(state->regData[rn].o));
+        UnwPrintd3(",r%d %s", rn, M_Origin2Str(state->regData[rn].o));
 
         /* Perform calculation */
         state->regData[rd].v = state->regData[rs].v + (op ? -state->regData[rn].v : state->regData[rn].v);
@@ -589,7 +589,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
       switch (op) {
         case 0: /* MOV */
-          UnwPrintd3("MOV r%d, #0x%x", rd, offset8);
+          UnwPrintd3("MOV r%d,#0x%x", rd, offset8);
           state->regData[rd].v = offset8;
           state->regData[rd].o = REG_VAL_FROM_CONST;
           break;
@@ -600,13 +600,13 @@ UnwResult UnwStartThumb(UnwState * const state) {
           break;
 
         case 2: /* ADD */
-          UnwPrintd5("ADD r%d, #0x%x\t; r%d %s", rd, offset8, rd, M_Origin2Str(state->regData[rd].o));
+          UnwPrintd5("ADD r%d,#0x%x\t; r%d %s", rd, offset8, rd, M_Origin2Str(state->regData[rd].o));
           state->regData[rd].v += offset8;
           state->regData[rd].o |= REG_VAL_ARITHMETIC;
           break;
 
         case 3: /* SUB */
-          UnwPrintd5("SUB r%d, #0x%d\t; r%d %s", rd, offset8, rd, M_Origin2Str(state->regData[rd].o));
+          UnwPrintd5("SUB r%d,#0x%d\t; r%d %s", rd, offset8, rd, M_Origin2Str(state->regData[rd].o));
           state->regData[rd].v -= offset8;
           state->regData[rd].o |= REG_VAL_ARITHMETIC;
           break;
@@ -654,12 +654,12 @@ UnwResult UnwStartThumb(UnwState * const state) {
         case 12: /* ORR */
         case 13: /* MUL */
         case 15: /* MVN */
-          UnwPrintd8("%s r%d, r%d\t; r%d %s, r%d %s",mnu[op],rd, rs, rd, M_Origin2Str(state->regData[rd].o), rs, M_Origin2Str(state->regData[rs].o));
+          UnwPrintd8("%s r%d,r%d\t; r%d %s,r%d %s", mnu[op], rd, rs, rd, M_Origin2Str(state->regData[rd].o), rs, M_Origin2Str(state->regData[rs].o));
           break;
 
         case 5: /* ADC */
         case 6: /* SBC */
-          UnwPrintd4("%s r%d, r%d", mnu[op], rd, rs);
+          UnwPrintd4("%s r%d,r%d", mnu[op], rd, rs);
           break;
 
         case 8: /* TST */
@@ -670,7 +670,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
           break;
 
         case 14: /* BIC */
-          UnwPrintd5("r%d, r%d\t; r%d %s", rd, rs, rs, M_Origin2Str(state->regData[rs].o));
+          UnwPrintd5("r%d,r%d\t; r%d %s", rd, rs, rs, M_Origin2Str(state->regData[rs].o));
           break;
       }
 
@@ -792,7 +792,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
       switch (op) {
         case 0: /* ADD */
-          UnwPrintd5("ADD r%d, r%d\t; r%d %s", rhd, rhs, rhs, M_Origin2Str(state->regData[rhs].o));
+          UnwPrintd5("ADD r%d,r%d\t; r%d %s", rhd, rhs, rhs, M_Origin2Str(state->regData[rhs].o));
           state->regData[rhd].v += state->regData[rhs].v;
           state->regData[rhd].o  =  state->regData[rhs].o;
           state->regData[rhd].o |= REG_VAL_ARITHMETIC;
@@ -804,7 +804,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
           break;
 
         case 2: /* MOV */
-          UnwPrintd5("MOV r%d, r%d\t; r%d %s", rhd, rhs, rhd, M_Origin2Str(state->regData[rhs].o));
+          UnwPrintd5("MOV r%d,r%d\t; r%d %s", rhd, rhs, rhd, M_Origin2Str(state->regData[rhs].o));
           state->regData[rhd].v  = state->regData[rhs].v;
           state->regData[rhd].o  = state->regData[rhs].o;
           break;
@@ -840,7 +840,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
       }
     }
     /* Format 9: PC-relative load
-     *  LDR Rd,[PC, #imm]
+     *  LDR Rd, [PC, #imm]
      */
     else if ((instr & 0xF800) == 0x4800) {
       uint8_t  rd    = (instr & 0x0700) >> 8;
@@ -887,7 +887,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
         uint8_t r;
 
         /* Load from memory: POP */
-        UnwPrintd2("POP {Rlist%s}\n", R ? ", PC" : "");
+        UnwPrintd2("POP {Rlist%s}\n", R ? ",PC" : "");
 
         for (r = 0; r < 8; r++) {
           if (rList & (0x1 << r)) {
@@ -902,7 +902,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
             state->regData[13].v += 4;
 
-            UnwPrintd3("  r%d = 0x%08x\n", r, state->regData[r].v);
+            UnwPrintd3("  r%d=0x%08x\n", r, state->regData[r].v);
           }
         }
 
@@ -949,11 +949,11 @@ UnwResult UnwStartThumb(UnwState * const state) {
         int8_t r;
 
         /* Store to memory: PUSH */
-        UnwPrintd2("PUSH {Rlist%s}", R ? ", LR" : "");
+        UnwPrintd2("PUSH {Rlist%s}", R ? ",LR" : "");
 
         /* Check if the LR is to be pushed */
         if (R) {
-          UnwPrintd3("\n  lr = 0x%08x\t; %s", state->regData[14].v, M_Origin2Str(state->regData[14].o));
+          UnwPrintd3("\n  lr=0x%08x\t; %s", state->regData[14].v, M_Origin2Str(state->regData[14].o));
 
           state->regData[13].v -= 4;
 
@@ -964,7 +964,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
 
         for (r = 7; r >= 0; r--) {
           if (rList & (0x1 << r)) {
-            UnwPrintd4("\n  r%d = 0x%08x\t; %s", r, state->regData[r].v, M_Origin2Str(state->regData[r].o));
+            UnwPrintd4("\n  r%d=0x%08x\t; %s", r, state->regData[r].v, M_Origin2Str(state->regData[r].o));
 
             state->regData[13].v -= 4;
 
@@ -986,7 +986,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
       /* Branch distance is twice that specified in the instruction. */
       branchValue *= 2;
 
-      UnwPrintd2("Bcond %d \n", branchValue);
+      UnwPrintd2("Bcond %d\n", branchValue);
 
       /* Only take the branch if a loop was detected */
       if (loopDetected) {
@@ -1015,7 +1015,7 @@ UnwResult UnwStartThumb(UnwState * const state) {
       /* Branch distance is twice that specified in the instruction. */
       branchValue *= 2;
 
-      UnwPrintd2("B %d \n", branchValue);
+      UnwPrintd2("B %d\n", branchValue);
 
       /* Update PC */
       state->regData[15].v += branchValue;
