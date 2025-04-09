@@ -3582,7 +3582,7 @@ void Draw_Tune_Menu() {
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
-      #if (ENABLED(SMOOTH_LIN_ADV))
+      #if ENABLED(SMOOTH_LIN_ADV)
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable.decimal);
       #endif
     #endif
@@ -3743,7 +3743,7 @@ void Draw_Motion_Menu() {
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
-      #if (ENABLED(SMOOTH_LIN_ADV))
+      #if ENABLED(SMOOTH_LIN_ADV)
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable.decimal);
       #endif
     #endif
