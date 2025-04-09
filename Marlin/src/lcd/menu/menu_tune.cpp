@@ -31,6 +31,7 @@
 #include "menu_item.h"
 #include "../../module/motion.h"
 #include "../../module/planner.h"
+#include "../../module/stepper.h"
 #include "../../module/temperature.h"
 #include "../../MarlinCore.h"
 
@@ -219,6 +220,11 @@ void menu_tune() {
       EXTRUDER_LOOP()
         EDIT_ITEM_N(float42_52, e, MSG_ADVANCE_K_E, &planner.extruder_advance_K[e], 0, 10);
     #endif
+  #endif
+  
+  #if (ENABLED(SMOOTH_LIN_ADV))
+    editable.decimal = Stepper::get_advance_tau();
+    EDIT_ITEM(float54, MSG_ADVANCE_TAU, &editable.decimal, 0.0f, 0.5f, []{ Stepper::set_advance_tau(editable.decimal); });
   #endif
 
   //

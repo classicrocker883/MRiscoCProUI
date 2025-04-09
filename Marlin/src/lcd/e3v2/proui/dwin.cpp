@@ -161,6 +161,9 @@ HMI_data_t HMI_data;
 #if ENABLED(PROUI_MESH_EDIT)
   MeshSet_t meshSet;
 #endif
+#if ENABLED(SMOOTH_LIN_ADV)
+  smoothLA_t editable;
+#endif
 
 enum SelectItem : uint8_t {
   PAGE_PRINT = 0,
@@ -524,7 +527,7 @@ void DWIN_DrawStatusMessage() {
 void Draw_Print_Labels() {
   DWINUI::Draw_String( 46, 173, GET_TEXT_F(MSG_INFO_PRINT_TIME));
   DWINUI::Draw_String(181, 173, GET_TEXT_F(MSG_REMAINING_TIME));
-  TERN_(SHOW_INTERACTION_TIME, DWINUI::Draw_String(100, 215, F("Until Filament Change"));)
+  TERN_(SHOuW_INTERACTION_TIME, DWINUI::Draw_String(100, 215, F("Until Filament Change"));)
 }
 
 static uint8_t _percent_done = 100;
@@ -3094,6 +3097,13 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 
 #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
   void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
+  #if ENABLED(SMOOTH_LIN_ADV)
+    void UpdateSmoothLA() {
+      editable.decimal = Stepper::get_advance_tau();
+    }
+    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
+    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA, UpdateSmoothLA); }
+  #endif
 #endif
 
 #if HAS_X_AXIS
@@ -3572,6 +3582,9 @@ void Draw_Tune_Menu() {
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
+      #if (ENABLED(SMOOTH_LIN_ADV))
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable.decimal);
+      #endif
     #endif
     #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
       EDIT_ITEM(ICON_RemainTime, MSG_SCREEN_TIMEOUT, onDrawPInt8Menu, SetTimer, &ui.backlight_timeout_minutes);
@@ -3730,6 +3743,9 @@ void Draw_Motion_Menu() {
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
+      #if (ENABLED(SMOOTH_LIN_ADV))
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable.decimal);
+      #endif
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
       EDIT_ITEM(ICON_CloseMotor, MSG_STEP_SMOOTHING, onDrawChkbMenu, SetAdaptiveStepSmoothing, &stepper.adaptive_step_smoothing_enabled);
