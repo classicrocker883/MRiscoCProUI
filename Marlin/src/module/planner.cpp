@@ -814,7 +814,7 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
     uint32_t cruise_rate = block->nominal_rate;
   #endif
 
-  // Steps for acceleration, plateau and deceleration
+  // Steps for acceleration, plateau, and deceleration
   int32_t plateau_steps = block->step_event_count,
           accelerate_steps = 0,
           decelerate_steps = 0;
@@ -825,9 +825,11 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
     inverse_accel = 1.0f / accel;
     const float half_inverse_accel = 0.5f * inverse_accel,
                 nominal_rate_sq = FLOAT_SQ(block->nominal_rate),
-                // Steps required for acceleration, deceleration to/from nominal rate
-                decelerate_steps_float = half_inverse_accel * (nominal_rate_sq - FLOAT_SQ(final_rate)),
-                accelerate_steps_float = half_inverse_accel * (nominal_rate_sq - FLOAT_SQ(initial_rate));
+                initial_rate_sq = FLOAT_SQ(initial_rate),
+                final_rate_sq = FLOAT_SQ(final_rate),
+                // Steps required for acceleration and deceleration to/from nominal rate
+                decelerate_steps_float = half_inverse_accel * (nominal_rate_sq - final_rate_sq),
+                accelerate_steps_float = half_inverse_accel * (nominal_rate_sq - initial_rate_sq);
     // Aims to fully reach nominal and final rates
     accelerate_steps = CEIL(accelerate_steps_float);
     decelerate_steps = CEIL(decelerate_steps_float);
@@ -853,12 +855,12 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
 
   #if ANY(S_CURVE_ACCELERATION, SMOOTH_LIN_ADV)
     const float rate_factor = inverse_accel * (STEPPER_TIMER_RATE);
-    // Jerk controlled speed requires to express speed versus time, NOT steps
+    // Jerk-controlled speed requires expressing speed versus time, NOT steps
     uint32_t acceleration_time = rate_factor * float(cruise_rate - initial_rate),
              deceleration_time = rate_factor * float(cruise_rate - final_rate);
   #endif
   #if ENABLED(S_CURVE_ACCELERATION)
-    // And to offload calculations from the ISR, we also calculate the inverse of those times here
+    // Offload calculations from the ISR by calculating the inverse of those times here
     uint32_t acceleration_time_inverse = get_period_inverse(acceleration_time),
              deceleration_time_inverse = get_period_inverse(deceleration_time);
   #endif
@@ -871,12 +873,12 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
     if (plateau_steps <= 0) block->cruise_time = 0;
     else block->cruise_time = (float)STEPPER_TIMER_RATE * (float)plateau_steps / (float)cruise_rate;
   #endif
-   #if ANY(S_CURVE_ACCELERATION, SMOOTH_LIN_ADV)
+  #if ANY(S_CURVE_ACCELERATION, SMOOTH_LIN_ADV)
     block->acceleration_time = acceleration_time;
     block->deceleration_time = deceleration_time;
     block->cruise_rate = cruise_rate;
   #endif
-   #if ENABLED(S_CURVE_ACCELERATION)
+  #if ENABLED(S_CURVE_ACCELERATION)
     block->acceleration_time_inverse = acceleration_time_inverse;
     block->deceleration_time_inverse = deceleration_time_inverse;
   #endif
@@ -888,6 +890,12 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
       block->max_adv_steps = cruise_rate * comp;
       block->final_adv_steps = final_rate * comp;
     }
+  #endif
+
+  #if ENABLED(LA_DEBUG)
+    SERIAL_ECHOLNPAIR("Accelerate Steps: ", accelerate_steps);
+    SERIAL_ECHOLNPAIR("Decelerate Steps: ", decelerate_steps);
+    SERIAL_ECHOLNPAIR("Plateau Steps: ", plateau_steps);
   #endif
 
   #if ENABLED(LASER_POWER_TRAP)
@@ -2509,9 +2517,14 @@ bool Planner::_populate_block(
 
   #if ENABLED(LIN_ADVANCE)
     #if ENABLED(SMOOTH_LIN_ADV)
-      block->use_advance_lead = use_advance_lead;
-      block->e_step_ratio = (block->direction_bits.e ? 1 : -1) *
-        float(block->steps.e) / block->step_event_count;
+      if (block->step_event_count != 0) { // Prevent division by zero
+        block->use_advance_lead = use_advance_lead;
+        block->e_step_ratio = (block->direction_bits.e ? 1 : -1) *
+          float(block->steps.e) / block->step_event_count;
+      }
+      else {
+        block->e_step_ratio = 0; // Default value if step_event_count is zero
+      }
     #else
       block->la_advance_rate = 0;
       block->la_scaling = 0;
@@ -2519,14 +2532,19 @@ bool Planner::_populate_block(
         // the Bresenham algorithm will convert this step rate into extruder steps
         block->la_advance_rate = extruder_advance_K[E_INDEX_N(extruder)] * block->acceleration_steps_per_s2;
 
-        // reduce LA ISR frequency by calling it only often enough to ensure that there will
+        // Ensure no overflow in advance rate calculation
+        if (block->la_advance_rate < 0) block->la_advance_rate = 0;
+
+        // Reduce LA ISR frequency by calling it only often enough to ensure that there will
         // never be more than four extruder steps per call
-        for (uint32_t dividend = block->steps.e << 1; dividend <= (block->step_event_count >> 2); dividend <<= 1)
+        for (uint32_t dividend = block->steps.e << 1; dividend <= (block->step_event_count >> 2) && dividend > 0; dividend <<= 1) {
           block->la_scaling++;
+        }
 
         #if ENABLED(LA_DEBUG)
-          if (block->la_advance_rate >> block->la_scaling > 10000)
+          if (block->la_advance_rate >> block->la_scaling > 10000) {
             SERIAL_ECHOLNPGM("eISR running at > 10kHz: ", block->la_advance_rate);
+          }
         #endif
       }
     #endif

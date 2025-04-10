@@ -1609,6 +1609,7 @@ void Stepper::isr() {
       // ^== Time critical. NOTHING besides pulse generation should be above here!!!
 
       if (!nextMainISR) nextMainISR = block_phase_isr(); // Manage acc/deceleration, get next block
+
       #if ENABLED(SMOOTH_LIN_ADV)
         if (!smoothLinAdvISR) smoothLinAdvISR = smooth_lin_adv_isr(); // Manage LA
       #endif
@@ -2024,11 +2025,11 @@ void Stepper::pulse_phase_isr() {
 
         #if ENABLED(LIN_ADVANCE)
           #if ENABLED(SMOOTH_LIN_ADV)
-            // extruder steps are exclusively managed by the LA isr
+            // Extruder steps are exclusively managed by the LA isr
             step_needed.e = false;
           #else
             if (la_active && step_needed.e) {
-              // don't actually step here, but do subtract movements steps
+              // Don't actually step here, but do subtract movements steps
               // from the linear advance step count
               step_needed.e = false;
               la_advance_steps--;
@@ -2923,6 +2924,7 @@ hal_timer_t Stepper::block_phase_isr() {
         }
       }
     }
+
     #if ENABLED(INPUT_SHAPING_E_SYNCH)
       constexpr uint16_t IS_COMPENSATION_BUFFER_SIZE =
         (SMOOTH_LIN_ADV_HZ / SHAPING_MIN_FREQ / 2.0f + 0.5f);
@@ -2936,33 +2938,25 @@ hal_timer_t Stepper::block_phase_isr() {
 
       void add_to_buffer(xy_float_t input) {
         delayBuffer.buffer[delayBuffer.index] = input;
-        delayBuffer.index++;
-        if (delayBuffer.index == IS_COMPENSATION_BUFFER_SIZE) {
-          delayBuffer.index = 0;
-        }
+        delayBuffer.index = (delayBuffer.index + 1) % IS_COMPENSATION_BUFFER_SIZE; // Wrap around
       }
 
       xy_float_t lookback(shaping_time_t t /* in stepper timer ticks */) {
         constexpr float ADV_TICKS_PER_STEPPER_TICKS = (float) SMOOTH_LIN_ADV_HZ / STEPPER_TIMER_RATE;
-        uint32_t delay_steps = t * ADV_TICKS_PER_STEPPER_TICKS  + 0.5f; // Convert time to steps
-        uint16_t past_i;
-        if (delay_steps>= IS_COMPENSATION_BUFFER_SIZE) {
-          // this means the buffer is too small. TODO: how to inform user?
-          past_i = delayBuffer.index;
+        uint32_t delay_steps = t * ADV_TICKS_PER_STEPPER_TICKS + 0.5f; // Convert time to steps
+        if (delay_steps >= IS_COMPENSATION_BUFFER_SIZE) {
+          // Buffer too small, return the most recent value
+          return delayBuffer.buffer[delayBuffer.index];
         }
-        else {
-          past_i = (delayBuffer.index + IS_COMPENSATION_BUFFER_SIZE - delay_steps);
-          if (past_i >= IS_COMPENSATION_BUFFER_SIZE) {
-            past_i -= IS_COMPENSATION_BUFFER_SIZE;
-          }
-        }
+        uint16_t past_i = (delayBuffer.index + IS_COMPENSATION_BUFFER_SIZE - delay_steps) % IS_COMPENSATION_BUFFER_SIZE;
         return delayBuffer.buffer[past_i];
       }
     #endif
 
     float lookahead(uint32_t t) {
-      for (uint8_t i = 0; block_t * block = Planner::get_future_block(i); i++) {
+      for (uint8_t i = 0; block_t *block = Planner::get_future_block(i); i++) {
         if (block->is_sync()) continue;
+
         if (t <= block->acceleration_time) {
           if (!block->use_advance_lead) return 0.0f;
           uint32_t rate = STEP_MULTIPLY(t, block->acceleration_rate) + block->initial_rate;
@@ -2989,6 +2983,8 @@ hal_timer_t Stepper::block_phase_isr() {
           return rate * block->e_step_ratio;
         }
         t -= block->deceleration_time;
+
+        if (t == 0) break; // Early exit if no time remains
       }
       return 0.0f;
     };
@@ -3002,6 +2998,7 @@ hal_timer_t Stepper::block_phase_isr() {
       else {
         curr_step_rate = 0;
       }
+
       static float last_target_adv_steps = 0;
       const float dt_inv = SMOOTH_LIN_ADV_HZ;
       float la_step_rate = (target_adv_steps - last_target_adv_steps) * dt_inv;
@@ -3015,11 +3012,13 @@ hal_timer_t Stepper::block_phase_isr() {
           (1 - extruder_advance_ALPHA) * soothed_values[i];
         soothed_values[i] = la_step_rate;
       }
+
       float planned_step_rate = 0;
       if (current_block) {
         planned_step_rate = curr_step_rate * current_block->e_step_ratio;
       }
       float total_step_rate = la_step_rate + planned_step_rate;
+
       #if ENABLED(INPUT_SHAPING_E_SYNCH)
         xy_float_t pre_shaping_rate = xy_float_t({0, 0}),
                    first_pulse_rate = xy_float_t({0, 0});

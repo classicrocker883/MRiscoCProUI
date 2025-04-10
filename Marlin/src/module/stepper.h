@@ -352,16 +352,35 @@ class Stepper {
     #endif
 
     #if ENABLED(SMOOTH_LIN_ADV)
+      /**
+       * Set the advance tau value and calculate related parameters.
+       * @param tau The advance time constant (must be > 0).
+       */
       static void set_advance_tau(float tau) {
+        // Validate tau to avoid division by zero or negative values
+        if (tau <= 0) {
+          SERIAL_ECHOLN("Error: tau must be greater than 0.");
+          return;
+        }
+
         extruder_advance_TAU = tau;
         extruder_advance_TAU_TICKS = tau * STEPPER_TIMER_RATE;
-        // α=1−exp(−dt/τ)
-        extruder_advance_ALPHA = 1 - expf(- SMOOTH_LIN_ADV_INTERVAL * SMOOTH_LIN_ADV_EXP_ORDER / extruder_advance_TAU_TICKS);
+
+        // Calculate α = 1 − exp(−dt / τ)
+        const float dt = SMOOTH_LIN_ADV_INTERVAL * SMOOTH_LIN_ADV_EXP_ORDER;
+        const float exponent = -dt / extruder_advance_TAU_TICKS;
+        extruder_advance_ALPHA = 1 - expf(exponent);
       }
+
+      /**
+       * Get the current advance tau value.
+       * @return The advance time constant.
+       */
       static float get_advance_tau() {
         return extruder_advance_TAU;
       }
     #endif
+
   private:
 
     static block_t* current_block;        // A pointer to the block currently being traced
@@ -448,24 +467,24 @@ class Stepper {
     #if ENABLED(LIN_ADVANCE)
       static constexpr hal_timer_t LA_ADV_NEVER = HAL_TIMER_TYPE_MAX;
       static hal_timer_t nextAdvanceISR,
-                         la_interval;      // Interval between ISR calls for LA
+                         la_interval;    // Interval between ISR calls for LA
       #if ENABLED(SMOOTH_LIN_ADV)
         static uint32_t curr_step_rate,  // Current tick relative to block start
                         curr_timer_tick; // Current motion step rate
         static void set_la_interval(int32_t rate);
       #else
-        static int32_t     la_delta_error,   // Analogue of delta_error.e for E steps in LA ISR
-                           la_dividend,      // Analogue of advance_dividend.e for E steps in LA ISR
-                           la_advance_steps; // Count of steps added to increase nozzle pressure
-        static bool        la_active;        // Whether linear advance is used on the present segment.
+        static int32_t la_delta_error,   // Analogue of delta_error.e for E steps in LA ISR
+                       la_dividend,      // Analogue of advance_dividend.e for E steps in LA ISR
+                       la_advance_steps; // Count of steps added to increase nozzle pressure
+        static bool    la_active;        // Whether linear advance is used on the present segment.
       #endif
 
       #if ENABLED(SMOOTH_LIN_ADV)
-        static float  extruder_advance_TAU,       // The smoothing time, which is also the lookahead
-                                                  // time of the smoother.
-                      extruder_advance_TAU_TICKS, // Same as extruder_advance_TAU but in in stepper timer ticks.
-                      extruder_advance_ALPHA;     // The smoothing factor of each stage of the high
-                                                  // order exponential smoothing filter (calculated from tau).
+        static float extruder_advance_TAU,       // The smoothing time, which is also the lookahead
+                                                 // time of the smoother.
+                     extruder_advance_TAU_TICKS, // Same as extruder_advance_TAU but in in stepper timer ticks.
+                     extruder_advance_ALPHA;     // The smoothing factor of each stage of the high
+                                                 // order exponential smoothing filter (calculated from tau).
       #endif
     #endif
 

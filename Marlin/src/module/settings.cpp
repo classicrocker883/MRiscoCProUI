@@ -1647,11 +1647,13 @@ void MarlinSettings::postprocess() {
         dummyf = 0;
         for (uint8_t q = DISTINCT_E; q--;) EEPROM_WRITE(dummyf);
       #endif
-      
+    }
+
+    {
       _FIELD_TEST(stepper_extruder_advance_TAU);
 
       #if ENABLED(SMOOTH_LIN_ADV)
-        EEPROM_WRITE(Stepper::get_advance_tau());
+        EEPROM_WRITE(stepper.extruder_advance_TAU);
       #else
         EEPROM_WRITE(0);
       #endif
@@ -2802,13 +2804,15 @@ void MarlinSettings::postprocess() {
           if (!validating)
             COPY(planner.extruder_advance_K, extruder_advance_K);
         #endif
-        
+      }
+
+      {
         #if ENABLED(SMOOTH_LIN_ADV)
+          float extruder_advance_TAU;
           _FIELD_TEST(stepper_extruder_advance_TAU);
-          float tau;
-          EEPROM_READ(tau);
+          EEPROM_READ(extruder_advance_TAU);
           if (!validating) {
-            Stepper::set_advance_tau(tau);
+            Stepper::set_advance_tau(extruder_advance_TAU);
           }
         #endif
       }
