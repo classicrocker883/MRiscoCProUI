@@ -1653,7 +1653,7 @@ void MarlinSettings::postprocess() {
       _FIELD_TEST(stepper_extruder_advance_TAU);
 
       #if ENABLED(SMOOTH_LIN_ADV)
-        EEPROM_WRITE(stepper.extruder_advance_TAU);
+        EEPROM_WRITE(Stepper::get_advance_tau());
       #else
         EEPROM_WRITE(0);
       #endif
