@@ -1211,9 +1211,9 @@
  *
  * Tune with M593 D<factor> F<frequency>
  */
-//#define INPUT_SHAPING_X
-//#define INPUT_SHAPING_Y
-//#define INPUT_SHAPING_Z
+#define INPUT_SHAPING_X
+#define INPUT_SHAPING_Y
+#define INPUT_SHAPING_Z
 #if ANY(INPUT_SHAPING_X, INPUT_SHAPING_Y, INPUT_SHAPING_Z)
   #if ENABLED(INPUT_SHAPING_X)
     #define SHAPING_FREQ_X  40.0        // (Hz) The default dominant resonant frequency on the X axis.
@@ -2376,7 +2376,9 @@
                                    // The lower the better until stepper skipps
                                    // Higher k and higher print accelerations may require larger tau to avoid skipping steps
     #define SMOOTH_LIN_ADV_HZ 5000 // How often to update extruder speed
-    //#define INPUT_SHAPING_E_SYNCH// Synchronize the extruder shaped xy axes (increrses precision)
+    #if ANY(INPUT_SHAPING_X, INPUT_SHAPING_Y, INPUT_SHAPING_Z)
+      #define INPUT_SHAPING_E_SYNCH// Synchronize the extruder shaped xy axes (increrses precision)
+    #endif
   #endif
 #endif
 
