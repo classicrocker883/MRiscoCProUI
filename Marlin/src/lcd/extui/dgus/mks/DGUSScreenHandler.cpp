@@ -58,29 +58,33 @@
 bool DGUSAutoTurnOff = false;
 MKS_Language mks_language_index; // Initialized by settings.load
 
-#if 0
-void DGUSScreenHandlerMKS::sendinfoscreen_ch(const uint16_t *line1, const uint16_t *line2, const uint16_t *line3, const uint16_t *line4) {
-  dgus.writeStringVar(VP_MSGSTR1, line1, 32);
-  dgus.writeStringVar(VP_MSGSTR2, line2, 32);
-  dgus.writeStringVar(VP_MSGSTR3, line3, 32);
-  dgus.writeStringVar(VP_MSGSTR4, line4, 32);
-}
-
-void DGUSScreenHandlerMKS::sendinfoscreen_en(PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4) {
+void DGUSScreenHandlerMKS::sendInfoScreen(const uint16_t *line1, const uint16_t *line2, const uint16_t *line3, const uint16_t *line4) {
   dgus.writeStringVar(VP_MSGSTR1, line1);
   dgus.writeStringVar(VP_MSGSTR2, line2);
   dgus.writeStringVar(VP_MSGSTR3, line3);
   dgus.writeStringVar(VP_MSGSTR4, line4);
 }
 
-void DGUSScreenHandlerMKS::sendInfoScreen(const void *line1, const void *line2, const void *line3, const void *line4, uint16_t language) {
-  if (language == MKS_English)
-    DGUSScreenHandlerMKS::sendinfoscreen_en((char *)line1, (char *)line2, (char *)line3, (char *)line4);
-  else if (language == MKS_SimpleChinese)
-    DGUSScreenHandlerMKS::sendinfoscreen_ch((uint16_t *)line1, (uint16_t *)line2, (uint16_t *)line3, (uint16_t *)line4);
+void DGUSScreenHandlerMKS::sendInfoScreen(const char *line1, const char *line2, const char *line3, const char *line4) {
+  dgus.writeStringVar(VP_MSGSTR1, line1);
+  dgus.writeStringVar(VP_MSGSTR2, line2);
+  dgus.writeStringVar(VP_MSGSTR3, line3);
+  dgus.writeStringVar(VP_MSGSTR4, line4);
 }
 
-#endif
+void DGUSScreenHandlerMKS::sendInfoScreen_P(PGM_P const line1, PGM_P const line2, PGM_P const line3, PGM_P const line4) {
+  dgus.writeStringVar_P(VP_MSGSTR1, line1);
+  dgus.writeStringVar_P(VP_MSGSTR2, line2);
+  dgus.writeStringVar_P(VP_MSGSTR3, line3);
+  dgus.writeStringVar_P(VP_MSGSTR4, line4);
+}
+
+void DGUSScreenHandlerMKS::sendInfoScreenMKS(const void *line1, const void *line2, const void *line3, const void *line4, const MKS_Language language) {
+  if (language == MKS_English)
+    DGUSScreenHandlerMKS::sendInfoScreen((char *)line1, (char *)line2, (char *)line3, (char *)line4);
+  else if (language == MKS_SimpleChinese)
+    DGUSScreenHandlerMKS::sendInfoScreen((uint16_t *)line1, (uint16_t *)line2, (uint16_t *)line3, (uint16_t *)line4);
+}
 
 void DGUSScreenHandlerMKS::sendFanToDisplay(DGUS_VP_Variable &var) {
   if (var.memadr) {
@@ -130,18 +134,18 @@ void DGUSScreenHandlerMKS::sendStringToDisplay_Language(DGUS_VP_Variable &var) {
   }
 }
 
-void DGUSScreenHandlerMKS::sendTMCStepValue(DGUS_VP_Variable &var) {
+void DGUSScreenHandlerMKS::sendTMCSensValue(DGUS_VP_Variable &var) {
   #if ENABLED(SENSORLESS_HOMING)
     #if X_HAS_STEALTHCHOP
-      tmc_step.x = stepperX.homing_threshold();
+      tmc_stall_sens.x = stepperX.homing_threshold();
       dgus.writeVariable(var.VP, *(int16_t*)var.memadr);
     #endif
     #if Y_HAS_STEALTHCHOP
-      tmc_step.y = stepperY.homing_threshold();
+      tmc_stall_sens.y = stepperY.homing_threshold();
       dgus.writeVariable(var.VP, *(int16_t*)var.memadr);
     #endif
     #if Z_HAS_STEALTHCHOP
-      tmc_step.z = stepperZ.homing_threshold();
+      tmc_stall_sens.z = stepperZ.homing_threshold();
       dgus.writeVariable(var.VP, *(int16_t*)var.memadr);
     #endif
   #endif
@@ -475,10 +479,8 @@ void DGUSScreenHandlerMKS::meshLevel(DGUS_VP_Variable &var, void *val_ptr) {
       case 0:
         offset = mesh_adj_distance;
         integer = offset; // get int
-        Deci = (offset * 10);
-        Deci = Deci % 10;
-        Deci2 = offset * 100;
-        Deci2 = Deci2 % 10;
+        Deci = (offset * 10) % 10;
+        Deci2 = (offset * 100) % 10;
         soft_endstop._enabled = false;
         queue.enqueue_now(F("G91"));
         snprintf_P(cmd_buf, 30, PSTR("G1 Z%d.%d%d"), integer, Deci, Deci2);
@@ -489,10 +491,8 @@ void DGUSScreenHandlerMKS::meshLevel(DGUS_VP_Variable &var, void *val_ptr) {
       case 1:
         offset = mesh_adj_distance;
         integer = offset;       // get int
-        Deci = (offset * 10);
-        Deci = Deci % 10;
-        Deci2 = offset * 100;
-        Deci2 = Deci2 % 10;
+        Deci = (offset * 10) % 10;
+        Deci2 = (offset * 100) % 10;
         soft_endstop._enabled = false;
         queue.enqueue_now(F("G91"));
         snprintf_P(cmd_buf, 30, PSTR("G1 Z-%d.%d%d"), integer, Deci, Deci2);
@@ -617,98 +617,90 @@ void DGUSScreenHandlerMKS::manualAssistLeveling(DGUS_VP_Variable &var, void *val
       break;
   }
 
-  if (WITHIN(point_val, 0x0002, 0x0005)) {
-    //queue.enqueue_now(F("G28Z"));
+  if (WITHIN(point_val, 0x0002, 0x0005))
     queue.enqueue_now(F("G1Z-10"));
-  }
 }
 
-#define mks_min(a, b) ((a) < (b)) ? (a) : (b)
-#define mks_max(a, b) ((a) > (b)) ? (a) : (b)
-void DGUSScreenHandlerMKS::tmcChangeConfig(DGUS_VP_Variable &var, void *val_ptr) {
-  #if ANY(HAS_TRINAMIC_CONFIG, HAS_STEALTHCHOP)
+#if ANY(HAS_TRINAMIC_CONFIG, HAS_STEALTHCHOP)
+
+  void DGUSScreenHandlerMKS::tmcChangeConfig(DGUS_VP_Variable &var, void *val_ptr) {
     const uint16_t tmc_val = BE16_P(val_ptr);
-  #endif
+    switch (var.VP) {
+      case VP_TMC_X_SENS:
+        #if USE_SENSORLESS && X_HAS_STEALTHCHOP
+          stepperX.homing_threshold(_MIN(tmc_val, 255));
+          settings.save();
+          tmc_stall_sens.x = stepperX.homing_threshold();
+        #endif
+        break;
+      case VP_TMC_Y_SENS:
+        #if USE_SENSORLESS && Y_HAS_STEALTHCHOP
+          stepperY.homing_threshold(_MIN(tmc_val, 255));
+          settings.save();
+          tmc_stall_sens.y = stepperY.homing_threshold();
+        #endif
+        break;
+      case VP_TMC_Z_SENS:
+        #if USE_SENSORLESS && Z_HAS_STEALTHCHOP
+          stepperZ.homing_threshold(_MIN(tmc_val, 255));
+          settings.save();
+          tmc_stall_sens.z = stepperZ.homing_threshold();
+        #endif
+        break;
+      case VP_TMC_X_Current:
+        #if X_IS_TRINAMIC
+          stepperX.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
+      case VP_TMC_X1_Current:
+        #if X2_IS_TRINAMIC
+          stepperX2.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
+      case VP_TMC_Y_Current:
+        #if Y_IS_TRINAMIC
+          stepperY.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
+      case VP_TMC_Y1_Current:
+        #if Y2_IS_TRINAMIC
+          stepperY2.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
+      case VP_TMC_Z_Current:
+        #if Z_IS_TRINAMIC
+          stepperZ.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
+      case VP_TMC_Z1_Current:
+        #if Z2_IS_TRINAMIC
+          stepperZ2.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
+      case VP_TMC_E0_Current:
+        #if E0_IS_TRINAMIC
+          stepperE0.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
+      case VP_TMC_E1_Current:
+        #if E1_IS_TRINAMIC
+          stepperE1.rms_current(tmc_val);
+          settings.save();
+        #endif
+        break;
 
-  switch (var.VP) {
-    case VP_TMC_X_STEP:
-      #if USE_SENSORLESS && X_HAS_STEALTHCHOP
-        stepperX.homing_threshold(mks_min(tmc_val, 255));
-        settings.save();
-        //tmc_step.x = stepperX.homing_threshold();
-      #endif
-      break;
-    case VP_TMC_Y_STEP:
-      #if USE_SENSORLESS && Y_HAS_STEALTHCHOP
-        stepperY.homing_threshold(mks_min(tmc_val, 255));
-        settings.save();
-        //tmc_step.y = stepperY.homing_threshold();
-      #endif
-      break;
-    case VP_TMC_Z_STEP:
-      #if USE_SENSORLESS && Z_HAS_STEALTHCHOP
-        stepperZ.homing_threshold(mks_min(tmc_val, 255));
-        settings.save();
-        //tmc_step.z = stepperZ.homing_threshold();
-      #endif
-      break;
-    case VP_TMC_X_Current:
-      #if X_IS_TRINAMIC
-        stepperX.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-    case VP_TMC_X1_Current:
-      #if X2_IS_TRINAMIC
-        stepperX2.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-    case VP_TMC_Y_Current:
-      #if Y_IS_TRINAMIC
-        stepperY.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-    case VP_TMC_Y1_Current:
-      #if Y2_IS_TRINAMIC
-        stepperY2.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-    case VP_TMC_Z_Current:
-      #if Z_IS_TRINAMIC
-        stepperZ.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-    case VP_TMC_Z1_Current:
-      #if Z2_IS_TRINAMIC
-        stepperZ2.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-    case VP_TMC_E0_Current:
-      #if E0_IS_TRINAMIC
-        stepperE0.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-    case VP_TMC_E1_Current:
-      #if E1_IS_TRINAMIC
-        stepperE1.rms_current(tmc_val);
-        settings.save();
-      #endif
-      break;
-
-    default: break;
+      default: break;
+    }
   }
-  #if USE_SENSORLESS
-    TERN_(X_HAS_STEALTHCHOP, tmc_step.x = stepperX.homing_threshold());
-    TERN_(Y_HAS_STEALTHCHOP, tmc_step.y = stepperY.homing_threshold());
-    TERN_(Z_HAS_STEALTHCHOP, tmc_step.z = stepperZ.homing_threshold());
-  #endif
-}
+
+#endif // HAS_TRINAMIC_CONFIG || HAS_STEALTHCHOP
 
 void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
   int16_t movevalue = BE16_P(val_ptr);
@@ -721,11 +713,10 @@ void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
   if (!print_job_timer.isPaused() && !queue.ring_buffer.empty())
     return;
 
-  char axiscode;
-  uint16_t speed = manual_feedrate_mm_m.x; // Default feedrate for manual moves
+  char axiscode = '\0';
+  uint16_t speed = 0;
 
   switch (var.VP) { // switch X Y Z or Home
-    default: return;
     #if HAS_X_AXIS
       case VP_MOVE_X:
         if (!ExtUI::canMove(ExtUI::axis_t::X)) return;
@@ -763,13 +754,8 @@ void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
     #endif
   }
 
-  if (movevalue != 0 && movevalue != 5) { // get move distance
-    switch (movevalue) {
-      case 0x0001: movevalue =  manualMoveStep; break;
-      case 0x0002: movevalue = -manualMoveStep; break;
-      default:     movevalue = 0; break;
-    }
-  }
+  if WITHIN(movevalue, 1, 4)  // get move distance
+    movevalue == 1 ? movevalue =  manualMoveStep : movevalue = -manualMoveStep;
 
   if (!movevalue) {
     queue.enqueue_one_now(TS(F("G28"), axiscode));
@@ -786,21 +772,16 @@ void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
   // Movement
   const bool old_relative_mode = relative_mode;
   if (!relative_mode) queue.enqueue_now(F("G91"));
+
+  // TODO: Use MString / TS() ...
+
   char buf[32]; // G1 X9999.99 F12345
-  //const uint16_t backup_speed = MMS_TO_MMM(feedrate_mm_s);
   char sign[] = "\0";
   int16_t value = movevalue / 100;
   if (movevalue < 0) { value = -value; sign[0] = '-'; }
   const int16_t fraction = ABS(movevalue) % 100;
   snprintf_P(buf, 32, PSTR("G0 %c%s%d.%02d F%d"), axiscode, sign, value, fraction, speed);
   queue.enqueue_one_now(buf);
-
-  //if (backup_speed != speed) {
-  //  snprintf_P(buf, 32, PSTR("G0 F%d"), backup_speed);
-  //  queue.enqueue_one_now(buf);
-  //}
-
-  //while (!enqueue_and_echo_command(buf)) idle();
 
   if (!old_relative_mode) queue.enqueue_now(F("G90"));
 
@@ -826,36 +807,18 @@ void DGUSScreenHandlerMKS::handleChangeLevelPoint(DGUS_VP_Variable &var, void *v
 #if ENABLED(EDITABLE_STEPS_PER_UNIT)
 
   void DGUSScreenHandlerMKS::handleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) {
-    const uint16_t raw = BE16_P(val_ptr);
-    const float value = (float)raw;
-
-    ExtUI::axis_t axis;
+    const float value = (float)BE16_P(val_ptr);
     switch (var.VP) {
-      default: return;
-      case VP_X_STEP_PER_MM: axis = ExtUI::axis_t::X; break;
-      case VP_Y_STEP_PER_MM: axis = ExtUI::axis_t::Y; break;
-      case VP_Z_STEP_PER_MM: axis = ExtUI::axis_t::Z; break;
-    }
-    ExtUI::setAxisSteps_per_mm(value, axis);
-    settings.save();
-    skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
-  }
-
-  void DGUSScreenHandlerMKS::handleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr) {
-    const uint16_t raw = BE16_P(val_ptr);
-    const float value = (float)raw;
-
-    ExtUI::extruder_t extruder;
-    switch (var.VP) {
-      default: return;
+      case VP_X_STEP_PER_MM: ExtUI::setAxisSteps_per_mm(value, ExtUI::axis_t::X); break;
+      case VP_Y_STEP_PER_MM: ExtUI::setAxisSteps_per_mm(value, ExtUI::axis_t::Y); break;
+      case VP_Z_STEP_PER_MM: ExtUI::setAxisSteps_per_mm(value, ExtUI::axis_t::Z); break;
       #if HAS_HOTEND
-        case VP_E0_STEP_PER_MM: extruder = ExtUI::extruder_t::E0; break;
+        case VP_E0_STEP_PER_MM: ExtUI::setAxisSteps_per_mm(value, ExtUI::extruder_t::E0); break;
       #endif
       #if HAS_MULTI_HOTEND
-        case VP_E1_STEP_PER_MM: extruder = ExtUI::extruder_t::E1; break;
+        case VP_E1_STEP_PER_MM: ExtUI::setAxisSteps_per_mm(value, ExtUI::extruder_t::E1); break;
       #endif
     }
-    ExtUI::setAxisSteps_per_mm(value, extruder);
     settings.save();
     skipVP = var.VP; // Don't overwrite value the next update time as the display might autoincrement in parallel
   }
@@ -863,70 +826,36 @@ void DGUSScreenHandlerMKS::handleChangeLevelPoint(DGUS_VP_Variable &var, void *v
 #endif // EDITABLE_STEPS_PER_UNIT
 
 void DGUSScreenHandlerMKS::handleMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr) {
-  const uint16_t raw = BE16_P(val_ptr);
-  const float value = (float)raw;
-
-  ExtUI::axis_t axis;
+  const float value = (float)BE16_P(val_ptr);
   switch (var.VP) {
-    case VP_X_MAX_SPEED: axis = ExtUI::axis_t::X; break;
-    case VP_Y_MAX_SPEED: axis = ExtUI::axis_t::Y; break;
-    case VP_Z_MAX_SPEED: axis = ExtUI::axis_t::Z; break;
-    default: return;
-  }
-  ExtUI::setAxisMaxFeedrate_mm_s(value, axis);
-  settings.save();
-  skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
-}
-
-void DGUSScreenHandlerMKS::handleExtruderMaxSpeedChange(DGUS_VP_Variable &var, void *val_ptr) {
-  const uint16_t raw = BE16_P(val_ptr);
-  const float value = (float)raw;
-
-  ExtUI::extruder_t extruder;
-  switch (var.VP) {
-    default: return;
+    case VP_X_MAX_SPEED: ExtUI::setAxisMaxFeedrate_mm_s(value, ExtUI::axis_t::X); break;
+    case VP_Y_MAX_SPEED: ExtUI::setAxisMaxFeedrate_mm_s(value, ExtUI::axis_t::Y); break;
+    case VP_Z_MAX_SPEED: ExtUI::setAxisMaxFeedrate_mm_s(value, ExtUI::axis_t::Z); break;
     #if HAS_HOTEND
-      case VP_E0_MAX_SPEED: extruder = ExtUI::extruder_t::E0; break;
+      case VP_E0_MAX_SPEED: ExtUI::setAxisMaxFeedrate_mm_s(value, ExtUI::extruder_t::E0); break;
     #endif
     #if HAS_MULTI_HOTEND
-      case VP_E1_MAX_SPEED: extruder = ExtUI::extruder_t::E1; break;
+      case VP_E1_MAX_SPEED: ExtUI::setAxisMaxFeedrate_mm_s(value, ExtUI::extruder_t::E1); break;
     #endif
   }
-  ExtUI::setAxisMaxFeedrate_mm_s(value, extruder);
   settings.save();
   skipVP = var.VP; // Don't overwrite value the next update time as the display might autoincrement in parallel
 }
 
 void DGUSScreenHandlerMKS::handleMaxAccChange(DGUS_VP_Variable &var, void *val_ptr) {
-  const uint16_t raw = BE16_P(val_ptr);
-  const float value = (float)raw;
-
-  ExtUI::axis_t axis;
+  const float value = (float)BE16_P(val_ptr);
   switch (var.VP) {
     default: return;
-    case VP_X_ACC_MAX_SPEED: axis = ExtUI::axis_t::X;  break;
-    case VP_Y_ACC_MAX_SPEED: axis = ExtUI::axis_t::Y;  break;
-    case VP_Z_ACC_MAX_SPEED: axis = ExtUI::axis_t::Z;  break;
-  }
-  ExtUI::setAxisMaxAcceleration_mm_s2(value, axis);
-  settings.save();
-  skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
-}
-
-void DGUSScreenHandlerMKS::handleExtruderAccChange(DGUS_VP_Variable &var, void *val_ptr) {
-  uint16_t raw = BE16_P(val_ptr);
-  float value = (float)raw;
-  ExtUI::extruder_t extruder;
-  switch (var.VP) {
-    default: return;
+    case VP_X_MAX_ACC: ExtUI::setAxisMaxAcceleration_mm_s2(value, ExtUI::axis_t::X); break;
+    case VP_Y_MAX_ACC: ExtUI::setAxisMaxAcceleration_mm_s2(value, ExtUI::axis_t::Y); break;
+    case VP_Z_MAX_ACC: ExtUI::setAxisMaxAcceleration_mm_s2(value, ExtUI::axis_t::Z); break;
     #if HAS_HOTEND
-      case VP_E0_ACC_MAX_SPEED: extruder = ExtUI::extruder_t::E0; settings.load(); break;
+      case VP_E0_MAX_ACC: ExtUI::setAxisMaxAcceleration_mm_s2(value, ExtUI::extruder_t::E0); break;
     #endif
     #if HAS_MULTI_HOTEND
-      case VP_E1_ACC_MAX_SPEED: extruder = ExtUI::extruder_t::E1; settings.load(); break;
+      case VP_E1_MAX_ACC: ExtUI::setAxisMaxAcceleration_mm_s2(value, ExtUI::extruder_t::E1); break;
     #endif
   }
-  ExtUI::setAxisMaxAcceleration_mm_s2(value, extruder);
   settings.save();
   skipVP = var.VP; // Don't overwrite value the next update time as the display might autoincrement in parallel
 }
@@ -994,37 +923,14 @@ void DGUSScreenHandlerMKS::handleAccChange(DGUS_VP_Variable &var, void *val_ptr)
 #if ENABLED(BABYSTEPPING)
 
   void DGUSScreenHandler::handleLiveAdjustZ(DGUS_VP_Variable &var, void *val_ptr) {
-    const float step = ZOffset_distance;
-
-    const uint16_t flag = BE16_P(val_ptr);
-    switch (flag) {
+    switch (BE16_P(val_ptr)) {
       case 0:
-        if (step == 0.01)
-          queue.inject(F("M290 Z-0.01"));
-        else if (step == 0.1)
-          queue.inject(F("M290 Z-0.1"));
-        else if (step == 0.5)
-          queue.inject(F("M290 Z-0.5"));
-        else if (step == 1)
-          queue.inject(F("M290 Z-1"));
-        else
-          queue.inject(F("M290 Z-0.01"));
-
+        queue.inject(TS(F("M290 Z"), -ZOffset_distance));
         z_offset_add -= ZOffset_distance;
         break;
 
       case 1:
-        if (step == 0.01)
-          queue.inject(F("M290 Z0.01"));
-        else if (step == 0.1)
-          queue.inject(F("M290 Z0.1"));
-        else if (step == 0.5)
-          queue.inject(F("M290 Z0.5"));
-        else if (step == 1)
-          queue.inject(F("M290 Z1"));
-        else
-          queue.inject(F("M290 Z-0.01"));
-
+        queue.inject(TS(F("M290 Z"), ZOffset_distance));
         z_offset_add += ZOffset_distance;
         break;
 
@@ -1084,15 +990,16 @@ void DGUSScreenHandlerMKS::filamentLoadUnload(DGUS_VP_Variable &var, void *val_p
 
   #if ALL(HAS_HOTEND, PREVENT_COLD_EXTRUSION)
     if (hotend_too_cold) {
-      if (thermalManager.targetTooColdToExtrude(hotend_too_cold - 1)) thermalManager.setTargetHotend(thermalManager.extrude_min_temp, hotend_too_cold - 1);
-      sendInfoScreen(F("NOTICE"), nullptr, F("Please wait."), F("Nozzle heating!"));
+      if (thermalManager.targetTooColdToExtrude(hotend_too_cold - 1))
+        thermalManager.setTargetHotend(thermalManager.extrude_min_temp, hotend_too_cold - 1);
+      sendInfoScreenMKS(F("NOTICE"), nullptr, F("Please wait."), F("Nozzle heating!"), MKS_English);
       setupConfirmAction(nullptr);
       gotoScreen(DGUS_SCREEN_POPUP);
     }
   #endif
 
   if (swap_tool) {
-    char buf[30];
+    char buf[30]; // TODO: Use MString / TS()
     snprintf_P(buf, 30,
       #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
         PSTR("M1002T%cE%dF%d"), char('0' + swap_tool - 1)
@@ -1112,7 +1019,7 @@ void DGUSScreenHandlerMKS::filamentLoadUnload(DGUS_VP_Variable &var, void *val_p
 void GcodeSuite::M1002() {
   #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
   {
-    char buf[3];
+    char buf[3]; // TODO: Use MString / TS()
     sprintf_P(buf, PSTR("T%c"), char('0' + parser.intval('T')));
     process_subcommands_now(buf);
   }
@@ -1122,7 +1029,7 @@ void GcodeSuite::M1002() {
   set_e_relative(); // M83
 
   {
-    char buf[20];
+    char buf[20]; // TODO: Use MString / TS()
     snprintf_P(buf, 20, PSTR("G1E%dF%d"), parser.intval('E'), parser.intval('F'));
     process_subcommands_now(buf);
   }
@@ -1264,9 +1171,9 @@ bool DGUSScreenHandlerMKS::loop() {
     if (!booted && ELAPSED(ms, TERN(USE_MKS_GREEN_UI, 1000, BOOTSCREEN_TIMEOUT))) {
       booted = true;
       #if USE_SENSORLESS
-        TERN_(X_HAS_STEALTHCHOP, tmc_step.x = stepperX.homing_threshold());
-        TERN_(Y_HAS_STEALTHCHOP, tmc_step.y = stepperY.homing_threshold());
-        TERN_(Z_HAS_STEALTHCHOP, tmc_step.z = stepperZ.homing_threshold());
+        TERN_(X_HAS_STEALTHCHOP, tmc_stall_sens.x = stepperX.homing_threshold());
+        TERN_(Y_HAS_STEALTHCHOP, tmc_stall_sens.y = stepperY.homing_threshold());
+        TERN_(Z_HAS_STEALTHCHOP, tmc_stall_sens.z = stepperZ.homing_threshold());
       #endif
 
       #if ENABLED(PREVENT_COLD_EXTRUSION)
@@ -1328,7 +1235,7 @@ void DGUSScreenHandlerMKS::runoutIdle() {
         queue.inject(F("M25"));
         gotoScreen(MKSLCD_SCREEN_PAUSE);
 
-        sendInfoScreen(F("NOTICE"), nullptr, F("Please change filament!"), nullptr);
+        sendInfoScreenMKS(F("NOTICE"), nullptr, F("Please change filament!"), nullptr, MKS_English);
         //setupConfirmAction(nullptr);
         gotoScreen(DGUS_SCREEN_POPUP);
         break;
@@ -1383,6 +1290,9 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       const char TemperatureConfig_buf_en[] = "Temperature";
       dgus.writeStringVar(VP_TemperatureConfig_Dis, TemperatureConfig_buf_en);
 
+      const char Probe_Offset_buf_en[] = "Probe Offset";
+      dgus.writeStringVar(VP_Probe_Offset_Dis, Probe_Offset_buf_en);
+
       const char Advance_buf_en[] = "Advanced";
       dgus.writeStringVar(VP_Advance_Dis, Advance_buf_en);
 
@@ -1402,14 +1312,14 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       ;
       dgus.writeStringVar(VP_Level_Dis, Level_buf_en);
 
-      const char MotorPulse_buf_en[] = "MotorPulse";
-      dgus.writeStringVar(VP_MotorPulse_Dis, MotorPulse_buf_en);
+      const char AxisRes_buf_en[] = "Axis Resolution";
+      dgus.writeStringVar(VP_AxisRes_Dis, AxisRes_buf_en);
 
-      const char MotorMaxSpeed_buf_en[] = "MotorMaxSpeed";
-      dgus.writeStringVar(VP_MotorMaxSpeed_Dis, MotorMaxSpeed_buf_en);
+      const char AxisMaxSpeed_buf_en[] = "Axis Max Speed";
+      dgus.writeStringVar(VP_AxisMaxSpeed_Dis, AxisMaxSpeed_buf_en);
 
-      const char MotorMaxAcc_buf_en[] = "MotorAcc";
-      dgus.writeStringVar(VP_MotorMaxAcc_Dis, MotorMaxAcc_buf_en);
+      const char AxisMaxAcc_buf_en[] = "Axis Max Acc.";
+      dgus.writeStringVar(VP_AxisMaxAcc_Dis, AxisMaxAcc_buf_en);
 
       const char TravelAcc_buf_en[] = "Travel Acc.";
       dgus.writeStringVar(VP_TravelAcc_Dis, TravelAcc_buf_en);
@@ -1447,26 +1357,26 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       const char FactoryDefaults_buf_en[] = "Factory Defaults";
       dgus.writeStringVar(VP_FactoryDefaults_Dis, FactoryDefaults_buf_en);
 
-      const char StoreSetting_buf_en[] = "Store Setting";
+      const char StoreSetting_buf_en[] = "Store Settings";
       dgus.writeStringVar(VP_StoreSetting_Dis, StoreSetting_buf_en);
 
       const char PrintPauseConfig_buf_en[] = "PrintPause Config";
       dgus.writeStringVar(VP_PrintPauseConfig_Dis, PrintPauseConfig_buf_en);
 
-      const char X_Pulse_buf_en[] = "X_Pulse";
-      dgus.writeStringVar(VP_X_Pulse_Dis, X_Pulse_buf_en);
+      const char X_Steps_mm_buf_en[] = "X steps/mm";
+      dgus.writeStringVar(VP_X_Steps_mm_Dis, X_Steps_mm_buf_en);
 
-      const char Y_Pulse_buf_en[] = "Y_Pulse";
-      dgus.writeStringVar(VP_Y_Pulse_Dis, Y_Pulse_buf_en);
+      const char Y_Steps_mm_buf_en[] = "Y steps/mm";
+      dgus.writeStringVar(VP_Y_Steps_mm_Dis, Y_Steps_mm_buf_en);
 
-      const char Z_Pulse_buf_en[] = "Z_Pulse";
-      dgus.writeStringVar(VP_Z_Pulse_Dis, Z_Pulse_buf_en);
+      const char Z_Steps_mm_buf_en[] = "Z steps/mm";
+      dgus.writeStringVar(VP_Z_Steps_mm_Dis, Z_Steps_mm_buf_en);
 
-      const char E0_Pulse_buf_en[] = "E0_Pulse";
-      dgus.writeStringVar(VP_E0_Pulse_Dis, E0_Pulse_buf_en);
+      const char E0_Steps_mm_buf_en[] = "E0 steps/mm";
+      dgus.writeStringVar(VP_E0_Steps_mm_Dis, E0_Steps_mm_buf_en);
 
-      const char E1_Pulse_buf_en[] = "E1_Pulse";
-      dgus.writeStringVar(VP_E1_Pulse_Dis, E1_Pulse_buf_en);
+      const char E1_Steps_mm_buf_en[] = "E1 steps/mm";
+      dgus.writeStringVar(VP_E1_Steps_mm_Dis, E1_Steps_mm_buf_en);
 
       const char X_Max_Speed_buf_en[] = "X Max Speed";
       dgus.writeStringVar(VP_X_Max_Speed_Dis, X_Max_Speed_buf_en);
@@ -1550,13 +1460,13 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       dgus.writeStringVar(VP_Info_PrintFinish_1_Dis, Info_PrintFinish_1_buf_en);
 
       const char TMC_X_Step_buf_en[] = "X Sensitivity";
-      dgus.writeStringVar(VP_TMC_X_Step_Dis, TMC_X_Step_buf_en);
+      dgus.writeStringVar(VP_TMC_X_SENS_Dis, TMC_X_Step_buf_en);
 
       const char TMC_Y_Step_buf_en[] = "Y Sensitivity";
-      dgus.writeStringVar(VP_TMC_Y_Step_Dis, TMC_Y_Step_buf_en);
+      dgus.writeStringVar(VP_TMC_Y_SENS_Dis, TMC_Y_Step_buf_en);
 
       const char TMC_Z_Step_buf_en[] = "Z Sensitivity";
-      dgus.writeStringVar(VP_TMC_Z_Step_Dis, TMC_Z_Step_buf_en);
+      dgus.writeStringVar(VP_TMC_Z_SENS_Dis, TMC_Z_Step_buf_en);
 
       const char TMC_X_Current_buf_en[] = "X Current";
       dgus.writeStringVar(VP_TMC_X_Current_Dis, TMC_X_Current_buf_en);
@@ -1585,6 +1495,15 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       const char Min_Ex_Temp_buf_en[] = "Min Extrude Temp";
       dgus.writeStringVar(VP_Min_Ex_Temp_Dis, Min_Ex_Temp_buf_en);
 
+      const char X_Offset_buf_en[] = "X Offset";
+      dgus.writeStringVar(VP_X_Offset_Dis, X_Offset_buf_en);
+
+      const char Y_Offset_buf_en[] = "Y Offset";
+      dgus.writeStringVar(VP_Y_Offset_Dis, Y_Offset_buf_en);
+
+      const char Z_Offset_buf_en[] = "Z Offset";
+      dgus.writeStringVar(VP_Z_Offset_Dis, Z_Offset_buf_en);
+
       const char AutoLEVEL_INFO1_buf_en[] = "Please Press Button!";
       dgus.writeStringVar(VP_AutoLEVEL_INFO1, AutoLEVEL_INFO1_buf_en);
 
@@ -1600,16 +1519,13 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       const char StopPrintConfirm_Info_buf_en[] = "Stop Print?";
       dgus.writeStringVar(VP_StopPrintConfirm_Info_Dis, StopPrintConfirm_Info_buf_en);
 
-      const char Printting_buf_en[] = "Printing";
-      dgus.writeStringVar(VP_Printting_Dis, Printting_buf_en);
-
       const char LCD_BLK_buf_en[] = "Backlight";
       dgus.writeStringVar(VP_LCD_BLK_Dis, LCD_BLK_buf_en);
 
     } break; // MKS_English
 
     case MKS_SimpleChinese: {
-      uint16_t home_buf_ch[] = { 0xF7D6, 0xB3D2 };
+      const uint16_t home_buf_ch[] = { 0xF7D6, 0xB3D2 };
       dgus.writeStringVar(VP_HOME_Dis, home_buf_ch, 4);
 
       const uint16_t Setting_Dis[] = { 0xE8C9, 0xC3D6, 0x2000, 0x2000, 0x2000 };
@@ -1660,14 +1576,14 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       };
       dgus.writeStringVar(VP_Level_Dis, Level_buf_ch, 32);
 
-      const uint16_t MotorPulse_buf_ch[] = { 0xF6C2, 0xE5B3, 0x2000 };
-      dgus.writeStringVar(VP_MotorPulse_Dis, MotorPulse_buf_ch);
+      const uint16_t AxisRes_buf_ch[] = { 0xF6C2, 0xE5B3, 0x2000 };
+      dgus.writeStringVar(VP_AxisRes_Dis, AxisRes_buf_ch);
 
-      const uint16_t MotorMaxSpeed_buf_ch[] = { 0xEED7, 0xF3B4, 0xD9CB, 0xC8B6, 0x2000 };
-      dgus.writeStringVar(VP_MotorMaxSpeed_Dis, MotorMaxSpeed_buf_ch);
+      const uint16_t AxisMaxSpeed_buf_ch[] = { 0xEED7, 0xF3B4, 0xD9CB, 0xC8B6, 0x2000 };
+      dgus.writeStringVar(VP_AxisMaxSpeed_Dis, AxisMaxSpeed_buf_ch);
 
-      const uint16_t MotorMaxAcc_buf_ch[] = { 0xEED7, 0xF3B4, 0xD3BC, 0xD9CB, 0xC8B6, 0x2000 };
-      dgus.writeStringVar(VP_MotorMaxAcc_Dis, MotorMaxAcc_buf_ch);
+      const uint16_t AxisMaxAcc_buf_ch[] = { 0xEED7, 0xF3B4, 0xD3BC, 0xD9CB, 0xC8B6, 0x2000 };
+      dgus.writeStringVar(VP_AxisMaxAcc_Dis, AxisMaxAcc_buf_ch);
 
       const uint16_t TravelAcc_buf_ch[] = { 0xD5BF, 0xD0D0, 0xD3BC, 0xD9CB, 0xC8B6, 0x2000 };
       dgus.writeStringVar(VP_TravelAcc_Dis, TravelAcc_buf_ch);
@@ -1711,20 +1627,20 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       const uint16_t PrintPauseConfig_buf_ch[] = { 0xDDD4, 0xA3CD, 0xBBCE, 0xC3D6, 0x2000 };
       dgus.writeStringVar(VP_PrintPauseConfig_Dis, PrintPauseConfig_buf_ch, 32);
 
-      const uint16_t X_Pulse_buf_ch[] = { 0x2058, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
-      dgus.writeStringVar(VP_X_Pulse_Dis, X_Pulse_buf_ch);
+      const uint16_t X_Steps_mm_buf_ch[] = { 0x2058, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
+      dgus.writeStringVar(VP_X_Steps_mm_Dis, X_Steps_mm_buf_ch);
 
-      const uint16_t Y_Pulse_buf_ch[] = { 0x2059, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
-      dgus.writeStringVar(VP_Y_Pulse_Dis, Y_Pulse_buf_ch);
+      const uint16_t Y_Steps_mm_buf_ch[] = { 0x2059, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
+      dgus.writeStringVar(VP_Y_Steps_mm_Dis, Y_Steps_mm_buf_ch);
 
-      const uint16_t Z_Pulse_buf_ch[] = { 0x205A, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
-      dgus.writeStringVar(VP_Z_Pulse_Dis, Z_Pulse_buf_ch);
+      const uint16_t Z_Steps_mm_buf_ch[] = { 0x205A, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
+      dgus.writeStringVar(VP_Z_Steps_mm_Dis, Z_Steps_mm_buf_ch);
 
-      const uint16_t E0_Pulse_buf_ch[] = { 0x3045, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
-      dgus.writeStringVar(VP_E0_Pulse_Dis, E0_Pulse_buf_ch);
+      const uint16_t E0_Steps_mm_buf_ch[] = { 0x3045, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
+      dgus.writeStringVar(VP_E0_Steps_mm_Dis, E0_Steps_mm_buf_ch);
 
-      const uint16_t E1_Pulse_buf_ch[] = { 0x3145, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
-      dgus.writeStringVar(VP_E1_Pulse_Dis, E1_Pulse_buf_ch);
+      const uint16_t E1_Steps_mm_buf_ch[] = { 0x3145, 0xE1D6, 0xF6C2, 0xE5B3, 0x2000 };
+      dgus.writeStringVar(VP_E1_Steps_mm_Dis, E1_Steps_mm_buf_ch);
 
       const uint16_t X_Max_Speed_buf_ch[] = { 0x2058, 0xEED7, 0xF3B4, 0xD9CB, 0xC8B6, 0x2000 };
       dgus.writeStringVar(VP_X_Max_Speed_Dis, X_Max_Speed_buf_ch);
@@ -1805,13 +1721,13 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
       dgus.writeStringVar(VP_Info_EEPROM_2_Dis, Info_EEPROM_2_buf_ch, 32);
 
       const uint16_t TMC_X_Step_buf_ch[] = { 0x2058, 0xE9C1, 0xF4C3, 0xC8B6, 0x2000 };
-      dgus.writeStringVar(VP_TMC_X_Step_Dis, TMC_X_Step_buf_ch);
+      dgus.writeStringVar(VP_TMC_X_SENS_Dis, TMC_X_Step_buf_ch);
 
       const uint16_t TMC_Y_Step_buf_ch[] = { 0x2059, 0xE9C1, 0xF4C3, 0xC8B6, 0x2000 };
-      dgus.writeStringVar(VP_TMC_Y_Step_Dis, TMC_Y_Step_buf_ch);
+      dgus.writeStringVar(VP_TMC_Y_SENS_Dis, TMC_Y_Step_buf_ch);
 
       const uint16_t TMC_Z_Step_buf_ch[] = { 0x205A, 0xE9C1, 0xF4C3, 0xC8B6, 0x2000 };
-      dgus.writeStringVar(VP_TMC_Z_Step_Dis, TMC_Z_Step_buf_ch);
+      dgus.writeStringVar(VP_TMC_Z_SENS_Dis, TMC_Z_Step_buf_ch);
 
       const uint16_t Info_PrintFinish_1_buf_ch[] = { 0xF2B4, 0xA1D3, 0xEACD, 0xC9B3, 0x2000 };
       dgus.writeStringVar(VP_Info_PrintFinish_1_Dis, Info_PrintFinish_1_buf_ch, 32);
@@ -1857,9 +1773,6 @@ void DGUSScreenHandlerMKS::updateDisplayLanguage() {
 
       const uint16_t StopPrintConfirm_Info_buf_ch[] = { 0xC7CA, 0xF1B7, 0xA3CD, 0xB9D6, 0xF2B4, 0xA1D3, 0x2000 };
       dgus.writeStringVar(VP_StopPrintConfirm_Info_Dis, StopPrintConfirm_Info_buf_ch, 32);
-
-      const uint16_t Printting_buf_ch[] = { 0xF2B4, 0xA1D3, 0xD0D6, 0x2000 };
-      dgus.writeStringVar(VP_Printting_Dis, Printting_buf_ch, 32);
 
       const uint16_t LCD_BLK_buf_ch[] = { 0xB3B1, 0xE2B9, 0xE8C9, 0xC3D6, 0x2000 };
       dgus.writeStringVar(VP_LCD_BLK_Dis, LCD_BLK_buf_ch, 32);

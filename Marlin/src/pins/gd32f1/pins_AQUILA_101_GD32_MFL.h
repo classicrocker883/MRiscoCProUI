@@ -19,41 +19,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-
-#include "../../inc/MarlinConfig.h"
-
-#if ENABLED(CONFIGURABLE_MACHINE_NAME)
-
-#include "../gcode.h"
-#include "../../MarlinCore.h"
-#include "../../lcd/marlinui.h"
+#pragma once
 
 /**
- * M550: Set machine name
- *
- * Parameters:
- *  P "<name>" Set the name using the 'P' parameter (RepRapFirmware)
- *  "<name>" Set the name using the "string" parameter
+ * Aquila v1.0.1 GD32 MFL (GD32F103RC) board pin assignments
  */
-void GcodeSuite::M550() {
-  bool did_set = true;
 
-  if (parser.seenval('P'))
-    machine_name = parser.value_string();
-  else if (parser.seen('P'))
-    machine_name = &parser.string_arg[1];
-  else if (parser.has_string())
-    machine_name = parser.string_arg;
-  else
-    did_set = false;
+#define ALLOW_GD32F1
 
-  if (did_set) {
-    machine_name.trim();
-    ui.reset_status(false);
-  }
-  else
-    SERIAL_ECHOLNPGM("RepRap name: ", &machine_name);
+#ifndef BOARD_INFO_NAME
+  #define BOARD_INFO_NAME      "Aquila v1.0.1 GD32 MFL"
+#endif
+#ifndef DEFAULT_MACHINE_NAME
+  #define DEFAULT_MACHINE_NAME "Aquila"
+#endif
 
-}
-
-#endif // CONFIGURABLE_MACHINE_NAME
+#include "../stm32f1/pins_CREALITY_V4.h"
