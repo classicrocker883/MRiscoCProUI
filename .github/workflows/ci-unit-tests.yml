@@ -54,9 +54,9 @@ jobs:
       uses: actions/cache@v4.2.2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-unit-v1
+        key: ${{ runner.os }}-pip-unit-v1-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
-          ${{ runner.os }}-pip-unit-
+          ${{ runner.os }}-pip-unit-v1-
 
     - name: Cache PlatformIO
       uses: actions/cache@v4.2.2
@@ -65,9 +65,9 @@ jobs:
           ~/.platformio
           .pio/build
           .pio/libdeps
-        key: ${{ runner.os }}-pio-tests-v1
+        key: ${{ runner.os }}-pio-tests-v1-${{ hashFiles('**/lockfiles', '**/platformio.ini') }}
         restore-keys: |
-          ${{ runner.os }}-pio-tests-
+          ${{ runner.os }}-pio-tests-v1-
 
     - name: Select Python 3.13
       uses: actions/setup-python@v5.4.0
@@ -77,7 +77,7 @@ jobs:
 
     - name: Install PlatformIO
       run: |
-        pip install -U pip wheel platformio
+        python3 -m pip install -U pip wheel platformio
         pio upgrade --dev
         pio pkg update --global
 
