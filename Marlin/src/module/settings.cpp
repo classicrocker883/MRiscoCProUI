@@ -502,11 +502,6 @@ typedef struct SettingsDataStruct {
   //
   #if ENABLED(LIN_ADVANCE)
     float planner_extruder_advance_K[DISTINCT_E];       // M900 K  planner.extruder_advance_K
-    #if ENABLED(SMOOTH_LIN_ADV)
-      float stepper_extruder_advance_TAU;               // Stepper::get_advance_tau()
-      float stepper_extruder_advance_TAU_TICKS;
-      float stepper_extruder_advance_ALPHA;
-    #endif
   #endif
 
   //
@@ -1646,20 +1641,10 @@ void MarlinSettings::postprocess() {
     #if ENABLED(LIN_ADVANCE)
     {
       _FIELD_TEST(planner_extruder_advance_K);
-
-      #if ENABLED(LIN_ADVANCE)
-        EEPROM_WRITE(planner.extruder_advance_K);
-      #else
-        dummyf = 0;
-        for (uint8_t q = DISTINCT_E; q--;) EEPROM_WRITE(dummyf);
-      #endif
-
-      _FIELD_TEST(stepper_extruder_advance_TAU);
+      EEPROM_WRITE(planner.extruder_advance_K);
 
       #if ENABLED(SMOOTH_LIN_ADV)
         EEPROM_WRITE(Stepper::get_advance_tau());
-      #else
-        EEPROM_WRITE(0);
       #endif
     }
     #endif
@@ -2470,7 +2455,7 @@ void MarlinSettings::postprocess() {
         #endif
         EEPROM_READ(lpq_len);
       }
-     // #endif
+      // #endif
 
       //
       // PIDTEMPBED
@@ -2584,12 +2569,12 @@ void MarlinSettings::postprocess() {
           TERN_(HAS_PLR_BED_THRESHOLD, recovery.bed_temp_threshold = bed_temp_threshold);
         }
       }
-     // #endif
+      // #endif
 
       //
       // Firmware Retraction
       //
-     // #if ENABLED(FWRETRACT)
+      // #if ENABLED(FWRETRACT)
       {
         fwretract_settings_t fwretract_settings;
         bool autoretract_enabled;
@@ -2811,7 +2796,6 @@ void MarlinSettings::postprocess() {
 
         #if ENABLED(SMOOTH_LIN_ADV)
           float extruder_advance_TAU;
-          _FIELD_TEST(stepper_extruder_advance_TAU);
           EEPROM_READ(extruder_advance_TAU);
           if (!validating) {
             Stepper::set_advance_tau(extruder_advance_TAU);
@@ -3976,10 +3960,10 @@ void MarlinSettings::reset() {
     #else
       planner.extruder_advance_K[0] = ADVANCE_K;
     #endif
-  #endif
 
-  #if ENABLED(SMOOTH_LIN_ADV)
-    Stepper::set_advance_tau(ADVANCE_TAU);
+    #if ENABLED(SMOOTH_LIN_ADV)
+      Stepper::set_advance_tau(ADVANCE_TAU);
+    #endif
   #endif
 
   //
