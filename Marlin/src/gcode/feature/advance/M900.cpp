@@ -37,6 +37,7 @@
  * M900: Get or Set Linear Advance K-factor
  *  T<tool>     Which tool to address
  *  K<factor>   Set current advance K factor (Slot 0).
+ *  U<factor>   Set current advance TAU factor (Slot 0).
  *  L<factor>   Set secondary advance K factor (Slot 1). Requires ADVANCE_K_EXTRA.
  *  S<0/1>      Activate slot 0 or 1. Requires ADVANCE_K_EXTRA.
  */

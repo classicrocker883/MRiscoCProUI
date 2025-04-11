@@ -500,8 +500,14 @@ typedef struct SettingsDataStruct {
   //
   // Linear Advance
   //
-  float planner_extruder_advance_K[DISTINCT_E]; // M900 K  planner.extruder_advance_K
-  float stepper_extruder_advance_TAU; // Stepper::get_advance_tau()
+  #if ENABLED(LIN_ADVANCE)
+    float planner_extruder_advance_K[DISTINCT_E];       // M900 K  planner.extruder_advance_K
+    #if ENABLED(SMOOTH_LIN_ADV)
+      float stepper_extruder_advance_TAU;               // Stepper::get_advance_tau()
+      float stepper_extruder_advance_TAU_TICKS;
+      float stepper_extruder_advance_ALPHA;
+    #endif
+  #endif
 
   //
   // HAS_MOTOR_CURRENT_(I2C|DAC|SPI|PWM)
@@ -1637,7 +1643,7 @@ void MarlinSettings::postprocess() {
     //
     // Linear Advance
     //
-    //#if ENABLED(LIN_ADVANCE)
+    #if ENABLED(LIN_ADVANCE)
     {
       _FIELD_TEST(planner_extruder_advance_K);
 
@@ -1647,9 +1653,7 @@ void MarlinSettings::postprocess() {
         dummyf = 0;
         for (uint8_t q = DISTINCT_E; q--;) EEPROM_WRITE(dummyf);
       #endif
-    }
 
-    {
       _FIELD_TEST(stepper_extruder_advance_TAU);
 
       #if ENABLED(SMOOTH_LIN_ADV)
@@ -1658,7 +1662,7 @@ void MarlinSettings::postprocess() {
         EEPROM_WRITE(0);
       #endif
     }
-    //#endif
+    #endif
 
     //
     // HAS_MOTOR_CURRENT_(SPI|PWM)
@@ -2795,7 +2799,7 @@ void MarlinSettings::postprocess() {
       //
       // Linear Advance
       //
-      //#if ENABLED(LIN_ADVANCE)
+      #if ENABLED(LIN_ADVANCE)
       {
         float extruder_advance_K[DISTINCT_E];
         _FIELD_TEST(planner_extruder_advance_K);
@@ -2804,9 +2808,7 @@ void MarlinSettings::postprocess() {
           if (!validating)
             COPY(planner.extruder_advance_K, extruder_advance_K);
         #endif
-      }
 
-      {
         #if ENABLED(SMOOTH_LIN_ADV)
           float extruder_advance_TAU;
           _FIELD_TEST(stepper_extruder_advance_TAU);
@@ -2816,7 +2818,7 @@ void MarlinSettings::postprocess() {
           }
         #endif
       }
-      //#endif
+      #endif
 
       //
       // HAS_MOTOR_CURRENT_(SPI|PWM)
