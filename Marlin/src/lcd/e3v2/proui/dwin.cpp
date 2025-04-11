@@ -161,9 +161,6 @@ HMI_data_t HMI_data;
 #if ENABLED(PROUI_MESH_EDIT)
   MeshSet_t meshSet;
 #endif
-#if ENABLED(SMOOTH_LIN_ADV)
-  smoothLA_t editable;
-#endif
 
 enum SelectItem : uint8_t {
   PAGE_PRINT = 0,
@@ -3098,11 +3095,8 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
   void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
   #if ENABLED(SMOOTH_LIN_ADV)
-    void UpdateSmoothLA() {
-      editable.decimal = Stepper::get_advance_tau();
-    }
     void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
-    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA, UpdateSmoothLA); }
+    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
   #endif
 #endif
 
@@ -3583,7 +3577,8 @@ void Draw_Tune_Menu() {
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
       #if ENABLED(SMOOTH_LIN_ADV)
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable.decimal);
+        float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_decimal);
       #endif
     #endif
     #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
@@ -3744,7 +3739,8 @@ void Draw_Motion_Menu() {
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
       #if ENABLED(SMOOTH_LIN_ADV)
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable.decimal);
+        float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_decimal);
       #endif
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)

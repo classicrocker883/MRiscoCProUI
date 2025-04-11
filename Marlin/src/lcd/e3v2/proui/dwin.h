@@ -45,14 +45,6 @@
 
 extern char DateTime[16+1];
 
-#if ENABLED(SMOOTH_LIN_ADV)
-  typedef struct {
-    float decimal;
-  } smoothLA_t;
-
-  extern smoothLA_t editable;
-#endif
-
 enum processID : uint8_t {
   // Process ID
   MainMenu,
