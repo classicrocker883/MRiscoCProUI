@@ -71,19 +71,20 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 
 <br>
 
-### MarlinSimulator.exe Instructions
-
-There is a *MarlinSimulator.exe* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
+### MarlinSimulator Instructions
+There is *MarlinSimulator.exe*|*MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
 The MarlinSimulator can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.  
-To create your own MarlinSimulator with your own build, start by changing in **Configuration.h** `MOTHERBOARD` to `BOARD_SIMULATED`, also disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`, and then in **platformio.ini** change `default_envs = simulator_windows`.
+To create your own MarlinSimulator with your own build, start by changing in **Configuration.h** `MOTHERBOARD` to `BOARD_SIMULATED`, also disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`, and then in **platformio.ini** change `default_envs = simulator_windows`.  
+For Linux, you may need to change `#define INVERT_E0_DIR HMI_data.Invert_E0` to `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **dwin_defines.h**, and change `default_envs = simulator_linux_release`.  
+For MacOS you're on your own...sorry.
 
 Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.  
 Or for the latest releast go to [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for the latest **SDL2** version (**NOT** *SDL3*)  
 You can *either* copy/paste the files directly, or install them.  
 It's recommended to install them, but if you have any issues, then try copy/paste method.
 
-#### Install Files
+#### Install Files (Windows)
 Navigate to the extracted SDL2 directory in an *MSYS2* or *bash* terminal (Run as Administrator):
 
 To install SDL for native (32-bit) development:
@@ -119,7 +120,10 @@ You may have to first Build so the directory can be created, but you can:
 
 Once all that is done, just Build like you would normally and *MarlinSimulator.exe* will be created.
 
-For MacOS or Linux, you're on your own...sorry.
+#### Install Files (Linux)
+These are the files you need to install:  
+`sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev`  
+- There may be other basic ones if you don't have already; like python, cmake, pip...
 
 #### Using MarlinSimulator.exe
 - Under `SD Card`, under `Components` on the right side, select or load an image
@@ -142,7 +146,6 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 <br>
 
 ## Donations
-
 Thank you for your support.  
 Please consider making a donation, as large or as small and as often as you'd like.  
 [Ko-fi](https://ko-fi.com/classicrocker883)  
@@ -175,7 +178,6 @@ Please consider making a donation, as large or as small and as often as you'd li
 <br>
 
 ## Marlin Support
-
 The Issue Queue is reserved for Bug Reports and Feature Requests. Please use the following resources for help with configuration and troubleshooting:
 
 - [Marlin Documentation](//marlinfw.org) - Official Marlin documentation
@@ -188,7 +190,6 @@ The Issue Queue is reserved for Bug Reports and Feature Requests. Please use the
 <br>
 
 ## Credits
-
 Thanks to Reddit u/schuh8 and GitHub @whasupjohn for donating his board to help test the firmware.
 <p>
 <details>
@@ -212,7 +213,6 @@ Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
 <br>
 
 ## Star History
-
 <a id="starchart" href="https://star-history.com/#classicrocker883/MRiscoCProUI&Date">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date&theme=dark" />
@@ -236,7 +236,6 @@ VS Code is an IDE program owned and maintained by Microsoft.
 <br>
 
 ## Disclaimer
-
 THIS FIRMWARE AND ALL OTHER FILES IN THE DOWNLOAD ARE PROVIDED FREE OF CHARGE WITH NO WARRANTY OR GUARANTEE. SUPPORT IS NOT INCLUDED JUST BECAUSE YOU DOWNLOADED THE FIRMWARE. WE ARE NOT LIABLE FOR ANY DAMAGE TO YOUR PRINTER, PERSON, OR ANY OTHER PROPERTY DUE TO USE OF THIS FIRMWARE. IF YOU DO NOT AGREE TO THESE TERMS THEN DO NOT USE THE FIRMWARE.
 
 <br>
