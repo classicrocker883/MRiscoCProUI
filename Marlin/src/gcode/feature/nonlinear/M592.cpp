@@ -31,6 +31,7 @@ void GcodeSuite::M592_report(const bool forReplay/*=true*/) {
   TERN_(MARLIN_SMALL_BUILD, return);
   report_heading_etc(forReplay, F(STR_NONLINEAR_EXTRUSION));
   SERIAL_ECHOPGM("  M592 A", stepper.ne.A, " B", stepper.ne.B, " C", stepper.ne.C);
+  SERIAL_EOL();
 }
 
 /**

@@ -46,6 +46,7 @@ void GcodeSuite::M86_report(const bool forReplay/*=true*/) {
     " S", c.timeout,
     " T", c.trigger
   );
+  SERIAL_EOL();
 }
 
 /**

@@ -171,9 +171,11 @@ void GcodeSuite::M900_report(const bool forReplay/*=true*/) {
     }
   #endif
   #if ENABLED(SMOOTH_LIN_ADV)
+    SERIAL_EOL();
     report_echo_start(forReplay);
     SERIAL_ECHOPGM("  M900 U", Stepper::get_advance_tau());
   #endif
+  SERIAL_EOL();
 }
 
 #endif // LIN_ADVANCE

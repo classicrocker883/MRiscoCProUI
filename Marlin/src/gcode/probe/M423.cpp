@@ -92,6 +92,7 @@ void GcodeSuite::M423_report(const bool forReplay/*=true*/) {
   SERIAL_ECHOPGM("  M423 A", xatc.start, " I", xatc.spacing);
   for (uint8_t x = 0; x < XATC_MAX_POINTS; ++x) {
     const float z = xatc.z_offset[x];
+    SERIAL_EOL();
     report_echo_start(forReplay);
     SERIAL_ECHOPGM("  M423 X", x, " Z");
     serial_offset(isnan(z) ? 0 : z);
