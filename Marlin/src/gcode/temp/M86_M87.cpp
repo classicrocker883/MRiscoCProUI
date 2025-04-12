@@ -38,7 +38,7 @@ void GcodeSuite::M86_report(const bool forReplay/*=true*/) {
 
   hotend_idle_settings_t &c = hotend_idle.cfg;
   report_heading_etc(forReplay, F(STR_HOTEND_TIMEOUT));
-  SERIAL_ECHOPGM("  M86"
+  SERIAL_ECHOLNPGM("  M86"
     #if HAS_HEATED_BED
       " B", c.bed_target,
     #endif
@@ -46,7 +46,6 @@ void GcodeSuite::M86_report(const bool forReplay/*=true*/) {
     " S", c.timeout,
     " T", c.trigger
   );
-  SERIAL_EOL();
 }
 
 /**

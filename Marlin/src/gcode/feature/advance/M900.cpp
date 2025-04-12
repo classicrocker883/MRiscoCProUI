@@ -163,7 +163,7 @@ void GcodeSuite::M900_report(const bool forReplay/*=true*/) {
   report_heading(forReplay, F(STR_LINEAR_ADVANCE));
   #if DISTINCT_E < 2
     report_echo_start(forReplay);
-    SERIAL_ECHOPGM("  M900 K", planner.extruder_advance_K[0]);
+    SERIAL_ECHOLNPGM("  M900 K", planner.extruder_advance_K[0]);
   #else
     EXTRUDER_LOOP() {
       report_echo_start(forReplay);
@@ -171,11 +171,9 @@ void GcodeSuite::M900_report(const bool forReplay/*=true*/) {
     }
   #endif
   #if ENABLED(SMOOTH_LIN_ADV)
-    SERIAL_EOL();
     report_echo_start(forReplay);
-    SERIAL_ECHOPGM("  M900 U", Stepper::get_advance_tau());
+    SERIAL_ECHOLNPGM("  M900 U", Stepper::get_advance_tau());
   #endif
-  SERIAL_EOL();
 }
 
 #endif // LIN_ADVANCE
