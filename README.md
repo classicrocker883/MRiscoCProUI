@@ -72,11 +72,13 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 <br>
 
 ### MarlinSimulator Instructions
-There is *MarlinSimulator.exe*|*MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
+There is a *MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
-The MarlinSimulator can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.  
-To create your own MarlinSimulator with your own build, start by changing in **Configuration.h** `MOTHERBOARD` to `BOARD_SIMULATED`, also disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`, and then in **platformio.ini** change `default_envs = simulator_windows`.  
-For Linux, you may need to change `#define INVERT_E0_DIR HMI_data.Invert_E0` to `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **dwin_defines.h**, and change `default_envs = simulator_linux_release`.  
+The *MarlinSimulator* can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.  
+To create *MarlinSimulator* with your own build, start in **Configuration.h** and change the `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`.  
+You may need to change `#define INVERT_E0_DIR HMI_data.Invert_E0` to `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **dwin_defines.h**. 
+Then in **platformio.ini** change to `simulator_windows` in `default_envs =` (for Windows) / `simulator_linux_release` `default_envs =` (for Linux).  
+If there is an error, add `-fno-lto` to `build_flags =` in **native.ini**.
 For MacOS you're on your own...sorry.
 
 Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.  
@@ -98,25 +100,14 @@ It's recommended to do both `make native` and `make cross`.
 For 64-bit - If you receive an error, then try the following:
 >     make install-package arch=x86_64-w64-mingw32 prefix=/usr
 
-When compiling, if you receive:  
-`error: the value of 'HMI_data' is not usable in a constant expression`  
-and/or  
-`note: 'HMI_data' was not declared 'constexpr'`  
-Then you must go to:  
-**.pio\libdeps\simulator_windows\MarlinSimUI\src\MarlinSimulator\hardware\KinematicSystem.cpp**
-
-Change the following:
-```diff
-- constexpr bool extruder_invert_dir[EXTRUDERS] = {
-
-+ const bool extruder_invert_dir[EXTRUDERS] = {
-```
-
-#### Copy/Paste Files
+#### Alternative SDL2 Install
+**Copy/Paste Files**  
 You may have to first Build so the directory can be created, but you can:  
-**Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\SDL2\\*, paste into the directory ~\.pio\libdeps\simulator_windows\\**imgui**  
+- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\SDL2\\*, paste into the directory ~\.pio\libdeps\simulator_windows\\**imgui**  
+
 -OR-  
-**Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory ~\.pio\libdeps\\*simulator_windows*
+
+- **Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory ~\.pio\libdeps\\*simulator_windows*
 
 Once all that is done, just Build like you would normally and *MarlinSimulator.exe* will be created.
 
@@ -125,7 +116,7 @@ These are the files you need to install:
 `sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev`  
 - There may be other basic ones if you don't have already; like python, cmake, pip...
 
-#### Using MarlinSimulator.exe
+#### Using MarlinSimulator
 - Under `SD Card`, under `Components` on the right side, select or load an image
 - Select Serial Monitor(1)
 - Use like a normal terminal, enter `G28` to watch it Home
