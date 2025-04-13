@@ -3096,7 +3096,7 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
   void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
   #if ENABLED(SMOOTH_LIN_ADV)
     void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
-    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
+    void SetSmoothLA() { SetFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
   #endif
 #endif
 
@@ -3578,7 +3578,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
       #if ENABLED(SMOOTH_LIN_ADV)
         float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_decimal);
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal);
       #endif
     #endif
     #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
@@ -3740,7 +3740,7 @@ void Draw_Motion_Menu() {
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
       #if ENABLED(SMOOTH_LIN_ADV)
         float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_decimal);
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal);
       #endif
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
