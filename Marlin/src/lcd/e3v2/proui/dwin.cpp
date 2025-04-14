@@ -3096,7 +3096,7 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
   void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
   #if ENABLED(SMOOTH_LIN_ADV)
     void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
-    void SetSmoothLA() { SetFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
+    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
   #endif
 #endif
 
