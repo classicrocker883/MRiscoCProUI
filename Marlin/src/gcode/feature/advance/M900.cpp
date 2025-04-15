@@ -167,7 +167,7 @@ void GcodeSuite::M900_report(const bool forReplay/*=true*/) {
   #else
     EXTRUDER_LOOP() {
       report_echo_start(forReplay);
-      SERIAL_ECHOPGM("  M900 T", e, " K", planner.extruder_advance_K[e]);
+      SERIAL_ECHOLNPGM("  M900 T", e, " K", planner.extruder_advance_K[e]);
     }
   #endif
   #if ENABLED(SMOOTH_LIN_ADV)
