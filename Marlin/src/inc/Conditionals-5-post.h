@@ -3016,6 +3016,10 @@
   #undef MICROSTEP_MODES
 #endif
 
+#if MB(PRINTRBOARD_G2) || ANY(HAS_MOTOR_CURRENT_SPI, HAS_MOTOR_CURRENT_PWM, HAS_MICROSTEPS)
+  #define HAS_STEPPER_CONTROL 1
+#endif
+
 /**
  * Helper Macros for heaters and extruder fan
  */
@@ -3564,6 +3568,10 @@
 
 #if BUTTONS_EXIST(EN1, EN2, ENC)
   #define HAS_ROTARY_ENCODER 1
+#endif
+
+#if defined(CPU_32_BIT) && !defined(FAST_BUTTON_POLLING)
+  #define FAST_BUTTON_POLLING
 #endif
 
 #if PIN_EXISTS(SAFE_POWER) && DISABLED(DISABLE_DRIVER_SAFE_POWER_PROTECT)

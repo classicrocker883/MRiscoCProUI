@@ -231,6 +231,7 @@
   #undef FWRETRACT
   #undef LCD_SHOW_E_TOTAL
   #undef LIN_ADVANCE
+  #undef SMOOTH_LIN_ADVANCE
   #undef MANUAL_E_MOVES_RELATIVE
   #undef PID_EXTRUSION_SCALING
   #undef SHOW_TEMP_ADC_VALUES
@@ -337,6 +338,10 @@
 // Linear advance uses Jerk since E is an isolated axis
 #if ALL(HAS_JUNCTION_DEVIATION, LIN_ADVANCE)
   #define HAS_LINEAR_E_JERK 1
+#endif
+
+#if ENABLED(LIN_ADVANCE) && DISABLED(SMOOTH_LIN_ADVANCE)
+  #define HAS_ROUGH_LIN_ADVANCE 1
 #endif
 
 // Some displays can toggle Adaptive Step Smoothing.
@@ -1090,6 +1095,9 @@
   #define _CUTTER_POWER_RPM     3
   #define _CUTTER_POWER(V)      _CAT(_CUTTER_POWER_, V)
   #define CUTTER_UNIT_IS(V)    (_CUTTER_POWER(CUTTER_POWER_UNIT) == _CUTTER_POWER(V))
+  #if DEFAULT_ACCELERATION_SPINDLE
+    #define HAS_SPINDLE_ACCELERATION 1
+  #endif
 #endif
 
 #if !defined(__AVR__) || !defined(USBCON)

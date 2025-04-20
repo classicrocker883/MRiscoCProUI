@@ -459,6 +459,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_AMAX_EN                        = _UxGT("Max * Accel");
   LSTR MSG_A_RETRACT                      = _UxGT("Retract Accel");
   LSTR MSG_A_TRAVEL                       = _UxGT("Travel Accel");
+  LSTR MSG_A_SPINDLE                      = _UxGT("Spindle Accel");
   LSTR MSG_INPUT_SHAPING                  = _UxGT("Input Shaping");
   LSTR MSG_SHAPING_ENABLE_N               = _UxGT("Enable @ shaping");
   LSTR MSG_SHAPING_DISABLE_N              = _UxGT("Disable @ shaping");
@@ -498,7 +499,9 @@ namespace LanguageNarrow_en {
   LSTR MSG_MAX_BELT_LEN                   = _UxGT("Max Belt Len");
   LSTR MSG_LINEAR_ADVANCE                 = _UxGT("Linear Advance");
   LSTR MSG_ADVANCE_K                      = _UxGT("Advance K");
+  LSTR MSG_ADVANCE_TAU                    = _UxGT("Advance Tau");
   LSTR MSG_ADVANCE_K_E                    = _UxGT("Advance K *");
+  LSTR MSG_ADVANCE_TAU_E                  = _UxGT("Advance Tau *");
   LSTR MSG_CONTRAST                       = _UxGT("LCD Contrast");
   LSTR MSG_BRIGHTNESS                     = _UxGT("LCD Brightness");
   LSTR MSG_SCREEN_TIMEOUT                 = _UxGT("LCD Timeout (m)");
@@ -953,7 +956,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_BACKLASH_SMOOTHING             = _UxGT("Smoothing");
 
   LSTR MSG_FIXED_TIME_MOTION              = _UxGT("Fixed-Time Motion");
-  LSTR MSG_FTM_CMPN_MODE                  = _UxGT("@ Comp. Mode:");
+  LSTR MSG_FTM_CMPN_MODE                  = _UxGT("@ Comp. Mode: $");
   LSTR MSG_FTM_ZV                         = _UxGT("ZV");
   LSTR MSG_FTM_ZVD                        = _UxGT("ZVD");
   LSTR MSG_FTM_ZVDD                       = _UxGT("ZVDD");
@@ -964,7 +967,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_FTM_MZV                        = _UxGT("MZV");
   //LSTR MSG_FTM_ULENDO_FBS               = _UxGT("Ulendo FBS");
   //LSTR MSG_FTM_DISCTF                   = _UxGT("DISCTF");
-  LSTR MSG_FTM_DYN_MODE                   = _UxGT("DF Mode:");
+  LSTR MSG_FTM_DYN_MODE                   = _UxGT("DF Mode: $");
   LSTR MSG_FTM_Z_BASED                    = _UxGT("Z-based");
   LSTR MSG_FTM_MASS_BASED                 = _UxGT("Mass-based");
   LSTR MSG_FTM_BASE_FREQ_N                = _UxGT("@ Base Freq.");
