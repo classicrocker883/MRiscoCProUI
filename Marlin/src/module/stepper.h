@@ -182,7 +182,7 @@ constexpr ena_mask_t enable_overlap[] = {
       static uint16_t             tail;
 
       #define SHAPING_QUEUE_AXIS_VARS(AXIS)                                                     \
-        static shaping_time_t delay_##AXIS;    /* = shaping_time_t(-1) to disable queueing*/    \
+        static shaping_time_t delay_##AXIS;    /*= shaping_time_t(-1) to disable queueing*/     \
         static shaping_time_t _peek_##AXIS;                                                     \
         static uint16_t head_##AXIS;                                                            \
         static uint16_t _free_count_##AXIS;
