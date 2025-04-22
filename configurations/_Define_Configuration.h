@@ -254,7 +254,7 @@
 // #define DEFAULT_chamberKd 655.17
 // #define PID_OPENLOOP
 // #define SLOW_PWM_HEATERS
-// #define PID_FUNCTIONAL_RANGE 10
+// #define PID_FUNCTIONAL_RANGE 20
 // #define PID_EDIT_MENU
 // #define PID_AUTOTUNE_MENU
 // #define PREVENT_COLD_EXTRUSION

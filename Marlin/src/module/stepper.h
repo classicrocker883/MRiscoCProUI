@@ -295,6 +295,7 @@ constexpr ena_mask_t enable_overlap[] = {
 class Stepper {
   friend class Max7219;
   friend class FTMotion;
+  friend class MarlinSettings;
   friend void stepperTask(void *);
 
   public:
@@ -351,44 +352,24 @@ class Stepper {
       static constexpr bool adaptive_step_smoothing_enabled = true;
     #endif
 
-    #if ENABLED(SMOOTH_LIN_ADV)
-      /**
-       * Set the advance tau value and calculate related parameters.
-       * @param tau The advance time constant (must be > 0).
-       */
-      static void set_advance_tau(float tau) {
-        // Validate tau to avoid division by zero or negative values
-        if (tau <= 0) {
-          SERIAL_ECHOLN("Error: tau must be greater than 0.");
-          return;
-        }
-
-        extruder_advance_TAU = tau;
-        extruder_advance_TAU_TICKS = tau * STEPPER_TIMER_RATE;
-
-        // Calculate α = 1 − exp(−dt / τ)
-        const float dt = SMOOTH_LIN_ADV_INTERVAL * SMOOTH_LIN_ADV_EXP_ORDER;
-        const float exponent = -dt / extruder_advance_TAU_TICKS;
-        extruder_advance_ALPHA = 1 - expf(exponent);
+    #if ENABLED(SMOOTH_LIN_ADVANCE)
+      static void set_advance_tau(const_float_t tau, const uint8_t e=E_INDEX_N(active_extruder)) {
+        extruder_advance_tau[e] = tau;
+        extruder_advance_tau_ticks[e] = tau * (STEPPER_TIMER_RATE); // i.e., <= STEPPER_TIMER_RATE / 2
+        // α = 1 − exp(−dt / τ)
+        extruder_advance_alpha[e] = 1.0f - expf(-(SMOOTH_LIN_ADV_INTERVAL) * (SMOOTH_LIN_ADV_EXP_ORDER) / extruder_advance_tau_ticks[e]);
       }
-
-      /**
-       * Get the current advance tau value.
-       * @return The advance time constant.
-       */
-      static float get_advance_tau() {
-        return extruder_advance_TAU;
-      }
+      static float get_advance_tau(const uint8_t e=E_INDEX_N(active_extruder)) { return extruder_advance_tau[e]; }
     #endif
 
   private:
 
-    static block_t* current_block;        // A pointer to the block currently being traced
+    static block_t* current_block;       // A pointer to the block currently being traced
 
-    static AxisBits last_direction_bits,  // The next stepping-bits to be output
-                    axis_did_move;        // Last Movement in the given direction is not null, as computed when the last movement was fetched from planner
+    static AxisBits last_direction_bits, // The next stepping-bits to be output
+                    axis_did_move;       // Last Movement in the given direction is not null, as computed when the last movement was fetched from planner
 
-    static bool abort_current_block;      // Signals to the stepper that current block should be aborted
+    static bool abort_current_block;     // Signals to the stepper that current block should be aborted
 
     #if ENABLED(X_DUAL_ENDSTOPS)
       static bool locked_X_motor, locked_X2_motor;
@@ -467,24 +448,19 @@ class Stepper {
     #if ENABLED(LIN_ADVANCE)
       static constexpr hal_timer_t LA_ADV_NEVER = HAL_TIMER_TYPE_MAX;
       static hal_timer_t nextAdvanceISR,
-                         la_interval;    // Interval between ISR calls for LA
-      #if ENABLED(SMOOTH_LIN_ADV)
-        static uint32_t curr_step_rate,  // Current tick relative to block start
-                        curr_timer_tick; // Current motion step rate
-        static void set_la_interval(int32_t rate);
+                         la_interval; // Interval between ISR calls for LA
+      #if ENABLED(SMOOTH_LIN_ADVANCE)
+        static uint32_t curr_timer_tick,                      // Current tick relative to block start
+                        curr_step_rate;                       // Current motion step rate
+        static float  extruder_advance_tau[DISTINCT_E],       // Smoothing time; also the lookahead time of the smoother
+                      extruder_advance_tau_ticks[DISTINCT_E], // Same as extruder_advance_tau but in in stepper timer ticks
+                      extruder_advance_alpha[DISTINCT_E];     // The smoothing factor of each stage of the high-order exponential
+                                                              // smoothing filter (calculated from tau)
       #else
-        static int32_t la_delta_error,   // Analogue of delta_error.e for E steps in LA ISR
-                       la_dividend,      // Analogue of advance_dividend.e for E steps in LA ISR
-                       la_advance_steps; // Count of steps added to increase nozzle pressure
-        static bool    la_active;        // Whether linear advance is used on the present segment.
-      #endif
-
-      #if ENABLED(SMOOTH_LIN_ADV)
-        static float extruder_advance_TAU,       // The smoothing time, which is also the lookahead
-                                                 // time of the smoother.
-                     extruder_advance_TAU_TICKS, // Same as extruder_advance_TAU but in in stepper timer ticks.
-                     extruder_advance_ALPHA;     // The smoothing factor of each stage of the high
-                                                 // order exponential smoothing filter (calculated from tau).
+        static int32_t  la_delta_error,   // Analogue of delta_error.e for E steps in LA ISR
+                        la_dividend,      // Analogue of advance_dividend.e for E steps in LA ISR
+                        la_advance_steps; // Count of steps added to increase nozzle pressure
+        static bool     la_active;        // Whether linear advance is used on the present segment
       #endif
     #endif
 
@@ -551,7 +527,8 @@ class Stepper {
     #if ENABLED(LIN_ADVANCE)
       // The Linear advance ISR phase
       static void advance_isr();
-      #if ENABLED(SMOOTH_LIN_ADV)
+      #if ENABLED(SMOOTH_LIN_ADVANCE)
+        static void set_la_interval(const int32_t rate);
         static hal_timer_t smooth_lin_adv_isr();
       #endif
     #endif
@@ -608,9 +585,7 @@ class Stepper {
       current_block = nullptr;
       axis_did_move.reset();
       planner.release_current_block();
-      #if DISABLED(SMOOTH_LIN_ADV)
-        TERN_(LIN_ADVANCE, la_interval = nextAdvanceISR = LA_ADV_NEVER);
-      #endif
+      TERN_(HAS_ROUGH_LIN_ADVANCE, la_interval = nextAdvanceISR = LA_ADV_NEVER);
     }
 
     // Quickly stop all steppers

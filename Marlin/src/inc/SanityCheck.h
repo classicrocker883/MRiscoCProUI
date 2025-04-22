@@ -853,24 +853,22 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
     #error "DIRECT_STEPPING is incompatible with LIN_ADVANCE. (Extrusion is controlled externally by the Step Daemon.)"
   #endif
 
-  #if ENABLED(SMOOTH_LIN_ADV)
-    #if ENABLED(MIXING_EXTRUDER)
-      #warning "SMOOTH_LIN_ADV with MIXING_EXTRUDER is not tested."
-    #endif
-    #if DISABLED(CPU_32_BIT)
-      #error "SMOOTH_LIN_ADV requires a 32-bit CPU."
-    #endif
-    static_assert(DISTINCT_E == 1, "SMOOTH_LIN_ADV is not compatible with multiple extruders.");
-    #if ENABLED(S_CURVE_ACCELERATION)
-      //#warning "SMOOTH_LIN_ADV together with S_CURVE_ACCELERATION is untested."
-    #endif
-
-    #if ENABLED(INPUT_SHAPING_E_SYNCH)
-      static_assert(ENABLED(INPUT_SHAPING_X), "INPUT_SHAPING_E_SYNCH requires INPUT_SHAPING_X.");
-      static_assert(ENABLED(INPUT_SHAPING_Y), "INPUT_SHAPING_E_SYNCH requires INPUT_SHAPING_Y.");
+  /**
+   * Smooth Linear Advance
+   */
+  #if ENABLED(SMOOTH_LIN_ADVANCE)
+    #ifndef CPU_32_BIT
+      #error "SMOOTH_LIN_ADVANCE requires a 32-bit CPU."
+    #elif DISTINCT_E > 1
+      #error "SMOOTH_LIN_ADVANCE is not compatible with multiple extruders."
+    #elif ENABLED(S_CURVE_ACCELERATION)
+      //#error "SMOOTH_LIN_ADVANCE is not compatible with S_CURVE_ACCELERATION."
+    #elif ENABLED(INPUT_SHAPING_E_SYNC) && NONE(INPUT_SHAPING_X, INPUT_SHAPING_Y)
+      #error "INPUT_SHAPING_E_SYNC requires INPUT_SHAPING_X or INPUT_SHAPING_Y."
     #endif
   #endif
-#endif
+
+#endif // LIN_ADVANCE
 
 /**
  * Nonlinear Extrusion requirements
@@ -1680,8 +1678,8 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
   #elif ENABLED(MESH_BED_LEVELING)
     #if ENABLED(DELTA)
       #error "MESH_BED_LEVELING is not compatible with DELTA printers."
-    #elif (GRID_MAX_POINTS_X) > 9 || (GRID_MAX_POINTS_Y) > 9
-      #error "GRID_MAX_POINTS_X and GRID_MAX_POINTS_Y must be less than 10 for MBL."
+    #elif !WITHIN(GRID_MAX_POINTS_X, 2, 255) || !WITHIN(GRID_MAX_POINTS_Y, 2, 255)
+      #error "GRID_MAX_POINTS_[XY] must be between 2 and 255 for MESH_BED_LEVELING."
     #endif
   #endif
 #endif
@@ -4125,6 +4123,8 @@ static_assert(_PLUS_TEST(3), "DEFAULT_MAX_ACCELERATION values must be positive."
       #error "SPINDLE_LASER_PWM_INVERT is required for (SPINDLE|LASER)_FEATURE."
     #elif !(defined(SPEED_POWER_MIN) && defined(SPEED_POWER_MAX) && defined(SPEED_POWER_STARTUP))
       #error "SPINDLE_LASER_USE_PWM equation constant(s) missing."
+    #elif DEFAULT_ACCELERATION_SPINDLE > SPEED_POWER_MAX - SPEED_POWER_MIN
+      #error "DEFAULT_ACCELERATION_SPINDLE must be <= SPEED_POWER_MAX - SPEED_POWER_MIN."
     #elif _PIN_CONFLICT(X_MIN)
       #error "SPINDLE_LASER_PWM_PIN conflicts with X_MIN_PIN."
     #elif _PIN_CONFLICT(X_MAX)
@@ -4511,7 +4511,7 @@ static_assert(_PLUS_TEST(3), "DEFAULT_MAX_ACCELERATION values must be positive."
  * Direct Stepping requirements
  */
 #if ENABLED(DIRECT_STEPPING)
-  #if ENABLED(CPU_32_BIT)
+  #ifdef CPU_32_BIT
     #error "Direct Stepping is not supported on 32-bit boards."
   #elif !IS_FULL_CARTESIAN
     #error "Direct Stepping is incompatible with enabled kinematics."

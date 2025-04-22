@@ -500,7 +500,7 @@ void PrintJobRecovery::resume() {
     // Restore Z fade and possibly re-enable bed leveling compensation.
     // Leveling may already be enabled due to the ENABLE_LEVELING_AFTER_G28 option.
     /// TODO: Add a G28 parameter to leave leveling disabled.
-    PROCESS_SUBCOMMANDS_NOW(TS(F("M420S"), F('0' + (char)info.flag.leveling), F("Z"), p_float_t(info.fade, 1)));
+    PROCESS_SUBCOMMANDS_NOW(TS(F("M420S"), '0' + (char)info.flag.leveling, F("Z"), p_float_t(info.fade, 1)));
 
     #if !HOMING_Z_DOWN
       // The physical Z was adjusted at power-off so undo the M420S1 correction to Z with G92.9.
@@ -599,11 +599,11 @@ void PrintJobRecovery::resume() {
   PROCESS_SUBCOMMANDS_NOW(TS(
     F("G1F3000X"), p_float_t(resume_pos.x, 3), F("Y"), p_float_t(resume_pos.y, 3)
   ));
-  DEBUG_ECHOLNPGM("Move XY: ", cmd);
+  DEBUG_ECHOLNPGM("Move XY: ", resume_pos.x, " | ", resume_pos.y);
 
   // Move back down to the saved Z for printing
   PROCESS_SUBCOMMANDS_NOW(TS(F("G1F600Z"), p_float_t(z_print, 3)));
-  DEBUG_ECHOLNPGM("Move Z: ", cmd);
+  DEBUG_ECHOLNPGM("Move Z: ", z_print);
 
   // Restore the feedrate and percentage
   PROCESS_SUBCOMMANDS_NOW(TS(F("G1F"), info.feedrate));
@@ -614,7 +614,7 @@ void PrintJobRecovery::resume() {
 
   // Restore E position with G92.9
   PROCESS_SUBCOMMANDS_NOW(TS(F("G92.9E"), p_float_t(resume_pos.e, 3)));
-  DEBUG_ECHOLNPGM("Extruder: ", cmd);
+  DEBUG_ECHOLNPGM("Extruder: ", resume_pos.e);
 
   #if ENABLED(CANCEL_OBJECTS)
     cancelable.state = info.cancel_state;
