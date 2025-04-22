@@ -12,12 +12,16 @@ def open_file_explorer():
     import platform
     current_OS = platform.system()
     if current_OS == "Windows":
+        import os
         try:
-            subprocess.run(["start", " ", script], shell=True)
-        except Exception as e:
-            print(f"Could not open File Explorer, an error occurred: {e}")
+            os.startfile(script)
+        except:
+            try:
+                subprocess.run(["explorer", script], shell=True, text=True, check=True)
+            except Exception as e:
+                print(f"Could not open File Explorer, an error occurred: {e}")
     elif current_OS == "Linux":
         try:
-            subprocess.run(["xdg-open", script])
+            subprocess.run(["xdg-open", script], text=True, check=True)
         except Exception as e:
             print(f"Could not open File Explorer, an error occurred: {e}")

@@ -89,7 +89,7 @@ void Toggle_Chkb_Line(bool &checked) {
 }
 
 void Draw_Menu_IntValue(uint16_t bcolor, const uint8_t line, uint8_t iNum, const int32_t value/*=0*/) {
-  DWINUI::Draw_Signed_Int(HMI_data.Text_Color, bcolor, iNum , VALX, MBASE(line) - 1, value);
+  DWINUI::Draw_Signed_Int(HMI_data.Text_Color, bcolor, iNum, VALX, MBASE(line) - 1, value);
 }
 
 void onDrawMenuItem(MenuItemClass* menuitem, int8_t line) {
@@ -147,9 +147,9 @@ void DrawItemEdit(const bool selected) {
   const uint16_t bcolor = selected ? HMI_data.Selected_Color : HMI_data.Background_Color;
   const uint8_t iNum = 4 - ((MenuData.dp > 0) ? (MenuData.dp - 1) : 0);
   switch (checkkey) {
-    case SetIntNoDraw:  if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
+    case SetIntNoDraw: if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
     case SetInt:
-    case SetPInt:   DWINUI::Draw_Signed_Int(HMI_data.Text_Color, bcolor, iNum , VALX, MBASE(CurrentMenu->line()) - 1, MenuData.Value); break;
+    case SetPInt:   DWINUI::Draw_Signed_Int(HMI_data.Text_Color, bcolor, iNum, VALX, MBASE(CurrentMenu->line()) - 1, MenuData.Value); break;
     case SetFloat:
     case SetPFloat: DWINUI::Draw_Signed_Float(HMI_data.Text_Color, bcolor, iNum, MenuData.dp, VALX - 2 * DWINUI::fontWidth(), MBASE(CurrentMenu->line()), MenuData.Value / POW(10, MenuData.dp)); break;
     default: break;
