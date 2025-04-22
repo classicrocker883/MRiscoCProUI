@@ -514,7 +514,7 @@ typedef struct SettingsDataStruct {
   #endif
 
   //
-  // HAS_MOTOR_CURRENT_(I2C|DAC|SPI|PWM)
+  // Stepper Motors Current
   //
   #ifndef MOTOR_CURRENT_COUNT
     #if HAS_MOTOR_CURRENT_PWM

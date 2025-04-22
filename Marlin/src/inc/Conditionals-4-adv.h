@@ -1246,8 +1246,14 @@
   #define HOMING_BUMP_MM { 0, 0, 0 }
 #endif
 
-#if HAS_USB_FLASH_DRIVE && NONE(USE_OTG_USB_HOST, USE_UHS3_USB)
-  #define USE_UHS2_USB
+#if ENABLED(MULTI_VOLUME)
+  #define HAS_MULTI_VOLUME 1
+#endif
+#if ENABLED(USB_FLASH_DRIVE_SUPPORT)
+  #define HAS_USB_FLASH_DRIVE 1
+  #if NONE(USE_OTG_USB_HOST, USE_UHS3_USB)
+    #define USE_UHS2_USB
+  #endif
 #endif
 
 /**

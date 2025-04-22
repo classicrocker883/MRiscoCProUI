@@ -28,19 +28,25 @@
 
 #include "../stepper.h"
 
-#if HAS_MOTOR_CURRENT_SPI
-  #include <SPI.h>
-#endif
-
 #if MB(PRINTRBOARD_G2)
   #include HAL_PATH(../.., fastio/G2_PWM.h)
+#elif HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
+  #define HAS_NON_G2_MOTOR_CURRENT 1
+#endif
+
+#if HAS_MOTOR_CURRENT_PWM || HAS_NON_G2_MOTOR_CURRENT
+  bool Stepper::initialized; // = false
+  uint32_t Stepper::motor_current_setting[MOTOR_CURRENT_COUNT]; // Initialized by settings.load
 #endif
 
 /**
- * Software-controlled Stepper Motor Current
+ * SPI-controlled Stepper Motor Current
  */
 
 #if HAS_MOTOR_CURRENT_SPI
+
+  #include <SPI.h>
+  constexpr uint32_t Stepper::digipot_count[];
 
   // From Arduino DigitalPotControl example
   void Stepper::set_digipot_value_spi(const int16_t address, const int16_t value) {
@@ -51,7 +57,35 @@
     //delay(10);
   }
 
+  #if HAS_NON_G2_MOTOR_CURRENT
+
+    void Stepper::set_digipot_current(const uint8_t driver, const int16_t current) {
+      if (WITHIN(driver, 0, COUNT(motor_current_setting) - 1))
+        motor_current_setting[driver] = current; // update motor_current_setting
+
+      if (!initialized) return;
+
+      //SERIAL_ECHOLNPGM("Digipotss current ", current);
+
+      const uint8_t digipot_ch[] = DIGIPOT_CHANNELS;
+      set_digipot_value_spi(digipot_ch[driver], current);
+    }
+
+    void Stepper::digipot_init() {
+      SPI.begin();
+      SET_OUTPUT(DIGIPOTSS_PIN);
+
+      for (uint8_t i = 0; i < COUNT(motor_current_setting); ++i)
+        set_digipot_current(i, motor_current_setting[i]);
+    }
+
+  #endif // HAS_NON_G2_MOTOR_CURRENT
+
 #endif // HAS_MOTOR_CURRENT_SPI
+
+/**
+ * PWM-controlled Stepper Motor Current
+ */
 
 #if HAS_MOTOR_CURRENT_PWM
 
@@ -74,28 +108,13 @@
     }
   }
 
-#endif // HAS_MOTOR_CURRENT_PWM
+  #if HAS_NON_G2_MOTOR_CURRENT
 
-/**
- * PWM-controlled Stepper Motor Current
- */
+    void Stepper::set_digipot_current(const uint8_t driver, const int16_t current) {
+      if (WITHIN(driver, 0, COUNT(motor_current_setting) - 1))
+        motor_current_setting[driver] = current; // update motor_current_setting
 
-#if !MB(PRINTRBOARD_G2) && (HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM)
-
-  void Stepper::set_digipot_current(const uint8_t driver, const int16_t current) {
-    if (WITHIN(driver, 0, COUNT(motor_current_setting) - 1))
-      motor_current_setting[driver] = current; // update motor_current_setting
-
-    if (!initialized) return;
-
-    #if HAS_MOTOR_CURRENT_SPI
-
-      //SERIAL_ECHOLNPGM("Digipotss current ", current);
-
-      const uint8_t digipot_ch[] = DIGIPOT_CHANNELS;
-      set_digipot_value_spi(digipot_ch[driver], current);
-
-    #elif HAS_MOTOR_CURRENT_PWM
+      if (!initialized) return;
 
       #define _WRITE_CURRENT_PWM(P) hal.set_pwm_duty(pin_t(MOTOR_CURRENT_PWM_## P ##_PIN), 255L * current / (MOTOR_CURRENT_PWM_RANGE))
       switch (driver) {
@@ -145,21 +164,9 @@
           #endif
           break;
       }
-    #endif
-  }
+    }
 
-  void Stepper::digipot_init() {
-
-    #if HAS_MOTOR_CURRENT_SPI
-
-      SPI.begin();
-      SET_OUTPUT(DIGIPOTSS_PIN);
-
-      for (uint8_t i = 0; i < COUNT(motor_current_setting); ++i)
-        set_digipot_current(i, motor_current_setting[i]);
-
-    #elif HAS_MOTOR_CURRENT_PWM
-
+    void Stepper::digipot_init() {
       #ifdef __SAM3X8E__
         #define _RESET_CURRENT_PWM_FREQ(P) NOOP
       #else
@@ -208,11 +215,11 @@
       #endif
 
       refresh_motor_power();
+    }
 
-    #endif
-  }
+  #endif // HAS_NON_G2_MOTOR_CURRENT
 
-#endif
+#endif // HAS_MOTOR_CURRENT_PWM
 
 /**
  * Software-controlled Microstepping with digital pins

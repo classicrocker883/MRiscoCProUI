@@ -120,10 +120,6 @@ Stepper stepper; // Singleton
   #include "../feature/dac/dac_dac084s085.h"
 #endif
 
-#if HAS_MOTOR_CURRENT_SPI
-  #include <SPI.h>
-#endif
-
 #if ENABLED(MIXING_EXTRUDER)
   #include "../feature/mixing.h"
 #endif
@@ -160,14 +156,6 @@ Stepper stepper; // Singleton
 
 #if ANY(HAS_EXTRA_ENDSTOPS, Z_STEPPER_AUTO_ALIGN)
   bool Stepper::separate_multi_axis = false;
-#endif
-
-#if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
-  bool Stepper::initialized; // = false
-  uint32_t Stepper::motor_current_setting[MOTOR_CURRENT_COUNT]; // Initialized by settings.load
-  #if HAS_MOTOR_CURRENT_SPI
-    constexpr uint32_t Stepper::digipot_count[];
-  #endif
 #endif
 
 stepper_flags_t Stepper::axis_enabled; // {0}
