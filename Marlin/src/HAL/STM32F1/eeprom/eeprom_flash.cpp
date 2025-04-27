@@ -28,11 +28,11 @@
 
 #ifdef __STM32F1__
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(FLASH_EEPROM_EMULATION)
 
-#include "../shared/eeprom_api.h"
+#include "../../shared/eeprom_api.h"
 
 #include <flash_stm32.h>
 #include <EEPROM.h>

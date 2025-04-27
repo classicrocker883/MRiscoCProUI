@@ -20,20 +20,19 @@
  *
  */
 
-#include "../platforms.h"
-
-#ifdef HAL_STM32
-
 /**
+ * HAL for stm32duino.com based on Libmaple and compatible (STM32F1)
  * Implementation of EEPROM settings in SD Card
  */
 
-#include "../../inc/MarlinConfig.h"
+#ifdef __STM32F1__
+
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(SDCARD_EEPROM_EMULATION)
 
-#include "../shared/eeprom_api.h"
-#include "../../sd/cardreader.h"
+#include "../../shared/eeprom_api.h"
+#include "../../../sd/cardreader.h"
 
 #define EEPROM_FILENAME "eeprom.dat"
 
@@ -42,7 +41,7 @@
 #endif
 size_t PersistentStore::capacity() { return MARLIN_EEPROM_SIZE - eeprom_exclude_size; }
 
-#define _ALIGN(x) __attribute__ ((aligned(x)))
+#define _ALIGN(x) __attribute__ ((aligned(x))) // SDIO uint32_t* compat.
 static char _ALIGN(4) HAL_eeprom_data[MARLIN_EEPROM_SIZE];
 
 bool PersistentStore::access_start() {
@@ -50,7 +49,7 @@ bool PersistentStore::access_start() {
 
   MediaFile file, root = card.getroot();
   if (!file.open(&root, EEPROM_FILENAME, O_RDONLY))
-    return true;
+    return true; // false aborts the save
 
   int bytes_read = file.read(HAL_eeprom_data, MARLIN_EEPROM_SIZE);
   if (bytes_read < 0) return false;
@@ -91,4 +90,4 @@ bool PersistentStore::read_data(int &pos, uint8_t *value, const size_t size, uin
 }
 
 #endif // SDCARD_EEPROM_EMULATION
-#endif // HAL_STM32
+#endif // __STM32F1__

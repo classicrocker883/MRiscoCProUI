@@ -20,19 +20,21 @@
  *
  */
 
+#include "../../platforms.h"
+
+#ifdef HAL_STM32
+
 /**
  * Platform-independent Arduino functions for I2C EEPROM.
  * Enable USE_SHARED_EEPROM if not supplied by the framework.
  */
 
-#ifdef __STM32F1__
-
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(IIC_BL24CXX_EEPROM)
 
-#include "../../libs/BL24CXX.h"
-#include "../shared/eeprom_if.h"
+#include "../../../libs/BL24CXX.h"
+#include "../../shared/eeprom_if.h"
 
 void eeprom_init() { BL24CXX::init(); }
 
@@ -51,4 +53,4 @@ uint8_t eeprom_read_byte(uint8_t *pos) {
 }
 
 #endif // IIC_BL24CXX_EEPROM
-#endif // __STM32F1__
+#endif // HAL_STM32

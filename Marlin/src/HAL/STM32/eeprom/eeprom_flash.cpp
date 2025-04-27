@@ -19,15 +19,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
-#include "../platforms.h"
+#include "../../platforms.h"
 
 #ifdef HAL_STM32
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(FLASH_EEPROM_EMULATION)
 
-#include "../shared/eeprom_api.h"
+#include "../../shared/eeprom_api.h"
 
 // Better: "utility/stm32_eeprom.h", but only after updating stm32duino to 2.0.0
 // Use EEPROM.h for compatibility, for now.
@@ -50,10 +50,10 @@
 
 #if ENABLED(FLASH_EEPROM_LEVELING)
 
-  #include "stm32_def.h"
+  #include <stm32_def.h>
 
   #define DEBUG_OUT ENABLED(EEPROM_CHITCHAT)
-  #include "../../core/debug_out.h"
+  #include "../../../core/debug_out.h"
 
   #ifndef MARLIN_EEPROM_SIZE
     #define MARLIN_EEPROM_SIZE    0x1000 // 4KB
