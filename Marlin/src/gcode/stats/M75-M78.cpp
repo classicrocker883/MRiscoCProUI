@@ -42,7 +42,8 @@
 void GcodeSuite::M75() {
   startOrResumeJob(); // ... ExtUI::onPrintTimerStarted()
   #if ENABLED(DWIN_LCD_PROUI)
-    if (!IS_SD_PRINTING()) DWIN_Print_Header(parser.string_arg && parser.string_arg[0] ? parser.string_arg : GET_TEXT(MSG_HOST_START_PRINT));
+    /// TODO: Remove if M75 <string> is never used
+    if (!card.isStillPrinting()) DWIN_Print_Header(parser.has_string() ? parser.string_arg : GET_TEXT(MSG_HOST_START_PRINT));
   #endif
 }
 

@@ -134,19 +134,20 @@ void tft_lvgl_init() {
 
   hal.watchdog_refresh();     // LVGL init takes time
 
-  #if ENABLED(USB_FLASH_DRIVE_SUPPORT)
-    uint16_t usb_flash_loop = 1000;
-    #if ENABLED(MULTI_VOLUME) && !HAS_SD_HOST_DRIVE
-      if (IS_SD_INSERTED())
-        card.changeMedia(&card.media_driver_sdcard);
+  #if HAS_USB_FLASH_DRIVE
+    #if HAS_MULTI_VOLUME && !HAS_SD_HOST_DRIVE
+      if (card.isSDCardInserted())
+        card.selectMediaSDCard();
       else
-        card.changeMedia(&card.media_driver_usbFlash);
+        card.selectMediaFlashDrive();
     #endif
-    do {
-      card.media_driver_usbFlash.idle();
+    // Wait up to two seconds for USB Drive to mount
+    for (uint16_t usb_flash_loop = 500; --usb_flash_loop;) {
       hal.watchdog_refresh();
-      delay(2);
-    } while (!card.media_driver_usbFlash.isInserted() && usb_flash_loop--);
+      card.media_driver_usbFlash.idle();
+      delay(4);
+      if (card.media_driver_usbFlash.isInserted()) break;
+    }
     card.mount();
   #elif HAS_LOGO_IN_FLASH
     delay(1000);

@@ -5,18 +5,23 @@ def open_file_explorer():
     import subprocess
     from pathlib import Path
     from SCons.Script import DefaultEnvironment
+
     env = DefaultEnvironment()
-    BUILD_PATH = Path(env['PROJECT_BUILD_DIR'], env['PIOENV'])
+    BUILD_PATH = Path(env["PROJECT_BUILD_DIR"], env["PIOENV"])
     script = f"{BUILD_PATH}"
     import platform
     current_OS = platform.system()
-    if current_OS == 'Windows':
+    if current_OS == "Windows":
+        import os
         try:
-            subprocess.run(["start", " ", script], shell=True)
-        except Exception as e:
-            print(f"Could not open File Explorer, an error occurred: {e}")
-    elif current_OS == 'Linux':
+            os.startfile(script)
+        except:
+            try:
+                subprocess.run(["explorer", script], shell=True, text=True, check=True)
+            except Exception as e:
+                print(f"Could not open File Explorer, an error occurred: {e}")
+    elif current_OS == "Linux":
         try:
-            subprocess.run(["xdg-open", script])
+            subprocess.run(["xdg-open", script], text=True, check=True)
         except Exception as e:
             print(f"Could not open File Explorer, an error occurred: {e}")

@@ -160,7 +160,7 @@ uint32_t Planner::max_acceleration_steps_per_s2[DISTINCT_AXES]; // (steps/s^2) D
     float Planner::max_e_jerk[DISTINCT_E];      // Calculated from junction_deviation_mm
   #endif
 #else // CLASSIC_JERK
-  TERN(HAS_LINEAR_E_JERK, xyz_pos_t, xyze_pos_t) Planner::max_jerk;
+  xyze_pos_t Planner::max_jerk;
 #endif
 
 #if ENABLED(SD_ABORT_ON_ENDSTOP_HIT)
@@ -778,12 +778,20 @@ block_t* Planner::get_current_block() {
   return nullptr;
 }
 
+block_t* Planner::get_future_block(const uint8_t offset) {
+  const uint8_t nr_moves = movesplanned();
+  if (nr_moves <= offset) return nullptr;
+  block_t * const block = &block_buffer[block_inc_mod(block_buffer_tail, offset)];
+  if (block->flag.recalculate) return nullptr;
+  return block;
+}
+
 /**
  * Calculate trapezoid parameters, multiplying the entry- and exit-speeds
  * by the provided factors. If entry_factor is 0 don't change the initial_rate.
  * Assumes that the implied initial_rate and final_rate are no less than
  * sqrt(block->acceleration_steps_per_s2 / 2). This is ensured through
- * minimum_planner_speed_sqr / min_entry_speed_sqr though note there's one
+ * minimum_planner_speed_sqr / min_entry_speed_sqr - but there's one
  * exception in recalculate_trapezoids().
  *
  * ############ VERY IMPORTANT ############
@@ -843,13 +851,15 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
     }
   }
 
-  #if ENABLED(S_CURVE_ACCELERATION)
+  #if ANY(S_CURVE_ACCELERATION, SMOOTH_LIN_ADVANCE)
     const float rate_factor = inverse_accel * (STEPPER_TIMER_RATE);
     // Jerk controlled speed requires to express speed versus time, NOT steps
     uint32_t acceleration_time = rate_factor * float(cruise_rate - initial_rate),
-             deceleration_time = rate_factor * float(cruise_rate - final_rate),
+             deceleration_time = rate_factor * float(cruise_rate - final_rate);
+  #endif
+  #if ENABLED(S_CURVE_ACCELERATION)
     // And to offload calculations from the ISR, we also calculate the inverse of those times here
-             acceleration_time_inverse = get_period_inverse(acceleration_time),
+    uint32_t acceleration_time_inverse = get_period_inverse(acceleration_time),
              deceleration_time_inverse = get_period_inverse(deceleration_time);
   #endif
 
@@ -857,16 +867,22 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
   block->accelerate_before = accelerate_steps;
   block->decelerate_start = block->step_event_count - decelerate_steps;
   block->initial_rate = initial_rate;
-  #if ENABLED(S_CURVE_ACCELERATION)
-    block->acceleration_time = acceleration_time;
-    block->deceleration_time = deceleration_time;
-    block->acceleration_time_inverse = acceleration_time_inverse;
-    block->deceleration_time_inverse = deceleration_time_inverse;
-    block->cruise_rate = cruise_rate;
-  #endif
   block->final_rate = final_rate;
 
-  #if ENABLED(LIN_ADVANCE)
+  #if ANY(S_CURVE_ACCELERATION, SMOOTH_LIN_ADVANCE)
+    block->acceleration_time = acceleration_time;
+    block->deceleration_time = deceleration_time;
+    block->cruise_rate = cruise_rate;
+  #endif
+  #if ENABLED(S_CURVE_ACCELERATION)
+    block->acceleration_time_inverse = acceleration_time_inverse;
+    block->deceleration_time_inverse = deceleration_time_inverse;
+  #endif
+  #if ENABLED(SMOOTH_LIN_ADVANCE)
+    block->cruise_time = plateau_steps > 0 ? float(plateau_steps) * float(STEPPER_TIMER_RATE) / float(cruise_rate) : 0;
+  #endif
+
+  #if HAS_ROUGH_LIN_ADVANCE
     if (block->la_advance_rate) {
       const float comp = extruder_advance_K[E_INDEX_N(block->extruder)] * block->steps.e / block->step_event_count;
       block->max_adv_steps = cruise_rate * comp;
@@ -895,30 +911,29 @@ void Planner::calculate_trapezoid_for_block(block_t * const block, const_float_t
      * Laser Trap Power works for all Jerk and Curve modes; however Arc-based moves will have issues since
      * the segments are usually too small.
      */
-    if (cutter.cutter_mode == CUTTER_MODE_CONTINUOUS) {
-      if (planner.laser_inline.status.isPowered && planner.laser_inline.status.isEnabled) {
-        if (block->laser.power > 0) {
-          NOLESS(block->laser.power, laser_power_floor);
-          block->laser.trap_ramp_active_pwr = (block->laser.power - laser_power_floor) * (initial_rate / float(block->nominal_rate)) + laser_power_floor;
-          block->laser.trap_ramp_entry_incr = (block->laser.power - block->laser.trap_ramp_active_pwr) / accelerate_steps;
-          float laser_pwr = block->laser.power * (final_rate / float(block->nominal_rate));
-          NOLESS(laser_pwr, laser_power_floor);
-          block->laser.trap_ramp_exit_decr = (block->laser.power - laser_pwr) / decelerate_steps;
-          #if ENABLED(DEBUG_LASER_TRAP)
-            SERIAL_ECHO_MSG("lp:",block->laser.power);
-            SERIAL_ECHO_MSG("as:",accelerate_steps);
-            SERIAL_ECHO_MSG("ds:",decelerate_steps);
-            SERIAL_ECHO_MSG("p.trap:",block->laser.trap_ramp_active_pwr);
-            SERIAL_ECHO_MSG("p.incr:",block->laser.trap_ramp_entry_incr);
-            SERIAL_ECHO_MSG("p.decr:",block->laser.trap_ramp_exit_decr);
-          #endif
-        }
-        else {
-          block->laser.trap_ramp_active_pwr = 0;
-          block->laser.trap_ramp_entry_incr = 0;
-          block->laser.trap_ramp_exit_decr = 0;
-        }
-
+    if (cutter.cutter_mode == CUTTER_MODE_CONTINUOUS
+      && planner.laser_inline.status.isPowered && planner.laser_inline.status.isEnabled
+    ) {
+      if (block->laser.power > 0) {
+        NOLESS(block->laser.power, laser_power_floor);
+        block->laser.trap_ramp_active_pwr = (block->laser.power - laser_power_floor) * (initial_rate / float(block->nominal_rate)) + laser_power_floor;
+        block->laser.trap_ramp_entry_incr = (block->laser.power - block->laser.trap_ramp_active_pwr) / accelerate_steps;
+        float laser_pwr = block->laser.power * (final_rate / float(block->nominal_rate));
+        NOLESS(laser_pwr, laser_power_floor);
+        block->laser.trap_ramp_exit_decr = (block->laser.power - laser_pwr) / decelerate_steps;
+        #if ENABLED(DEBUG_LASER_TRAP)
+          SERIAL_ECHO_MSG("lp:", block->laser.power);
+          SERIAL_ECHO_MSG("as:", accelerate_steps);
+          SERIAL_ECHO_MSG("ds:", decelerate_steps);
+          SERIAL_ECHO_MSG("p.trap:", block->laser.trap_ramp_active_pwr);
+          SERIAL_ECHO_MSG("p.incr:", block->laser.trap_ramp_entry_incr);
+          SERIAL_ECHO_MSG("p.decr:", block->laser.trap_ramp_exit_decr);
+        #endif
+      }
+      else {
+        block->laser.trap_ramp_active_pwr = 0;
+        block->laser.trap_ramp_entry_incr = 0;
+        block->laser.trap_ramp_exit_decr = 0;
       }
     }
   #endif // LASER_POWER_TRAP
@@ -1188,10 +1203,14 @@ void Planner::recalculate(const_float_t safe_exit_speed_sqr) {
     #define FAN_SET(F) do{ kickstart_fan(fan_speed, ms, F); _FAN_SET(F); }while(0)
 
     const millis_t ms = millis();
-    TERN_(HAS_FAN0, FAN_SET(0)); TERN_(HAS_FAN1, FAN_SET(1));
-    TERN_(HAS_FAN2, FAN_SET(2)); TERN_(HAS_FAN3, FAN_SET(3));
-    TERN_(HAS_FAN4, FAN_SET(4)); TERN_(HAS_FAN5, FAN_SET(5));
-    TERN_(HAS_FAN6, FAN_SET(6)); TERN_(HAS_FAN7, FAN_SET(7));
+    TERN_(HAS_FAN0, FAN_SET(0));
+    TERN_(HAS_FAN1, FAN_SET(1));
+    TERN_(HAS_FAN2, FAN_SET(2));
+    TERN_(HAS_FAN3, FAN_SET(3));
+    TERN_(HAS_FAN4, FAN_SET(4));
+    TERN_(HAS_FAN5, FAN_SET(5));
+    TERN_(HAS_FAN6, FAN_SET(6));
+    TERN_(HAS_FAN7, FAN_SET(7));
   }
 
   #if FAN_KICKSTART_TIME
@@ -1490,7 +1509,7 @@ void Planner::check_axes_activity() {
 
 #if HAS_LEVELING
 
-  TERN(PROUI_EX, ,constexpr) xy_pos_t level_fulcrum = {
+  IF_DISABLED(PROUI_EX, constexpr) xy_pos_t level_fulcrum = {
     TERN(Z_SAFE_HOMING, Z_SAFE_HOMING_X_POINT, X_HOME_POS),
     TERN(Z_SAFE_HOMING, Z_SAFE_HOMING_Y_POINT, Y_HOME_POS)
   };
@@ -1585,7 +1604,9 @@ void Planner::quick_stop() {
   const bool was_enabled = stepper.suspend();
 
   // Drop all queue entries
-  block_buffer_nonbusy = block_buffer_head = block_buffer_tail;
+  const uint8_t tail_value = block_buffer_tail; // Read tail value once
+  block_buffer_head = tail_value;
+  block_buffer_nonbusy = tail_value;
 
   // Restart the block delay for the first movement - As the queue was
   // forced to empty, there's no risk the ISR will touch this.
@@ -1906,8 +1927,12 @@ bool Planner::_populate_block(
   #endif
 
   SECONDARY_AXIS_CODE(
-    dm.i = (dist.i > 0), dm.j = (dist.j > 0), dm.k = (dist.k > 0),
-    dm.u = (dist.u > 0), dm.v = (dist.v > 0), dm.w = (dist.w > 0)
+    dm.i = (dist.i > 0),
+    dm.j = (dist.j > 0),
+    dm.k = (dist.k > 0),
+    dm.u = (dist.u > 0),
+    dm.v = (dist.v > 0),
+    dm.w = (dist.w > 0)
   );
 
   #if HAS_EXTRUDERS
@@ -1957,23 +1982,25 @@ bool Planner::_populate_block(
   // Number of steps for each axis
   // See https://www.corexy.com/theory.html
   block->steps.set(NUM_AXIS_LIST(
-    #if CORE_IS_XY
-      ABS(dist.a + dist.b), ABS(dist.a - dist.b), ABS(dist.c)
-    #elif CORE_IS_XZ
-      ABS(dist.a + dist.c), ABS(dist.b), ABS(dist.a - dist.c)
-    #elif CORE_IS_YZ
-      ABS(dist.a), ABS(dist.b + dist.c), ABS(dist.b - dist.c)
-    #elif ENABLED(MARKFORGED_XY)
-      ABS(dist.a TERN(MARKFORGED_INVERSE, -, +) dist.b), ABS(dist.b), ABS(dist.c)
-    #elif ENABLED(MARKFORGED_YX)
-      ABS(dist.a), ABS(dist.b TERN(MARKFORGED_INVERSE, -, +) dist.a), ABS(dist.c)
-    #elif IS_SCARA
-      ABS(dist.a), ABS(dist.b), ABS(dist.c)
-    #else // default non-h-bot planning
-      ABS(dist.a), ABS(dist.b), ABS(dist.c)
-    #endif
-    , ABS(dist.i), ABS(dist.j), ABS(dist.k), ABS(dist.u), ABS(dist.v), ABS(dist.w)
-  ));
+      #if CORE_IS_XY
+        ABS(dist.a + dist.b), ABS(dist.a - dist.b), ABS(dist.c)
+      #elif CORE_IS_XZ
+        ABS(dist.a + dist.c), ABS(dist.b), ABS(dist.a - dist.c)
+      #elif CORE_IS_YZ
+        ABS(dist.a), ABS(dist.b + dist.c), ABS(dist.b - dist.c)
+      #elif ENABLED(MARKFORGED_XY)
+        ABS(dist.a TERN(MARKFORGED_INVERSE, -, +) dist.b), ABS(dist.b), ABS(dist.c)
+      #elif ENABLED(MARKFORGED_YX)
+        ABS(dist.a), ABS(dist.b TERN(MARKFORGED_INVERSE, -, +) dist.a), ABS(dist.c)
+      #elif IS_SCARA
+        ABS(dist.a), ABS(dist.b), ABS(dist.c)
+      #else // default non-h-bot planning
+        ABS(dist.a), ABS(dist.b), ABS(dist.c)
+      #endif
+      , ABS(dist.i), ABS(dist.j), ABS(dist.k)
+      , ABS(dist.u), ABS(dist.v), ABS(dist.w)
+    )
+  );
 
   /**
    * This part of the code calculates the total length of the movement.
@@ -2024,8 +2051,12 @@ bool Planner::_populate_block(
   #endif
 
   SECONDARY_AXIS_CODE(
-    dist_mm.i = dist.i * mm_per_step[I_AXIS], dist_mm.j = dist.j * mm_per_step[J_AXIS], dist_mm.k = dist.k * mm_per_step[K_AXIS],
-    dist_mm.u = dist.u * mm_per_step[U_AXIS], dist_mm.v = dist.v * mm_per_step[V_AXIS], dist_mm.w = dist.w * mm_per_step[W_AXIS]
+    dist_mm.i = dist.i * mm_per_step[I_AXIS],
+    dist_mm.j = dist.j * mm_per_step[J_AXIS],
+    dist_mm.k = dist.k * mm_per_step[K_AXIS],
+    dist_mm.u = dist.u * mm_per_step[U_AXIS],
+    dist_mm.v = dist.v * mm_per_step[V_AXIS],
+    dist_mm.w = dist.w * mm_per_step[W_AXIS]
   );
 
   TERN_(HAS_EXTRUDERS, dist_mm.e = esteps_float * mm_per_step[E_AXIS_N(extruder)]);
@@ -2036,10 +2067,16 @@ bool Planner::_populate_block(
     bool cartesian_move = hints.cartesian_move;
   #endif
 
-  if (true NUM_AXIS_GANG(
-      && (block->steps.a < MIN_STEPS_PER_SEGMENT), && (block->steps.b < MIN_STEPS_PER_SEGMENT), && (block->steps.c < MIN_STEPS_PER_SEGMENT),
-      && (block->steps.i < MIN_STEPS_PER_SEGMENT), && (block->steps.j < MIN_STEPS_PER_SEGMENT), && (block->steps.k < MIN_STEPS_PER_SEGMENT),
-      && (block->steps.u < MIN_STEPS_PER_SEGMENT), && (block->steps.v < MIN_STEPS_PER_SEGMENT), && (block->steps.w < MIN_STEPS_PER_SEGMENT)
+  if (true NUM_AXIS_GANG (
+      && (block->steps.a < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.b < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.c < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.i < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.j < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.k < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.u < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.v < MIN_STEPS_PER_SEGMENT),
+      && (block->steps.w < MIN_STEPS_PER_SEGMENT)
     )
   ) {
     block->millimeters = TERN0(HAS_EXTRUDERS, ABS(dist_mm.e));
@@ -2082,11 +2119,19 @@ bool Planner::_populate_block(
 
   block->step_event_count = (
     #if NUM_AXES
-      _MAX(LOGICAL_AXIS_LIST(esteps,
-        block->steps.a, block->steps.b, block->steps.c,
-        block->steps.i, block->steps.j, block->steps.k,
-        block->steps.u, block->steps.v, block->steps.w
-      ))
+      _MAX(LOGICAL_AXIS_LIST (
+          esteps,
+          block->steps.a,
+          block->steps.b,
+          block->steps.c,
+          block->steps.i,
+          block->steps.j,
+          block->steps.k,
+          block->steps.u,
+          block->steps.v,
+          block->steps.w
+        )
+      )
     #elif HAS_EXTRUDERS
       esteps
     #endif
@@ -2179,12 +2224,12 @@ bool Planner::_populate_block(
         #define _IS_DUPE(N) TERN0(HAS_DUPLICATION_MODE, (extruder_duplication_enabled && TERN1(MULTI_NOZZLE_DUPLICATION, TEST(duplication_e_mask, N))))
 
         #define ENABLE_ONE_E(N) do{ \
-          if (N == E_STEPPER_INDEX(extruder) || _IS_DUPE(N)) {  /* N is 'extruder', or N is duplicating */ \
-            stepper.ENABLE_EXTRUDER(N);                         /* Enable the relevant E stepper... */ \
-            extruder_last_move[N] = (BLOCK_BUFFER_SIZE) * 2;    /* ...and reset its counter */ \
+          if (N == E_STEPPER_INDEX(extruder) || _IS_DUPE(N)) { /* N is 'extruder', or N is duplicating */ \
+            stepper.ENABLE_EXTRUDER(N);                        /* Enable the relevant E stepper... */ \
+            extruder_last_move[N] = (BLOCK_BUFFER_SIZE) * 2;   /* ...and reset its counter */ \
           } \
-          else if (!extruder_last_move[N])                      /* Counter expired since last E stepper enable */ \
-            stepper.DISABLE_EXTRUDER(N);                        /* Disable the E stepper */ \
+          else if (!extruder_last_move[N])                     /* Counter expired since last E stepper enable */ \
+            stepper.DISABLE_EXTRUDER(N);                       /* Disable the E stepper */ \
         }while(0);
 
       #else
@@ -2364,8 +2409,8 @@ bool Planner::_populate_block(
   #if ENABLED(LIN_ADVANCE)
     bool use_advance_lead = false;
   #endif
-  if (!ANY_AXIS_MOVES(block)) {                                   // Is this a retract / recover move?
-    accel = CEIL(settings.retract_acceleration * steps_per_mm);   // Convert to: acceleration steps/sec^2
+  if (!ANY_AXIS_MOVES(block)) {                                 // Is this a retract / recover move?
+    accel = CEIL(settings.retract_acceleration * steps_per_mm); // Convert to: acceleration steps/sec^2
   }
   else {
     #define LIMIT_ACCEL_LONG(AXIS,INDX) do{ \
@@ -2413,58 +2458,73 @@ bool Planner::_populate_block(
         if (e_D_ratio > 3.0f)
           use_advance_lead = false;
         else {
-          // Scale E acceleration so that it will be possible to jump to the advance speed.
-          const uint32_t max_accel_steps_per_s2 = MAX_E_JERK(extruder) / (extruder_advance_K[E_INDEX_N(extruder)] * e_D_ratio) * steps_per_mm;
-          if (accel > max_accel_steps_per_s2) {
-            accel = max_accel_steps_per_s2;
-            if (ENABLED(LA_DEBUG)) SERIAL_ECHOLNPGM("Acceleration limited.");
-          }
+          #if HAS_ROUGH_LIN_ADVANCE
+            // Scale E acceleration so that it will be possible to jump to the advance speed.
+            const uint32_t max_accel_steps_per_s2 = MAX_E_JERK(extruder) / (extruder_advance_K[E_INDEX_N(extruder)] * e_D_ratio) * steps_per_mm;
+            if (accel > max_accel_steps_per_s2) {
+              accel = max_accel_steps_per_s2;
+              if (TERN0(LA_DEBUG, DEBUGGING(INFO))) SERIAL_ECHOLNPGM("Acceleration limited.");
+            }
+          #endif
         }
       }
-    #endif
+    #endif // LIN_ADVANCE
 
     // Limit acceleration per axis
     if (block->step_event_count <= acceleration_long_cutoff) {
       LOGICAL_AXIS_CODE(
         LIMIT_ACCEL_LONG(E_AXIS, E_INDEX_N(extruder)),
-        LIMIT_ACCEL_LONG(A_AXIS, 0), LIMIT_ACCEL_LONG(B_AXIS, 0), LIMIT_ACCEL_LONG(C_AXIS, 0),
-        LIMIT_ACCEL_LONG(I_AXIS, 0), LIMIT_ACCEL_LONG(J_AXIS, 0), LIMIT_ACCEL_LONG(K_AXIS, 0),
-        LIMIT_ACCEL_LONG(U_AXIS, 0), LIMIT_ACCEL_LONG(V_AXIS, 0), LIMIT_ACCEL_LONG(W_AXIS, 0)
+        LIMIT_ACCEL_LONG(A_AXIS, 0),
+        LIMIT_ACCEL_LONG(B_AXIS, 0),
+        LIMIT_ACCEL_LONG(C_AXIS, 0),
+        LIMIT_ACCEL_LONG(I_AXIS, 0),
+        LIMIT_ACCEL_LONG(J_AXIS, 0),
+        LIMIT_ACCEL_LONG(K_AXIS, 0),
+        LIMIT_ACCEL_LONG(U_AXIS, 0),
+        LIMIT_ACCEL_LONG(V_AXIS, 0),
+        LIMIT_ACCEL_LONG(W_AXIS, 0)
       );
     }
     else {
       LOGICAL_AXIS_CODE(
         LIMIT_ACCEL_FLOAT(E_AXIS, E_INDEX_N(extruder)),
-        LIMIT_ACCEL_FLOAT(A_AXIS, 0), LIMIT_ACCEL_FLOAT(B_AXIS, 0), LIMIT_ACCEL_FLOAT(C_AXIS, 0),
-        LIMIT_ACCEL_FLOAT(I_AXIS, 0), LIMIT_ACCEL_FLOAT(J_AXIS, 0), LIMIT_ACCEL_FLOAT(K_AXIS, 0),
-        LIMIT_ACCEL_FLOAT(U_AXIS, 0), LIMIT_ACCEL_FLOAT(V_AXIS, 0), LIMIT_ACCEL_FLOAT(W_AXIS, 0)
+        LIMIT_ACCEL_FLOAT(A_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(B_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(C_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(I_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(J_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(K_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(U_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(V_AXIS, 0),
+        LIMIT_ACCEL_FLOAT(W_AXIS, 0)
       );
     }
   }
   block->acceleration_steps_per_s2 = accel;
   block->acceleration = accel / steps_per_mm;
   #if DISABLED(S_CURVE_ACCELERATION)
-    block->acceleration_rate = (uint32_t)(accel * (float(1UL << 24) / (STEPPER_TIMER_RATE)));
+    block->acceleration_rate = uint32_t(accel * (float(1UL << 24) / (STEPPER_TIMER_RATE)));
   #endif
 
-  #if ENABLED(LIN_ADVANCE)
+  #if HAS_ROUGH_LIN_ADVANCE
     block->la_advance_rate = 0;
     block->la_scaling = 0;
-
     if (use_advance_lead) {
-      // the Bresenham algorithm will convert this step rate into extruder steps
+      // The Bresenham algorithm will convert this step rate into extruder steps
       block->la_advance_rate = extruder_advance_K[E_INDEX_N(extruder)] * block->acceleration_steps_per_s2;
 
-      // reduce LA ISR frequency by calling it only often enough to ensure that there will
+      // Reduce LA ISR frequency by calling it only often enough to ensure that there will
       // never be more than four extruder steps per call
       for (uint32_t dividend = block->steps.e << 1; dividend <= (block->step_event_count >> 2); dividend <<= 1)
         block->la_scaling++;
 
-      #if ENABLED(LA_DEBUG)
-        if (block->la_advance_rate >> block->la_scaling > 10000)
+      // Output debugging if the rate gets very high
+      if (TERN0(LA_DEBUG, DEBUGGING(INFO)) && block->la_advance_rate >> block->la_scaling > 10000)
           SERIAL_ECHOLNPGM("eISR running at > 10kHz: ", block->la_advance_rate);
-      #endif
     }
+  #elif ENABLED(SMOOTH_LIN_ADVANCE)
+    block->use_advance_lead = use_advance_lead;
+    block->e_step_ratio = (block->direction_bits.e ? 1 : -1) * float(block->steps.e) / block->step_event_count;
   #endif
 
   // Formula for the average speed over a 1 step worth of distance if starting from zero and
@@ -2519,10 +2579,18 @@ bool Planner::_populate_block(
       #if HAS_DIST_MM_ARG
         cart_dist_mm
       #else
-        LOGICAL_AXIS_ARRAY(dist_mm.e,
-          dist_mm.x, dist_mm.y, dist_mm.z,
-          dist_mm.i, dist_mm.j, dist_mm.k,
-          dist_mm.u, dist_mm.v, dist_mm.w)
+        LOGICAL_AXIS_ARRAY(
+          dist_mm.e,
+          dist_mm.x,
+          dist_mm.y,
+          dist_mm.z,
+          dist_mm.i,
+          dist_mm.j,
+          dist_mm.k,
+          dist_mm.u,
+          dist_mm.v,
+          dist_mm.w
+        )
       #endif
     ;
 
@@ -2692,7 +2760,8 @@ bool Planner::_populate_block(
       }
     #endif
 
-    #if ENABLED(LIN_ADVANCE)
+    // In the SMOOTH_LIN_ADVANCE case, the extra jerk will be applied by the residual current la_step_rate.
+    #if HAS_ROUGH_LIN_ADVANCE
       // Advance affects E_AXIS speed and therefore jerk. Add a speed correction whenever
       // LA is turned OFF. No correction is applied when LA is turned ON (because it didn't
       // perform well; it takes more time/effort to push/melt filament than the reverse).
@@ -2707,7 +2776,7 @@ bool Planner::_populate_block(
       // Prepare for next segment.
       previous_advance_rate = block->la_advance_rate;
       previous_e_mm_per_step = mm_per_step[E_AXIS_N(extruder)];
-    #endif
+    #endif // HAS_ROUGH_LIN_ADVANCE
 
     xyze_float_t speed_diff = current_speed;
     float vmax_junction;
@@ -2762,7 +2831,7 @@ bool Planner::_populate_block(
   previous_speed = current_speed;
   previous_nominal_speed = block->nominal_speed;
 
-  position = target;  // Update the position
+  position = target; // Update the position
 
   #if ENABLED(POWER_LOSS_RECOVERY)
     block->sdpos = recovery.command_sdpos();
@@ -2772,7 +2841,7 @@ bool Planner::_populate_block(
   TERN_(HAS_POSITION_FLOAT, position_float = target_float);
   TERN_(GRADIENT_MIX, mixer.gradient_control(target_float.z));
 
-  return true;        // Movement was accepted
+  return true;       // Movement was accepted
 
 } // _populate_block()
 
@@ -2836,7 +2905,7 @@ void Planner::buffer_sync_block(const BlockFlagBit sync_flag/*=BLOCK_BIT_SYNC_PO
  * @param extruder      Optional target extruder (otherwise active_extruder)
  * @param hints         Optional parameters to aid planner calculations
  *
- * @return  false if no segment was queued due to cleaning, cold extrusion, full queue, etc...
+ * @return  false if no segment was queued due to cleaning, cold extrusion, full queue, etc.
  */
 bool Planner::buffer_segment(const abce_pos_t &abce
   OPTARG(HAS_DIST_MM_ARG, const xyze_float_t &cart_dist_mm),
@@ -2979,15 +3048,27 @@ bool Planner::buffer_line(const xyze_pos_t &cart, const_feedRate_t fr_mm_s,
     #if HAS_JUNCTION_DEVIATION
       const xyze_pos_t cart_dist_mm = LOGICAL_AXIS_ARRAY(
         cart.e - position_cart.e,
-        cart.x - position_cart.x, cart.y - position_cart.y, cart.z - position_cart.z,
-        cart.i - position_cart.i, cart.j - position_cart.j, cart.k - position_cart.k,
-        cart.u - position_cart.u, cart.v - position_cart.v, cart.w - position_cart.w
+        cart.x - position_cart.x,
+        cart.y - position_cart.y,
+        cart.z - position_cart.z,
+        cart.i - position_cart.i,
+        cart.j - position_cart.j,
+        cart.k - position_cart.k,
+        cart.u - position_cart.u,
+        cart.v - position_cart.v,
+        cart.w - position_cart.w
       );
     #else
       const xyz_pos_t cart_dist_mm = NUM_AXIS_ARRAY(
-        cart.x - position_cart.x, cart.y - position_cart.y, cart.z - position_cart.z,
-        cart.i - position_cart.i, cart.j - position_cart.j, cart.k - position_cart.k,
-        cart.u - position_cart.u, cart.v - position_cart.v, cart.w - position_cart.w
+        cart.x - position_cart.x,
+        cart.y - position_cart.y,
+        cart.z - position_cart.z,
+        cart.i - position_cart.i,
+        cart.j - position_cart.j,
+        cart.k - position_cart.k,
+        cart.u - position_cart.u,
+        cart.v - position_cart.v,
+        cart.w - position_cart.w
       );
     #endif
 
@@ -3306,9 +3387,15 @@ void Planner::set_max_feedrate(const AxisEnum axis, float inMaxFeedrateMMS) {
         #else
           LOGICAL_AXIS_ARRAY(
             (DEFAULT_EJERK) * 2,
-            (DEFAULT_XJERK) * 2, (DEFAULT_YJERK) * 2, (DEFAULT_ZJERK) * 2,
-            (DEFAULT_IJERK) * 2, (DEFAULT_JJERK) * 2, (DEFAULT_KJERK) * 2,
-            (DEFAULT_UJERK) * 2, (DEFAULT_VJERK) * 2, (DEFAULT_WJERK) * 2
+            (DEFAULT_XJERK) * 2,
+            (DEFAULT_YJERK) * 2,
+            (DEFAULT_ZJERK) * 2,
+            (DEFAULT_IJERK) * 2,
+            (DEFAULT_JJERK) * 2,
+            (DEFAULT_KJERK) * 2,
+            (DEFAULT_UJERK) * 2,
+            (DEFAULT_VJERK) * 2,
+            (DEFAULT_WJERK) * 2
           )
         #endif
       ;

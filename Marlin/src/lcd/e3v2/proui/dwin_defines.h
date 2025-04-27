@@ -29,10 +29,8 @@
 
 #if HAS_MESH
   #define PROUI_MESH_EDIT     // Add a menu to edit mesh inset + points
-  #if ENABLED(PROUI_MESH_EDIT)
-    #define Z_OFFSET_MIN -3.0 // (mm)
-    #define Z_OFFSET_MAX  3.0 // (mm)
-  #endif
+  #define Z_OFFSET_MIN -3.0 // (mm)
+  #define Z_OFFSET_MAX  3.0 // (mm)
 #endif
 
 #if ENABLED(HYBRID_THRESHOLD)
@@ -159,6 +157,16 @@
     #undef  INVERT_E0_DIR
     #define INVERT_E0_DIR PRO_data.Invert_E0
   #endif
+#if ENABLED(PROUI_MESH_EDIT)
+  #undef  MESH_MIN_X
+  #undef  MESH_MAX_X
+  #undef  MESH_MIN_Y
+  #undef  MESH_MAX_Y
+  #define MESH_MIN_X (float)PRO_data.mesh_min_x
+  #define MESH_MAX_X (float)PRO_data.mesh_max_x
+  #define MESH_MIN_Y (float)PRO_data.mesh_min_y
+  #define MESH_MAX_Y (float)PRO_data.mesh_max_y
+#endif
 
 #else
 
@@ -187,15 +195,15 @@
     #undef  INVERT_E0_DIR
     #define INVERT_E0_DIR HMI_data.Invert_E0
   #endif
-#endif // PROUI_EX
-
 #if ENABLED(PROUI_MESH_EDIT)
   #undef  MESH_MIN_X
   #undef  MESH_MAX_X
   #undef  MESH_MIN_Y
   #undef  MESH_MAX_Y
-  #define MESH_MIN_X meshSet.mesh_min_x
-  #define MESH_MAX_X meshSet.mesh_max_x
-  #define MESH_MIN_Y meshSet.mesh_min_y
-  #define MESH_MAX_Y meshSet.mesh_max_y
+  #define MESH_MIN_X (float)meshSet.mesh_min_x
+  #define MESH_MAX_X (float)meshSet.mesh_max_x
+  #define MESH_MIN_Y (float)meshSet.mesh_min_y
+  #define MESH_MAX_Y (float)meshSet.mesh_max_y
 #endif
+
+#endif // PROUI_EX

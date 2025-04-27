@@ -8,6 +8,10 @@
 ![HC32 Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs-HC32.yml/badge.svg)  
 ![Ender Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs_Ender.yml/badge.svg)
 
+### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about *this* firmware and the features it provides
+
+<br>
+
 **Don't forget to checkout the [thingiverse](https://www.thingiverse.com/classicrocker883/designs) models I've designed:**
 
 [Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender 3 V2
@@ -29,7 +33,7 @@
 
 ### - Please read this: -
 > [!NOTE]
-Many Updates have been included in the most recent MRiscoCProUI for the **2024-December** release.
+Many Updates have been included in the most recent MRiscoCProUI for the **2025-April** release.
 This release has many changes to the **UI**.
 New ICON's have been added, and old ones enhanced. Whoever edited them before saved directly as .*JPG* which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
 >
@@ -67,18 +71,23 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 
 <br>
 
-### MarlinSimulator.exe Instructions
+### MarlinSimulator Instructions
+There is a *MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
-There is a *MarlinSimulator.exe* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
+The *MarlinSimulator* can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.  
+To create *MarlinSimulator* with your own build, start in **Configuration.h** and change the `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`.  
+You may need to change `#define INVERT_E0_DIR HMI_data.Invert_E0` to `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **dwin_defines.h**. 
+Then in **platformio.ini** change to `simulator_windows` in `default_envs =` (for Windows) / `simulator_linux_release` `default_envs =` (for Linux).  
+If there is an error, add `-fno-lto` to `build_flags =` in **native.ini**.
+For MacOS you're on your own...sorry.
 
-To create your own MarlinSimulator with your own build, start by changing in Configuration.h **MOTHERBOARD** to *BOARD_SIMULATED*, also disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`, and then in platformio.ini **default_envs =** change to *simulator_windows*. The MarlinSimulator can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.
+Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.  
+Or for the latest releast go to [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for the latest **SDL2** version (**NOT** *SDL3*)  
+You can *either* copy/paste the files directly, or install them.  
+It's recommended to install them, but if you have any issues, then try copy/paste method.
 
-Then you have to extract **SDL2-devel-2.30.5-mingw.zip** from /**docs**.
-You can either copy/paste the files directly, or install them.
-
-32-bit files are in \i686-w64-mingw32
-64-bit files are in \x86_64-w64-mingw32
-Navigate to the SDL2 directory in an *MSYS2 MINGW64* terminal (Run as Administrator):
+#### Install Files (Windows)
+Navigate to the extracted SDL2 directory in an *MSYS2* or *bash* terminal (Run as Administrator):
 
 To install SDL for native (32-bit) development:
 >     make native
@@ -86,17 +95,31 @@ To install SDL for native (32-bit) development:
 To install SDL for cross-compiling development:
 >     make cross
 
-Recommended for 64-bit - If you receive an error, then try the following:
+It's recommended to do both `make native` and `make cross`.
+
+For 64-bit - If you receive an error, then try the following:
 >     make install-package arch=x86_64-w64-mingw32 prefix=/usr
 
-You may have to first Build so the directory can be created, but you can:
-**Copy** the contents of ~\SDL2-2.30.5\x86_64-w64-mingw32\include\SDL2\\* into the directory ~\.pio\libdeps\simulator_windows\\**imgui**
--OR-
-**Copy** the just folder ~\SDL2-2.30.5\x86_64-w64-mingw32\include\\**SDL2** into the directory ~\.pio\libdeps\\*simulator_windows*
+#### Alternative SDL2 Install
+**Copy/Paste Files**  
+You may have to first Build so the directory can be created, but you can:  
+- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\SDL2\\*, paste into the directory ~\.pio\libdeps\simulator_windows\\**imgui**  
+
+-OR-  
+
+- **Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory ~\.pio\libdeps\\*simulator_windows*
 
 Once all that is done, just Build like you would normally and *MarlinSimulator.exe* will be created.
 
-For MacOS or Linux, you're on your own...sorry.
+#### Install Files (Linux)
+These are the files you need to install:  
+`sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev`  
+- There may be other basic ones if you don't have already; like python, cmake, pip...
+
+#### Using MarlinSimulator
+- Under `SD Card`, under `Components` on the right side, select or load an image
+- Select Serial Monitor(1)
+- Use like a normal terminal, enter `G28` to watch it Home
 
 <br>
 
@@ -114,11 +137,10 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 <br>
 
 ## Donations
-
-Thank you for your support.
-Please consider making a donation, as large or as small and as often as you'd like.
-[Ko-fi](https://ko-fi.com/classicrocker883)
-[Venmo](https://venmo.com/u/andrewleduc88)
+Thank you for your support.  
+Please consider making a donation, as large or as small and as often as you'd like.  
+[Ko-fi](https://ko-fi.com/classicrocker883)  
+[Venmo](https://venmo.com/u/andrewleduc88)  
 [Paypal](https://www.paypal.com/paypalme/andrewleduc)
 
 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal**
@@ -147,7 +169,6 @@ Please consider making a donation, as large or as small and as often as you'd li
 <br>
 
 ## Marlin Support
-
 The Issue Queue is reserved for Bug Reports and Feature Requests. Please use the following resources for help with configuration and troubleshooting:
 
 - [Marlin Documentation](//marlinfw.org) - Official Marlin documentation
@@ -160,7 +181,6 @@ The Issue Queue is reserved for Bug Reports and Feature Requests. Please use the
 <br>
 
 ## Credits
-
 Thanks to Reddit u/schuh8 and GitHub @whasupjohn for donating his board to help test the firmware.
 <p>
 <details>
@@ -181,8 +201,9 @@ The fork for H32|HC32 firmware is maintained by [@shadow578](https://github.com/
 
 Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
 
-## Star History
+<br>
 
+## Star History
 <a id="starchart" href="https://star-history.com/#classicrocker883/MRiscoCProUI&Date">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date&theme=dark" />
@@ -206,7 +227,6 @@ VS Code is an IDE program owned and maintained by Microsoft.
 <br>
 
 ## Disclaimer
-
 THIS FIRMWARE AND ALL OTHER FILES IN THE DOWNLOAD ARE PROVIDED FREE OF CHARGE WITH NO WARRANTY OR GUARANTEE. SUPPORT IS NOT INCLUDED JUST BECAUSE YOU DOWNLOADED THE FIRMWARE. WE ARE NOT LIABLE FOR ANY DAMAGE TO YOUR PRINTER, PERSON, OR ANY OTHER PROPERTY DUE TO USE OF THIS FIRMWARE. IF YOU DO NOT AGREE TO THESE TERMS THEN DO NOT USE THE FIRMWARE.
 
 <br>

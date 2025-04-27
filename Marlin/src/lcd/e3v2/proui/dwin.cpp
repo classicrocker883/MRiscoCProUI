@@ -130,9 +130,11 @@
   #endif
 #endif
 
-// Juntion deviation limits
-#define MIN_JD_MM 0.001f
-#define MAX_JD_MM TERN(LIN_ADVANCE, 0.3f, 0.5f)
+// Junction deviation limits
+#if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
+  #define MIN_JD_MM 0.01f
+  #define MAX_JD_MM TERN(LIN_ADVANCE, 0.3f, 0.5f)
+#endif
 
 #if HAS_TRINAMIC_CONFIG
   #define MIN_TMC_CURRENT 100
@@ -1281,8 +1283,8 @@ void Draw_Main_Area() {
 void HMI_WaitForUser() {
   EncoderState encoder_diffState = get_encoder_state();
   if ((encoder_diffState != ENCODER_DIFF_NO) && !ui.backlight) {
-    if (checkkey == WaitResponse) { HMI_ReturnScreen(); }
-    return ui.refresh_brightness();
+    ui.refresh_brightness();
+    return HMI_ReturnScreen();
   }
   if (!wait_for_user) {
     switch (checkkey) {
@@ -1337,7 +1339,7 @@ void EachMomentUpdate() {
 
   if (ELAPSED(ms, next_var_update_ms)) {
     next_var_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
-    blink ^= true;
+    FLIP(blink);
     update_variable();
     switch(checkkey) {
       #if HAS_ESDIAG
@@ -2143,6 +2145,10 @@ void DWIN_SetDataDefaults() {
     PRO_data.z_max_pos  = DEF_Z_MAX_POS;
     #if HAS_MESH
       PRO_data.grid_max_points = DEF_GRID_MAX_POINTS;
+      PRO_data.mesh_min_x = DEF_MESH_MIN_X;
+      PRO_data.mesh_max_x = DEF_MESH_MAX_X;
+      PRO_data.mesh_min_y = DEF_MESH_MIN_Y;
+      PRO_data.mesh_max_y = DEF_MESH_MAX_Y;
     #endif
     #if HAS_BED_PROBE
       PRO_data.zprobefeedslow = DEF_Z_PROBE_FEEDRATE_SLOW;
@@ -2186,9 +2192,9 @@ void DWIN_CopySettingsTo(char * const buff) {
 void DWIN_CopySettingsFrom(PGM_P const buff) {
   DEBUG_ECHOLNPGM("DWIN_CopySettingsFrom");
   memcpy(&HMI_data, buff, sizeof(HMI_data_t));
-  TERN_(PROUI_EX, memcpy(&PRO_data, buff + sizeof(HMI_data_t), sizeof(PRO_data_t));)
   #if PROUI_EX
-    ProEx.SetData();
+    memcpy(&PRO_data, buff + sizeof(HMI_data_t), sizeof(PRO_data_t));
+    ProEx.LoadSettings();
   #elif ENABLED(MESH_BED_LEVELING)
     SetData();
   #endif
@@ -2310,7 +2316,16 @@ void MarlinUI::update() {
 }
 
 #if HAS_LCD_BRIGHTNESS
-  void MarlinUI::_set_brightness() { DWIN_LCD_Brightness(backlight ? brightness : 0); }
+  void MarlinUI::_set_brightness() {
+    if (backlight) {
+      DWIN_LCD_Brightness(brightness);
+      wait_for_user = false;
+    }
+    else {
+      DWIN_LCD_Brightness(0);
+      wait_for_user = true;
+    }
+  }
 #endif
 
 void MarlinUI::kill_screen(FSTR_P const lcd_error, FSTR_P const) {
@@ -2505,7 +2520,7 @@ void ApplyMove() {
   void SetBaud250K() { queue.inject(F("M575B250")); }
   void SetBaudRate() {
     Toggle_Chkb_Line(HMI_data.Baud250K);
-    if (HMI_data.Baud250K) { SetBaud250K(); } else { SetBaud115K(); }
+    HMI_data.Baud250K ? SetBaud250K() : SetBaud115K();
   }
 #endif
 
@@ -2513,7 +2528,7 @@ void ApplyMove() {
   void ApplyBrightness() { ui.set_brightness(MenuData.Value); }
   void LiveBrightness() { DWIN_LCD_Brightness(MenuData.Value); }
   void SetBrightness() { SetIntOnClick(LCD_BRIGHTNESS_MIN, LCD_BRIGHTNESS_MAX, ui.brightness, ApplyBrightness, LiveBrightness); }
-  void TurnOffBacklight() { HMI_SaveProcessID(WaitResponse); ui.set_brightness(0); DWIN_RedrawScreen(); }
+  void TurnOffBacklight() { ui.set_brightness(0); DWIN_RedrawScreen(); }
 #endif
 
 #if ENABLED(CASE_LIGHT_MENU)
@@ -3081,13 +3096,17 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
   #if HAS_HOTEND
     void SetMaxJerkE() { HMI_value.axis = E_AXIS; SetFloatOnClick(min_jerk_edit_values.e, max_jerk_edit_values.e, UNITFDIGITS, planner.max_jerk.e, ApplyMaxJerk); }
   #endif
-#elif HAS_JUNCTION_DEVIATION
+#elif ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
   void ApplyJDmm() { TERN_(LIN_ADVANCE, planner.recalculate_max_e_jerk();) }
   void SetJDmm() { SetPFloatOnClick(MIN_JD_MM, MAX_JD_MM, 3, ApplyJDmm); }
 #endif
 
-#if ENABLED(LIN_ADVANCE)
+#if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
   void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
+  #if ENABLED(SMOOTH_LIN_ADVANCE)
+    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
+    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
+  #endif
 #endif
 
 #if HAS_X_AXIS
@@ -3216,7 +3235,11 @@ void ReturnToPreviousMenu() {
   if (PreviousMenu == FileMenu)         return Draw_Print_File_Menu();
   if (PreviousMenu == PrepareMenu)      return Draw_Prepare_Menu();
   #if HAS_TOOLBAR
-    else if (CurrentMenu == ZOffsetWizMenu) { DWIN_ResetStatusLine(); Goto_Main_Menu(); return Goto_ToolBar(); }
+    else if (CurrentMenu == ZOffsetWizMenu) {
+      DWIN_ResetStatusLine();
+      Goto_Main_Menu();
+      return Goto_ToolBar();
+    }
   #endif
 }
 
@@ -3510,7 +3533,7 @@ void Draw_Tune_Menu() {
     if (laser_device.is_laser_device()) return LCD_MESSAGE_F("Not available in laser mode");
   #endif
   checkkey = Menu;
-  if (SET_MENU(TuneMenu, MSG_TUNE, 23)) {
+  if (SET_MENU(TuneMenu, MSG_TUNE, 24)) {
     BACK_ITEM(Goto_PrintProcess);
     #if HAS_LCD_BRIGHTNESS
       MENU_ITEM(ICON_Box, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
@@ -3562,6 +3585,10 @@ void Draw_Tune_Menu() {
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
+      #if ENABLED(SMOOTH_LIN_ADVANCE)
+        float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal);
+      #endif
     #endif
     #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
       EDIT_ITEM(ICON_RemainTime, MSG_SCREEN_TIMEOUT, onDrawPInt8Menu, SetTimer, &ui.backlight_timeout_minutes);
@@ -3640,16 +3667,16 @@ void Draw_Tune_Menu() {
 
 #if HAS_TRINAMIC_CONFIG
 
-  #if AXIS_IS_TMC(X)
+  #if X_IS_TRINAMIC
     void SetXTMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperX.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(Y)
+  #if Y_IS_TRINAMIC
     void SetYTMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperY.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(Z)
+  #if Z_IS_TRINAMIC
     void SetZTMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperZ.refresh_stepper_current(); }); }
   #endif
-  #if AXIS_IS_TMC(E0)
+  #if E0_IS_TRINAMIC
     void SetETMCCurrent() { SetPIntOnClick(MIN_TMC_CURRENT, MAX_TMC_CURRENT, []{ stepperE0.refresh_stepper_current(); }); }
   #endif
 
@@ -3671,18 +3698,10 @@ void Draw_Tune_Menu() {
     checkkey = Menu;
     if (SET_MENU(TrinamicConfigMenu, MSG_TMC_DRIVERS, 5 PLUS_TERN0(STEALTHCHOP_MENU, 4) PLUS_TERN0(HYBRID_THRESHOLD_MENU, 4))) {
       BACK_ITEM(ReturnToPreviousMenu);
-      #if AXIS_IS_TMC(X)
-        EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ACURRENT, onDrawPIntMenu, SetXTMCCurrent, &stepperX.val_mA);
-      #endif
-      #if AXIS_IS_TMC(Y)
-        EDIT_ITEM(ICON_TMCYSet, MSG_TMC_BCURRENT, onDrawPIntMenu, SetYTMCCurrent, &stepperY.val_mA);
-      #endif
-      #if AXIS_IS_TMC(Z)
-        EDIT_ITEM(ICON_TMCZSet, MSG_TMC_CCURRENT, onDrawPIntMenu, SetZTMCCurrent, &stepperZ.val_mA);
-      #endif
-      #if AXIS_IS_TMC(E0)
-        EDIT_ITEM(ICON_TMCESet, MSG_TMC_ECURRENT, onDrawPIntMenu, SetETMCCurrent, &stepperE0.val_mA);
-      #endif
+      TERN_(X_IS_TRINAMIC,  EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ACURRENT, onDrawPIntMenu, SetXTMCCurrent, &stepperX.val_mA));
+      TERN_(Y_IS_TRINAMIC,  EDIT_ITEM(ICON_TMCYSet, MSG_TMC_BCURRENT, onDrawPIntMenu, SetYTMCCurrent, &stepperY.val_mA));
+      TERN_(Z_IS_TRINAMIC,  EDIT_ITEM(ICON_TMCZSet, MSG_TMC_CCURRENT, onDrawPIntMenu, SetZTMCCurrent, &stepperZ.val_mA));
+      TERN_(E0_IS_TRINAMIC, EDIT_ITEM(ICON_TMCESet, MSG_TMC_ECURRENT, onDrawPIntMenu, SetETMCCurrent, &stepperE0.val_mA));
 
       #if ENABLED(STEALTHCHOP_MENU)
         TERN_(X_HAS_STEALTHCHOP,  EDIT_ITEM(ICON_TMCXSet, MSG_TMC_ASTEALTH, onDrawChkbMenu, SetXTMCStealth, &stepperX.stored.stealthChop_enabled));
@@ -3705,7 +3724,7 @@ void Draw_Tune_Menu() {
 
 void Draw_Motion_Menu() {
   checkkey = Menu;
-  if (SET_MENU(MotionMenu, MSG_MOTION, 9)) {
+  if (SET_MENU(MotionMenu, MSG_MOTION, 10)) {
     BACK_ITEM(Draw_Control_Menu);
     MENU_ITEM(ICON_MaxSpeed, MSG_SPEED, onDrawSubMenu, Draw_MaxSpeed_Menu);
     MENU_ITEM(ICON_MaxAccelerated, MSG_ACCELERATION, onDrawSubMenu, Draw_MaxAccel_Menu);
@@ -3723,11 +3742,15 @@ void Draw_Motion_Menu() {
     #if ENABLED(SHAPING_MENU)
       MENU_ITEM(ICON_InputShaping, MSG_INPUT_SHAPING, onDrawSubMenu, Draw_InputShaping_Menu);
     #endif
-    #if HAS_JUNCTION_DEVIATION
+    #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
-    #if ENABLED(LIN_ADVANCE)
+    #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
+      #if ENABLED(SMOOTH_LIN_ADVANCE)
+        float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal);
+      #endif
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
       EDIT_ITEM(ICON_CloseMotor, MSG_STEP_SMOOTHING, onDrawChkbMenu, SetAdaptiveStepSmoothing, &stepper.adaptive_step_smoothing_enabled);
@@ -4255,20 +4278,20 @@ void Draw_MaxAccel_Menu() {
       MENU_ITEM(ICON_Homing, MSG_AUTO_HOME, onDrawMenuItem, AutoHome);
       MENU_ITEM(ICON_AxisD, MSG_MOVE_NOZZLE_TO_BED, onDrawMenuItem, SetMoveZto0);
       EDIT_ITEM(ICON_Fade, MSG_XATC_UPDATE_Z_OFFSET, onDrawPFloat2Menu, SetZOffset, &BABY_Z_VAR);
+
+      DWINUI::Draw_Icon(ICON_Info, ICOX, 100 + 3 * MLINE);
+      DWINUI::Draw_CenteredString(263, "For Best Results:\n");
+      DWINUI::Draw_Icon(ICON_HotendTemp, ICOX + 206, 100 + 3 * MLINE);
+
+      DWINUI::Draw_Icon(ICON_More, ICOX - 2, 92 + 4 * MLINE);
+      DWINUI::Draw_CenteredString(308, "Have Nozzle Touch Bed");
+      DWINUI::Draw_Icon(ICON_Cancel, ICOX + 206, 92 + 4 * MLINE);
+      DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(4 + 2), 240);
+
+      if (!axis_is_trusted(Z_AXIS)) { LCD_MESSAGE(MSG_POSITION_UNKNOWN_Z); }
+      else { LCD_MESSAGE(MSG_CENTER_NOZZLE); }
     }
     UpdateMenu(ZOffsetWizMenu);
-
-    DWINUI::Draw_Icon(ICON_Info, ICOX, 100 + 3 * MLINE);
-    DWINUI::Draw_CenteredString(263, "For Best Results:\n");
-    DWINUI::Draw_Icon(ICON_HotendTemp, ICOX + 206, 100 + 3 * MLINE);
-
-    DWINUI::Draw_Icon(ICON_More, ICOX - 2, 92 + 4 * MLINE);
-    DWINUI::Draw_CenteredString(308, "Have Nozzle Touch Bed");
-    DWINUI::Draw_Icon(ICON_Cancel, ICOX + 206, 92 + 4 * MLINE);
-    DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(4 + 2), 240);
-
-    if (!axis_is_trusted(Z_AXIS)) { LCD_MESSAGE(MSG_POSITION_UNKNOWN_Z); }
-    else { LCD_MESSAGE(MSG_CENTER_NOZZLE); }
   }
 #endif
 
@@ -4394,15 +4417,23 @@ void Draw_MaxAccel_Menu() {
     void ResetMesh() { Goto_Popup(Popup_ResetMesh, OnClick_ResetMesh); }
 
     // Mesh Inset
+    #if PROUI_EX
+      void SetMeshArea() {
+        PRO_data.mesh_min_x = meshSet.mesh_min_x;
+        PRO_data.mesh_max_x = meshSet.mesh_max_x;
+        PRO_data.mesh_min_y = meshSet.mesh_min_y;
+        PRO_data.mesh_max_y = meshSet.mesh_max_y;
+      }
+    #endif
     void ResetMeshInset() { set_bed_leveling_enabled(false); OPTCODE(MESH_BED_LEVELING, bedlevel.initialize()) reset_bed_level(); }
     void ApplyMeshInset() { ResetMeshInset(); ReDrawItem(); }
-    void SetXMeshInset() { SetPFloatOnClick(0, X_BED_SIZE, UNITFDIGITS, ApplyMeshInset); }
-    void SetYMeshInset() { SetPFloatOnClick(0, Y_BED_SIZE, UNITFDIGITS, ApplyMeshInset); }
+    void SetXMeshInset() { SetPFloatOnClick(0, X_BED_SIZE, UNITFDIGITS, OPTITEM(PROUI_EX, SetMeshArea) ApplyMeshInset); }
+    void SetYMeshInset() { SetPFloatOnClick(0, Y_BED_SIZE, UNITFDIGITS, OPTITEM(PROUI_EX, SetMeshArea) ApplyMeshInset); }
     void MaxMeshArea() {
-      meshSet.mesh_min_x = 0;
-      meshSet.mesh_max_x = X_BED_SIZE;
-      meshSet.mesh_min_y = 0;
-      meshSet.mesh_max_y = Y_BED_SIZE;
+      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = 0;
+      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_BED_SIZE;
+      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = 0;
+      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_BED_SIZE;
       ResetMeshInset();
       ReDrawMenu();
     }
@@ -4411,10 +4442,10 @@ void Draw_MaxAccel_Menu() {
       if (max < X_BED_SIZE - MESH_MAX_X) { max = X_BED_SIZE - MESH_MAX_X; }
       if (max < MESH_MIN_Y) { max = MESH_MIN_Y; }
       if (max < Y_BED_SIZE - MESH_MAX_Y) { max = Y_BED_SIZE - MESH_MAX_Y; }
-      meshSet.mesh_min_x = max;
-      meshSet.mesh_max_x = X_BED_SIZE - max;
-      meshSet.mesh_min_y = max;
-      meshSet.mesh_max_y = Y_BED_SIZE - max;
+      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = max;
+      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_BED_SIZE - max;
+      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = max;
+      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_BED_SIZE - max;
       ResetMeshInset();
       ReDrawMenu();
     }

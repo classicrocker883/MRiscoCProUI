@@ -9,10 +9,12 @@ if pioutil.is_pio_build():
     from SCons.Script import DefaultEnvironment
     env = DefaultEnvironment()
     Import("env")
-    env['PROGNAME'] = datetime.now().strftime("firmware-%Y%m%d-%H%M%S")
+    env["PROGNAME"] = datetime.now().strftime("firmware-%Y%m%d-%H%M%S")
+
     def name_target(target, source, env):
-        print("FIRMWARE ELF: %s.elf" % env['PROGNAME'])
-        print("FIRMWARE BIN: %s.bin" % env['PROGNAME'])
+        print("FIRMWARE ELF: %s.elf" % env["PROGNAME"])
+        print("FIRMWARE BIN: %s.bin" % env["PROGNAME"])
+
     import marlin
     import open_explorer
     open_explorer.open_file_explorer()

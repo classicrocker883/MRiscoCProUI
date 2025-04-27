@@ -49,7 +49,7 @@ constexpr bool DEF_INVERT_E0_DIR = INVERT_E0_DIR;
 #if DISABLED(FILAMENT_RUNOUT_SENSOR) // must be defined as opposite FIL_RUNOUT_STATE in Configuration.h
   #if MOTHERBOARD == BOARD_CREALITY_V427 || MOTHERBOARD == BOARD_CREALITY_V24S1_301F4 || MOTHERBOARD == BOARD_CREALITY_V24S1_301 || MOTHERBOARD == BOARD_VOXELAB_AQUILA || MOTHERBOARD == BOARD_AQUILA_V101
     #define FIL_RUNOUT_STATE LOW
-  #elif MOTHERBOARD == BOARD_CREALITY_V422 || MOTHERBOARD == BOARD_CREALITY_V4
+  #elif MOTHERBOARD == BOARD_CREALITY_V422 || MOTHERBOARD == BOARD_CREALITY_V4 || MOTHERBOARD == BOARD_BTT_SKR_MINI_E3_V3_0_1 || MOTHERBOARD == BOARD_BTT_SKR_MINI_E3_V3_0 || MOTHERBOARD == BOARD_BTT_SKR_MINI_E3_V2_0 || MOTHERBOARD == BOARD_CREALITY_CR4NTXXC10
     #define FIL_RUNOUT_STATE HIGH
   #else
     #error "FIL_RUNOUT_STATE must be HIGH or LOW - defined as opposite in Configuration.h"
@@ -118,54 +118,6 @@ extern PRO_data_t PRO_data;
 class ProUIClass {
 public:
   static void Init();
-#if HAS_BED_PROBE
-  static void HeatedBed();
-  static void StopLeveling();
-  static bool QuitLeveling();
-  static void MeshUpdate(const int8_t x, const int8_t y, const_float_t zval);
-  static void LevelingDone();
-#endif
-#if HAS_MEDIA
-  static void C10();
-#endif
-#if HAS_FILAMENT_SENSOR
-  static void SetRunoutState(uint32_t ulPin);
-  static void DrawRunoutActive(bool selected);
-  static void ApplyRunoutActive();
-  static void C412();
-  static void C412_report(const bool forReplay=true);
-#endif
-#if HAS_MESH
-  static void DrawMeshPoints(bool selected, int8_t line, uint8_t MeshPoints);
-  static void CheckMeshInsets();
-  static void ApplyMeshLimits();
-  static void ApplyMeshPoints();
-  static void C29();
-  static void C29_report(const bool forReplay=true);
-#endif
-  static void C100();
-  static void C100_report(const bool forReplay=true);
-  static void C101();
-  static void C101_report(const bool forReplay=true);
-  static void C102();
-  static void C102_report(const bool forReplay=true);
-  static void C104();
-  static void C104_report(const bool forReplay=true);
-  static void C115();
-#if ENABLED(NOZZLE_PARK_FEATURE)
-  static void C125();
-  static void C125_report(const bool forReplay=true);
-#endif
-#if HAS_EXTRUDERS
-  static void C562();
-  static void C562_report(const bool forReplay=true);
-#endif
-  static void C851();
-  static void C851_report(const bool forReplay=true);
-#if HAS_TOOLBAR
-  static void C810();
-  static void C810_report(const bool forReplay=true);
-#endif
   static void UpdateAxis(const AxisEnum axis);
   static void ApplyPhySet();
   static void CheckParkingPos();
@@ -174,6 +126,62 @@ public:
 #if ANY(AUTO_BED_LEVELING_BILINEAR, MESH_BED_LEVELING)
   static float getZvalues(const uint8_t sy, const uint8_t x, const uint8_t y, const float *values);
 #endif
+#if HAS_BED_PROBE
+  static void HeatedBed();
+  static void StopLeveling();
+  static bool QuitLeveling();
+  static void MeshUpdate(const int8_t x, const int8_t y, const_float_t zval);
+  static void LevelingDone();
+#endif
+#if HAS_FILAMENT_SENSOR
+  static void SetRunoutState(uint32_t ulPin);
+  static void DrawRunoutActive(bool selected);
+  static void ApplyRunoutActive();
+#endif
+#if HAS_MESH
+  static void DrawMeshPoints(bool selected, int8_t line, uint8_t MeshPoints);
+  static void CheckMeshInsets();
+  static void ApplyMeshLimits();
+  static void ApplyMeshPoints();
+#endif
+#if HAS_CGCODE
+  #if HAS_MEDIA
+    static void C10();
+  #endif
+  #if HAS_MESH
+    static void C29();
+    static void C29_report(const bool forReplay=true);
+  #endif
+    static void C100();
+    static void C100_report(const bool forReplay=true);
+    static void C101();
+    static void C101_report(const bool forReplay=true);
+    static void C102();
+    static void C102_report(const bool forReplay=true);
+    static void C104();
+    static void C104_report(const bool forReplay=true);
+    static void C115();
+  #if ENABLED(NOZZLE_PARK_FEATURE)
+    static void C125();
+    static void C125_report(const bool forReplay=true);
+  #endif
+  #if HAS_FILAMENT_SENSOR
+    static void C412();
+    static void C412_report(const bool forReplay=true);
+  #endif
+  #if HAS_EXTRUDERS
+    static void C562();
+    static void C562_report(const bool forReplay=true);
+  #endif
+  #if HAS_TOOLBAR
+    static void C810();
+    static void C810_report(const bool forReplay=true);
+  #endif
+  #if HAS_BED_PROBE
+    static void C851();
+    static void C851_report(const bool forReplay=true);
+  #endif
+#endif // HAS_CGCODE
 };
 
 extern ProUIClass ProEx;

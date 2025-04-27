@@ -41,7 +41,7 @@ HostUI hostui;
 
 void HostUI::action(FSTR_P const fstr, const bool eol) {
   PORT_REDIRECT(SerialMask::All);
-  SERIAL_ECHOPGM("//action:", fstr);
+  SERIAL_ECHOPGM("//action: ", fstr);
   if (eol) SERIAL_EOL();
 }
 

@@ -74,6 +74,7 @@
 // #define MAX31865_WIRE_OHMS_0              0.95f
 // #define MAX31865_WIRE_OHMS_1              0.0f
 // #define MAX31865_WIRE_OHMS_2              0.0f
+// #define MAX31865_WIRE_OHMS_BED            0.0f
 // #define HEPHESTOS2_HEATED_BED_KIT
 // #define HEATER_BED_INVERTING true
 // #define BED_CHECK_INTERVAL 5000
@@ -606,7 +607,7 @@
 // #define USE_UHS3_USB
 // #define DISABLE_DUE_SD_MMC
 // #define USE_OTG_USB_HOST
-// #define USB_CS_PIN    SDSS
+// #define USB_CS_PIN    SD_SS_PIN
 // #define USB_INTR_PIN  SD_DETECT_PIN
 // #define SD_FIRMWARE_UPDATE
 // #define SD_FIRMWARE_UPDATE_EEPROM_ADDR    0x1FF
@@ -645,12 +646,12 @@
 // #define STATUS_FAN_FRAMES 3
 // #define STATUS_HEAT_PERCENT
 // #define STATUS_HEAT_POWER
+// #define MENU_HOLLOW_FRAME
+// #define OVERLAY_GFX_REVERSE
 // #define MARLIN_BRICKOUT
 // #define MARLIN_INVADERS
 // #define MARLIN_SNAKE
 // #define GAMES_EASTER_EGG
-// #define MENU_HOLLOW_FRAME
-// #define OVERLAY_GFX_REVERSE
 // #define LCD_BAUDRATE 115200
 // #define DGUS_RX_BUFFER_SIZE 128
 // #define DGUS_TX_BUFFER_SIZE 48
@@ -733,6 +734,7 @@
 // #define LCD_BACKLIGHT_TIMEOUT_MINS 10
 // #define EDITABLE_DISPLAY_TIMEOUT
 // #define ADC_BUTTON_DEBOUNCE_DELAY 16
+// #define FAST_BUTTON_POLLING
 // #define USE_WATCHDOG
 // #define WATCHDOG_RESET_MANUAL
 // #define BABYSTEPPING
@@ -758,6 +760,10 @@
 // #define ADVANCE_K_EXTRA
 // #define LA_DEBUG
 // #define EXPERIMENTAL_I2S_LA
+// #define SMOOTH_LIN_ADVANCE
+// #define ADVANCE_TAU 0.01
+// #define SMOOTH_LIN_ADV_HZ 2000
+// #define INPUT_SHAPING_E_SYNC
 // #define NONLINEAR_EXTRUSION
 // #define SAFE_BED_LEVELING_START_X 0.0
 // #define SAFE_BED_LEVELING_START_Y 0.0
@@ -1245,6 +1251,7 @@
 // #define SPEED_POWER_MIN          5000
 // #define SPEED_POWER_MAX         30000
 // #define SPEED_POWER_STARTUP     25000
+// #define DEFAULT_ACCELERATION_SPINDLE   1000
 // #define SPEED_POWER_INTERCEPT       0
 // #define SPEED_POWER_MIN             0
 // #define SPEED_POWER_MAX           100

@@ -61,7 +61,7 @@ public:
     _spi.pin_ssel = digitalPinToPinName(_ssPin);
     _dataSize = DATA_SIZE_8BIT;
     _bitOrder = MSBFIRST;
-    _dataMode = SPI_MODE_0;
+    _dataMode = TERN(BTTSKRMINI, SPI_MODE0, SPI_MODE_0);
     _spi.handle.State = HAL_SPI_STATE_RESET;
     setClockDivider(SPI_SPEED_CLOCK_DIV2_MHZ);
   }
@@ -79,12 +79,21 @@ public:
   void setBitOrder(BitOrder _order) { _bitOrder = _order; }
 
   void setDataMode(uint8_t _mode) {
-    switch (_mode) {
-      case SPI_MODE0: _dataMode = SPI_MODE_0; break;
-      case SPI_MODE1: _dataMode = SPI_MODE_1; break;
-      case SPI_MODE2: _dataMode = SPI_MODE_2; break;
-      case SPI_MODE3: _dataMode = SPI_MODE_3; break;
-    }
+    #if ENABLED(BTTSKRMINI)
+      switch (_mode) {
+        case SPI_MODE0: _dataMode = SPI_MODE0; break;
+        case SPI_MODE1: _dataMode = SPI_MODE1; break;
+        case SPI_MODE2: _dataMode = SPI_MODE2; break;
+        case SPI_MODE3: _dataMode = SPI_MODE3; break;
+      }
+    #else
+      switch (_mode) {
+        case SPI_MODE0: _dataMode = SPI_MODE_0; break;
+        case SPI_MODE1: _dataMode = SPI_MODE_1; break;
+        case SPI_MODE2: _dataMode = SPI_MODE_2; break;
+        case SPI_MODE3: _dataMode = SPI_MODE_3; break;
+      }
+    #endif
   }
 
   void setClockDivider(uint8_t _div);
@@ -96,7 +105,7 @@ private:
   DMA_HandleTypeDef _dmaTx;
   DMA_HandleTypeDef _dmaRx;
   BitOrder _bitOrder;
-  spi_mode_e _dataMode;
+  TERN(BTTSKRMINI, SPIMode, spi_mode_e) _dataMode;
   uint8_t _clockDivider;
   uint32_t _speed;
   uint32_t _dataSize;

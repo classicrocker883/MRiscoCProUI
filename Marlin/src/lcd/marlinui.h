@@ -110,6 +110,9 @@ typedef bool (*statusResetFunc_t)();
     #if HAS_HEATED_BED
       celsius_t bed_temp;
     #endif
+    #if HAS_HEATED_CHAMBER
+      celsius_t chamber_temp;
+    #endif
     #if HAS_FAN
       uint16_t fan_speed;
     #endif
@@ -367,17 +370,7 @@ public:
 
   #if HAS_STATUS_MESSAGE
 
-    #if ANY(HAS_WIRED_LCD, DWIN_LCD_PROUI)
-      #if ENABLED(STATUS_MESSAGE_SCROLLING)
-        #define MAX_MESSAGE_LENGTH _MAX(LONG_FILENAME_LENGTH, MAX_LANG_CHARSIZE * 2 * (LCD_WIDTH))
-      #else
-        #define MAX_MESSAGE_LENGTH (MAX_LANG_CHARSIZE * (LCD_WIDTH))
-      #endif
-    #else
-      #define MAX_MESSAGE_LENGTH 63
-    #endif
-
-    static MString<MAX_MESSAGE_LENGTH> status_message;
+    static MString<MAX_MESSAGE_SIZE> status_message;
     static uint8_t alert_level; // Higher levels block lower levels
 
     #if HAS_STATUS_MESSAGE_TIMEOUT
@@ -408,7 +401,6 @@ public:
 
   #else
 
-    #define MAX_MESSAGE_LENGTH 1
     static constexpr bool has_status() { return false; }
 
     static bool set_alert_level(int8_t) { return false; }
@@ -520,6 +512,13 @@ public:
     static void pause_print();
     static void resume_print();
 
+    static void draw_kill_screen();
+    static void kill_screen(FSTR_P const lcd_error, FSTR_P const lcd_component);
+
+    #if DISABLED(LIGHTWEIGHT_UI)
+      static void draw_status_message(const bool blink);
+    #endif
+
     #if ENABLED(FLOWMETER_SAFETY)
       static void flow_fault();
     #endif
@@ -566,15 +565,13 @@ public:
       #endif
 
       #if ENABLED(LCD_PROGRESS_BAR) && !HAS_MARLINUI_U8GLIB
-        static millis_t progress_bar_ms;  // Start time for the current progress bar cycle
+        static millis_t progress_bar_ms; // Start time for the current progress bar cycle
         static void draw_progress_bar(const uint8_t percent);
         #if PROGRESS_MSG_EXPIRE > 0
           static millis_t expire_status_ms; // = 0
           FORCE_INLINE static void reset_progress_bar_timeout() { expire_status_ms = 0; }
         #endif
       #endif
-
-      static uint8_t lcd_status_update_delay;
 
       #if HAS_LCD_CONTRAST
         static uint8_t contrast;
@@ -588,7 +585,9 @@ public:
         static void pause_filament_display(const millis_t ms=millis()) { next_filament_display = ms + 5000UL; }
       #endif
 
+      static uint8_t lcd_status_update_delay;
       static void quick_feedback(const bool clear_buttons=true);
+      static void status_screen();
 
       #if ENABLED(ADVANCED_PAUSE_FEATURE)
         static void draw_hotend_status(const uint8_t row, const uint8_t extruder);
@@ -598,8 +597,6 @@ public:
         static bool on_edit_screen;
         static void screen_click(const uint8_t row, const uint8_t col, const uint8_t x, const uint8_t y);
       #endif
-
-      static void status_screen();
 
     #endif // HAS_WIRED_LCD
 
@@ -613,17 +610,6 @@ public:
       static bool did_first_redraw;
     #endif
 
-    #if ANY(BABYSTEP_GFX_OVERLAY, MESH_EDIT_GFX_OVERLAY)
-      static void zoffset_overlay(const int8_t dir);
-      static void zoffset_overlay(const_float_t zvalue);
-    #endif
-
-    static void draw_kill_screen();
-    static void kill_screen(FSTR_P const lcd_error, FSTR_P const lcd_component);
-    #if DISABLED(LIGHTWEIGHT_UI)
-      static void draw_status_message(const bool blink);
-    #endif
-
   #else // No LCD
 
     static void update() {}
@@ -632,7 +618,7 @@ public:
     static void clear_for_drawing() {}
     static void kill_screen(FSTR_P const, FSTR_P const) {}
 
-  #endif
+  #endif // HAS_DISPLAY
 
   static bool detected() IF_DISABLED(HAS_WIRED_LCD, { return true; });
   static void reinit_lcd() { TERN_(REINIT_NOISY_LCD, init_lcd()); }
@@ -659,7 +645,8 @@ public:
     static void preheat_hotend(const uint8_t m, const uint8_t e=active_extruder) { TERN_(HAS_HOTEND, apply_preheat(m, _BV(PT_HOTEND))); }
     static void preheat_hotend_and_fan(const uint8_t m, const uint8_t e=active_extruder) { preheat_hotend(m, e); preheat_set_fan(m); }
     static void preheat_bed(const uint8_t m) { TERN_(HAS_HEATED_BED, apply_preheat(m, _BV(PT_BED))); }
-    static void preheat_all(const uint8_t m) { apply_preheat(m, PT_ALL); }
+    static void preheat_chamber(const uint8_t m) { TERN_(HAS_HEATED_CHAMBER, apply_preheat(m, _BV(PT_CHAMBER))); }
+    static void preheat_all(const uint8_t m, const uint8_t e=active_extruder) { apply_preheat(m, PT_ALL, e); }
   #endif
 
   static void reset_status_timeout(const millis_t ms) {
@@ -674,6 +661,11 @@ public:
   #endif
 
   #if HAS_MARLINUI_MENU
+
+    #if ANY(BABYSTEP_GFX_OVERLAY, MESH_EDIT_GFX_OVERLAY)
+      static void zoffset_overlay(const int8_t dir);
+      static void zoffset_overlay(const_float_t zvalue);
+    #endif
 
     #if HAS_TOUCH_BUTTONS
       static uint8_t touch_buttons;
@@ -730,9 +722,6 @@ public:
 
     #if ENABLED(AUTO_BED_LEVELING_UBL)
       static void ubl_plot(const uint8_t x_plot, const uint8_t y_plot);
-    #endif
-
-    #if ENABLED(AUTO_BED_LEVELING_UBL)
       static void ubl_mesh_edit_start(const_float_t initial);
       static float ubl_mesh_value();
     #endif
@@ -910,6 +899,29 @@ private:
     #endif
   #endif
 };
+
+/**
+ * @brief Expand a string with optional substitution
+ * @details Expand a string with optional substitutions:
+ *   $ : the clipped string given by fstr or cstr
+ *   { :  '0'....'10' for indexes 0 - 10
+ *   ~ :  '1'....'11' for indexes 0 - 10
+ *   * : 'E1'...'E11' for indexes 0 - 10 (By default. Uses LCD_FIRST_TOOL)
+ *   @ : an axis name such as XYZUVW, or E for an extruder
+ *
+ * @param *outstr The output destination buffer
+ * @param ptpl A ROM string (template)
+ * @param ind An index value to use for = ~ * substitution
+ * @param cstr An SRAM C-string to use for $ substitution
+ * @param fstr A ROM F-string to use for $ substitution
+ * @param maxlen The maximum size of the string (in pixels on GLCD)
+ * @return the output width (in pixels on GLCD)
+ */
+uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, const char *cstr=nullptr, FSTR_P const fstr=nullptr, const uint8_t maxlen=MAX_MESSAGE_SIZE);
+
+inline uint8_t expand_u8str(char * const outstr, FSTR_P const ftpl, const int8_t ind, const char *cstr=nullptr, FSTR_P const fstr=nullptr, const uint8_t maxlen=MAX_MESSAGE_SIZE) {
+  return expand_u8str_P(outstr, FTOP(ftpl), ind, cstr, fstr, maxlen);
+}
 
 #define LCD_MESSAGE_F(S)       ui.set_status(F(S))
 #define LCD_MESSAGE(M)         ui.set_status(GET_TEXT_F(M))

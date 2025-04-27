@@ -61,7 +61,7 @@ MAP(_N_LBL, LOGICAL_AXIS_NAMES); MAP(_SP_N_LBL, LOGICAL_AXIS_NAMES);
     SerialLeafT2 msSerial2(ethernet.have_telnet_client, MYSERIAL2, false);
   #endif
 
-  #define __S_LEAF(N) ,SERIAL_LEAF_##N
+  #define __S_LEAF(N) , SERIAL_LEAF_##N
   #define _S_LEAF(N) __S_LEAF(N)
 
   SerialOutputT multiSerial( SERIAL_LEAF_1 REPEAT_S(2, INCREMENT(NUM_SERIAL), _S_LEAF) );
@@ -93,16 +93,18 @@ void SERIAL_ECHO_P(PGM_P pstr) {
 }
 void SERIAL_ECHOLN_P(PGM_P pstr) { SERIAL_ECHO_P(pstr); SERIAL_EOL(); }
 
-void SERIAL_ECHO_START()  { SERIAL_ECHO(F("echo:")); }
-void SERIAL_ERROR_START() { SERIAL_ECHO(F("Error:")); }
-void SERIAL_WARN_START()  { SERIAL_ECHO(F("Warning:")); }
+void SERIAL_ECHO_START()  { SERIAL_ECHO(F("echo: ")); }
+void SERIAL_ERROR_START() { SERIAL_ECHO(F("Error: ")); }
+void SERIAL_WARN_START()  { SERIAL_ECHO(F("Warning: ")); }
 
 void SERIAL_ECHO_SP(uint8_t count) { count *= (PROPORTIONAL_FONT_RATIO); while (count--) SERIAL_CHAR(' '); }
 
-// serial_print_P workaround is undefined without this call to function
-void serial_print_P(PGM_P p) {
+//serial_print_P workaround is undefined without this call to function
+#if ALL(PROUI_EX, HAS_CGCODE, HAS_MESH)
+  void serial_print_P(PGM_P p) {
     SERIAL_ECHO_P(p);
-}
+  }
+#endif
 
 void serial_offset(const_float_t v, const uint8_t sp/*=0*/) {
   if (v == 0 && sp == 1)

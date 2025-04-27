@@ -144,24 +144,28 @@ void custom_gcode(const int16_t codenum) {
       #if HAS_FILAMENT_SENSOR
         case 412: ProEx.C412(); break;  // Set runout sensor active mode
       #endif
-      case 562: ProEx.C562(); break;    // Invert Extruder
-      case 851: ProEx.C851(); break;    // If has a probe set z feed rate and multiprobe, if not, set manual z-offset
+      #if HAS_EXTRUDERS
+        case 562: ProEx.C562(); break;  // Invert Extruder
+      #endif
       #if HAS_TOOLBAR
         case 810: ProEx.C810(); break;  // Config toolbar
+      #endif
+      #if HAS_BED_PROBE
+        case 851: ProEx.C851(); break;  // If has a probe set z feed rate and multiprobe, if not, set manual z-offset
       #endif
     #endif
     default: CError(); break;
   }
 }
 
-void custom_gcode_report(const bool forReplay/*=true*/) {
-  #if PROUI_EX
-    ProEx.C100_report(forReplay);
-    ProEx.C101_report(forReplay);
-    ProEx.C102_report(forReplay);
+#if PROUI_EX
+  void custom_gcode_report(const bool forReplay/*=true*/) {
     #if HAS_MESH
       ProEx.C29_report(forReplay);
     #endif
+    ProEx.C100_report(forReplay);
+    ProEx.C101_report(forReplay);
+    ProEx.C102_report(forReplay);
     ProEx.C104_report(forReplay);
     #if ENABLED(NOZZLE_PARK_FEATURE)
       ProEx.C125_report(forReplay);
@@ -169,11 +173,16 @@ void custom_gcode_report(const bool forReplay/*=true*/) {
     #if HAS_FILAMENT_SENSOR
       ProEx.C412_report(forReplay);
     #endif
+    #if HAS_EXTRUDERS
       ProEx.C562_report(forReplay);
+    #endif
+    #if HAS_TOOLBAR
+      ProEx.C810_report(forReplay);
+    #endif
     #if HAS_BED_PROBE
       ProEx.C851_report(forReplay);
     #endif
-  #endif
-}
+  }
+#endif
 
 #endif // DWIN_LCD_PROUI && HAS_CGCODE
