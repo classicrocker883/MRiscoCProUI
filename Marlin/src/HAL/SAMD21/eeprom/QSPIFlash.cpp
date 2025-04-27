@@ -24,7 +24,7 @@
  * SAMD21 HAL developed by Bart Meijer (brupje)
  * Based on SAMD51 HAL by Giuliano Zaro (AKA GMagician)
  */
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(QSPI_EEPROM)
 

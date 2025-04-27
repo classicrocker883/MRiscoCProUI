@@ -26,7 +26,7 @@
  */
 #ifdef __SAMD21__
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(FLASH_EEPROM_EMULATION)
 
@@ -35,7 +35,7 @@
 /* reserve flash memory */
 static const uint8_t flashdata[TOTAL_FLASH_SIZE]  __attribute__((__aligned__(256))) { }; \
 
-#include "../shared/eeprom_api.h"
+#include "../../shared/eeprom_api.h"
 
 size_t PersistentStore::capacity() { return MARLIN_EEPROM_SIZE - eeprom_exclude_size; }
 

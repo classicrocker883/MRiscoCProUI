@@ -28,6 +28,10 @@
 
 #if HAS_MEDIA
 
+#if HAS_MULTI_VOLUME && !SHARED_VOLUME_IS(SD_ONBOARD) && !SHARED_VOLUME_IS(USB_FLASH_DRIVE)
+  #error "DEFAULT_SHARED_VOLUME must be either SV_SD_ONBOARD or SV_USB_FLASH_DRIVE."
+#endif
+
 //#define DEBUG_CARDREADER
 
 #include "cardreader.h"
@@ -133,17 +137,17 @@ int16_t CardReader::nrItems = -1;
 
 #endif // SDCARD_SORT_ALPHA
 
+#if HAS_SDCARD
+  CardReader::sdcard_driver_t CardReader::media_driver_sdcard;
+#endif
+
 #if HAS_USB_FLASH_DRIVE
   DiskIODriver_USBFlash CardReader::media_driver_usbFlash;
 #endif
 
-#if NEED_SD2CARD_SDIO || NEED_SD2CARD_SPI
-  CardReader::sdcard_driver_t CardReader::media_driver_sdcard;
-#endif
-
 DiskIODriver* CardReader::driver = nullptr;
 MarlinVolume CardReader::volume;
-MediaFile CardReader::file;
+MediaFile CardReader::myfile;
 
 #if HAS_MEDIA_SUBCALLS
   uint8_t CardReader::file_subcall_ctr;
@@ -154,13 +158,11 @@ MediaFile CardReader::file;
 uint32_t CardReader::filesize, CardReader::sdpos;
 
 CardReader::CardReader() {
-  changeMedia(&
-    #if HAS_USB_FLASH_DRIVE && !SHARED_VOLUME_IS(SD_ONBOARD)
-      media_driver_usbFlash
-    #else
-      media_driver_sdcard
-    #endif
-  );
+  #if HAS_USB_FLASH_DRIVE && !SHARED_VOLUME_IS(SD_ONBOARD)
+    selectMediaFlashDrive();
+  #else
+    selectMediaSDCard();
+  #endif
 
   #if ENABLED(SDCARD_SORT_ALPHA)
     sort_count = 0;
@@ -462,9 +464,9 @@ void CardReader::ls(const uint8_t lsflags/*=0*/) {
 // Echo the DOS 8.3 filename (and long filename, if any)
 //
 void CardReader::printSelectedFilename() {
-  if (file.isOpen()) {
+  if (myfile.isOpen()) {
     char dosFilename[FILENAME_LENGTH];
-    file.getDosName(dosFilename);
+    myfile.getDosName(dosFilename);
     SERIAL_ECHO(dosFilename);
     #if ENABLED(LONG_FILENAME_HOST_SUPPORT)
       selectFileByName(dosFilename);
@@ -500,7 +502,14 @@ void CardReader::mount() {
     cdroot();
   else {
     #if ANY(HAS_SD_DETECT, HAS_USB_FLASH_DRIVE)
-      if (marlin_state != MarlinState::MF_INITIALIZING) LCD_ALERTMESSAGE(MSG_MEDIA_INIT_FAIL);
+      if (marlin_state != MarlinState::MF_INITIALIZING) {
+        if (isSDCardSelected())
+          LCD_ALERTMESSAGE(MSG_MEDIA_INIT_FAIL_SD);
+        else if (isFlashDriveSelected())
+          LCD_ALERTMESSAGE(MSG_MEDIA_INIT_FAIL_USB);
+        else
+          LCD_ALERTMESSAGE(MSG_MEDIA_INIT_FAIL);
+      }
     #endif
   }
 
@@ -515,8 +524,12 @@ void CardReader::mount() {
  * Handle SD card events
  */
 void CardReader::manage_media() {
+  #if HAS_USB_FLASH_DRIVE           // Wrap for optimal non-virtual?
+    driver->idle();                 // Handle device tasks (e.g., USB Drive insert / remove)
+  #endif
+
   static uint8_t prev_stat = 2;     // At boot we don't know if media is present or not
-  uint8_t stat = uint8_t(IS_SD_INSERTED());
+  uint8_t stat = uint8_t(isInserted());
   if (stat == prev_stat) return;    // Already checked and still no change?
 
   DEBUG_SECTION(cmm, "CardReader::manage_media()", true);
@@ -624,7 +637,7 @@ void CardReader::startOrResumeFilePrinting() {
 void CardReader::endFilePrintNow(TERN_(SD_RESORT, const bool re_sort/*=false*/)) {
   TERN_(ADVANCED_PAUSE_FEATURE, did_pause_print = 0);
   flag.abort_sd_printing = false;
-  if (isFileOpen()) file.close();
+  if (isFileOpen()) myfile.close();
   TERN_(SD_RESORT, if (re_sort) presort());
 }
 
@@ -659,7 +672,7 @@ void CardReader::getAbsFilenameInCWD(char *dst) {
     appendAtom(workDirParents[i]);
 
   if (cnt < MAXPATHNAMELENGTH - (FILENAME_LENGTH) - 1) {    // Leave room for filename and nul
-    appendAtom(file);
+    appendAtom(myfile);
     --dst;
   }
   *dst = '\0';
@@ -736,8 +749,8 @@ void CardReader::openFileRead(const char * const path, const uint8_t subcall_typ
   const char * const fname = diveToFile(true, diveDir, path);
   if (!fname) return openFailed(path);
 
-  if (file.open(diveDir, fname, O_READ)) {
-    filesize = file.fileSize();
+  if (myfile.open(diveDir, fname, O_READ)) {
+    filesize = myfile.fileSize();
     sdpos = 0;
 
     { // Don't remove this block, as the PORT_REDIRECT is a RAII
@@ -777,7 +790,7 @@ void CardReader::openFileWrite(const char * const path) {
   if (!fname) return openFailed(path);
 
   #if DISABLED(SDCARD_READONLY)
-    if (file.open(diveDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC)) {
+    if (myfile.open(diveDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC)) {
       flag.saving = true;
       selectFileByName(fname);
       TERN_(EMERGENCY_PARSER, emergency_parser.disable());
@@ -831,7 +844,7 @@ void CardReader::removeFile(const char * const name) {
   #if ENABLED(SDCARD_READONLY)
     SERIAL_ECHOLNPGM("Deletion failed (read-only), File: ", fname, ".");
   #else
-    if (file.remove(itsDirPtr, fname)) {
+    if (myfile.remove(itsDirPtr, fname)) {
       SERIAL_ECHOLNPGM("File deleted: ", fname);
       sdpos = 0;
       TERN_(SDCARD_SORT_ALPHA, presort());
@@ -865,7 +878,7 @@ void CardReader::write_command(char * const buf) {
        *npos = nullptr,
        *end = buf + strlen(buf) - 1;
 
-  file.writeError = false;
+  myfile.writeError = false;
   if ((npos = strchr(buf, 'N'))) {
     begin = strchr(npos, ' ') + 1;
     end = strchr(npos, '*') - 1;
@@ -873,9 +886,9 @@ void CardReader::write_command(char * const buf) {
   end[1] = '\r';
   end[2] = '\n';
   end[3] = '\0';
-  file.write(begin);
+  myfile.write(begin);
 
-  if (file.writeError) SERIAL_ERROR_MSG(STR_SD_ERR_WRITE_TO_FILE);
+  if (myfile.writeError) SERIAL_ERROR_MSG(STR_SD_ERR_WRITE_TO_FILE);
 }
 
 #if DISABLED(NO_SD_AUTOSTART)
@@ -1000,8 +1013,8 @@ void CardReader::write_command(char * const buf) {
 // Close the working file.
 //
 void CardReader::closefile(const bool store_location/*=false*/) {
-  file.sync();
-  file.close();
+  myfile.sync();
+  myfile.close();
   flag.saving = flag.logging = false;
   sdpos = 0;
 
@@ -1440,7 +1453,7 @@ int16_t CardReader::get_num_items() {
 // Return from procedure or close out the Print Job.
 //
 void CardReader::fileHasFinished() {
-  file.close();
+  myfile.close();
 
   #if HAS_MEDIA_SUBCALLS
     if (file_subcall_ctr > 0) { // Resume calling file after closing procedure

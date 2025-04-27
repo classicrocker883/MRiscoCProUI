@@ -4793,7 +4793,7 @@ void Temperature::isr() {
         wait_for_heatup = false;
         #if ENABLED(SOVOL_SV06_RTS)
           update_time_value = RTS_UPDATE_VALUE;
-          if (IS_SD_PRINTING()) rts.refreshTime();
+          if (card.isStillPrinting()) rts.refreshTime();
           rts.start_print_flag = false;
         #else
           ui.reset_status();

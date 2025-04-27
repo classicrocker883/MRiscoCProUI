@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2025 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -25,20 +25,20 @@
  * Enable USE_SHARED_EEPROM if not supplied by the framework.
  */
 
-#include "../platforms.h"
+#ifdef __STM32F1__
 
-#ifdef ARDUINO_ARCH_MFL
-
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(IIC_BL24CXX_EEPROM)
 
-#include "../../libs/BL24CXX.h"
-#include "../shared/eeprom_if.h"
+#include "../../../libs/BL24CXX.h"
+#include "../../shared/eeprom_if.h"
 
-void eeprom_init() {
-  BL24CXX::init();
-}
+void eeprom_init() { BL24CXX::init(); }
+
+// ------------------------
+// Public functions
+// ------------------------
 
 void eeprom_write_byte(uint8_t *pos, uint8_t value) {
   const unsigned eeprom_address = (unsigned)pos;
@@ -51,4 +51,4 @@ uint8_t eeprom_read_byte(uint8_t *pos) {
 }
 
 #endif // IIC_BL24CXX_EEPROM
-#endif // ARDUINO_ARCH_MFL
+#endif // __STM32F1__
