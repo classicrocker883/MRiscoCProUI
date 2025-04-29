@@ -24,8 +24,8 @@
 
 #include <USBComposite.h>
 
-#include "../../inc/MarlinConfigPre.h"
-#include "../../core/serial_hook.h"
+#include "../../../inc/MarlinConfigPre.h"
+#include "../../../core/serial_hook.h"
 
 extern USBMassStorage MarlinMSC;
 extern Serial1Class<USBCompositeSerial> MarlinCompositeSerial;

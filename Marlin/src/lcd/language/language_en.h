@@ -580,11 +580,9 @@ namespace LanguageNarrow_en {
   LSTR MSG_PRINTING_OBJECT                = _UxGT("Printing Object");
   LSTR MSG_CANCEL_OBJECT                  = _UxGT("Cancel Object");
   LSTR MSG_CANCEL_OBJECT_N                = _UxGT("Cancel Object {");
-  LSTR MSG_CONTINUE_PRINT_JOB             = _UxGT("Continue Print");
-  LSTR MSG_MEDIA_MENU                     = _UxGT("Select from ") MEDIA_TYPE_EN;
-  LSTR MSG_TURN_OFF                       = _UxGT("Turn off printer");
+  LSTR MSG_CONTINUE_PRINT_JOB             = _UxGT("Continue Print Job");
+  LSTR MSG_TURN_OFF                       = _UxGT("Turn off now");
   LSTR MSG_END_LOOPS                      = _UxGT("End Repeat Loops");
-  LSTR MSG_NO_MEDIA                       = _UxGT("No ") MEDIA_TYPE_EN;
   LSTR MSG_DWELL                          = _UxGT("Sleep...");
   LSTR MSG_USERWAIT                       = _UxGT("Click to Resume...");
   LSTR MSG_PRINT_PAUSED                   = _UxGT("Print Paused");
@@ -660,6 +658,9 @@ namespace LanguageNarrow_en {
   LSTR MSG_RUN_AUTOFILES                  = _UxGT("Run Autofiles");
   LSTR MSG_RUN_AUTOFILES_SD               = _UxGT("Run SD Autofiles");
   LSTR MSG_RUN_AUTOFILES_USB              = _UxGT("Run USB Autofiles");
+  LSTR MSG_MEDIA_MENU                     = _UxGT("Select from ") MEDIA_TYPE_EN;
+  LSTR MSG_MEDIA_MENU_SD                  = _UxGT("Select from SD Card");
+  LSTR MSG_NO_MEDIA                       = _UxGT("No ") MEDIA_TYPE_EN _UxGT(" Detected");
 
   LSTR MSG_ZPROBE_OUT                     = _UxGT("Z-Probe Past Bed");
   LSTR MSG_SKEW_FACTOR                    = _UxGT("Skew Factor");
@@ -785,6 +786,7 @@ namespace LanguageNarrow_en {
   #if LCD_WIDTH < 20 || !HAS_DWIN_E3V2
     LSTR MSG_BACK                         = _UxGT("Back");
     LSTR MSG_MEDIA_NOT_INSERTED           = _UxGT("No Media");
+    LSTR MSG_MEDIA_MENU_USB               = _UxGT("Select from USB");
     LSTR MSG_HOMING_FEEDRATE_N            = _UxGT("@ Homing FR");
   #endif
 
@@ -836,13 +838,13 @@ namespace LanguageNarrow_en {
   LSTR MSG_ALERT_TEXT                     = _UxGT("Alert Text");
   LSTR MSG_PERCENT_TEXT                   = _UxGT("Percent Text");
   LSTR MSG_BAR_FILL                       = _UxGT("Bar Fill");
-  LSTR MSG_INDICATOR_VALUE                = _UxGT("Indicator value");
-  LSTR MSG_COORDINATE_VALUE               = _UxGT("Coordinate value");
+  LSTR MSG_INDICATOR_VALUE                = _UxGT("Indicator Value");
+  LSTR MSG_COORDINATE_VALUE               = _UxGT("Coordinate Value");
 
   LSTR MSG_UI_LANGUAGE                    = _UxGT("UI Language");
   LSTR MSG_LOCKSCREEN                     = _UxGT("Lock Screen");
   LSTR MSG_LOCKSCREEN_LOCKED              = _UxGT("Printer is Locked,");
-  LSTR MSG_LOCKSCREEN_UNLOCK              = _UxGT("Scroll to unlock");
+  LSTR MSG_LOCKSCREEN_UNLOCK              = _UxGT("Scroll to Unlock");
   LSTR MSG_PLEASE_PREHEAT                 = _UxGT("Please Preheat");
 
   // Prusa MMU 2
@@ -1217,6 +1219,7 @@ namespace LanguageWide_en {
     LSTR MSG_OUTAGE_RECOVERY3             = _UxGT("file was interrupted.");
 
     LSTR MSG_MEDIA_NOT_INSERTED           = MEDIA_TYPE_EN _UxGT(" Not Inserted");
+    LSTR MSG_MEDIA_MENU_USB               = _UxGT("Select from USB Drive");
     LSTR MSG_CHECK_FILENAME               = _UxGT("Please check filenames");
     LSTR MSG_ONLY_GCODE                   = _UxGT("Only G-code can be printed");
 

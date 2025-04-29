@@ -16,9 +16,9 @@
 //
 #pragma once
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
-#include "SDIO.hpp"
+#include <SDIO.hpp>
 
 namespace sdio {
 
