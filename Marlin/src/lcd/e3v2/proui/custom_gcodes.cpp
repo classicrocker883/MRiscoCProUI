@@ -38,21 +38,22 @@
 
 void CError() {
   SERIAL_ECHO_START();
-  SERIAL_ECHOLNPGM(" This G-code is not implemented in firmware");
+  SERIAL_ECHOLNPGM("This G-code is not implemented in firmware");
 }
 
 #if HAS_CUSTOM_COLORS
 // C11 Set color for UI element E
   void C11() {
     const int16_t E = parser.seenval('E') ? parser.value_byte() : 0; // UI element
-    if (E) {
-      HMI_value.Color.r = parser.seenval('R') ? parser.value_byte() : 0;
-      HMI_value.Color.g = parser.seenval('G') ? parser.value_byte() : 0;
-      HMI_value.Color.b = parser.seenval('B') ? parser.value_byte() : 0;
-      DWIN_ApplyColor(E);
-    }
-    else { // Set default colors
-      DWIN_ApplyColor(1);
+    switch (E) {
+      case 0: DWIN_RedrawScreen();
+      case 1: DWIN_ApplyColor(1); // Set default colors
+      default: {
+        HMI_value.Color.r = parser.seenval('R') ? parser.value_byte() : 0;
+        HMI_value.Color.g = parser.seenval('G') ? parser.value_byte() : 0;
+        HMI_value.Color.b = parser.seenval('B') ? parser.value_byte() : 0;
+        DWIN_ApplyColor(E);
+      }
     }
   }
 #endif

@@ -4022,7 +4022,7 @@ void Draw_MaxAccel_Menu() {
     void DWIN_ApplyColor(const int8_t element) {
       const uint16_t color = RGB(HMI_value.Color.r, HMI_value.Color.g, HMI_value.Color.b);
       switch (element) {
-        case  1: default: RestoreDefaultColors();   break;
+        case  1: RestoreDefaultColors(); break;
         case  2: HMI_data.Background_Color = color; DWINUI::SetBackgroundColor(HMI_data.Background_Color); break;
         case  3: HMI_data.Cursor_Color     = color; break;
         case  4: HMI_data.TitleBg_Color    = color; DWINUI::SetButtonColor(HMI_data.TitleBg_Color); break;
@@ -4042,6 +4042,10 @@ void Draw_MaxAccel_Menu() {
         case 18: HMI_data.Indicator_Color  = color; break;
         case 19: HMI_data.Coordinate_Color = color; break;
         case 20: HMI_data.Bottom_Color     = color; break;
+        default:
+          DEBUG_ECHOLNPGM("Invalid color element:", element);
+          LCD_MESSAGE_F("Invalid color element");
+          break;
       }
     }
   #endif // HAS_CGCODE (C11)
