@@ -177,10 +177,8 @@ public:
     static void C810();
     static void C810_report(const bool forReplay=true);
   #endif
-  #if HAS_BED_PROBE
-    static void C851();
-    static void C851_report(const bool forReplay=true);
-  #endif
+  static void C851();
+  static void C851_report(const bool forReplay=true);
 #endif // HAS_CGCODE
 };
 
