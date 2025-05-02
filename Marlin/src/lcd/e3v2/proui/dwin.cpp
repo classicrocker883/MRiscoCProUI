@@ -790,7 +790,7 @@ void _draw_xyz_position(const bool force) {
 }
 
 void update_variable() {
-  #if DEBUG_DWIN
+  #if DEBUG_OUT
     DWINUI::Draw_Int(Color_Light_Red, Color_Bg_Black, 2, DWIN_WIDTH - 6 * DWINUI::fontWidth(), 6, checkkey);
     DWINUI::Draw_Int(Color_Yellow, Color_Bg_Black, 2, DWIN_WIDTH - 3 * DWINUI::fontWidth(), 6, last_checkkey);
   #endif
@@ -1942,7 +1942,8 @@ void DWIN_HomingDone() {
 
 // Started a Print Job
 void DWIN_Print_Started() {
-  DEBUG_ECHOLNPGM("DWIN_Print_Started: ", SD_Printing());
+  DEBUG_ECHOPGM("DWIN_Print_Started: ");
+  DEBUG_ECHOLN(SD_Printing() ? "SD Card" : "USB");
   TERN_(HAS_GCODE_PREVIEW, if (Host_Printing()) { preview.invalidate(); })
   TERN_(SET_PROGRESS_PERCENT, ui.progress_reset();)
   TERN_(SET_REMAINING_TIME, ui.reset_remaining_time();)
@@ -2299,8 +2300,8 @@ void MarlinUI::init_lcd() {
   DEBUG_ECHOLNPGM("MarlinUI::init_lcd");
   delay(750); // Wait to wakeup screen
   const bool hs = DWIN_Handshake(); UNUSED(hs);
-  #if DEBUG_DWIN
-    DEBUG_ECHOPGM("DWIN_Handshake ");
+  #if DEBUG_OUT
+    DEBUG_ECHOPGM("DWIN_Handshake: ");
     DEBUG_ECHOLN(hs ? F("ok.") : F("error."));
   #endif
   DWIN_Frame_SetDir(1);
@@ -4022,7 +4023,7 @@ void Draw_MaxAccel_Menu() {
     void DWIN_ApplyColor(const int8_t element) {
       const uint16_t color = RGB(HMI_value.Color.r, HMI_value.Color.g, HMI_value.Color.b);
       switch (element) {
-        case  1: default: RestoreDefaultColors();   break;
+        case  1: RestoreDefaultColors(); break;
         case  2: HMI_data.Background_Color = color; DWINUI::SetBackgroundColor(HMI_data.Background_Color); break;
         case  3: HMI_data.Cursor_Color     = color; break;
         case  4: HMI_data.TitleBg_Color    = color; DWINUI::SetButtonColor(HMI_data.TitleBg_Color); break;
@@ -4042,6 +4043,10 @@ void Draw_MaxAccel_Menu() {
         case 18: HMI_data.Indicator_Color  = color; break;
         case 19: HMI_data.Coordinate_Color = color; break;
         case 20: HMI_data.Bottom_Color     = color; break;
+        default:
+          DEBUG_ECHOLNPGM("Invalid color element:", element);
+          LCD_MESSAGE_F("Invalid color element");
+          break;
       }
     }
   #endif // HAS_CGCODE (C11)
@@ -4638,7 +4643,7 @@ void Draw_MaxAccel_Menu() {
   void HostShutDown() { Goto_Popup(PopUp_HostShutDown, OnClick_HostShutDown); }
 #endif
 
-#if DEBUG_DWIN
+#if DEBUG_OUT
   void DWIN_Debug(PGM_P msg1, PGM_P msg2, PGM_P msg3, PGM_P msg4) {
     DEBUG_ECHOLNPGM_P(msg1, msg2, msg3, msg4);
     DWIN_Debug_Popup(msg1, msg2, msg3, msg4);
