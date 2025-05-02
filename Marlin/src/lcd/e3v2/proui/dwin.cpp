@@ -1942,7 +1942,7 @@ void DWIN_HomingDone() {
 
 // Started a Print Job
 void DWIN_Print_Started() {
-  DEBUG_ECHOLNPGM("DWIN_Print_Started: ");
+  DEBUG_ECHOPGM("DWIN_Print_Started: ");
   DEBUG_ECHOLN(SD_Printing() ? "SD Card" : "USB");
   TERN_(HAS_GCODE_PREVIEW, if (Host_Printing()) { preview.invalidate(); })
   TERN_(SET_PROGRESS_PERCENT, ui.progress_reset();)
