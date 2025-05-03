@@ -2005,16 +2005,17 @@ void DWIN_Print_Finished() {
 void DWIN_Print_Aborted() {
   DEBUG_ECHOLNPGM("DWIN_Print_Aborted");
   const bool auto_abort = TERN0(PROUI_ITEM_ABRT, HMI_data.auto_abort);
+  queue.clear();
   quickstop_stepper();
   if (auto_abort) {
     ui.status_printf(0, F("..Using Auto Abort GCodes.."));
     TERN_(SAVED_POSITIONS, queue.inject(F("G60S0"));)
     RaiseHead();
     safe_delay(200);
-    #ifdef EVENT_GCODE_SD_ABORT
-      queue.inject(F(EVENT_GCODE_SD_ABORT));
-    #endif
     ui.reset_status(true);
+  }
+  else {
+    DisableMotors();
   }
   LCD_MESSAGE(MSG_PRINT_ABORTED);
   TERN_(HOST_PROMPT_SUPPORT, hostui.notify(GET_TEXT_F(MSG_PRINT_ABORTED));)
