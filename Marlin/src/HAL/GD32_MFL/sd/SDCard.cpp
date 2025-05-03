@@ -15,12 +15,12 @@
 // If not, see <https://www.gnu.org/licenses/>.
 //
 
-#include "../platforms.h"
+#include "../../platforms.h"
 
 #ifdef ARDUINO_ARCH_MFL
 
-#include "../../inc/MarlinConfig.h"
-#include "../shared/Delay.h"
+#include "../../../inc/MarlinConfig.h"
+#include "../../shared/Delay.h"
 
 #include "SDCard.h"
 #include <string.h>

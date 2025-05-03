@@ -20,11 +20,11 @@
  *
  */
 
-#include "../platforms.h"
+#include "../../platforms.h"
 
 #ifdef ARDUINO_ARCH_MFL
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(ONBOARD_SDIO)
 
@@ -215,7 +215,6 @@ void DMA1_IRQHandler() {
   }
 }
 
-
 extern "C" {
 
   void SDIO_IRQHandler(void) {
@@ -227,7 +226,6 @@ extern "C" {
   }
 
 } // extern "C"
-
 
 #endif // ONBOARD_SDIO
 #endif // ARDUINO_ARCH_MFL
