@@ -1,5 +1,4 @@
-# Professional Firmware for the Voxelab Aquila and Creality Ender-3 3D Printers
-**_<sup>(or any other compatible 3D Printer)</sup>_**
+# Professional Firmware for the Voxelab Aquila and Creality Ender-3 3D Printers <br> **_<sup><sup><sub>(Or any other compatible 3D Printer)</sub></sup></sup>_**
 
 ![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)  
 ![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)  
@@ -28,8 +27,7 @@
 
 ---
 
-## Universal Firmware for RET6/RCT6 chips: G32, N32, H32, Creality 4.2.7 and 4.2.2 boards
-**_<sup>(Also available for BTT SKR Mini E3 and others)</sup>_**
+## Universal Firmware for RET6/RCT6 chips: G32, N32, H32, Creality 4.2.7 and 4.2.2 boards <br> **_<sup><sup><sub>(Also available for BTT SKR Mini E3 and others)</sub></sup></sup>_**
 
 ### - Please read this: -
 > [!NOTE]
@@ -39,10 +37,11 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 >
 > > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the *LCD Display* with the new **DWIN_SET**; which is located in the `display assets` folder.
 >
-> If you encounter any issues, suggestions, or feature requests please feel free to post it on the [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues), otherwise if everything is going well please leave a comment.
+> If you encounter any issues, have a suggestion, or feature requests please feel free to post it on the [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues), otherwise if everything is going well please leave a comment on the [Discussions tab](https://github.com/classicrocker883/MRiscoCProUI/discussions).
 >
-> I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best; easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware - like with other versions.
->
+> I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best; easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware.
+
+> [!TIP]
 > If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change state it triggers no filament to **HIGH**, or **LOW** (depending on what is already selected). This is found in the _Prepare_ menu/ _Filament Management_/ _Filament Settings_ -> _Runout Active_.
 
 <br>
@@ -54,9 +53,10 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 
 > [!CAUTION]
 >
-> The screen may **freeze and restart** when the SD card is inserted. This means that everything *so far* seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible *unless* you use USB serial interface to upload the file (through a slicer or something like Pronterface).
+> *G-code Thumbnail Preview* has been disabled for HC32 boards for the time being.  
+> When enabled, the screen may **freeze and restart** when the SD card is inserted. This means that everything *so far* seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible *unless* you use USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).
 
-> [!TIP]
+> [!NOTE]
 > H32->HC32 support is currently only in the branch **HC32-&lt;Month&gt;**. You can find the original repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
 >
 > HC32 support has recently been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here.
@@ -67,7 +67,11 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release). <br>
 Other changes and updates are [addressed here](https://github.com/classicrocker883/MRiscoCProUI/releases/latest).
 
-[Linear Advance Information](https://github.com/MarlinFirmware/MarlinDocumentation/blob/master/_features/lin_advance.md)
+- [LA - Linear Advance](https://marlinfw.org/docs/features/lin_advance.html)
+- [MPC - Model Predictive Temperature Control](https://marlinfw.org/docs/features/model_predictive_control.html)
+- [IS - Input Shaping](https://marlinfw.org/docs/features/input_shaping.html)
+- [Firmware Retract](https://marlinfw.org/docs/features/fwretract.html)
+
 
 <br>
 
@@ -129,9 +133,9 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 
 <br>
 
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" />
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" />
-<img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" />
+<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" /><p>
+<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" /><p>
+<img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" /><p>
 <img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle"  />
 
 <br>
@@ -141,9 +145,9 @@ Thank you for your support.
 Please consider making a donation, as large or as small and as often as you'd like.  
 [Ko-fi](https://ko-fi.com/classicrocker883)  
 [Venmo](https://venmo.com/u/andrewleduc88)  
-[Paypal](https://www.paypal.com/paypalme/andrewleduc)
+[Paypal](https://www.paypal.com/paypalme/andrewleduc) - **Single payment**
 
-[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal**
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal - Monthly Payment**
 
 <br>
 
@@ -214,15 +218,15 @@ Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
 
 This work would not be possible without me spending time working on it for free.
 
-I would greatly appreciate supporters, helpers, and betatesters whenever possible.
+I would greatly appreciate supporters, helpers, and beta testers whenever possible.
 
 Please show your support by considering making a donation, or giving your input if you end up using this firmware.
 
-It wasn't easy getting it to this point. I am just a basic programmer and the work is mostly trial and error. Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me what changes need to be made as I make them.
+It wasn't easy getting it to this point. I am just a basic programmer and the work is mostly trial and error.  
+Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me what changes need to be made as I make them.
 
-Marlin firmware is an Open Source project hosted on Github, [Marlin](https://marlinfw.org/) is owned and maintained by the maker community.
-
-VS Code is an IDE program owned and maintained by Microsoft.
+- [Marlin Firmware](https://marlinfw.org/) is an Open Source project and owned and maintained by the maker community.
+- VS Code is an IDE program owned and maintained by Microsoft.
 
 <br>
 
