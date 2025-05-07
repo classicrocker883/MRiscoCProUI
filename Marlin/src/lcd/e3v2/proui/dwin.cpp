@@ -2032,15 +2032,15 @@ void DWIN_Print_Aborted() {
   const bool auto_abort = TERN0(PROUI_ITEM_ABRT, HMI_data.auto_abort);
   queue.clear();
   quickstop_stepper();
+  TERN_(SAVED_POSITIONS, queue.inject(F("G60S0"));)
+  RaiseHead();
+  safe_delay(200);
+  ui.reset_status(true);
   if (auto_abort) {
-    ui.status_printf(0, F("..Using Auto Abort GCodes.."));
-    TERN_(SAVED_POSITIONS, queue.inject(F("G60S0"));)
-    RaiseHead();
+    ui.status_printf(0, F("..Disable Motors on Abort.."));
+    DisableMotors();
     safe_delay(200);
     ui.reset_status(true);
-  }
-  else {
-    DisableMotors();
   }
   LCD_MESSAGE(MSG_PRINT_ABORTED);
   TERN_(HOST_PROMPT_SUPPORT, hostui.notify(GET_TEXT_F(MSG_PRINT_ABORTED));)
@@ -2155,7 +2155,7 @@ void DWIN_SetDataDefaults() {
     ApplyLEDColor();
   #endif
   TERN_(HAS_GCODE_PREVIEW, HMI_data.EnablePreview = true;)
-  TERN_(PROUI_ITEM_ABRT, HMI_data.auto_abort = true;)
+  TERN_(PROUI_ITEM_ABRT, HMI_data.auto_abort = false;)
   #if ENABLED(PROUI_MESH_EDIT)
     meshSet.mesh_min_x = DEF_MESH_MIN_X;
     meshSet.mesh_max_x = DEF_MESH_MAX_X;
@@ -2344,14 +2344,11 @@ void MarlinUI::update() {
 
 #if HAS_LCD_BRIGHTNESS
   void MarlinUI::_set_brightness() {
-    if (backlight) {
-      DWIN_LCD_Brightness(brightness);
-      wait_for_user = false;
-    }
-    else {
-      DWIN_LCD_Brightness(0);
+    DWIN_LCD_Brightness(backlight ? brightness : 0);
+    if (!backlight)
       wait_for_user = true;
-    }
+    else if (checkkey != PrintDone)
+      wait_for_user = false;
   }
 #endif
 
@@ -3620,7 +3617,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Auto Abort GCodes", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(FWRETRACT)
       MENU_ITEM(ICON_FWRetLength, MSG_FWRETRACT, onDrawSubMenu, Draw_FWRetract_Menu);
@@ -4826,7 +4823,7 @@ void Draw_AdvancedSettings_Menu() {
       MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Auto Abort GCodes", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(PRINTCOUNTER)
       MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);
@@ -4886,7 +4883,7 @@ void Draw_AdvancedSettings_Menu() {
         MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
       #endif
       #if ENABLED(PROUI_ITEM_ABRT)
-        EDIT_ITEM_F(ICON_File, "Auto Abort GCodes", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+        EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
       #endif
       #if ENABLED(PRINTCOUNTER)
         MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);

@@ -353,9 +353,11 @@ typedef struct SettingsDataStruct {
   //
   // BLTOUCH
   //
-  bool bltouch_od_5v_mode;
-  #if HAS_BLTOUCH_HS_MODE
-    bool bltouch_high_speed_mode;                       // M401 S
+  #if ENABLED(BLTOUCH)
+    bool bltouch_od_5v_mode;
+    #if HAS_BLTOUCH_HS_MODE
+      bool bltouch_high_speed_mode;                     // M401 S
+    #endif
   #endif
 
   //
@@ -431,12 +433,16 @@ typedef struct SettingsDataStruct {
   //
   // Power Monitor
   //
-  uint8_t power_monitor_flags;                          // M430 I V W
+  #if HAS_POWER_MONITOR
+    uint8_t power_monitor_flags;                        // M430 I V W
+  #endif
 
   //
   // LCD Contrast
   //
-  uint8_t lcd_contrast;                                 // M250 C
+  #if HAS_LCD_CONTRAST
+    uint8_t lcd_contrast;                               // M250 C
+  #endif
 
   //
   // LCD_BRIGHTNESS
@@ -462,8 +468,10 @@ typedef struct SettingsDataStruct {
   //
   // Power-Loss Recovery
   //
-  bool recovery_enabled;                                // M413 S
-  celsius_t bed_temp_threshold;                         // M413 B
+  #if ENABLED(POWER_LOSS_RECOVERY)
+    bool recovery_enabled;                              // M413 S
+    celsius_t bed_temp_threshold;                       // M413 B
+  #endif
 
   //
   // Firmware Retraction
@@ -495,10 +503,12 @@ typedef struct SettingsDataStruct {
   //
   // TMC Stepper Current
   //
-  per_stepper_uint16_t tmc_stepper_current;             // M906 X Y Z...
-  per_stepper_uint32_t tmc_hybrid_threshold;            // M913 X Y Z...
-  mot_stepper_int16_t tmc_sgt;                          // M914 X Y Z...
-  per_stepper_bool_t tmc_stealth_enabled;               // M569 X Y Z...
+  #if HAS_TRINAMIC_CONFIG
+    per_stepper_uint16_t tmc_stepper_current;           // M906 X Y Z...
+    per_stepper_uint32_t tmc_hybrid_threshold;          // M913 X Y Z...
+    mot_stepper_int16_t tmc_sgt;                        // M914 X Y Z...
+    per_stepper_bool_t tmc_stealth_enabled;             // M569 X Y Z...
+  #endif
 
   //
   // Linear Advance
@@ -992,15 +1002,13 @@ void MarlinSettings::postprocess() {
     //
     // Hotend Offsets
     //
-    //#if HAS_HOTEND_OFFSET
+    #if HAS_HOTEND_OFFSET
     {
-      #if HAS_HOTEND_OFFSET
-        // Skip hotend 0 which must be 0
-        for (uint8_t e = 1; e < HOTENDS; ++e)
-          EEPROM_WRITE(hotend_offset[e]);
-      #endif
+      // Skip hotend 0 which must be 0
+      for (uint8_t e = 1; e < HOTENDS; ++e)
+        EEPROM_WRITE(hotend_offset[e]);
     }
-    //#endif
+    #endif
 
     //
     // Spindle Acceleration
@@ -1017,12 +1025,12 @@ void MarlinSettings::postprocess() {
     //
     //#if HAS_FILAMENT_SENSOR
     {
+      _FIELD_TEST(runout_sensor_enabled);
       #if HAS_FILAMENT_SENSOR
         const bool &runout_sensor_enabled = runout.enabled;
       #else
         constexpr int8_t runout_sensor_enabled = -1;
       #endif
-      _FIELD_TEST(runout_sensor_enabled);
       EEPROM_WRITE(runout_sensor_enabled);
 
       #if HAS_FILAMENT_RUNOUT_DISTANCE
@@ -1227,19 +1235,19 @@ void MarlinSettings::postprocess() {
     //
     // BLTOUCH
     //
-    //#if ENABLED(BLTOUCH)
+    #if ENABLED(BLTOUCH)
     {
       _FIELD_TEST(bltouch_od_5v_mode);
-      const bool bltouch_od_5v_mode = TERN0(BLTOUCH, bltouch.od_5v_mode);
+      const bool bltouch_od_5v_mode = bltouch.od_5v_mode;
       EEPROM_WRITE(bltouch_od_5v_mode);
 
       #if HAS_BLTOUCH_HS_MODE
         _FIELD_TEST(bltouch_high_speed_mode);
-        const bool bltouch_high_speed_mode = TERN0(BLTOUCH, bltouch.high_speed_mode);
+        const bool bltouch_high_speed_mode = bltouch.high_speed_mode;
         EEPROM_WRITE(bltouch_high_speed_mode);
       #endif
     }
-    //#endif
+    #endif
 
     //
     // Kinematic Settings (Delta, SCARA, TPARA, Polargraph...)
@@ -1378,28 +1386,24 @@ void MarlinSettings::postprocess() {
     //
     // Power Monitor
     //
-    //#if HAS_POWER_MONITOR
+    #if HAS_POWER_MONITOR
     {
-      #if HAS_POWER_MONITOR
-        const uint8_t &power_monitor_flags = power_monitor.flags;
-      #else
-        constexpr uint8_t power_monitor_flags = 0x00;
-      #endif
       _FIELD_TEST(power_monitor_flags);
+      const uint8_t &power_monitor_flags = power_monitor.flags;
       EEPROM_WRITE(power_monitor_flags);
     }
-    //#endif
+    #endif
 
     //
     // LCD Contrast
     //
-    //#if HAS_LCD_CONTRAST
+    #if HAS_LCD_CONTRAST
     {
       _FIELD_TEST(lcd_contrast);
       const uint8_t lcd_contrast = TERN(HAS_LCD_CONTRAST, ui.contrast, 127);
       EEPROM_WRITE(lcd_contrast);
     }
-    //#endif
+    #endif
 
     //
     // LCD Brightness
@@ -1439,15 +1443,15 @@ void MarlinSettings::postprocess() {
     //
     // Power-Loss Recovery
     //
-    //#if ENABLED(POWER_LOSS_RECOVERY)
+    #if ENABLED(POWER_LOSS_RECOVERY)
     {
       _FIELD_TEST(recovery_enabled);
-      const bool recovery_enabled = TERN0(POWER_LOSS_RECOVERY, recovery.enabled);
+      const bool recovery_enabled = recovery.enabled;
       const celsius_t bed_temp_threshold = TERN0(HAS_PLR_BED_THRESHOLD, recovery.bed_temp_threshold);
       EEPROM_WRITE(recovery_enabled);
       EEPROM_WRITE(bed_temp_threshold);
     }
-    //#endif
+    #endif
 
     //
     // Firmware Retraction
@@ -1514,36 +1518,32 @@ void MarlinSettings::postprocess() {
     //
     // TMC Stepper Current
     //
-    //#if HAS_TRINAMIC_CONFIG
+    #if HAS_TRINAMIC_CONFIG
     {
       _FIELD_TEST(tmc_stepper_current);
-
       per_stepper_uint16_t tmc_stepper_current{0};
-
-      #if HAS_TRINAMIC_CONFIG
-        TERN_(X_IS_TRINAMIC,  tmc_stepper_current.X =  stepperX.getMilliamps());
-        TERN_(Y_IS_TRINAMIC,  tmc_stepper_current.Y =  stepperY.getMilliamps());
-        TERN_(Z_IS_TRINAMIC,  tmc_stepper_current.Z =  stepperZ.getMilliamps());
-        TERN_(I_IS_TRINAMIC,  tmc_stepper_current.I =  stepperI.getMilliamps());
-        TERN_(J_IS_TRINAMIC,  tmc_stepper_current.J =  stepperJ.getMilliamps());
-        TERN_(K_IS_TRINAMIC,  tmc_stepper_current.K =  stepperK.getMilliamps());
-        TERN_(U_IS_TRINAMIC,  tmc_stepper_current.U =  stepperU.getMilliamps());
-        TERN_(V_IS_TRINAMIC,  tmc_stepper_current.V =  stepperV.getMilliamps());
-        TERN_(W_IS_TRINAMIC,  tmc_stepper_current.W =  stepperW.getMilliamps());
-        TERN_(X2_IS_TRINAMIC, tmc_stepper_current.X2 = stepperX2.getMilliamps());
-        TERN_(Y2_IS_TRINAMIC, tmc_stepper_current.Y2 = stepperY2.getMilliamps());
-        TERN_(Z2_IS_TRINAMIC, tmc_stepper_current.Z2 = stepperZ2.getMilliamps());
-        TERN_(Z3_IS_TRINAMIC, tmc_stepper_current.Z3 = stepperZ3.getMilliamps());
-        TERN_(Z4_IS_TRINAMIC, tmc_stepper_current.Z4 = stepperZ4.getMilliamps());
-        TERN_(E0_IS_TRINAMIC, tmc_stepper_current.E0 = stepperE0.getMilliamps());
-        TERN_(E1_IS_TRINAMIC, tmc_stepper_current.E1 = stepperE1.getMilliamps());
-        TERN_(E2_IS_TRINAMIC, tmc_stepper_current.E2 = stepperE2.getMilliamps());
-        TERN_(E3_IS_TRINAMIC, tmc_stepper_current.E3 = stepperE3.getMilliamps());
-        TERN_(E4_IS_TRINAMIC, tmc_stepper_current.E4 = stepperE4.getMilliamps());
-        TERN_(E5_IS_TRINAMIC, tmc_stepper_current.E5 = stepperE5.getMilliamps());
-        TERN_(E6_IS_TRINAMIC, tmc_stepper_current.E6 = stepperE6.getMilliamps());
-        TERN_(E7_IS_TRINAMIC, tmc_stepper_current.E7 = stepperE7.getMilliamps());
-      #endif
+      TERN_(X_IS_TRINAMIC,  tmc_stepper_current.X =  stepperX.getMilliamps());
+      TERN_(Y_IS_TRINAMIC,  tmc_stepper_current.Y =  stepperY.getMilliamps());
+      TERN_(Z_IS_TRINAMIC,  tmc_stepper_current.Z =  stepperZ.getMilliamps());
+      TERN_(I_IS_TRINAMIC,  tmc_stepper_current.I =  stepperI.getMilliamps());
+      TERN_(J_IS_TRINAMIC,  tmc_stepper_current.J =  stepperJ.getMilliamps());
+      TERN_(K_IS_TRINAMIC,  tmc_stepper_current.K =  stepperK.getMilliamps());
+      TERN_(U_IS_TRINAMIC,  tmc_stepper_current.U =  stepperU.getMilliamps());
+      TERN_(V_IS_TRINAMIC,  tmc_stepper_current.V =  stepperV.getMilliamps());
+      TERN_(W_IS_TRINAMIC,  tmc_stepper_current.W =  stepperW.getMilliamps());
+      TERN_(X2_IS_TRINAMIC, tmc_stepper_current.X2 = stepperX2.getMilliamps());
+      TERN_(Y2_IS_TRINAMIC, tmc_stepper_current.Y2 = stepperY2.getMilliamps());
+      TERN_(Z2_IS_TRINAMIC, tmc_stepper_current.Z2 = stepperZ2.getMilliamps());
+      TERN_(Z3_IS_TRINAMIC, tmc_stepper_current.Z3 = stepperZ3.getMilliamps());
+      TERN_(Z4_IS_TRINAMIC, tmc_stepper_current.Z4 = stepperZ4.getMilliamps());
+      TERN_(E0_IS_TRINAMIC, tmc_stepper_current.E0 = stepperE0.getMilliamps());
+      TERN_(E1_IS_TRINAMIC, tmc_stepper_current.E1 = stepperE1.getMilliamps());
+      TERN_(E2_IS_TRINAMIC, tmc_stepper_current.E2 = stepperE2.getMilliamps());
+      TERN_(E3_IS_TRINAMIC, tmc_stepper_current.E3 = stepperE3.getMilliamps());
+      TERN_(E4_IS_TRINAMIC, tmc_stepper_current.E4 = stepperE4.getMilliamps());
+      TERN_(E5_IS_TRINAMIC, tmc_stepper_current.E5 = stepperE5.getMilliamps());
+      TERN_(E6_IS_TRINAMIC, tmc_stepper_current.E6 = stepperE6.getMilliamps());
+      TERN_(E7_IS_TRINAMIC, tmc_stepper_current.E7 = stepperE7.getMilliamps());
       EEPROM_WRITE(tmc_stepper_current);
     }
 
@@ -1620,7 +1620,6 @@ void MarlinSettings::postprocess() {
     //
     {
       _FIELD_TEST(tmc_stealth_enabled);
-
       per_stepper_bool_t tmc_stealth_enabled = { false };
       TERN_(X_HAS_STEALTHCHOP,  tmc_stealth_enabled.X  = stepperX.get_stored_stealthChop());
       TERN_(Y_HAS_STEALTHCHOP,  tmc_stealth_enabled.Y  = stepperY.get_stored_stealthChop());
@@ -1646,7 +1645,7 @@ void MarlinSettings::postprocess() {
       TERN_(E7_HAS_STEALTHCHOP, tmc_stealth_enabled.E7 = stepperE7.get_stored_stealthChop());
       EEPROM_WRITE(tmc_stealth_enabled);
     }
-    //#endif
+    #endif
 
     //
     // Linear Advance
@@ -1726,6 +1725,7 @@ void MarlinSettings::postprocess() {
     //
     #if NUM_AXES //&& ENABLED(BACKLASH_GCODE)
     {
+      _FIELD_TEST(backlash_distance_mm);
       #if ENABLED(BACKLASH_GCODE)
         xyz_float_t backlash_distance_mm;
         LOOP_NUM_AXES(axis) backlash_distance_mm[axis] = backlash.get_distance_mm((AxisEnum)axis);
@@ -1739,7 +1739,6 @@ void MarlinSettings::postprocess() {
       #else
         const float backlash_smoothing_mm = 3;
       #endif
-      _FIELD_TEST(backlash_distance_mm);
       EEPROM_WRITE(backlash_distance_mm);
       EEPROM_WRITE(backlash_correction);
       EEPROM_WRITE(backlash_smoothing_mm);
@@ -1751,9 +1750,9 @@ void MarlinSettings::postprocess() {
     //
     #if ENABLED(EXTENSIBLE_UI)
     {
+      _FIELD_TEST(extui_data);
       char extui_data[ExtUI::eeprom_data_size] = { 0 };
       ExtUI::onStoreSettings(extui_data);
-      _FIELD_TEST(extui_data);
       EEPROM_WRITE(extui_data);
     }
     #endif
@@ -2149,8 +2148,8 @@ void MarlinSettings::postprocess() {
       //
       //#if HAS_FILAMENT_SENSOR
       {
-        int8_t runout_sensor_enabled;
         _FIELD_TEST(runout_sensor_enabled);
+        int8_t runout_sensor_enabled;
         EEPROM_READ(runout_sensor_enabled);
         #if HAS_FILAMENT_SENSOR
           if (!validating) runout.enabled = runout_sensor_enabled < 0 ? FIL_RUNOUT_ENABLED_DEFAULT : runout_sensor_enabled;
@@ -2361,27 +2360,19 @@ void MarlinSettings::postprocess() {
       //
       // BLTOUCH
       //
-      //#if ENABLED(BLTOUCH)
+      #if ENABLED(BLTOUCH)
       {
         _FIELD_TEST(bltouch_od_5v_mode);
-        #if ENABLED(BLTOUCH)
-          const bool &bltouch_od_5v_mode = bltouch.od_5v_mode;
-        #else
-          bool bltouch_od_5v_mode;
-        #endif
+        const bool &bltouch_od_5v_mode = bltouch.od_5v_mode;
         EEPROM_READ(bltouch_od_5v_mode);
 
         #if HAS_BLTOUCH_HS_MODE
           _FIELD_TEST(bltouch_high_speed_mode);
-          #if ENABLED(BLTOUCH)
-            const bool &bltouch_high_speed_mode = bltouch.high_speed_mode;
-          #else
-            bool bltouch_high_speed_mode;
-          #endif
+          const bool &bltouch_high_speed_mode = bltouch.high_speed_mode;
           EEPROM_READ(bltouch_high_speed_mode);
         #endif
       }
-      //#endif
+      #endif
 
       //
       // Kinematic Settings (Delta, SCARA, TPARA, Polargraph...)
@@ -2510,8 +2501,8 @@ void MarlinSettings::postprocess() {
       //
       #if HAS_USER_THERMISTORS
       {
-        user_thermistor_t user_thermistor[USER_THERMISTORS];
         _FIELD_TEST(user_thermistor);
+        user_thermistor_t user_thermistor[USER_THERMISTORS];
         EEPROM_READ(user_thermistor);
         if (!validating) COPY(thermalManager.user_thermistor, user_thermistor);
       }
@@ -2520,33 +2511,33 @@ void MarlinSettings::postprocess() {
       //
       // Power Monitor
       //
-      //#if HAS_POWER_MONITOR
+      #if HAS_POWER_MONITOR
       {
-        uint8_t power_monitor_flags;
         _FIELD_TEST(power_monitor_flags);
+        uint8_t power_monitor_flags;
         EEPROM_READ(power_monitor_flags);
-        TERN_(HAS_POWER_MONITOR, if (!validating) power_monitor.flags = power_monitor_flags);
+        if (!validating) power_monitor.flags = power_monitor_flags;
       }
-      //#endif
+      #endif
 
       //
       // LCD Contrast
       //
-      //#if HAS_LCD_CONTRAST
+      #if HAS_LCD_CONTRAST
       {
-        uint8_t lcd_contrast;
         _FIELD_TEST(lcd_contrast);
+        uint8_t lcd_contrast;
         EEPROM_READ(lcd_contrast);
-        TERN_(HAS_LCD_CONTRAST, if (!validating) ui.contrast = lcd_contrast);
+        if (!validating) ui.contrast = lcd_contrast;
       }
-      //#endif
+      #endif
 
       //
       // LCD Brightness
       //
       {
-        uint8_t lcd_brightness;
         _FIELD_TEST(lcd_brightness);
+        uint8_t lcd_brightness;
         EEPROM_READ(lcd_brightness);
         TERN_(HAS_LCD_BRIGHTNESS, if (!validating) ui.brightness = lcd_brightness);
       }
@@ -2577,7 +2568,7 @@ void MarlinSettings::postprocess() {
       //
       // Power-Loss Recovery
       //
-      //#if ENABLED(POWER_LOSS_RECOVERY)
+      #if ENABLED(POWER_LOSS_RECOVERY)
       {
         _FIELD_TEST(recovery_enabled);
         bool recovery_enabled;
@@ -2585,20 +2576,20 @@ void MarlinSettings::postprocess() {
         EEPROM_READ(recovery_enabled);
         EEPROM_READ(bed_temp_threshold);
         if (!validating) {
-          TERN_(POWER_LOSS_RECOVERY, recovery.enabled = recovery_enabled);
+          recovery.enabled = recovery_enabled;
           TERN_(HAS_PLR_BED_THRESHOLD, recovery.bed_temp_threshold = bed_temp_threshold);
         }
       }
-     // #endif
+     #endif
 
       //
       // Firmware Retraction
       //
      // #if ENABLED(FWRETRACT)
       {
+        _FIELD_TEST(fwretract_settings);
         fwretract_settings_t fwretract_settings;
         bool autoretract_enabled;
-        _FIELD_TEST(fwretract_settings);
         EEPROM_READ(fwretract_settings);
         EEPROM_READ(autoretract_enabled);
 
@@ -2659,49 +2650,45 @@ void MarlinSettings::postprocess() {
       //
       // TMC Stepper Current
       //
-      //#if HAS_TRINAMIC_CONFIG
+      #if HAS_TRINAMIC_CONFIG
       {
         _FIELD_TEST(tmc_stepper_current);
-
         per_stepper_uint16_t currents;
         EEPROM_READ(currents);
 
-        #if HAS_TRINAMIC_CONFIG
-
-          #define SET_CURR(Q) stepper##Q.rms_current(currents.Q ? currents.Q : Q##_CURRENT)
-          if (!validating) {
-            TERN_(X_IS_TRINAMIC,  SET_CURR(X));
-            TERN_(Y_IS_TRINAMIC,  SET_CURR(Y));
-            TERN_(Z_IS_TRINAMIC,  SET_CURR(Z));
-            TERN_(I_IS_TRINAMIC,  SET_CURR(I));
-            TERN_(J_IS_TRINAMIC,  SET_CURR(J));
-            TERN_(K_IS_TRINAMIC,  SET_CURR(K));
-            TERN_(U_IS_TRINAMIC,  SET_CURR(U));
-            TERN_(V_IS_TRINAMIC,  SET_CURR(V));
-            TERN_(W_IS_TRINAMIC,  SET_CURR(W));
-            TERN_(X2_IS_TRINAMIC, SET_CURR(X2));
-            TERN_(Y2_IS_TRINAMIC, SET_CURR(Y2));
-            TERN_(Z2_IS_TRINAMIC, SET_CURR(Z2));
-            TERN_(Z3_IS_TRINAMIC, SET_CURR(Z3));
-            TERN_(Z4_IS_TRINAMIC, SET_CURR(Z4));
-            TERN_(E0_IS_TRINAMIC, SET_CURR(E0));
-            TERN_(E1_IS_TRINAMIC, SET_CURR(E1));
-            TERN_(E2_IS_TRINAMIC, SET_CURR(E2));
-            TERN_(E3_IS_TRINAMIC, SET_CURR(E3));
-            TERN_(E4_IS_TRINAMIC, SET_CURR(E4));
-            TERN_(E5_IS_TRINAMIC, SET_CURR(E5));
-            TERN_(E6_IS_TRINAMIC, SET_CURR(E6));
-            TERN_(E7_IS_TRINAMIC, SET_CURR(E7));
-          }
-        #endif
+        #define SET_CURR(Q) stepper##Q.rms_current(currents.Q ? currents.Q : Q##_CURRENT)
+        if (!validating) {
+          TERN_(X_IS_TRINAMIC,  SET_CURR(X));
+          TERN_(Y_IS_TRINAMIC,  SET_CURR(Y));
+          TERN_(Z_IS_TRINAMIC,  SET_CURR(Z));
+          TERN_(I_IS_TRINAMIC,  SET_CURR(I));
+          TERN_(J_IS_TRINAMIC,  SET_CURR(J));
+          TERN_(K_IS_TRINAMIC,  SET_CURR(K));
+          TERN_(U_IS_TRINAMIC,  SET_CURR(U));
+          TERN_(V_IS_TRINAMIC,  SET_CURR(V));
+          TERN_(W_IS_TRINAMIC,  SET_CURR(W));
+          TERN_(X2_IS_TRINAMIC, SET_CURR(X2));
+          TERN_(Y2_IS_TRINAMIC, SET_CURR(Y2));
+          TERN_(Z2_IS_TRINAMIC, SET_CURR(Z2));
+          TERN_(Z3_IS_TRINAMIC, SET_CURR(Z3));
+          TERN_(Z4_IS_TRINAMIC, SET_CURR(Z4));
+          TERN_(E0_IS_TRINAMIC, SET_CURR(E0));
+          TERN_(E1_IS_TRINAMIC, SET_CURR(E1));
+          TERN_(E2_IS_TRINAMIC, SET_CURR(E2));
+          TERN_(E3_IS_TRINAMIC, SET_CURR(E3));
+          TERN_(E4_IS_TRINAMIC, SET_CURR(E4));
+          TERN_(E5_IS_TRINAMIC, SET_CURR(E5));
+          TERN_(E6_IS_TRINAMIC, SET_CURR(E6));
+          TERN_(E7_IS_TRINAMIC, SET_CURR(E7));
+        }
       }
 
       //
       // TMC Hybrid Threshold
       //
       {
-        per_stepper_uint32_t tmc_hybrid_threshold;
         _FIELD_TEST(tmc_hybrid_threshold);
+        per_stepper_uint32_t tmc_hybrid_threshold;
         EEPROM_READ(tmc_hybrid_threshold);
 
         #if ENABLED(HYBRID_THRESHOLD)
@@ -2736,9 +2723,10 @@ void MarlinSettings::postprocess() {
       // TMC StallGuard threshold.
       //
       {
-        mot_stepper_int16_t tmc_sgt;
         _FIELD_TEST(tmc_sgt);
+        mot_stepper_int16_t tmc_sgt;
         EEPROM_READ(tmc_sgt);
+
         #if USE_SENSORLESS
           if (!validating) {
             NUM_AXIS_CODE(
@@ -2766,11 +2754,8 @@ void MarlinSettings::postprocess() {
       //
       {
         _FIELD_TEST(tmc_stealth_enabled);
-
         per_stepper_bool_t tmc_stealth_enabled;
         EEPROM_READ(tmc_stealth_enabled);
-
-        #if HAS_TRINAMIC_CONFIG
 
         #define SET_STEPPING_MODE(ST) stepper##ST.stored.stealthChop_enabled = tmc_stealth_enabled.ST; stepper##ST.refresh_stepping_mode();
         if (!validating) {
@@ -2797,9 +2782,8 @@ void MarlinSettings::postprocess() {
           TERN_(E6_HAS_STEALTHCHOP, SET_STEPPING_MODE(E6));
           TERN_(E7_HAS_STEALTHCHOP, SET_STEPPING_MODE(E7));
         }
-        #endif
       }
-      //#endif // HAS_TRINAMIC_CONFIG
+      #endif // HAS_TRINAMIC_CONFIG
 
       //
       // Linear Advance
@@ -2915,11 +2899,11 @@ void MarlinSettings::postprocess() {
       //
       #if NUM_AXES// && ENABLED(BACKLASH_GCODE)
       {
+        _FIELD_TEST(backlash_distance_mm);
         xyz_float_t backlash_distance_mm;
         uint8_t backlash_correction;
         float backlash_smoothing_mm;
 
-        _FIELD_TEST(backlash_distance_mm);
         EEPROM_READ(backlash_distance_mm);
         EEPROM_READ(backlash_correction);
         EEPROM_READ(backlash_smoothing_mm);
@@ -2941,8 +2925,8 @@ void MarlinSettings::postprocess() {
       //
       #if ENABLED(EXTENSIBLE_UI)
       { // This is a significant hardware change; don't reserve EEPROM space when not present
-        const char extui_data[ExtUI::eeprom_data_size] = { 0 };
         _FIELD_TEST(extui_data);
+        const char extui_data[ExtUI::eeprom_data_size] = { 0 };
         EEPROM_READ(extui_data);
         if (!validating) ExtUI::onLoadSettings(extui_data);
       }
@@ -2956,8 +2940,8 @@ void MarlinSettings::postprocess() {
           EEPROM_READ(meshSet);
         #endif
       {
-        const char dwin_data[eeprom_data_size] = { 0 };
         _FIELD_TEST(dwin_data);
+        const char dwin_data[eeprom_data_size] = { 0 };
         EEPROM_READ(dwin_data);
         if (!validating) DWIN_CopySettingsFrom(dwin_data);
       }

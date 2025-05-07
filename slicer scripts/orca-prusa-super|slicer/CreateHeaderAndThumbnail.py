@@ -11,6 +11,20 @@
 # github.com/alexqzd/Marlin/blob/Gcode-preview/Display%20firmware/gcode_thumb_to_jpg.py
 # ------------------------------------------------------------------------------
 
+"""
+Copy and paste this into "Machine start G-code" in Printer Settings
+(see Orca-PrinterSettings-StartScript.png)
+
+;
+; First layer print x min = [first_layer_print_min_0]
+; First layer print y min = [first_layer_print_min_1]
+; First layer print x max = [first_layer_print_max_0]
+; First layer print y max = [first_layer_print_max_1]
+; Total layer count = [total_layer_count]
+;
+
+"""
+
 import sys
 import re
 import os
@@ -125,7 +139,7 @@ try:
         of.write(";MAXZ:{:.3f}\n".format(maxz))
         of.write(";POSTPROCESSED\n")
         of.write(";Header generated for the MRiscoCProUI Firmware\n")
-        of.write(";https://github.com/classicrocker883/MRiscoCProUI")
+        of.write(";https://github.com/classicrocker883/MRiscoCProU\n")
         of.write(lines)
 except:
     print("Error writing output file")

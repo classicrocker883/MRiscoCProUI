@@ -58,19 +58,6 @@ extern xyz_pos_t cartes;
   extern abce_pos_t delta;
 #endif
 
-#if HAS_ABL_NOT_UBL
-  extern feedRate_t xy_probe_feedrate_mm_s;
-  #define XY_PROBE_FEEDRATE_MM_S xy_probe_feedrate_mm_s
-#elif defined(XY_PROBE_FEEDRATE)
-  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS(XY_PROBE_FEEDRATE)
-#else
-  #define XY_PROBE_FEEDRATE_MM_S PLANNER_XY_FEEDRATE_MM_S
-#endif
-
-#if HAS_BED_PROBE
-  constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
-#endif
-
 /**
  * Feed rates are often configured with mm/m
  * but the planner and stepper like mm/s units.
@@ -111,6 +98,19 @@ extern feedRate_t feedrate_mm_s;
  */
 extern int16_t feedrate_percentage;
 #define MMS_SCALED(V) ((V) * 0.01f * feedrate_percentage)
+
+#if HAS_ABL_NOT_UBL
+  extern feedRate_t xy_probe_feedrate_mm_s;
+  #define XY_PROBE_FEEDRATE_MM_S xy_probe_feedrate_mm_s
+#elif defined(XY_PROBE_FEEDRATE)
+  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS(XY_PROBE_FEEDRATE)
+#else
+  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS((homing_feedrate_mm_m.x + homing_feedrate_mm_m.y) * 1.5)
+#endif
+
+#if HAS_BED_PROBE
+  constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
+#endif
 
 // The active extruder (tool). Set with T<extruder> command.
 #if HAS_MULTI_EXTRUDER

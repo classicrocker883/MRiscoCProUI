@@ -4313,7 +4313,7 @@ void Temperature::isr() {
     constexpr bool do_buttons = true;
   #else
     static bool do_buttons;
-    do_buttons ^= true;
+    FLIP(do_buttons);
   #endif
   if (do_buttons) ui.update_buttons();
 
