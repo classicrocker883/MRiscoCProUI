@@ -141,6 +141,12 @@
   #define MAX_TMC_CURRENT 3000
 #endif
 
+#if ANY(TJC_DISPLAY, DACAI_DISPLAY)
+  #define HOME_AND_KILL_ICON ICON_BLTouch
+#else
+  #define HOME_AND_KILL_ICON ICON_Printer_0
+#endif
+
 // Editable temperature limits
 #define MIN_ETEMP       0
 #define MAX_ETEMP       thermalManager.hotend_max_target(EXT)
@@ -564,7 +570,13 @@ void Draw_Print_ProgressElapsed() {
 #endif
 
 void ICON_ResumeOrPause() {
-  if (checkkey == PrintProcess) { (print_job_timer.isPaused() || HMI_flag.pause_flag) ? ICON_Resume() : ICON_Pause(); }
+  if (checkkey != PrintProcess) return;
+  if (print_job_timer.isPaused() || HMI_flag.pause_flag) {
+    ICON_Resume();
+  }
+  else {
+    ICON_Pause();
+  }
 }
 
 // Update filename on print
@@ -953,19 +965,28 @@ void SDCard_Folder(char * const dirname) {
 
 void onClickSDItem() {
   const uint16_t hasUpDir = !card.flag.workDirIsRoot;
-  if (hasUpDir && CurrentMenu->selected == 1) return SDCard_Up();
+  if (hasUpDir && CurrentMenu->selected == 1) {
+    SDCard_Up();
+    return;
+  }
   else {
     const uint16_t filenum = CurrentMenu->selected - 1 - hasUpDir;
     card.selectFileByIndexSorted(filenum);
 
     // Enter that folder!
-    if (card.flag.filenameIsDir) return SDCard_Folder(card.filename);
+    if (card.flag.filenameIsDir) {
+      SDCard_Folder(card.filename);
+      return;
+    }
 
-    if (card.fileIsBinary())
-      return DWIN_Popup_Confirm(ICON_Error, GET_TEXT_F(MSG_CHECK_FILENAME), GET_TEXT_F(MSG_ONLY_GCODE));
+    if (card.fileIsBinary()) {
+      DWIN_Popup_Confirm(ICON_Error, GET_TEXT_F(MSG_CHECK_FILENAME), GET_TEXT_F(MSG_ONLY_GCODE));
+      return;
+    }
     else {
       DWIN_Print_Header(card.longest_filename()); // Save filename
-      return Goto_ConfirmToPrint();
+      Goto_ConfirmToPrint();
+      return;
     }
   }
 }
@@ -1199,7 +1220,7 @@ void OnClick_PauseOrStop() {
     case PRINT_STOP: if (HMI_flag.select_flag) { ui.abort_print(); } break; // stop confirmed then abort print
     default: break;
   }
-  return Goto_PrintProcess();
+  Goto_PrintProcess();
 }
 
 // Printing
@@ -1233,11 +1254,11 @@ void HMI_Printing() {
           ui.resume_print();
           break;
         }
-        else {
-          return Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
-        }
+        Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+        return;
       case PRINT_STOP:
-        return Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+        Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+        return;
       default: break;
     }
   }
@@ -1284,7 +1305,8 @@ void HMI_WaitForUser() {
   EncoderState encoder_diffState = get_encoder_state();
   if ((encoder_diffState != ENCODER_DIFF_NO) && !ui.backlight) {
     ui.refresh_brightness();
-    return HMI_ReturnScreen();
+    HMI_ReturnScreen();
+    return;
   }
   if (!wait_for_user) {
     switch (checkkey) {
@@ -1434,9 +1456,11 @@ void EachMomentUpdate() {
       //if ((min.value % 60) == 0) // 1 minute update, else every second
       Draw_Print_ProgressElapsed();
     }
+
     #if HAS_PLR_UI_FLAG
-      else if (DWIN_lcd_sd_status && recovery.ui_flag_resume) { // resume print before power off
-        return Goto_PowerLossRecovery();
+      else if (DWIN_lcd_sd_status && recovery.ui_flag_resume) { // Resume interrupted print
+        Goto_PowerLossRecovery();
+        return;
       }
     #endif
 
@@ -1467,7 +1491,8 @@ void EachMomentUpdate() {
     if (HMI_flag.select_flag) {
       queue.inject(F("M1000C"));
       select_page.reset();
-      return Goto_Main_Menu();
+      Goto_Main_Menu();
+      return;
     }
     else {
       HMI_SaveProcessID(NothingToDo);
@@ -1862,7 +1887,7 @@ void DWIN_HomingStart() {
   DEBUG_ECHOLNPGM("DWIN_HomingStart");
   if (checkkey != NothingToDo || checkkey != Leveling) { HMI_SaveProcessID(Homing); }
   Title.ShowCaption(GET_TEXT_F(MSG_HOMING));
-  DWIN_Show_Popup(TERN(TJC_DISPLAY, ICON_BLTouch, ICON_Printer_0), GET_TEXT_F(MSG_HOMING), GET_TEXT_F(MSG_PLEASE_WAIT));
+  DWIN_Show_Popup(HOME_AND_KILL_ICON, GET_TEXT_F(MSG_HOMING), GET_TEXT_F(MSG_PLEASE_WAIT));
 }
 
 void DWIN_HomingDone() {
@@ -2331,7 +2356,7 @@ void MarlinUI::update() {
 #endif
 
 void MarlinUI::kill_screen(FSTR_P const lcd_error, FSTR_P const) {
-  DWIN_Show_Popup(TERN(TJC_DISPLAY, ICON_BLTouch, ICON_Printer_0), GET_TEXT_F(MSG_PRINTER_KILLED), lcd_error);
+  DWIN_Show_Popup(HOME_AND_KILL_ICON, GET_TEXT_F(MSG_PRINTER_KILLED), lcd_error);
   DWINUI::Draw_CenteredString(HMI_data.PopupTxt_Color, 270, GET_TEXT_F(MSG_TURN_OFF));
   DWIN_UpdateLCD();
 }
@@ -2461,7 +2486,8 @@ void AxisMove(AxisEnum axis) {
   #if HAS_HOTEND
     if (axis == E_AXIS && thermalManager.tooColdToExtrude(EXT)) {
       gcode.process_subcommands_now(F("G92E0")); // Reset extruder position
-      return DWIN_Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_HOTEND_TOO_COLD), GET_TEXT_F(MSG_PLEASE_PREHEAT));
+      DWIN_Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_HOTEND_TOO_COLD), GET_TEXT_F(MSG_PLEASE_PREHEAT));
+      return;
     }
   #endif
   if (!planner.is_full()) { planner.buffer_line(current_position, manual_feedrate_mm_s[axis]); }
@@ -2802,7 +2828,8 @@ void ApplyMove() {
     DWIN_ResetStatusLine();
 
     if (HMI_flag.select_flag) { // Confirm
-      return card.openAndPrintFile(card.filename);
+      card.openAndPrintFile(card.filename);
+      return;
     }
     else {
       HMI_ReturnScreen();
@@ -2812,18 +2839,30 @@ void ApplyMove() {
 
 void Goto_ConfirmToPrint() {
   #if ENABLED(CV_LASER_MODULE)
-    if (fileprop.isConfig) return card.openAndPrintFile(card.filename);
-    if (fileprop.isLaser) {
-      if (laser_device.is_laser_device())
-        return Draw_LaserPrint_Menu();
-      else
-        return Draw_LaserSettings_Menu();
+    if (fileprop.isConfig) {
+      card.openAndPrintFile(card.filename);
+      return;
     }
-    else
+    if (fileprop.isLaser) {
+      if (laser_device.is_laser_device()) {
+        Draw_LaserPrint_Menu();
+        return;
+      }
+      else {
+        Draw_LaserSettings_Menu();
+        return;
+      }
+    }
+    else {
       LaserOn(false); // If it is not laser file turn off laser mode
+      return;
+    }
   #endif
   #if HAS_GCODE_PREVIEW
-    if (HMI_data.EnablePreview) return Goto_Popup(preview.drawFromSD, OnClick_ConfirmToPrint);
+    if (HMI_data.EnablePreview) {
+      Goto_Popup(preview.drawFromSD, OnClick_ConfirmToPrint);
+      return;
+    }
   #endif
   card.openAndPrintFile(card.filename); // Direct print SD file
 }
@@ -3221,26 +3260,27 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 
 void ReturnToPreviousMenu() {
   #if ENABLED(CV_LASER_MODULE)
-    if (PreviousMenu == LaserPrintMenu) return Draw_LaserPrint_Menu();
+    if (PreviousMenu == LaserPrintMenu) { Draw_LaserPrint_Menu();       return; }
   #endif
   #if ANY(PID_AUTOTUNE_MENU, PID_EDIT_MENU) \
    || ANY(MPC_EDIT_MENU, MPC_AUTOTUNE_MENU)
-    if (PreviousMenu == PIDMenu)        return Draw_PID_Menu();
+    if (PreviousMenu == PIDMenu)        { Draw_PID_Menu();              return; }
   #endif
   #if HAS_MESH
-    if (PreviousMenu == AdvancedMenu)   return Draw_Advanced_Menu();
+    if (PreviousMenu == AdvancedMenu)   { Draw_Advanced_Menu();         return; }
   #endif
-  if (PreviousMenu == AdvancedSettings) return Draw_AdvancedSettings_Menu();
-  if (PreviousMenu == TemperatureMenu)  return Draw_Temperature_Menu();
-  if (PreviousMenu == FilamentMenu)     return Draw_FilamentMan_Menu();
-  if (PreviousMenu == TuneMenu)         return Draw_Tune_Menu();
-  if (PreviousMenu == FileMenu)         return Draw_Print_File_Menu();
-  if (PreviousMenu == PrepareMenu)      return Draw_Prepare_Menu();
+  if (PreviousMenu == AdvancedSettings) { Draw_AdvancedSettings_Menu(); return; }
+  if (PreviousMenu == TemperatureMenu)  { Draw_Temperature_Menu();      return; }
+  if (PreviousMenu == FilamentMenu)     { Draw_FilamentMan_Menu();      return; }
+  if (PreviousMenu == TuneMenu)         { Draw_Tune_Menu();             return; }
+  if (PreviousMenu == FileMenu)         { Draw_Print_File_Menu();       return; }
+  if (PreviousMenu == PrepareMenu)      { Draw_Prepare_Menu();          return; }
   #if HAS_TOOLBAR
     else if (CurrentMenu == ZOffsetWizMenu) {
       DWIN_ResetStatusLine();
       Goto_Main_Menu();
-      return Goto_ToolBar();
+      Goto_ToolBar();
+      return;
     }
   #endif
 }
@@ -3532,7 +3572,10 @@ void Draw_FilSet_Menu() {
 
 void Draw_Tune_Menu() {
   #if ENABLED(CV_LASER_MODULE)
-    if (laser_device.is_laser_device()) return LCD_MESSAGE_F("Not available in laser mode");
+    if (laser_device.is_laser_device()) {
+      LCD_MESSAGE_F("Not available in laser mode");
+      return;
+    }
   #endif
   checkkey = Menu;
   if (SET_MENU(TuneMenu, MSG_TUNE, 24)) {
@@ -4474,7 +4517,8 @@ void Draw_MaxAccel_Menu() {
     void Draw_EditMesh_Menu() {
       if (!leveling_is_valid()) {
         LCD_MESSAGE(MSG_UBL_MESH_INVALID);
-        return DWIN_Popup_Confirm(ICON_Leveling_1, GET_TEXT_F(MSG_NO_VALID_MESH), GET_TEXT_F(MSG_UBL_LOAD_MESH));
+        DWIN_Popup_Confirm(ICON_Leveling_1, GET_TEXT_F(MSG_NO_VALID_MESH), GET_TEXT_F(MSG_UBL_LOAD_MESH));
+        return;
       }
       set_bed_leveling_enabled(false);
       checkkey = Menu;
@@ -4563,7 +4607,10 @@ void Draw_MaxAccel_Menu() {
 
   void LaserRunRange() {
     if (!laser_device.is_laser_device()) return;
-    if (!all_axes_trusted()) return LCD_MESSAGE_F("First set home");
+    if (!all_axes_trusted()) {
+      LCD_MESSAGE_F("First set home");
+      return;
+    }
     DWIN_Show_Popup(ICON_TempTooHigh, F("LASER"), F("Run Range"), BTN_Cancel);
     HMI_SaveProcessID(WaitResponse);
     laser_device.laser_range();
@@ -4585,7 +4632,10 @@ void Draw_MaxAccel_Menu() {
   }
 
   void Draw_LaserPrint_Menu() {
-    if (!laser_device.is_laser_device()) return Goto_Main_Menu();
+    if (!laser_device.is_laser_device()) {
+      Goto_Main_Menu();
+      return;
+    }
     checkkey = Menu;
     if (SET_MENU(LaserPrintMenu, MSG_LASER_MENU, 4)) {
       BACK_ITEM(Draw_Print_File_Menu);

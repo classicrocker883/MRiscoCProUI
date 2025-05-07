@@ -741,6 +741,8 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
     #error "SWITCHING_NOZZLE requires NUM_SERVOS >= 1."
   #elif !defined(SWITCHING_NOZZLE_SERVO_NR)
     #error "SWITCHING_NOZZLE requires SWITCHING_NOZZLE_SERVO_NR."
+  #elif ALL(SWITCHING_NOZZLE_LIFT_TO_PROBE, NOZZLE_AS_PROBE)
+    #error "SWITCHING_NOZZLE_LIFT_TO_PROBE cannot be used with NOZZLE_AS_PROBE."
   #elif SWITCHING_NOZZLE_SERVO_NR == 0 && !PIN_EXISTS(SERVO0)
     #error "SERVO0_PIN must be defined for your SWITCHING_NOZZLE."
   #elif SWITCHING_NOZZLE_SERVO_NR == 1 && !PIN_EXISTS(SERVO1)
@@ -870,7 +872,9 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
     #ifndef CPU_32_BIT
       #error "SMOOTH_LIN_ADVANCE requires a 32-bit CPU."
     #elif ENABLED(S_CURVE_ACCELERATION)
-      //#error "SMOOTH_LIN_ADVANCE is not compatible with S_CURVE_ACCELERATION."
+      #error "SMOOTH_LIN_ADVANCE is not compatible with S_CURVE_ACCELERATION."
+    #elif ENABLED(NONLINEAR_EXTRUSION)
+      #error "SMOOTH_LIN_ADVANCE doesn't currently support NONLINEAR_EXTRUSION."
     #elif ENABLED(INPUT_SHAPING_E_SYNC) && NONE(INPUT_SHAPING_X, INPUT_SHAPING_Y)
       #error "INPUT_SHAPING_E_SYNC requires INPUT_SHAPING_X or INPUT_SHAPING_Y."
     #endif
