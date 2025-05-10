@@ -360,7 +360,7 @@ typedef struct PlannerSettings {
   #if ENABLED(EDITABLE_STEPS_PER_UNIT)
     float axis_steps_per_mm[DISTINCT_AXES];
   #else
-    #define _DLIM(I) _MIN(I, (signed)COUNT(_dasu) - 1)
+    #define _DLIM(I) ALIM(I, _dasu)
     #define _DASU(N) _dasu[_DLIM(N)],
     #define _EASU(N) _dasu[_DLIM(E_AXIS + N)],
     static constexpr float axis_steps_per_mm[DISTINCT_AXES] = {
@@ -1089,8 +1089,8 @@ class Planner {
     #if HAS_LINEAR_E_JERK
       FORCE_INLINE static void recalculate_max_e_jerk() {
         const float prop = junction_deviation_mm * SQRT(0.5) / (1.0f - SQRT(0.5));
-        EXTRUDER_LOOP()
-          max_e_jerk[E_INDEX_N(e)] = SQRT(prop * settings.max_acceleration_mm_per_s2[E_AXIS_N(e)]);
+        for (uint8_t i = 0; i < DISTINCT_E; ++i)
+          max_e_jerk[i] = SQRT(prop * settings.max_acceleration_mm_per_s2[E_AXIS + i]);
       }
     #endif
 
