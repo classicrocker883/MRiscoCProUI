@@ -1946,6 +1946,9 @@
     //#define CUSTOM_FIRMWARE_UPLOAD  // MRiscoC Enabled for easy firmware upgrade
   #endif
 
+  // "Over-the-air" Firmware Update with M936 - Required to set EEPROM flag
+  //#define OTA_FIRMWARE_UPDATE
+
   /**
    * Set this option to one of the following (or the board's defaults apply):
    *
