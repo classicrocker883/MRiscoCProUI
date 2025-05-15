@@ -3143,7 +3143,8 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 #endif
 
 #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-  void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
+  void ApplyLA_K() { planner.set_advance_k(MenuData.Value / MINUNITMULT); }
+  void SetLA_K() { SetPFloatOnClick(0, 10, 3, ApplyLA_K); }
   #if ENABLED(SMOOTH_LIN_ADVANCE)
     void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
     void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
