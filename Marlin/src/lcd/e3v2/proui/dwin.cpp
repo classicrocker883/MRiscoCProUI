@@ -1275,10 +1275,10 @@ void Draw_Main_Area() {
     OPTCODE(PROUI_ITEM_PLOT,
     case PlotProcess:
       switch (HMI_value.tempControl) {
-        TERN_(PIDTEMP,        case PID_EXTR_START:)
-        TERN_(MPCTEMP,        case MPC_STARTED:)      drawHotendPlot(); break;
-        TERN_(PIDTEMPBED,     case PID_BED_START:     drawBedPlot(); break;)
-        TERN_(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawChamberPlot(); break;)
+        TERN_(PIDTEMP,          case PID_EXTR_START:)
+        TERN_(MPCTEMP,          case MPC_STARTED:)      drawHotendPlot();  break;
+        OPTCODE(PIDTEMPBED,     case PID_BED_START:     drawBedPlot();     break)
+        OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawChamberPlot(); break)
         default: break;
       }
       break)
@@ -1363,7 +1363,7 @@ void EachMomentUpdate() {
     next_var_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
     FLIP(blink);
     update_variable();
-    switch(checkkey) {
+    switch (checkkey) {
       #if HAS_ESDIAG
         case ESDiagProcess:
           esDiag.update();
@@ -1381,16 +1381,19 @@ void EachMomentUpdate() {
           }
         }
       #endif
-      #if ANY(PROUI_TUNING_GRAPH, PROUI_ITEM_PLOT)
-        switch (HMI_value.tempControl) {
-          OPTCODE(PIDTEMP,        case PID_EXTR_START:    { plot.update(thermalManager.wholeDegHotend(EXT)); } break)
-          OPTCODE(PIDTEMPBED,     case PID_BED_START:     { plot.update(thermalManager.wholeDegBed()); }       break)
-          OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: { plot.update(thermalManager.wholeDegChamber()); }   break)
-          OPTCODE(MPCTEMP,        case MPC_STARTED:       { plot.update(thermalManager.wholeDegHotend(EXT)); } break)
-          default: break;
-        }
-      #endif
-      default: break;
+        #if ANY(PROUI_TUNING_GRAPH, PROUI_ITEM_PLOT)
+          switch (HMI_value.tempControl) {
+            TERN_(PIDTEMP,          case PID_EXTR_START:)
+            TERN_(MPCTEMP,          case MPC_STARTED:)      plot.update(thermalManager.wholeDegHotend(EXT)); break;
+            OPTCODE(PIDTEMPBED,     case PID_BED_START:     plot.update(thermalManager.wholeDegBed());       break)
+            OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: plot.update(thermalManager.wholeDegChamber());   break)
+            default:
+              break;
+          }
+        break;
+        #endif
+      default:
+        break;
     }
   }
 
@@ -1558,11 +1561,11 @@ void EachMomentUpdate() {
     if (encoder_diffState == ENCODER_DIFF_CW || encoder_diffState == ENCODER_DIFF_CCW) {
       const bool change = encoder_diffState != ENCODER_DIFF_ENTER;
       if (change) {
-        switch(HMI_value.tempControl) {
-          TERN_(MPCTEMP,        case MPC_STARTED:)
-          TERN_(PIDTEMP,        case PID_EXTR_START:) drawBedPlot(); break;
-          TERN_(PIDTEMPBED,     case PID_BED_START: TERN(PIDTEMPCHAMBER, drawChamberPlot, drawHotendPlot)(); break;)
-          TERN_(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawHotendPlot(); break;)
+        switch (HMI_value.tempControl) {
+          TERN_(MPCTEMP,          case MPC_STARTED:)
+          TERN_(PIDTEMP,          case PID_EXTR_START:) drawBedPlot(); break;
+          OPTCODE(PIDTEMPBED,     case PID_BED_START: TERN(PIDTEMPCHAMBER, drawChamberPlot, drawHotendPlot)(); break)
+          OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawHotendPlot(); break)
           default: break;
         }
       }
@@ -1723,16 +1726,16 @@ void HMI_ReturnScreen() {
     HMI_SaveProcessID(PlotProcess);
 
     switch (result) {
-      #if ENABLED(MPCTEMP)
-        case MPC_STARTED:
-      #elif ENABLED(PIDTEMP)
+      #if ENABLED(PIDTEMP)
         case PID_EXTR_START:
+      #elif ENABLED(MPCTEMP)
+        case MPC_STARTED:
       #endif
-          Title.ShowCaption(GET_TEXT_F(MSG_HOTEND_TEMP_GRAPH));
-          DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, GET_TEXT_F(MSG_TEMP_NOZZLE));
-          _maxtemp = MAX_ETEMP;
-          _target = thermalManager.degTargetHotend(EXT);
-          break;
+        Title.ShowCaption(GET_TEXT_F(MSG_HOTEND_TEMP_GRAPH));
+        DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, GET_TEXT_F(MSG_TEMP_NOZZLE));
+        _maxtemp = MAX_ETEMP;
+        _target = thermalManager.degTargetHotend(EXT);
+        break;
       #if ENABLED(PIDTEMPBED)
         case PID_BED_START:
           Title.ShowCaption(GET_TEXT_F(MSG_BED_TEMP_GRAPH));

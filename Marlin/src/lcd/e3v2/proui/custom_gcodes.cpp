@@ -115,7 +115,7 @@ void C108() {
 
 // Special Creality DWIN G-Codes
 void custom_gcode(const int16_t codenum) {
-  switch(codenum) {
+  switch (codenum) {
     #if HAS_CUSTOM_COLORS
       case 11: C11(); break;           // Set color for UI element E
     #endif
