@@ -2041,7 +2041,9 @@ void DWIN_Print_Aborted() {
   ui.reset_status(true);
   if (auto_abort) {
     ui.status_printf(0, F("..Disable Motors on Abort.."));
-    DisableMotors();
+    queue.clear();
+    quickstop_stepper();
+    gcode.process_subcommands_now(F("M84"));
     safe_delay(200);
     ui.reset_status(true);
   }
@@ -3621,7 +3623,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(FWRETRACT)
       MENU_ITEM(ICON_FWRetLength, MSG_FWRETRACT, onDrawSubMenu, Draw_FWRetract_Menu);
@@ -4806,6 +4808,9 @@ void Draw_AdvancedSettings_Menu() {
     #if ALL(PROUI_ITEM_PLR, POWER_LOSS_RECOVERY)
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
     #endif
+    #if ENABLED(PROUI_ITEM_ABRT)
+      EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+    #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
@@ -4825,9 +4830,6 @@ void Draw_AdvancedSettings_Menu() {
     EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
     #if HAS_TRINAMIC_CONFIG
       MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
-    #endif
-    #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(PRINTCOUNTER)
       MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);
@@ -4866,6 +4868,9 @@ void Draw_AdvancedSettings_Menu() {
       #if ALL(PROUI_ITEM_PLR, POWER_LOSS_RECOVERY)
         EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
       #endif
+      #if ENABLED(PROUI_ITEM_ABRT)
+        EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      #endif
       #if ENABLED(SHOW_SPEED_IND)
         EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
       #endif
@@ -4885,9 +4890,6 @@ void Draw_AdvancedSettings_Menu() {
       EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
       #if HAS_TRINAMIC_CONFIG
         MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
-      #endif
-      #if ENABLED(PROUI_ITEM_ABRT)
-        EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
       #endif
       #if ENABLED(PRINTCOUNTER)
         MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);
