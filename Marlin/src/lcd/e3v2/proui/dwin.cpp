@@ -1275,10 +1275,10 @@ void Draw_Main_Area() {
     OPTCODE(PROUI_ITEM_PLOT,
     case PlotProcess:
       switch (HMI_value.tempControl) {
-        TERN_(PIDTEMP,        case PID_EXTR_START:)
-        TERN_(MPCTEMP,        case MPC_STARTED:)      drawHotendPlot(); break;
-        TERN_(PIDTEMPBED,     case PID_BED_START:     drawBedPlot(); break;)
-        TERN_(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawChamberPlot(); break;)
+        TERN_(PIDTEMP,          case PID_EXTR_START:)
+        TERN_(MPCTEMP,          case MPC_STARTED:)      drawHotendPlot();  break;
+        OPTCODE(PIDTEMPBED,     case PID_BED_START:     drawBedPlot();     break)
+        OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawChamberPlot(); break)
         default: break;
       }
       break)
@@ -1363,7 +1363,7 @@ void EachMomentUpdate() {
     next_var_update_ms = ms + DWIN_VAR_UPDATE_INTERVAL;
     FLIP(blink);
     update_variable();
-    switch(checkkey) {
+    switch (checkkey) {
       #if HAS_ESDIAG
         case ESDiagProcess:
           esDiag.update();
@@ -1381,16 +1381,19 @@ void EachMomentUpdate() {
           }
         }
       #endif
-      #if ANY(PROUI_TUNING_GRAPH, PROUI_ITEM_PLOT)
-        switch (HMI_value.tempControl) {
-          OPTCODE(PIDTEMP,        case PID_EXTR_START:    { plot.update(thermalManager.wholeDegHotend(EXT)); } break)
-          OPTCODE(PIDTEMPBED,     case PID_BED_START:     { plot.update(thermalManager.wholeDegBed()); }       break)
-          OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: { plot.update(thermalManager.wholeDegChamber()); }   break)
-          OPTCODE(MPCTEMP,        case MPC_STARTED:       { plot.update(thermalManager.wholeDegHotend(EXT)); } break)
-          default: break;
-        }
-      #endif
-      default: break;
+        #if ANY(PROUI_TUNING_GRAPH, PROUI_ITEM_PLOT)
+          switch (HMI_value.tempControl) {
+            TERN_(PIDTEMP,          case PID_EXTR_START:)
+            TERN_(MPCTEMP,          case MPC_STARTED:)      plot.update(thermalManager.wholeDegHotend(EXT)); break;
+            OPTCODE(PIDTEMPBED,     case PID_BED_START:     plot.update(thermalManager.wholeDegBed());       break)
+            OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: plot.update(thermalManager.wholeDegChamber());   break)
+            default:
+              break;
+          }
+        break;
+        #endif
+      default:
+        break;
     }
   }
 
@@ -1558,11 +1561,11 @@ void EachMomentUpdate() {
     if (encoder_diffState == ENCODER_DIFF_CW || encoder_diffState == ENCODER_DIFF_CCW) {
       const bool change = encoder_diffState != ENCODER_DIFF_ENTER;
       if (change) {
-        switch(HMI_value.tempControl) {
-          TERN_(MPCTEMP,        case MPC_STARTED:)
-          TERN_(PIDTEMP,        case PID_EXTR_START:) drawBedPlot(); break;
-          TERN_(PIDTEMPBED,     case PID_BED_START: TERN(PIDTEMPCHAMBER, drawChamberPlot, drawHotendPlot)(); break;)
-          TERN_(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawHotendPlot(); break;)
+        switch (HMI_value.tempControl) {
+          TERN_(MPCTEMP,          case MPC_STARTED:)
+          TERN_(PIDTEMP,          case PID_EXTR_START:) drawBedPlot(); break;
+          OPTCODE(PIDTEMPBED,     case PID_BED_START: TERN(PIDTEMPCHAMBER, drawChamberPlot, drawHotendPlot)(); break)
+          OPTCODE(PIDTEMPCHAMBER, case PID_CHAMBER_START: drawHotendPlot(); break)
           default: break;
         }
       }
@@ -1723,16 +1726,16 @@ void HMI_ReturnScreen() {
     HMI_SaveProcessID(PlotProcess);
 
     switch (result) {
-      #if ENABLED(MPCTEMP)
-        case MPC_STARTED:
-      #elif ENABLED(PIDTEMP)
+      #if ENABLED(PIDTEMP)
         case PID_EXTR_START:
+      #elif ENABLED(MPCTEMP)
+        case MPC_STARTED:
       #endif
-          Title.ShowCaption(GET_TEXT_F(MSG_HOTEND_TEMP_GRAPH));
-          DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, GET_TEXT_F(MSG_TEMP_NOZZLE));
-          _maxtemp = MAX_ETEMP;
-          _target = thermalManager.degTargetHotend(EXT);
-          break;
+        Title.ShowCaption(GET_TEXT_F(MSG_HOTEND_TEMP_GRAPH));
+        DWINUI::Draw_CenteredString(3, HMI_data.PopupTxt_Color, 75, GET_TEXT_F(MSG_TEMP_NOZZLE));
+        _maxtemp = MAX_ETEMP;
+        _target = thermalManager.degTargetHotend(EXT);
+        break;
       #if ENABLED(PIDTEMPBED)
         case PID_BED_START:
           Title.ShowCaption(GET_TEXT_F(MSG_BED_TEMP_GRAPH));
@@ -2038,7 +2041,9 @@ void DWIN_Print_Aborted() {
   ui.reset_status(true);
   if (auto_abort) {
     ui.status_printf(0, F("..Disable Motors on Abort.."));
-    DisableMotors();
+    queue.clear();
+    quickstop_stepper();
+    gcode.process_subcommands_now(F("M84"));
     safe_delay(200);
     ui.reset_status(true);
   }
@@ -3140,7 +3145,8 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 #endif
 
 #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-  void SetLA_K() { SetPFloatOnClick(0, 10, 3); }
+  void ApplyLA_K() { planner.set_advance_k(MenuData.Value / MINUNITMULT); }
+  void SetLA_K() { SetPFloatOnClick(0, 10, 3, ApplyLA_K); }
   #if ENABLED(SMOOTH_LIN_ADVANCE)
     void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
     void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
@@ -3617,7 +3623,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(FWRETRACT)
       MENU_ITEM(ICON_FWRetLength, MSG_FWRETRACT, onDrawSubMenu, Draw_FWRetract_Menu);
@@ -4802,6 +4808,9 @@ void Draw_AdvancedSettings_Menu() {
     #if ALL(PROUI_ITEM_PLR, POWER_LOSS_RECOVERY)
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
     #endif
+    #if ENABLED(PROUI_ITEM_ABRT)
+      EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+    #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
@@ -4821,9 +4830,6 @@ void Draw_AdvancedSettings_Menu() {
     EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
     #if HAS_TRINAMIC_CONFIG
       MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
-    #endif
-    #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(PRINTCOUNTER)
       MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);
@@ -4862,6 +4868,9 @@ void Draw_AdvancedSettings_Menu() {
       #if ALL(PROUI_ITEM_PLR, POWER_LOSS_RECOVERY)
         EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
       #endif
+      #if ENABLED(PROUI_ITEM_ABRT)
+        EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      #endif
       #if ENABLED(SHOW_SPEED_IND)
         EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
       #endif
@@ -4881,9 +4890,6 @@ void Draw_AdvancedSettings_Menu() {
       EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
       #if HAS_TRINAMIC_CONFIG
         MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
-      #endif
-      #if ENABLED(PROUI_ITEM_ABRT)
-        EDIT_ITEM_F(ICON_File, "Disable Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
       #endif
       #if ENABLED(PRINTCOUNTER)
         MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);

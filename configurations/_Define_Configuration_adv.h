@@ -761,8 +761,8 @@
 // #define LA_DEBUG
 // #define EXPERIMENTAL_I2S_LA
 // #define SMOOTH_LIN_ADVANCE
-// #define ADVANCE_TAU 0.01
-// #define SMOOTH_LIN_ADV_HZ 2000
+// #define ADVANCE_TAU 0.02
+// #define SMOOTH_LIN_ADV_HZ 1000
 // #define INPUT_SHAPING_E_SYNC
 // #define NONLINEAR_EXTRUSION
 // #define SAFE_BED_LEVELING_START_X 0.0
