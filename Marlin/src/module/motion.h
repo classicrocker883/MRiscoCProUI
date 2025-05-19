@@ -108,7 +108,10 @@ extern int16_t feedrate_percentage;
   #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS((homing_feedrate_mm_m.x + homing_feedrate_mm_m.y) * 1.5)
 #endif
 
-#if HAS_BED_PROBE
+#ifdef Z_PROBE_FEEDRATE_SLOW
+  TERN(PROUI_EX, const, constexpr) feedRate_t z_probe_slow_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
+#endif
+#ifdef Z_PROBE_FEEDRATE_FAST
   constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
 #endif
 
