@@ -87,6 +87,10 @@ typedef bool (*statusResetFunc_t)();
 
 #endif // HAS_WIRED_LCD
 
+#if LCD_WITH_BLINK && HAS_EXTRA_PROGRESS && !IS_DWIN_MARLINUI
+  #define HAS_ROTATE_PROGRESS 1
+#endif
+
 #if HAS_MARLINUI_U8GLIB
   enum MarlinFont : uint8_t {
     FONT_STATUSMENU = 1,
@@ -345,7 +349,7 @@ public:
       FORCE_INLINE static uint16_t get_progress_permyriad() { return _get_progress(); }
     #endif
     static uint8_t get_progress_percent() { return uint8_t(_get_progress() / (PROGRESS_SCALE)); }
-    #if LCD_WITH_BLINK && HAS_EXTRA_PROGRESS
+    #if HAS_ROTATE_PROGRESS
       #if ENABLED(SHOW_PROGRESS_PERCENT)
         static void drawPercent();
       #endif

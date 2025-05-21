@@ -60,6 +60,10 @@ MarlinUI ui;
   #include "../module/printcounter.h"
 #endif
 
+#if HAS_WIRED_LCD || HAS_PREHEAT
+  #include "../module/temperature.h"
+#endif
+
 #if LCD_HAS_WAIT_FOR_MOVE
   bool MarlinUI::wait_for_move; // = false
 #endif
@@ -147,8 +151,6 @@ constexpr uint8_t epps = ENCODER_PULSES_PER_STEP;
 #endif
 
 #if HAS_PREHEAT
-  #include "../module/temperature.h"
-
   preheat_t MarlinUI::material_preset[PREHEAT_COUNT];  // Initialized by settings.load
 
   void MarlinUI::reset_material_presets() {
@@ -342,7 +344,6 @@ void MarlinUI::init() {
 
   #include "lcdprint.h"
 
-  #include "../module/temperature.h"
   #include "../module/planner.h"
   #include "../module/motion.h"
 
@@ -1917,7 +1918,7 @@ uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, 
     );
   }
 
-  #if LCD_WITH_BLINK && HAS_EXTRA_PROGRESS
+  #if HAS_ROTATE_PROGRESS
 
     // Renew and redraw all enabled progress strings
     void MarlinUI::rotate_progress() {
@@ -1937,7 +1938,7 @@ uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, 
       }
     }
 
-  #endif // LCD_WITH_BLINK && HAS_EXTRA_PROGRESS
+  #endif // HAS_ROTATE_PROGRESS
 
 #endif // HAS_PRINT_PROGRESS
 
