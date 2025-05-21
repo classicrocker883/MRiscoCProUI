@@ -3,9 +3,11 @@ name: Aquila Build Configs
 ######################### Aquila #########################
 
 on:
-  workflow_dispatch:
-#   release:
-#     types: [released]
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
 
 jobs:
   Build-Default-A:            # Default for Aquila
