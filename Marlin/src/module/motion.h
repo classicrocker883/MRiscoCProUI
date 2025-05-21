@@ -109,7 +109,7 @@ extern int16_t feedrate_percentage;
 #endif
 
 #ifdef Z_PROBE_FEEDRATE_SLOW
-  TERN(PROUI_EX, const, constexpr) feedRate_t z_probe_slow_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
+  TERN(DWIN_LCD_PROUI, const, constexpr) feedRate_t z_probe_slow_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
 #endif
 #ifdef Z_PROBE_FEEDRATE_FAST
   constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
