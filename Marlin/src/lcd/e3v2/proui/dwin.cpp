@@ -2033,6 +2033,7 @@ void DWIN_Print_Finished() {
 void DWIN_Print_Aborted() {
   DEBUG_ECHOLNPGM("DWIN_Print_Aborted");
   const bool auto_abort = TERN0(PROUI_ITEM_ABRT, HMI_data.auto_abort);
+  safe_delay(100);
   queue.clear();
   quickstop_stepper();
   TERN_(SAVED_POSITIONS, queue.inject(F("G60S0"));)
@@ -2041,6 +2042,7 @@ void DWIN_Print_Aborted() {
   ui.reset_status(true);
   if (auto_abort) {
     ui.status_printf(0, F("..Disable Motors on Abort.."));
+    safe_delay(100);
     queue.clear();
     quickstop_stepper();
     gcode.process_subcommands_now(F("M84"));
@@ -3140,7 +3142,7 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 #endif
 
 #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-  void ApplyLA_K() { planner.set_advance_k(MenuData.Value / MINUNITMULT); }
+  void ApplyLA_K() { planner.set_advance_k(MenuData.Value / POW(10, 3)); }
   void SetLA_K() { SetPFloatOnClick(0, 10, 3, ApplyLA_K); }
   #if ENABLED(SMOOTH_LIN_ADVANCE)
     void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
@@ -3625,8 +3627,8 @@ void Draw_Tune_Menu() {
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal);
+        float editable_decimal_u = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal_u);
       #endif
     #endif
     #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
@@ -3787,8 +3789,8 @@ void Draw_Motion_Menu() {
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        float editable_decimal = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal);
+        float editable_decimal_u = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal_u);
       #endif
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
