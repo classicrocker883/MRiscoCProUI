@@ -3,9 +3,11 @@ name: HC32 Build Configs
 ######################### Aquila HC32 #########################
 
 on:
-  workflow_dispatch:
-  release:
-    types: [created]
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
 
 jobs:
   Build-Default:
@@ -16,6 +18,8 @@ jobs:
         temp: [true,false]
         inshape: [true,false]
     steps:
+    - name: Echo target
+      run: echo "Compiling configs for ${{ inputs.target }}"
     - uses: actions/checkout@v4.2.2
     - name: Setup node
       uses: actions/setup-node@v4.2.0

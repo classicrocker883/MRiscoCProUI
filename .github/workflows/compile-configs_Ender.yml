@@ -3,9 +3,11 @@ name: Ender-3V2 Build Configs
 ######################### Ender-3 #########################
 
 on:
-  workflow_dispatch:
-#   release:
-#     types: [prereleased]
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
 
 jobs:
   Build-Default-GD32-E:            # Default for Ender-3 GD32
@@ -17,6 +19,8 @@ jobs:
         inshape: [true,false]
         tjc: [true,false]
     steps:
+    - name: Echo target
+      run: echo "Compiling configs for ${{ inputs.target }}"
     - uses: actions/checkout@v4.2.2
     - name: Setup node
       uses: actions/setup-node@v4.2.0
