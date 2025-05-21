@@ -8,12 +8,12 @@ on:
 jobs:
   build-ender3:
     if: contains(github.event.release.tag_name, 'ender3')
-    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs-Ender.yml@HC32-May-Test
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_Ender.yml@HC32-May-Test
     with:
       target: ender3
 
   build-hc32:
     if: contains(github.event.release.tag_name, 'HC32')
-    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs-HC32.yml@HC32-May-Test
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_HC32.yml@HC32-May-Test
     with:
       target: HC32
