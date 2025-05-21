@@ -34,7 +34,7 @@
  * Verbose version identifier which should contain a reference to the location
  * from where the binary was downloaded or the source code was compiled.
  */
-#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION "Aquila-HC32"
+#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION "Aquila-UBL"
 
 /**
  * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
@@ -45,13 +45,6 @@
 
 #define STRING_DISTRIBUTION_DATE __DATE__
 #define STRING_DISTRIBUTION_TIME __TIME__
-
-/**
- * The protocol for communication to the host. Protocol indicates communication
- * standards such as the use of ASCII, "echo:" and "error:" line prefixes, etc.
- * (Other behaviors are given by the firmware version and capabilities report.)
- */
-//#define PROTOCOL_VERSION "1.0"
 
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.

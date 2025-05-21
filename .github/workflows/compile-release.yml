@@ -1,9 +1,9 @@
-# .github/workflows/release-matrix.yml
-name: Dispatch to Config Builds
+# .github/workflows/compile-release.yml
+name: Compile Config Builds
 
 on:
   release:
-    types: [released]
+    types: [released, prereleased]
 
 jobs:
   build-ender3:

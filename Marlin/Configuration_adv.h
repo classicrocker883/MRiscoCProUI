@@ -3969,7 +3969,7 @@
 /**
  * Extra options for the M114 "Current Position" report
  */
-//#define M114_DETAIL         // Use 'M114 D' for details to check planner calculations
+#define M114_DETAIL           // Use 'M114 D' for details to check planner calculations
 //#define M114_REALTIME       // Real current position based on forward kinematics
 //#define M114_LEGACY         // M114 used to synchronize on every call. Enable if needed.
 
@@ -4004,7 +4004,7 @@
 #define CAPABILITIES_REPORT
 #if ENABLED(CAPABILITIES_REPORT)
   // Include capabilities in M115 output
-  //#define EXTENDED_CAPABILITIES_REPORT // (1000 bytes of flash)
+  #define EXTENDED_CAPABILITIES_REPORT // (1000 bytes of flash)
   #if ENABLED(EXTENDED_CAPABILITIES_REPORT)
     #define M115_GEOMETRY_REPORT  // (448 bytes of flash) MRiscoC Enabled
   #endif
