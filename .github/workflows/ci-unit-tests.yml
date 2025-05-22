@@ -51,7 +51,7 @@ jobs:
       uses: actions/checkout@v4.2.2
 
     - name: Cache pip
-      uses: actions/cache@v4.2.2
+      uses: actions/cache@v4.2.3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-unit-v1-${{ hashFiles('**/requirements.txt') }}
@@ -59,7 +59,7 @@ jobs:
           ${{ runner.os }}-pip-unit-v1-
 
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.2
+      uses: actions/cache@v4.2.3
       with:
         path: |
           ~/.platformio
@@ -70,7 +70,7 @@ jobs:
           ${{ runner.os }}-pio-tests-v1-
 
     - name: Select Python 3.13
-      uses: actions/setup-python@v5.4.0
+      uses: actions/setup-python@v5.6.0
       with:
         python-version: '3.13'
         architecture: 'x64'
