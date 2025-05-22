@@ -51,9 +51,9 @@ jobs:
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
-        cp configurations/Voxelab\ Aquila\ HC32/ConfigurationDNP.h Marlin/Configuration.h
-        cp configurations/Voxelab\ Aquila\ HC32/Configuration_advDNP.h Marlin/Configuration_adv.h
-        cp configurations/Voxelab\ Aquila\ HC32/Version.h Marlin/Version.h
+        cp configurations/Voxelab\ Aquila\ HC32/Default/Configuration.h Marlin/Configuration.h
+        cp configurations/Voxelab\ Aquila\ HC32/Default/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Voxelab\ Aquila\ HC32/Default/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
         if ($IS); then STEMP=; else STEMP='\/\/'; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
@@ -123,9 +123,9 @@ jobs:
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
-        cp configurations/Voxelab\ Aquila\ HC32/ConfigurationMM.h Marlin/Configuration.h
-        cp configurations/Voxelab\ Aquila\ HC32/Configuration_advMM.h Marlin/Configuration_adv.h
-        cp configurations/Voxelab\ Aquila\ HC32/Version.h Marlin/Version.h
+        cp configurations/Voxelab\ Aquila\ HC32/MM/Configuration.h Marlin/Configuration.h
+        cp configurations/Voxelab\ Aquila\ HC32/MM/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Voxelab\ Aquila\ HC32/MM/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
         if ($IS); then STEMP=; else STEMP='\/\/'; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
@@ -205,9 +205,9 @@ jobs:
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
-        cp configurations/Voxelab\ Aquila\ HC32/ConfigurationUBL.h Marlin/Configuration.h
-        cp configurations/Voxelab\ Aquila\ HC32/Configuration_advUBL.h Marlin/Configuration_adv.h
-        cp configurations/Voxelab\ Aquila\ HC32/Version.h Marlin/Version.h
+        cp configurations/Voxelab\ Aquila\ HC32/UBL/Configuration.h Marlin/Configuration.h
+        cp configurations/Voxelab\ Aquila\ HC32/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Voxelab\ Aquila\ HC32/UBL/Version.h Marlin/Version.h
         if ($PRO); then
         sed -i "s/.*#define PROUI_EX 1/\/\/#define PROUI_EX 1/" Marlin/Configuration.h
         fi;
@@ -288,9 +288,9 @@ jobs:
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
-        cp configurations/Voxelab\ Aquila\ HC32/ConfigurationUBL.h Marlin/Configuration.h
-        cp configurations/Voxelab\ Aquila\ HC32/Configuration_advUBL.h Marlin/Configuration_adv.h
-        cp configurations/Voxelab\ Aquila\ HC32/Version.h Marlin/Version.h
+        cp configurations/Voxelab\ Aquila\ HC32/UBL/Configuration.h Marlin/Configuration.h
+        cp configurations/Voxelab\ Aquila\ HC32/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Voxelab\ Aquila\ HC32/UBL/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
         sed -i "s/.*#define INPUT_SHAPING_X/#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
         sed -i "s/.*#define INPUT_SHAPING_Y/#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
@@ -365,9 +365,9 @@ jobs:
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
-        cp configurations/Voxelab\ Aquila\ HC32/ConfigurationBLT.h Marlin/Configuration.h
-        cp configurations/Voxelab\ Aquila\ HC32/Configuration_advBLT.h Marlin/Configuration_adv.h
-        cp configurations/Voxelab\ Aquila\ HC32/Version.h Marlin/Version.h
+        cp configurations/Voxelab\ Aquila\ HC32/BLT/Configuration.h Marlin/Configuration.h
+        cp configurations/Voxelab\ Aquila\ HC32/BLT/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Voxelab\ Aquila\ HC32/BLT/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
         if ($IS); then STEMP=; else STEMP='\/\/'; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
