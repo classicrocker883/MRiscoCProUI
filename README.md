@@ -197,7 +197,7 @@ On Reddit: u/<b>In*Us*2</b>
 
 Join the Voxelab Aquila [Facebook Group](https://www.facebook.com/groups/voxelabaquila/)
 
-This fork of Mriscoc's ProUI firmware is maintained by [@classicrocker883](https://github.com/classicrocker883) (yours truly)
+This fork of MRiscoC's Professional Firmware is maintained by [@classicrocker883](https://github.com/classicrocker883) (yours truly)
 
 ProUI is a Marlin based firmware maintained by [@mriscoc](https://github.com/mriscoc)
 

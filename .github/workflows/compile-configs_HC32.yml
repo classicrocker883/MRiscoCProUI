@@ -18,10 +18,8 @@ jobs:
         temp: [true,false]
         inshape: [true,false]
     steps:
-    - name: Echo target
-      run: echo "Compiling configs for ${{ inputs.target }}"
     - uses: actions/checkout@v4.2.2
-    - name: Setup node
+    - name: Set up node
       uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
@@ -93,7 +91,7 @@ jobs:
         inshape: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
-    - name: Setup node
+    - name: Set up node
       uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
@@ -174,7 +172,7 @@ jobs:
         bmp: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
-    - name: Setup node
+    - name: Set up node
       uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
@@ -259,7 +257,7 @@ jobs:
         bmp: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
-    - name: Setup node
+    - name: Set up node
       uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
@@ -335,7 +333,7 @@ jobs:
         bmp: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
-    - name: Setup node
+    - name: Set up node
       uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
@@ -413,7 +411,7 @@ jobs:
         inshape: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
-    - name: Setup node
+    - name: Set up node
       uses: actions/setup-node@v4.2.0
       with:
         node-version: 20
