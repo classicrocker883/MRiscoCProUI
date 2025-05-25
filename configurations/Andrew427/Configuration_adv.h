@@ -1985,15 +1985,6 @@
 //#define NO_SD_HOST_DRIVE   // Disable SD Card access over USB (for security).
 
 /**
- * By default the framework is responsible for the shared media I/O.
- * Enable this if you need Marlin to take care of the shared media I/O.
- * Useful if shared media isn't working properly on some boards.
- */
-#if HAS_MEDIA && DISABLED(NO_SD_HOST_DRIVE)
-  //#define DISKIO_HOST_DRIVE
-#endif
-
-/**
  * Additional options for Graphical Displays
  *
  * Use the optimizations here to improve printing performance,
@@ -3048,6 +3039,15 @@
    */
   #define INTERPOLATE      true
 
+  #if HAS_DRIVER(TMC2240)
+    #define TMC2240_CURRENT_RANGE   1   // RMS: { 0:'690mA', 1:'1410mA', 2:'2120mA', 3:'2110mA' }
+                                        // PEAK:{ 0:'1A', 1:'2A', 2:'3A', 3:'3A' }
+                                        // Determines max current. Lower is more internal current resolution. Higher runs cooler.
+    #define TMC2240_Rref        12000   // ('rref', 12000, minval=12000, maxval=60000)
+    #define TMC2240_SLOPE_CONTROL   0   // :{ 0:'100V/us', 1:'200V/us', 2:'400V/us', 3:'800V/us' }
+                                        // Lower is more silent. Higher runs cooler.
+  #endif
+
   #if AXIS_IS_TMC_CONFIG(X)
     #define X_CURRENT       800        // (mA) RMS current. Multiply by 1.414 for peak current.
     #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for homing. (Typically lower than *_CURRENT.)
@@ -3356,7 +3356,7 @@
   // @section tmc/stealthchop
 
   /**
-   * TMC2130, TMC2160, TMC2208, TMC2209, TMC5130 and TMC5160 only
+   * TMC2130, TMC2160, TMC2208, TMC2209, TMC2240, TMC5130 and TMC5160 only
    * Use Trinamic's ultra quiet stepping mode.
    * When disabled, Marlin will use spreadCycle stepping mode.
    */
@@ -3435,7 +3435,7 @@
   // @section tmc/hybrid
 
   /**
-   * TMC2130, TMC2160, TMC2208, TMC2209, TMC5130 and TMC5160 only
+   * TMC2130, TMC2160, TMC2208, TMC2209, TMC2240, TMC5130 and TMC5160 only
    * The driver will switch to spreadCycle when stepper speed is over HYBRID_THRESHOLD.
    * This mode allows for faster movements at the expense of higher noise levels.
    * STEALTHCHOP_(XY|Z|E) must be enabled to use HYBRID_THRESHOLD.
@@ -3469,16 +3469,16 @@
   /**
    * Use StallGuard to home / probe X, Y, Z.
    *
-   * TMC2130, TMC2160, TMC2209, TMC2660, TMC5130, and TMC5160 only
+   * TMC2130, TMC2160, TMC2209, TMC2240, TMC2660, TMC5130, and TMC5160 only
    * Connect the stepper driver's DIAG1 pin to the X/Y endstop pin.
    * X, Y, and Z homing will always be done in spreadCycle mode.
    *
    * X/Y/Z_STALL_SENSITIVITY is the default stall threshold.
    * Use M914 X Y Z to set the stall threshold at runtime:
    *
-   *  Sensitivity   TMC2209   Others
-   *    HIGHEST       255      -64    (Too sensitive => False positive)
-   *    LOWEST         0        63    (Too insensitive => No trigger)
+   *  Sensitivity  TMC2209/2240   Others
+   *    HIGHEST        255         -64    (Too sensitive => False positive)
+   *    LOWEST          0           63    (Too insensitive => No trigger)
    *
    * It is recommended to set HOMING_BUMP_MM to { 0, 0, 0 }.
    *
@@ -3495,7 +3495,7 @@
   //#define SENSORLESS_HOMING // StallGuard capable drivers only
 
   #if ANY(SENSORLESS_HOMING, SENSORLESS_PROBING)
-    // TMC2209: 0...255. TMC2130: -64...63
+    // TMC2209/2240: 0...255. TMC2130: -64...63
     #define X_STALL_SENSITIVITY  8
     #define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
     #define Y_STALL_SENSITIVITY  8

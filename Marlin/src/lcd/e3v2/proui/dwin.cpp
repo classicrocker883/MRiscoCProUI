@@ -3625,7 +3625,8 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
+      float editable_decimal_k = planner.get_advance_k();
+      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_decimal_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
         float editable_decimal_u = static_cast<float>(Stepper::get_advance_tau());
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal_u);
@@ -3787,7 +3788,8 @@ void Draw_Motion_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &planner.extruder_advance_K[EXT]);
+      float editable_decimal_k = planner.get_advance_k();
+      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_decimal_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
         float editable_decimal_u = static_cast<float>(Stepper::get_advance_tau());
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal_u);
