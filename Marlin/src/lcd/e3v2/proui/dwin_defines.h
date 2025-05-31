@@ -40,7 +40,7 @@
   #define STEALTHCHOP_MENU      // Enable StealthChop menu (352 bytes)
 #endif
 
-#if defined(__STM32F1__) || defined(STM32F1) || MB(CREALITY_V24S1_301, CREALITY_V24S1_301F4)
+#if defined(__STM32F1__) || defined(STM32F1) || defined(ARDUINO_ARCH_HC32) || MB(CREALITY_V24S1_301, CREALITY_V24S1_301F4)
   #define DASH_REDRAW 1
 #endif
 

@@ -1,0 +1,25 @@
+# .github/workflows/compile-release.yml
+name: Compile Config Builds
+
+on:
+  release:
+    types: [released, prereleased]
+
+jobs:
+  build-ender3:
+    if: contains(github.event.release.tag_name, 'ender3')
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_ender3.yml@HC32-May-Test
+    with:
+      target: ender3
+
+  build-hc32:
+    if: contains(github.event.release.tag_name, 'HC32')
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_HC32.yml@HC32-May-Test
+    with:
+      target: HC32
+
+  build-aquila:
+    if: ${{ !contains(github.event.release.tag_name, 'ender3') && !contains(github.event.release.tag_name, 'HC32') }}
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs.yml@HC32-May-Test
+    with:
+      target: aquila
