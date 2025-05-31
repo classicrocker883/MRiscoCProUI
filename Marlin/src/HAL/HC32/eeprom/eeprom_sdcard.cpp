@@ -25,12 +25,12 @@
  */
 #ifdef ARDUINO_ARCH_HC32
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(SDCARD_EEPROM_EMULATION)
 
-#include "../shared/eeprom_api.h"
-#include "../../sd/cardreader.h"
+#include "../../shared/eeprom_api.h"
+#include "../../../sd/cardreader.h"
 
 #define EEPROM_FILENAME "eeprom.dat"
 

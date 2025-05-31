@@ -94,7 +94,7 @@ def main():
     print("Not a git repository or no branch found.")
     sys.exit(1)
 
-  if branch.startswith(("2025-", "HC32")):
+  if branch.startswith("2025-"):
     branch = branch
   else:
     branch = "2025-May"

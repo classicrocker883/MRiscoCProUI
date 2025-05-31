@@ -26,12 +26,12 @@
  */
 #ifdef ARDUINO_ARCH_HC32
 
-#include "../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfig.h"
 
 #if ENABLED(IIC_BL24CXX_EEPROM)
 
-#include "../../libs/BL24CXX.h"
-#include "../shared/eeprom_if.h"
+#include "../../../libs/BL24CXX.h"
+#include "../../shared/eeprom_if.h"
 
 void eeprom_init() {
   BL24CXX::init();
@@ -39,7 +39,7 @@ void eeprom_init() {
 
 void eeprom_write_byte(uint8_t *pos, unsigned char value) {
   const unsigned eeprom_address = (unsigned)pos;
-  return BL24CXX::writeOneByte(eeprom_address, value);
+  BL24CXX::writeOneByte(eeprom_address, value);
 }
 
 uint8_t eeprom_read_byte(uint8_t *pos) {
