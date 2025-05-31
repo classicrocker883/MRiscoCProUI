@@ -1271,6 +1271,7 @@ void restore_feedrate_and_scaling() {
 
       soft_endstop.min[axis] = base_min_pos(axis);
       soft_endstop.max[axis] = base_max_pos(axis);
+      set_axis_untrusted(axis);
 
     #endif
 

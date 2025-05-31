@@ -912,7 +912,10 @@ void update_variable() {
 bool DWIN_lcd_sd_status = false;
 
 #if ENABLED(PROUI_ITEM_ABRT)
-  void SetAutoAbort() { Toggle_Chkb_Line(HMI_data.auto_abort); }
+  void SetAutoAbort() {
+    Toggle_Chkb_Line(HMI_data.auto_abort);
+    LCD_MESSAGE_F("..Disable Motors on Abort..");
+  }
 #endif
 
 #if ENABLED(PROUI_MEDIASORT)
@@ -2041,7 +2044,7 @@ void DWIN_Print_Aborted() {
   safe_delay(200);
   ui.reset_status(true);
   if (auto_abort) {
-    ui.status_printf(0, F("..Disable Motors on Abort.."));
+    LCD_MESSAGE_F("..Disable Motors on Abort..");
     safe_delay(100);
     queue.clear();
     quickstop_stepper();
@@ -3616,7 +3619,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(FWRETRACT)
       MENU_ITEM(ICON_FWRetLength, MSG_FWRETRACT, onDrawSubMenu, Draw_FWRetract_Menu);
@@ -4800,7 +4803,7 @@ void Draw_AdvancedSettings_Menu() {
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
-      EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
@@ -4860,7 +4863,7 @@ void Draw_AdvancedSettings_Menu() {
         EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
       #endif
       #if ENABLED(PROUI_ITEM_ABRT)
-        EDIT_ITEM_F(ICON_File, "Disable on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+        EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
       #endif
       #if ENABLED(SHOW_SPEED_IND)
         EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);

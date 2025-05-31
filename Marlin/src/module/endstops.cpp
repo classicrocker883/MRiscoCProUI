@@ -65,10 +65,6 @@
   #include "probe.h"
 #endif
 
-#if HAS_FILAMENT_SENSOR
-  #include "../feature/runout.h"
-#endif
-
 #define DEBUG_OUT ALL(USE_SENSORLESS, DEBUG_LEVELING_FEATURE)
 #include "../core/debug_out.h"
 
