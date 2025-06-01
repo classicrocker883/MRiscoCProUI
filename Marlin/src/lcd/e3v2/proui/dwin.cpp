@@ -616,9 +616,9 @@ void Draw_PrintProcess() {
 }
 
 void Goto_PrintProcess() {
-  if (checkkey == PrintProcess) { ICON_ResumeOrPause(); }
-  else {
+  if (checkkey != PrintProcess) {
     checkkey = PrintProcess;
+    select_print.reset();
     Draw_PrintProcess();
     TERN_(DASH_REDRAW, DWIN_RedrawDash();)
   }
@@ -1502,7 +1502,6 @@ void EachMomentUpdate() {
     }
     else {
       HMI_SaveProcessID(NothingToDo);
-      select_print.set(PRINT_SETUP);
       queue.inject(F("M1000"));
     }
   }
@@ -1950,7 +1949,7 @@ void DWIN_HomingDone() {
           reset_bed_level();
           HMI_ReturnScreen();
           DWIN_UpdateLCD();
-          ui.set_status(F("Mesh was cancelled"));
+          LCD_MESSAGE_F("Mesh was cancelled");
         }
         else {
           Goto_MeshViewer(true);
@@ -1963,9 +1962,7 @@ void DWIN_HomingDone() {
       ui.set_status(TS("X:", p_float_t(xpos, 1), " Y:", p_float_t(ypos, 1), " Z:", p_float_t(zval, 3)));
     }
     void DWIN_PointUpdate(const int8_t cpos, const int8_t tpos, const_float_t zval) {
-      ui.set_status(
-        TS(GET_TEXT_F(MSG_PROBING_POINT), F(" "), cpos, F("/"), tpos, F(" Z="), p_float_t(zval, 2))
-      );
+      ui.set_status(TS(GET_TEXT_F(MSG_PROBING_POINT), F(" "), cpos, F("/"), tpos, F(" Z="), p_float_t(zval, 2)));
     }
   #endif
 
@@ -1980,7 +1977,6 @@ void DWIN_Print_Started() {
   TERN_(SET_REMAINING_TIME, ui.reset_remaining_time();)
   HMI_flag.pause_flag = false;
   HMI_flag.abort_flag = false;
-  select_print.reset();
   #if ENABLED(CV_LASER_MODULE)
     if (!fileprop.isConfig)
   #endif
@@ -2370,7 +2366,7 @@ void MarlinUI::kill_screen(FSTR_P const lcd_error, FSTR_P const) {
 
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   void MarlinUI::pause_show_message(const PauseMessage message, const PauseMode mode/*=PAUSE_MODE_SAME*/, const uint8_t extruder/*=EXT*/) {
-    pause_mode = mode;
+    if (mode != PAUSE_MODE_SAME) pause_mode = mode;
     switch (message) {
       case PAUSE_MESSAGE_PARKING:  DWIN_Popup_Pause(GET_TEXT_F(MSG_PAUSE_PRINT_PARKING));    break; // M125
       case PAUSE_MESSAGE_CHANGING: DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_INIT));   break; // pause_print (M125, M600)
@@ -2828,10 +2824,8 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
   void SetPreview() { Toggle_Chkb_Line(HMI_data.EnablePreview); }
   void OnClick_ConfirmToPrint() {
     DWIN_ResetStatusLine();
-
     if (HMI_flag.select_flag) { // Confirm
       card.openAndPrintFile(card.filename);
-      return;
     }
     else {
       HMI_ReturnScreen();
@@ -3146,9 +3140,9 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 
 #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
   void ApplyLA_K() { planner.set_advance_k(MenuData.Value / POW(10, 3)); }
-  void SetLA_K() { SetPFloatOnClick(0, 10, 3, ApplyLA_K); }
+  void SetLA_K() { SetFloatOnClick(0, 10, 3, planner.extruder_advance_K[EXT], ApplyLA_K); }
   #if ENABLED(SMOOTH_LIN_ADVANCE)
-    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value); }
+    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value / POW(10, MINUNITMULT)); }
     void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
   #endif
 #endif
@@ -3628,11 +3622,11 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      float editable_decimal_k = planner.get_advance_k();
-      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_decimal_k);
+      float editable_k = planner.get_advance_k();
+      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        float editable_decimal_u = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal_u);
+        static float editable_u = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_u);
       #endif
     #endif
     #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
@@ -3769,7 +3763,7 @@ void Draw_Tune_Menu() {
 
 void Draw_Motion_Menu() {
   checkkey = Menu;
-  if (SET_MENU(MotionMenu, MSG_MOTION, 10)) {
+  if (SET_MENU(MotionMenu, MSG_MOTION, 11)) {
     BACK_ITEM(Draw_Control_Menu);
     MENU_ITEM(ICON_MaxSpeed, MSG_SPEED, onDrawSubMenu, Draw_MaxSpeed_Menu);
     MENU_ITEM(ICON_MaxAccelerated, MSG_ACCELERATION, onDrawSubMenu, Draw_MaxAccel_Menu);
@@ -3791,11 +3785,11 @@ void Draw_Motion_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      float editable_decimal_k = planner.get_advance_k();
-      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_decimal_k);
+      float editable_k = planner.get_advance_k();
+      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        float editable_decimal_u = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_decimal_u);
+        static float editable_u = static_cast<float>(Stepper::get_advance_tau());
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_u);
       #endif
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
