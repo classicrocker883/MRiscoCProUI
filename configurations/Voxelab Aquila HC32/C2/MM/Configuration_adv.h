@@ -2401,6 +2401,9 @@
  * For better results also enable ADAPTIVE_STEP_SMOOTHING.
  */
 //#define NONLINEAR_EXTRUSION // (560 bytes of flash)
+#if ENABLED(NONLINEAR_EXTRUSION)
+  //#define NONLINEAR_EXTRUSION_DEFAULT_ON    // Enable if NLE should be ON by default
+#endif
 
 // @section leveling
 
