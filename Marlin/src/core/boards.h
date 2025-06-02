@@ -283,7 +283,7 @@
 
 #define BOARD_DUE3DOM                 3000  // DUE3DOM for Arduino DUE
 #define BOARD_DUE3DOM_MINI            3001  // DUE3DOM MINI for Arduino DUE
-#define BOARD_RADDS                   3002  // RADDS v1.5/v1.6`
+#define BOARD_RADDS                   3002  // RADDS v1.5/v1.6
 #define BOARD_RAMPS_FD_V1             3003  // RAMPS-FD v1
 #define BOARD_RAMPS_FD_V2             3004  // RAMPS-FD v2
 #define BOARD_RAMPS_SMART_EFB         3005  // RAMPS-SMART (Power outputs: Hotend, Fan, Bed)
