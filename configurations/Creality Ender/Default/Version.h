@@ -28,20 +28,20 @@
 /**
  * Marlin release version identifier
  */
-#define SHORT_BUILD_VERSION "2.1.3g-3"
+#define SHORT_BUILD_VERSION "2.1.3g-5"
 
 /**
  * Verbose version identifier which should contain a reference to the location
  * from where the binary was downloaded or the source code was compiled.
  */
-#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION "Ender-NP"
+#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION "Ender-Default"
 
 /**
  * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
  * here we define this default string as the date where the latest release
  * version was tagged.
  */
-//#define STRING_DISTRIBUTION_DATE "2025-04-21"
+//#define STRING_DISTRIBUTION_DATE "2025-06-03"
 
 #define STRING_DISTRIBUTION_DATE __DATE__
 #define STRING_DISTRIBUTION_TIME __TIME__

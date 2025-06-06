@@ -187,56 +187,56 @@
 
 // Use NUM_ARGS(__VA_ARGS__) to get the number of variadic arguments
 #define _NUM_ARGS(_,n,m,l,k,j,i,h,g,f,e,d,c,b,a,Z,Y,X,W,V,U,T,S,R,Q,P,O,N,M,L,K,J,I,H,G,F,E,D,C,B,A,OUT,...) OUT
-#define NUM_ARGS(V...) _NUM_ARGS(0,V,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
+#define NUM_ARGS(...) _NUM_ARGS(0,__VA_ARGS__,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
 
 // Use TWO_ARGS(__VA_ARGS__) to get whether there are 1, 2, or >2 arguments
 #define _TWO_ARGS(_,n,m,l,k,j,i,h,g,f,e,d,c,b,a,Z,Y,X,W,V,U,T,S,R,Q,P,O,N,M,L,K,J,I,H,G,F,E,D,C,B,A,OUT,...) OUT
-#define TWO_ARGS(V...) _TWO_ARGS(0,V,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,1,0)
+#define TWO_ARGS(...) _TWO_ARGS(0,__VA_ARGS__,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,1,0)
 
 // Macros to chain up to 40 conditions
-#define _DO_1( W,C,A)      (_##W##_1(A))
-#define _DO_2( W,C,A,B)    (_##W##_1(A) C _##W##_1(B))
-#define _DO_3( W,C,A,V...) (_##W##_1(A) C _DO_2( W,C,V))
-#define _DO_4( W,C,A,V...) (_##W##_1(A) C _DO_3( W,C,V))
-#define _DO_5( W,C,A,V...) (_##W##_1(A) C _DO_4( W,C,V))
-#define _DO_6( W,C,A,V...) (_##W##_1(A) C _DO_5( W,C,V))
-#define _DO_7( W,C,A,V...) (_##W##_1(A) C _DO_6( W,C,V))
-#define _DO_8( W,C,A,V...) (_##W##_1(A) C _DO_7( W,C,V))
-#define _DO_9( W,C,A,V...) (_##W##_1(A) C _DO_8( W,C,V))
-#define _DO_10(W,C,A,V...) (_##W##_1(A) C _DO_9( W,C,V))
-#define _DO_11(W,C,A,V...) (_##W##_1(A) C _DO_10(W,C,V))
-#define _DO_12(W,C,A,V...) (_##W##_1(A) C _DO_11(W,C,V))
-#define _DO_13(W,C,A,V...) (_##W##_1(A) C _DO_12(W,C,V))
-#define _DO_14(W,C,A,V...) (_##W##_1(A) C _DO_13(W,C,V))
-#define _DO_15(W,C,A,V...) (_##W##_1(A) C _DO_14(W,C,V))
-#define _DO_16(W,C,A,V...) (_##W##_1(A) C _DO_15(W,C,V))
-#define _DO_17(W,C,A,V...) (_##W##_1(A) C _DO_16(W,C,V))
-#define _DO_18(W,C,A,V...) (_##W##_1(A) C _DO_17(W,C,V))
-#define _DO_19(W,C,A,V...) (_##W##_1(A) C _DO_18(W,C,V))
-#define _DO_20(W,C,A,V...) (_##W##_1(A) C _DO_19(W,C,V))
-#define _DO_21(W,C,A,V...) (_##W##_1(A) C _DO_20(W,C,V))
-#define _DO_22(W,C,A,V...) (_##W##_1(A) C _DO_21(W,C,V))
-#define _DO_23(W,C,A,V...) (_##W##_1(A) C _DO_22(W,C,V))
-#define _DO_24(W,C,A,V...) (_##W##_1(A) C _DO_23(W,C,V))
-#define _DO_25(W,C,A,V...) (_##W##_1(A) C _DO_24(W,C,V))
-#define _DO_26(W,C,A,V...) (_##W##_1(A) C _DO_25(W,C,V))
-#define _DO_27(W,C,A,V...) (_##W##_1(A) C _DO_26(W,C,V))
-#define _DO_28(W,C,A,V...) (_##W##_1(A) C _DO_27(W,C,V))
-#define _DO_29(W,C,A,V...) (_##W##_1(A) C _DO_28(W,C,V))
-#define _DO_30(W,C,A,V...) (_##W##_1(A) C _DO_29(W,C,V))
-#define _DO_31(W,C,A,V...) (_##W##_1(A) C _DO_30(W,C,V))
-#define _DO_32(W,C,A,V...) (_##W##_1(A) C _DO_31(W,C,V))
-#define _DO_33(W,C,A,V...) (_##W##_1(A) C _DO_32(W,C,V))
-#define _DO_34(W,C,A,V...) (_##W##_1(A) C _DO_33(W,C,V))
-#define _DO_35(W,C,A,V...) (_##W##_1(A) C _DO_34(W,C,V))
-#define _DO_36(W,C,A,V...) (_##W##_1(A) C _DO_35(W,C,V))
-#define _DO_37(W,C,A,V...) (_##W##_1(A) C _DO_36(W,C,V))
-#define _DO_38(W,C,A,V...) (_##W##_1(A) C _DO_37(W,C,V))
-#define _DO_39(W,C,A,V...) (_##W##_1(A) C _DO_38(W,C,V))
-#define _DO_40(W,C,A,V...) (_##W##_1(A) C _DO_39(W,C,V))
-#define __DO_N(W,C,N,V...) _DO_##N(W,C,V)
-#define _DO_N( W,C,N,V...)  __DO_N(W,C,N,V)
-#define DO(W,C,V...)        (_DO_N(W,C,NUM_ARGS(V),V))
+#define _DO_1( W,C,A)     (_##W##_1(A))
+#define _DO_2( W,C,A,B)   (_##W##_1(A) C _##W##_1(B))
+#define _DO_3( W,C,A,...) (_##W##_1(A) C _DO_2( W,C,__VA_ARGS__))
+#define _DO_4( W,C,A,...) (_##W##_1(A) C _DO_3( W,C,__VA_ARGS__))
+#define _DO_5( W,C,A,...) (_##W##_1(A) C _DO_4( W,C,__VA_ARGS__))
+#define _DO_6( W,C,A,...) (_##W##_1(A) C _DO_5( W,C,__VA_ARGS__))
+#define _DO_7( W,C,A,...) (_##W##_1(A) C _DO_6( W,C,__VA_ARGS__))
+#define _DO_8( W,C,A,...) (_##W##_1(A) C _DO_7( W,C,__VA_ARGS__))
+#define _DO_9( W,C,A,...) (_##W##_1(A) C _DO_8( W,C,__VA_ARGS__))
+#define _DO_10(W,C,A,...) (_##W##_1(A) C _DO_9( W,C,__VA_ARGS__))
+#define _DO_11(W,C,A,...) (_##W##_1(A) C _DO_10(W,C,__VA_ARGS__))
+#define _DO_12(W,C,A,...) (_##W##_1(A) C _DO_11(W,C,__VA_ARGS__))
+#define _DO_13(W,C,A,...) (_##W##_1(A) C _DO_12(W,C,__VA_ARGS__))
+#define _DO_14(W,C,A,...) (_##W##_1(A) C _DO_13(W,C,__VA_ARGS__))
+#define _DO_15(W,C,A,...) (_##W##_1(A) C _DO_14(W,C,__VA_ARGS__))
+#define _DO_16(W,C,A,...) (_##W##_1(A) C _DO_15(W,C,__VA_ARGS__))
+#define _DO_17(W,C,A,...) (_##W##_1(A) C _DO_16(W,C,__VA_ARGS__))
+#define _DO_18(W,C,A,...) (_##W##_1(A) C _DO_17(W,C,__VA_ARGS__))
+#define _DO_19(W,C,A,...) (_##W##_1(A) C _DO_18(W,C,__VA_ARGS__))
+#define _DO_20(W,C,A,...) (_##W##_1(A) C _DO_19(W,C,__VA_ARGS__))
+#define _DO_21(W,C,A,...) (_##W##_1(A) C _DO_20(W,C,__VA_ARGS__))
+#define _DO_22(W,C,A,...) (_##W##_1(A) C _DO_21(W,C,__VA_ARGS__))
+#define _DO_23(W,C,A,...) (_##W##_1(A) C _DO_22(W,C,__VA_ARGS__))
+#define _DO_24(W,C,A,...) (_##W##_1(A) C _DO_23(W,C,__VA_ARGS__))
+#define _DO_25(W,C,A,...) (_##W##_1(A) C _DO_24(W,C,__VA_ARGS__))
+#define _DO_26(W,C,A,...) (_##W##_1(A) C _DO_25(W,C,__VA_ARGS__))
+#define _DO_27(W,C,A,...) (_##W##_1(A) C _DO_26(W,C,__VA_ARGS__))
+#define _DO_28(W,C,A,...) (_##W##_1(A) C _DO_27(W,C,__VA_ARGS__))
+#define _DO_29(W,C,A,...) (_##W##_1(A) C _DO_28(W,C,__VA_ARGS__))
+#define _DO_30(W,C,A,...) (_##W##_1(A) C _DO_29(W,C,__VA_ARGS__))
+#define _DO_31(W,C,A,...) (_##W##_1(A) C _DO_30(W,C,__VA_ARGS__))
+#define _DO_32(W,C,A,...) (_##W##_1(A) C _DO_31(W,C,__VA_ARGS__))
+#define _DO_33(W,C,A,...) (_##W##_1(A) C _DO_32(W,C,__VA_ARGS__))
+#define _DO_34(W,C,A,...) (_##W##_1(A) C _DO_33(W,C,__VA_ARGS__))
+#define _DO_35(W,C,A,...) (_##W##_1(A) C _DO_34(W,C,__VA_ARGS__))
+#define _DO_36(W,C,A,...) (_##W##_1(A) C _DO_35(W,C,__VA_ARGS__))
+#define _DO_37(W,C,A,...) (_##W##_1(A) C _DO_36(W,C,__VA_ARGS__))
+#define _DO_38(W,C,A,...) (_##W##_1(A) C _DO_37(W,C,__VA_ARGS__))
+#define _DO_39(W,C,A,...) (_##W##_1(A) C _DO_38(W,C,__VA_ARGS__))
+#define _DO_40(W,C,A,...) (_##W##_1(A) C _DO_39(W,C,__VA_ARGS__))
+#define __DO_N(W,C,N,...)  _DO_##N(W,C,__VA_ARGS__)
+#define  _DO_N(W,C,N,...) __DO_N(W,C,N,__VA_ARGS__)
+#define   DO(W,C,...)     (_DO_N(W,C,NUM_ARGS(__VA_ARGS__),__VA_ARGS__))
 
 // Recognize "true" values: blank, 1, 0x1, true
 #define _ISENA_     ~,1
@@ -354,6 +354,12 @@
 #define GANG_N_1(N,K)   _GANG_N(N,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K,K)
 
 // Expansion of some list items
+#define LIST_32(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC,DD,EE,FF,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC,DD,EE,FF
+#define LIST_31(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC,DD,EE,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC,DD,EE
+#define LIST_30(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC,DD,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC,DD
+#define LIST_29(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,CC
+#define LIST_28(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,BB,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,TU,V,W,X,Y,Z,AA,BB
+#define LIST_27(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,AA
 #define LIST_26(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
 #define LIST_25(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y
 #define LIST_24(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,...) A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X
@@ -586,6 +592,9 @@
 
 #endif
 
+// Limit an index to an array size
+#define ALIM(I,ARR) _MIN(I, (signed)COUNT(ARR) - 1)
+
 // Macros for adding
 #define INC_0   1
 #define INC_1   2
@@ -608,6 +617,17 @@
 #define INC_18 19
 #define INC_19 20
 #define INC_20 21
+#define INC_21 22
+#define INC_22 23
+#define INC_23 24
+#define INC_24 25
+#define INC_25 26
+#define INC_26 27
+#define INC_27 28
+#define INC_28 29
+#define INC_29 30
+#define INC_30 31
+#define INC_31 32
 #define INCREMENT_(n) INC_##n
 #define INCREMENT( n) INCREMENT_(n)
 
@@ -643,6 +663,23 @@
 #define DEC_13 12
 #define DEC_14 13
 #define DEC_15 14
+#define DEC_16 15
+#define DEC_17 16
+#define DEC_18 17
+#define DEC_19 18
+#define DEC_20 19
+#define DEC_21 20
+#define DEC_22 21
+#define DEC_23 22
+#define DEC_24 23
+#define DEC_25 24
+#define DEC_26 25
+#define DEC_27 26
+#define DEC_28 27
+#define DEC_29 28
+#define DEC_30 29
+#define DEC_31 30
+#define DEC_32 31
 #define DECREMENT_(n) DEC_##n
 #define DECREMENT( n) DECREMENT_(n)
 

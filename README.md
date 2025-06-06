@@ -1,11 +1,10 @@
-# Professional Firmware for the Voxelab Aquila and Creality Ender-3 3D Printers
-**_<sup>(or any other compatible 3D Printer)</sup>_**
+# Professional Firmware for the Voxelab Aquila and Creality Ender-3 3D Printers <br> **_<sup><sup><sub>(Or any other compatible 3D Printer)</sub></sup></sup>_**
 
-![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)  
-![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)  
-![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)  
-[![Aquila Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases/latest)  
-![HC32 Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs-HC32.yml/badge.svg)  
+![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)
+![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)
+![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)
+[![Aquila Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases/latest)
+![HC32 Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs-HC32.yml/badge.svg)
 ![Ender Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs_Ender.yml/badge.svg)
 
 ### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about *this* firmware and the features it provides
@@ -28,21 +27,21 @@
 
 ---
 
-## Universal Firmware for RET6/RCT6 chips: G32, N32, H32, Creality 4.2.7 and 4.2.2 boards
-**_<sup>(Also available for BTT SKR Mini E3 and others)</sup>_**
+## Universal Firmware for RET6/RCT6 chips: G32, N32, H32, Creality 4.2.7 and 4.2.2 boards <br> **_<sup><sup><sub>(Also available for BTT SKR Mini E3 and others)</sub></sup></sup>_**
 
 ### - Please read this: -
 > [!NOTE]
-Many Updates have been included in the most recent MRiscoCProUI for the **2025-April** release.
+Many Updates have been included in the most recent MRiscoCProUI for the **2025-June** release.
 This release has many changes to the **UI**.
 New ICON's have been added, and old ones enhanced. Whoever edited them before saved directly as .*JPG* which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
 >
 > > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the *LCD Display* with the new **DWIN_SET**; which is located in the `display assets` folder.
 >
-> If you encounter any issues, suggestions, or feature requests please feel free to post it on the [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues), otherwise if everything is going well please leave a comment.
+> If you encounter any issues, have a suggestion, or feature requests please feel free to post it on the [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues), otherwise if everything is going well please leave a comment on the [Discussions tab](https://github.com/classicrocker883/MRiscoCProUI/discussions).
 >
-> I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best; easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware - like with other versions.
->
+> I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best; easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware.
+
+> [!TIP]
 > If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change state it triggers no filament to **HIGH**, or **LOW** (depending on what is already selected). This is found in the _Prepare_ menu/ _Filament Management_/ _Filament Settings_ -> _Runout Active_.
 
 <br>
@@ -54,12 +53,11 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 
 > [!CAUTION]
 >
-> The screen may **freeze and restart** when the SD card is inserted. This means that everything *so far* seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible *unless* you use USB serial interface to upload the file (through a slicer or something like Pronterface).
+> *G-code Thumbnail Preview* has been disabled for HC32 boards for the time being.
+> When enabled, the screen may **freeze and restart** when the SD card is inserted. This means that everything *so far* seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible *unless* you use USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).
 
-> [!TIP]
-> H32->HC32 support is currently only in the branch **HC32-&lt;Month&gt;**. You can find the original repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
->
-> HC32 support has recently been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here.
+> [!NOTE]
+> H32->HC32 support has been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here. You can find the original HC32 repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
 
 <br>
 
@@ -67,23 +65,27 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release). <br>
 Other changes and updates are [addressed here](https://github.com/classicrocker883/MRiscoCProUI/releases/latest).
 
-[Linear Advance Information](https://github.com/MarlinFirmware/MarlinDocumentation/blob/master/_features/lin_advance.md)
+- [LA - Linear Advance](https://marlinfw.org/docs/features/lin_advance.html)
+- [MPC - Model Predictive Temperature Control](https://marlinfw.org/docs/features/model_predictive_control.html)
+- [IS - Input Shaping](https://marlinfw.org/docs/features/input_shaping.html)
+- [Firmware Retract](https://marlinfw.org/docs/features/fwretract.html)
+
 
 <br>
 
 ### MarlinSimulator Instructions
 There is a *MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
-The *MarlinSimulator* can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.  
-To create *MarlinSimulator* with your own build, start in **Configuration.h** and change the `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`.  
-You may need to change `#define INVERT_E0_DIR HMI_data.Invert_E0` to `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **dwin_defines.h**. 
-Then in **platformio.ini** change to `simulator_windows` in `default_envs =` (for Windows) / `simulator_linux_release` `default_envs =` (for Linux).  
+The *MarlinSimulator* can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.
+To create *MarlinSimulator* with your own build, start in **Configuration.h** and change the `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`.
+You may need to change `#define INVERT_E0_DIR HMI_data.Invert_E0` to `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **dwin_defines.h**.
+Then in **platformio.ini** change to `simulator_windows` in `default_envs =` (for Windows) / `simulator_linux_release` `default_envs =` (for Linux).
 If there is an error, add `-fno-lto` to `build_flags =` in **native.ini**.
 For MacOS you're on your own...sorry.
 
-Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.  
-Or for the latest releast go to [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for the latest **SDL2** version (**NOT** *SDL3*)  
-You can *either* copy/paste the files directly, or install them.  
+Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.
+Or for the latest releast go to [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for the latest **SDL2** version (**NOT** *SDL3*)
+You can *either* copy/paste the files directly, or install them.
 It's recommended to install them, but if you have any issues, then try copy/paste method.
 
 #### Install Files (Windows)
@@ -101,19 +103,19 @@ For 64-bit - If you receive an error, then try the following:
 >     make install-package arch=x86_64-w64-mingw32 prefix=/usr
 
 #### Alternative SDL2 Install
-**Copy/Paste Files**  
-You may have to first Build so the directory can be created, but you can:  
-- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\SDL2\\*, paste into the directory ~\.pio\libdeps\simulator_windows\\**imgui**  
+**Copy/Paste Files**
+You may have to first Build so the directory can be created, but you can:
+- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\SDL2\\*, paste into the directory ~\.pio\libdeps\simulator_windows\\**imgui**
 
--OR-  
+-OR-
 
 - **Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory ~\.pio\libdeps\\*simulator_windows*
 
 Once all that is done, just Build like you would normally and *MarlinSimulator.exe* will be created.
 
 #### Install Files (Linux)
-These are the files you need to install:  
-`sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev`  
+These are the files you need to install:
+`sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev`
 - There may be other basic ones if you don't have already; like python, cmake, pip...
 
 #### Using MarlinSimulator
@@ -129,21 +131,21 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 
 <br>
 
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" />
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" />
-<img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" />
+<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" /><p>
+<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" /><p>
+<img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" /><p>
 <img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle"  />
 
 <br>
 
 ## Donations
-Thank you for your support.  
-Please consider making a donation, as large or as small and as often as you'd like.  
-[Ko-fi](https://ko-fi.com/classicrocker883)  
-[Venmo](https://venmo.com/u/andrewleduc88)  
-[Paypal](https://www.paypal.com/paypalme/andrewleduc)
+Thank you for your support.
+Please consider making a donation, as large or as small and as often as you'd like.
+[Ko-fi](https://ko-fi.com/classicrocker883)
+[Venmo](https://venmo.com/u/andrewleduc88)
+[Paypal](https://www.paypal.com/paypalme/andrewleduc) - **Single payment**
 
-[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal**
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal - Monthly Payment**
 
 <br>
 
@@ -193,7 +195,7 @@ On Reddit: u/<b>In*Us*2</b>
 
 Join the Voxelab Aquila [Facebook Group](https://www.facebook.com/groups/voxelabaquila/)
 
-This fork of Mriscoc's ProUI firmware is maintained by [@classicrocker883](https://github.com/classicrocker883) (yours truly)
+This fork of MRiscoC's Professional Firmware is maintained by [@classicrocker883](https://github.com/classicrocker883) (yours truly)
 
 ProUI is a Marlin based firmware maintained by [@mriscoc](https://github.com/mriscoc)
 
@@ -214,15 +216,15 @@ Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
 
 This work would not be possible without me spending time working on it for free.
 
-I would greatly appreciate supporters, helpers, and betatesters whenever possible.
+I would greatly appreciate supporters, helpers, and beta testers whenever possible.
 
 Please show your support by considering making a donation, or giving your input if you end up using this firmware.
 
-It wasn't easy getting it to this point. I am just a basic programmer and the work is mostly trial and error. Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me what changes need to be made as I make them.
+It wasn't easy getting it to this point. I am just a basic programmer and the work is mostly trial and error.
+Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me what changes need to be made as I make them.
 
-Marlin firmware is an Open Source project hosted on Github, [Marlin](https://marlinfw.org/) is owned and maintained by the maker community.
-
-VS Code is an IDE program owned and maintained by Microsoft.
+- [Marlin Firmware](https://marlinfw.org/) is an Open Source project and owned and maintained by the maker community.
+- VS Code is an IDE program owned and maintained by Microsoft.
 
 <br>
 

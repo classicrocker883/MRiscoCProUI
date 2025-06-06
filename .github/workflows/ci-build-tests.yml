@@ -8,7 +8,7 @@ name: CI - Build Tests
 on:
   pull_request:
     branches:
-    - 2025-April
+    - 2025-June
     paths-ignore:
     - configurations/**
     - display assets/**
@@ -22,7 +22,7 @@ on:
     - '**/*.md'
   push:
     branches:
-    - 2025-April
+    - 2025-June
     paths-ignore:
     - configurations/**
     - display assets/**
@@ -41,6 +41,9 @@ jobs:
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+
+    env:
+      CONFIG_BRANCH: ${{ github.base_ref || github.ref_name }}
 
     strategy:
       fail-fast: true
@@ -162,6 +165,9 @@ jobs:
         # STM32G0
         - STM32G0B1RE_btt
 
+        # HC32
+        - HC32F460C_aquila_101
+
         # GD32F3
         # - GD32F303RE_creality_mfl
 
@@ -178,7 +184,7 @@ jobs:
       uses: actions/checkout@v4.2.2
 
     - name: Cache pip
-      uses: actions/cache@v4.2.2
+      uses: actions/cache@v4.2.3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-build-v1-${{ hashFiles('**/requirements.txt') }}
@@ -186,7 +192,7 @@ jobs:
           ${{ runner.os }}-pip-build-v1-
 
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.2
+      uses: actions/cache@v4.2.3
       with:
         path: |
           ~/.platformio
@@ -197,7 +203,7 @@ jobs:
           ${{ runner.os }}-pio-build-v1-
 
     - name: Select Python 3.13
-      uses: actions/setup-python@v5.4.0
+      uses: actions/setup-python@v5.6.0
       with:
         python-version: '3.13'
         architecture: 'x64'
@@ -215,6 +221,13 @@ jobs:
         sudo apt-get install libsdl2-dev
         sudo apt-get install libsdl2-net-dev
         sudo apt-get install libglm-dev
+
+    - name: Checkout Configurations
+      uses: actions/checkout@v4.2.2
+      with:
+        repository: classicrocker883/MRiscoCProUI
+        ref: ${{ env.CONFIG_BRANCH }}
+        path: ConfigurationsRepo
 
     - name: Run ${{ matrix.test-platform }} Tests
       run: |

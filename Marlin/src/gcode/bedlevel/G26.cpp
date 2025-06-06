@@ -132,11 +132,11 @@
 #endif
 
 #ifndef G26_XY_FEEDRATE
-  #define G26_XY_FEEDRATE (PLANNER_XY_FEEDRATE_MM_S / 3.0)
+  #define G26_XY_FEEDRATE (XY_PROBE_FEEDRATE_MM_S / 3.0)
 #endif
 
 #ifndef G26_XY_FEEDRATE_TRAVEL
-  #define G26_XY_FEEDRATE_TRAVEL (PLANNER_XY_FEEDRATE_MM_S / 1.5)
+  #define G26_XY_FEEDRATE_TRAVEL (XY_PROBE_FEEDRATE_MM_S / 1.5)
 #endif
 
 #if CROSSHAIRS_SIZE >= INTERSECTION_CIRCLE_RADIUS
@@ -268,8 +268,10 @@ typedef struct {
 
     // If the end point of the line is closer to the nozzle, flip the direction,
     // moving from the end to the start. On very small lines the optimization isn't worth it.
-    if (dist_end < dist_start && (INTERSECTION_CIRCLE_RADIUS) < ABS(line_length))
-      return print_line_from_here_to_there(e, s);
+    if (dist_end < dist_start && (INTERSECTION_CIRCLE_RADIUS) < ABS(line_length)) {
+      print_line_from_here_to_there(e, s);
+      return;
+    }
 
     // Decide whether to retract & lift
     if (dist_start > 2.0) retract_lift_move(s);

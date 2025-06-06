@@ -624,7 +624,6 @@
 // #define DEFAULT_VOLUME SV_SD_ONBOARD
 // #define DEFAULT_SHARED_VOLUME SV_USB_FLASH_DRIVE
 // #define NO_SD_HOST_DRIVE
-// #define DISKIO_HOST_DRIVE
 // #define XYZ_NO_FRAME
 // #define XYZ_HOLLOW_FRAME
 // #define USE_BIG_EDIT_FONT
@@ -761,8 +760,8 @@
 // #define LA_DEBUG
 // #define EXPERIMENTAL_I2S_LA
 // #define SMOOTH_LIN_ADVANCE
-// #define ADVANCE_TAU 0.01
-// #define SMOOTH_LIN_ADV_HZ 2000
+// #define ADVANCE_TAU 0.02
+// #define SMOOTH_LIN_ADV_HZ 1000
 // #define INPUT_SHAPING_E_SYNC
 // #define NONLINEAR_EXTRUSION
 // #define SAFE_BED_LEVELING_START_X 0.0
@@ -935,7 +934,11 @@
 // #define FILAMENT_UNLOAD_ALL_EXTRUDERS
 // #define CONFIGURE_FILAMENT_CHANGE
 // #define HOLD_MULTIPLIER    0.5
+// #define EDITABLE_HOMING_CURRENT
 // #define INTERPOLATE      true
+// #define TMC2240_CURRENT_RANGE   1
+// #define TMC2240_Rref        12000
+// #define TMC2240_SLOPE_CONTROL   0
 // #define X_CURRENT       800
 // #define X_CURRENT_HOME  X_CURRENT
 // #define X_MICROSTEPS     16

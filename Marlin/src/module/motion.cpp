@@ -1271,6 +1271,7 @@ void restore_feedrate_and_scaling() {
 
       soft_endstop.min[axis] = base_min_pos(axis);
       soft_endstop.max[axis] = base_max_pos(axis);
+      set_axis_untrusted(axis);
 
     #endif
 
@@ -1836,7 +1837,7 @@ float get_move_distance(const xyze_pos_t &diff OPTARG(HAS_ROTATIONAL_AXES, bool 
           if (planner.buffer_line(raised, fr_zfast)) {
             //  2. Move to the current native XY and raised Z. Presumably this is a null move.
             xyze_pos_t curpos = current_position; curpos.z = raised_parked_position.z;
-            if (planner.buffer_line(curpos, PLANNER_XY_FEEDRATE_MM_S)) {
+            if (planner.buffer_line(curpos, XY_PROBE_FEEDRATE_MM_S)) {
               //  3. Lower Z back down
               line_to_current_position(fr_zfast);
             }
@@ -1990,7 +1991,7 @@ void prepare_line_to_destination() {
    */
   feedRate_t get_homing_bump_feedrate(const AxisEnum axis) {
     #if HOMING_Z_WITH_PROBE
-      if (axis == Z_AXIS) return MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
+      if (axis == Z_AXIS) return z_probe_slow_mm_s;
     #endif
     static const uint8_t homing_bump_divisor[] PROGMEM = HOMING_BUMP_DIVISOR;
     uint8_t hbd = pgm_read_byte(&homing_bump_divisor[axis]);
