@@ -297,6 +297,7 @@ jobs:
         sed -i "s/.*#define INPUT_SHAPING_Z/#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
         sed -i "s/.*#define POWER_LOSS_RECOVERY/\/\/#define POWER_LOSS_RECOVERY/" Marlin/Configuration_adv.h
         sed -i "s/.*#define PROUI_ITEM_PLR/\/\/#define PROUI_ITEM_PLR/" Marlin/Configuration.h
+        sed -i "s/.*#define SDCARD_READONLY/#define SDCARD_READONLY/" Marlin/Configuration_adv.h
         if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
         sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
         sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h

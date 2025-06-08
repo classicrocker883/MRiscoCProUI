@@ -2463,7 +2463,7 @@ void MarlinSettings::postprocess() {
         #endif
         EEPROM_READ(lpq_len);
       }
-     // #endif
+      // #endif
 
       //
       // PIDTEMPBED
@@ -2582,7 +2582,7 @@ void MarlinSettings::postprocess() {
       //
       // Firmware Retraction
       //
-     // #if ENABLED(FWRETRACT)
+      // #if ENABLED(FWRETRACT)
       {
         _FIELD_TEST(fwretract_settings);
         fwretract_settings_t fwretract_settings;
