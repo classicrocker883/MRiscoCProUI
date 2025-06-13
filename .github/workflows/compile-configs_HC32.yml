@@ -17,6 +17,7 @@ jobs:
       matrix:
         temp: [true,false]
         inshape: [true,false]
+        tjc: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -47,7 +48,8 @@ jobs:
       run: |
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-        echo "filename=HC32_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        echo "filename=${DTMP}HC32_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -62,12 +64,16 @@ jobs:
         if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+        if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
         pio run
         mkdir temp
         mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
       env:
         TP: ${{ matrix.temp }}
         IS: ${{ matrix.inshape }}
+        TJC: ${{ matrix.tjc }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
@@ -89,6 +95,7 @@ jobs:
       matrix:
         temp: [true,false]
         inshape: [true,false]
+        tjc: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -119,7 +126,8 @@ jobs:
       run: |
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-        echo "filename=HC32_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        echo "filename=${DTMP}HC32_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -142,12 +150,16 @@ jobs:
         if [ "$IS" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define FILAMENT_RUNOUT_SENSOR/\/\/#define FILAMENT_RUNOUT_SENSOR/" Marlin/Configuration.h
         fi;
+        if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
         pio run
         mkdir temp
         mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
       env:
         TP: ${{ matrix.temp }}
         IS: ${{ matrix.inshape }}
+        TJC: ${{ matrix.tjc }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
@@ -170,6 +182,9 @@ jobs:
         temp: [true,false]
         pro: [true,false]
         bmp: [true,false]
+        t5: [true,false]
+        t13: [true,false]
+        tjc: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -201,7 +216,10 @@ jobs:
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($PRO); then PRTMP=; else PRTMP=-ProUI-EX; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=HC32${MPTMP}_UBL${PRTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        if ($T5); then STMP=_SPDY5; else STMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_UBL${PRTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -228,6 +246,11 @@ jobs:
         sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
         sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
         if ($BMP); then sed -i -e "/.*#define BIQU_MICROPROBE_V2.*/a#define NO_MICROPROBE_WARNING" Marlin/Configuration.h; fi;
+        if ($T5); then THMP="5"; elif ($T13); then THMP="13"; else THMP="1"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+        if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
         pio run
         mkdir temp
         mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
@@ -235,6 +258,9 @@ jobs:
         TP: ${{ matrix.temp }}
         PRO: ${{ matrix.pro }}
         BMP: ${{ matrix.bmp }}
+        T5: ${{ matrix.t5 }}
+        T13: ${{ matrix.t13 }}
+        TJC: ${{ matrix.tjc }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
@@ -255,6 +281,9 @@ jobs:
     strategy:
       matrix:
         bmp: [true,false]
+        t5: [true,false]
+        t13: [true,false]
+        tjc: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -284,7 +313,10 @@ jobs:
       id: build_configs
       run: |
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=HC32${MPTMP}_UBL-IS$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        if ($T5); then STMP=_SPDY5; else STMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_UBL-IS$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -306,11 +338,19 @@ jobs:
         sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
         sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
         if ($BMP); then sed -i -e "/.*#define BIQU_MICROPROBE_V2.*/a#define NO_MICROPROBE_WARNING" Marlin/Configuration.h; fi;
+        if ($T5); then THMP="5"; elif ($T13); then THMP="13"; else THMP="1"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+        if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
         pio run
         mkdir temp
         mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
       env:
         BMP: ${{ matrix.bmp }}
+        T5: ${{ matrix.t5 }}
+        T13: ${{ matrix.t13 }}
+        TJC: ${{ matrix.tjc }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
@@ -332,6 +372,9 @@ jobs:
       matrix:
         inshape: [true,false]
         bmp: [true,false]
+        t5: [true,false]
+        t13: [true,false]
+        tjc: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -362,7 +405,10 @@ jobs:
       run: |
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=HC32${MPTMP}_BLT-ProUI-EX${ISTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        if ($T5); then STMP=_SPDY5; else STMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -382,12 +428,20 @@ jobs:
         sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
         sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
         if ($BMP); then sed -i -e "/.*#define BIQU_MICROPROBE_V2.*/a#define NO_MICROPROBE_WARNING" Marlin/Configuration.h; fi;
+        if ($T5); then THMP="5"; elif ($T13); then THMP="13"; else THMP="1"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+        if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
         pio run
         mkdir temp
         mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
       env:
         IS: ${{ matrix.inshape }}
         BMP: ${{ matrix.bmp }}
+        T5: ${{ matrix.t5 }}
+        T13: ${{ matrix.t13 }}
+        TJC: ${{ matrix.tjc }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2

@@ -1305,3 +1305,206 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
+  Build-UBL-EX-SKR-A:            # UBL EX for Ender-3, SKR Mini
+    name: Build UBL EX SKR Files A
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip: [V3_0,V2_0,V3_0_1]
+        tjc: [true,false]
+        bmp: [true,false]
+        t5: [true,false]
+        t13: [true,false]
+    steps:
+    - uses: actions/checkout@v4.2.2
+    - name: Set up node
+      uses: actions/setup-node@v4.4.0
+      with:
+        node-version: 20
+    - name: Cache pip
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Cache PlatformIO
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Select Python 3.13
+      uses: actions/setup-python@v5.6.0
+      with:
+        python-version: '3.13'
+    - name: Install PlatformIO
+      run: |
+        python3 -m pip install --upgrade pip wheel platformio
+    - name: Run PlatformIO
+      id: build_configs
+      run: |
+        if [ "$SKR" = V3_0 ]; then AVTMP="V3"; SKTMP="STM32G0B1RE"
+        elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; SKTMP="STM32F103RC"
+        elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
+        fi;
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+        if ($T5); then STMP=_SPDY5; else STMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        > Marlin/Configuration.h
+        > Marlin/Configuration_adv.h
+        > Marlin/Version.h
+        if [ "$SKR" = V3_0 ]; then
+        cp configurations/BTT_SKR-Mini-E3-V3/UBL/Configuration.h Marlin/Configuration.h
+        cp configurations/BTT_SKR-Mini-E3-V3/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/BTT_SKR-Mini-E3-V3/UBL/Version.h Marlin/Version.h
+        else
+        cp configurations/BTT_SKR-Mini-E3-V2/UBL/Configuration.h Marlin/Configuration.h
+        cp configurations/BTT_SKR-Mini-E3-V2/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/BTT_SKR-Mini-E3-V2/UBL/Version.h Marlin/Version.h
+        sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
+        fi;
+        sed -i "s/default_envs =.*/default_envs = ${SKTMP}_btt/" platformio.ini
+        sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_${SKR}/" Marlin/Configuration.h
+        sed -i 's/.*#define CUSTOM_MACHINE_NAME.*/#define CUSTOM_MACHINE_NAME "Ender-3"/' Marlin/Configuration.h
+        sed -i 's/.*#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION .*/#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION "Ender-UBL"/' Marlin/Version.h
+        sed -i 's/.*#define MACHINE_NAME .*/#define MACHINE_NAME "Ender-3"/' Marlin/Version.h
+        if [ "$SKR" = V3_0_1 ]; then
+        sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define E0_AUTO_FAN_PIN.*/#define E0_AUTO_FAN_PIN FAN1_PIN/" Marlin/Configuration_adv.h
+        fi;
+        if [ "$SKR" = V3_0 ]; then
+        sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
+        fi;
+        if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
+        if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
+        sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+        sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
+        sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
+        sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
+        sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+        sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+        if ($T5); then THMP="5"; elif ($T13); then THMP="13"; else THMP="1"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+        pio run
+        mkdir temp
+        mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
+      env:
+        SKR: ${{ matrix.chip }}
+        TJC: ${{ matrix.tjc }}
+        BMP: ${{ matrix.bmp }}
+        T5: ${{ matrix.t5 }}
+        T13: ${{ matrix.t13 }}
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        asset_path: temp/build.bin
+        asset_name: ${{ steps.build_configs.outputs.filename }}
+        asset_content_type: application/x-binary
+  Build-MM-EX-SKR-A:            # MM EX for Ender-3, SKR Mini
+    name: Build MM EX SKR Files A
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip: [V3_0,V2_0,V3_0_1]
+        tjc: [true,false]
+        t5: [true,false]
+        t13: [true,false]
+    steps:
+    - uses: actions/checkout@v4.2.2
+    - name: Set up node
+      uses: actions/setup-node@v4.4.0
+      with:
+        node-version: 20
+    - name: Cache pip
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Cache PlatformIO
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Select Python 3.13
+      uses: actions/setup-python@v5.6.0
+      with:
+        python-version: '3.13'
+    - name: Install PlatformIO
+      run: |
+        python3 -m pip install --upgrade pip wheel platformio
+    - name: Run PlatformIO
+      id: build_configs
+      run: |
+        if [ "$SKR" = V3_0 ]; then AVTMP="V3"; SKTMP="STM32G0B1RE"
+        elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; SKTMP="STM32F103RC"
+        elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
+        fi;
+        if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+        if ($T5); then STMP=_SPDY5; else STMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${TTMP}${STMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        > Marlin/Configuration.h
+        > Marlin/Configuration_adv.h
+        > Marlin/Version.h
+        if [ "$SKR" = V3_0 ]; then
+        cp configurations/BTT_SKR-Mini-E3-V3/MM/Configuration.h Marlin/Configuration.h
+        cp configurations/BTT_SKR-Mini-E3-V3/MM/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/BTT_SKR-Mini-E3-V3/MM/Version.h Marlin/Version.h
+        else
+        cp configurations/BTT_SKR-Mini-E3-V2/MM/Configuration.h Marlin/Configuration.h
+        cp configurations/BTT_SKR-Mini-E3-V2/MM/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/BTT_SKR-Mini-E3-V2/MM/Version.h Marlin/Version.h
+        fi;
+        sed -i "s/default_envs =.*/default_envs = ${SKTMP}_btt/" platformio.ini
+        sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_${SKR}/" Marlin/Configuration.h
+        sed -i 's/.*#define CUSTOM_MACHINE_NAME.*/#define CUSTOM_MACHINE_NAME "Ender-3"/' Marlin/Configuration.h
+        sed -i 's/.*#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION .*/#define DETAILED_BUILD_VERSION SHORT_BUILD_VERSION "Ender-MM"/' Marlin/Version.h
+        sed -i 's/.*#define MACHINE_NAME .*/#define MACHINE_NAME "Ender-3"/' Marlin/Version.h
+        if [ "$SKR" = V3_0_1 ]; then
+        sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define E0_AUTO_FAN_PIN.*/#define E0_AUTO_FAN_PIN FAN1_PIN/" Marlin/Configuration_adv.h
+        fi;
+        if [ "$SKR" = V3_0 ]; then
+        sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
+        fi;
+        if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+        sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+        sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
+        if ($T5); then THMP="5"; elif ($T13); then THMP="13"; else THMP="1"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+        pio run
+        mkdir temp
+        mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
+      env:
+        SKR: ${{ matrix.chip }}
+        TJC: ${{ matrix.tjc }}
+        T5: ${{ matrix.t5 }}
+        T13: ${{ matrix.t13 }}
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        asset_path: temp/build.bin
+        asset_name: ${{ steps.build_configs.outputs.filename }}
+        asset_content_type: application/x-binary

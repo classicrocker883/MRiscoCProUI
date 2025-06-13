@@ -661,6 +661,8 @@ jobs:
         chip: [V3_0,V2_0,V3_0_1]
         tjc: [true,false]
         bmp: [true,false]
+        t5: [true,false]
+        t13: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -689,13 +691,15 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if [ "$SKR" = V3_0 ]; then AVTMP="V3"; STMP="STM32G0B1RE"
-        elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; STMP="STM32F103RC"
-        elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; STMP="STM32F401RC"
+        if [ "$SKR" = V3_0 ]; then AVTMP="V3"; SKTMP="STM32G0B1RE"
+        elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; SKTMP="STM32F103RC"
+        elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
         fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Aquila_SKR-Mini-E3-${AVTMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        if ($T5); then STMP=_SPDY5; else STMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        echo "filename=${DTMP}Aquila_SKR-Mini-E3-${AVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -709,7 +713,7 @@ jobs:
         cp configurations/BTT_SKR-Mini-E3-V2/UBL/Version.h Marlin/Version.h
         sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
         fi;
-        sed -i "s/default_envs =.*/default_envs = ${STMP}_btt/" platformio.ini
+        sed -i "s/default_envs =.*/default_envs = ${SKTMP}_btt/" platformio.ini
         sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_${SKR}/" Marlin/Configuration.h
         if [ "$SKR" = V3_0_1 ]; then
         sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
@@ -728,13 +732,17 @@ jobs:
         sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
         sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
         sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+        if ($T5); then THMP="5"; elif ($T13); then THMP="13"; else THMP="1"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
         pio run
         mkdir temp
-        mv .pio/build/${STMP}_btt/*.bin temp/build.bin
+        mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
       env:
         SKR: ${{ matrix.chip }}
         TJC: ${{ matrix.tjc }}
         BMP: ${{ matrix.bmp }}
+        T5: ${{ matrix.t5 }}
+        T13: ${{ matrix.t13 }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
@@ -756,6 +764,8 @@ jobs:
       matrix:
         chip: [V3_0,V2_0,V3_0_1]
         tjc: [true,false]
+        t5: [true,false]
+        t13: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -784,12 +794,14 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if [ "$SKR" = V3_0 ]; then AVTMP="V3"; STMP="STM32G0B1RE"
-        elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; STMP="STM32F103RC"
-        elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; STMP="STM32F401RC"
+        if [ "$SKR" = V3_0 ]; then AVTMP="V3"; SKTMP="STM32G0B1RE"
+        elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; SKTMP="STM32F103RC"
+        elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
         fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-        echo "filename=${DTMP}Aquila_SKR-Mini-E3-${AVTMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        if ($T5); then STMP=_SPDY5; else STMP=; fi;
+        if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
+        echo "filename=${DTMP}Aquila_SKR-Mini-E3-${AVTMP}${TTMP}${STMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -802,7 +814,7 @@ jobs:
         cp configurations/BTT_SKR-Mini-E3-V2/MM/Configuration_adv.h Marlin/Configuration_adv.h
         cp configurations/BTT_SKR-Mini-E3-V2/MM/Version.h Marlin/Version.h
         fi;
-        sed -i "s/default_envs =.*/default_envs = ${STMP}_btt/" platformio.ini
+        sed -i "s/default_envs =.*/default_envs = ${SKTMP}_btt/" platformio.ini
         sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_${SKR}/" Marlin/Configuration.h
         if [ "$SKR" = V3_0_1 ]; then
         sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
@@ -814,12 +826,16 @@ jobs:
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
+        if ($T5); then THMP="5"; elif ($T13); then THMP="13"; else THMP="1"; fi;
+        sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
         pio run
         mkdir temp
-        mv .pio/build/${STMP}_btt/*.bin temp/build.bin
+        mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
       env:
         SKR: ${{ matrix.chip }}
         TJC: ${{ matrix.tjc }}
+        T5: ${{ matrix.t5 }}
+        T13: ${{ matrix.t13 }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
