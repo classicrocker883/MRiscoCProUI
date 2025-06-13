@@ -473,7 +473,7 @@ typedef struct SettingsDataStruct {
   //
   // Firmware Retraction
   //
-  fwretract_settings_t fwretract_settings;              // M207 S F Z W, M208 S F W R
+  fwretract_settings_t fwretract_settings;              // M207 S F W Z, M208 S F W R
   bool autoretract_enabled;                             // M209 S
 
   //
@@ -605,7 +605,7 @@ typedef struct SettingsDataStruct {
   // CONFIGURABLE_MACHINE_NAME
   //
   #if ENABLED(CONFIGURABLE_MACHINE_NAME)
-    TString machine_name;                               // M550 P
+    TString machine_name;                               // M550
   #endif
 
   //
