@@ -234,6 +234,7 @@ jobs:
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define SHOW_SPEED_IND/${PTEMP}#define SHOW_SPEED_IND/" Marlin/Configuration.h
+        sed -i "s/.*#define LONG_FILENAME_WRITE_SUPPORT/${PTEMP}#define LONG_FILENAME_WRITE_SUPPORT/" Marlin/Configuration_adv.h
         if [ "$IS" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
         sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
@@ -335,6 +336,7 @@ jobs:
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define SHOW_SPEED_IND/${PTEMP}#define SHOW_SPEED_IND/" Marlin/Configuration.h
+        sed -i "s/.*#define LONG_FILENAME_WRITE_SUPPORT/${PTEMP}#define LONG_FILENAME_WRITE_SUPPORT/" Marlin/Configuration_adv.h
         if [ "$IS" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
         sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
