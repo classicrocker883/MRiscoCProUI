@@ -1,11 +1,9 @@
 # Professional Firmware for the Voxelab Aquila and Creality Ender-3 3D Printers <br> **_<sup><sup><sub>(Or any other compatible 3D Printer)</sub></sup></sup>_**
 
-![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)
-![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)
-![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)
-[![Aquila Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases/latest)
-![HC32 Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs-HC32.yml/badge.svg)
-![Ender Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-configs_Ender.yml/badge.svg)
+![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)  
+![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)  
+![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)  
+[![Latest Firmware Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-release.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases) <sup>- Link to latest releases</sup>
 
 ### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about *this* firmware and the features it provides
 
@@ -13,7 +11,7 @@
 
 **Don't forget to checkout the [thingiverse](https://www.thingiverse.com/classicrocker883/designs) models I've designed:**
 
-[Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender 3 V2
+[Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender-3 V2
 <img src="https://cdn.thingiverse.com/assets/1a/21/e9/e9/f5/card_preview_c60b15d6-69cf-469a-8641-40f6bef37992.png" style="float:left;width:40px;height:40px;" align="left"/>
 
 [Tool Box for Middle Extrusion](https://www.thingiverse.com/thing:5181522) "**VOXELAB**" engraved
@@ -22,14 +20,18 @@
 [Fantastic Filament Guide](https://www.thingiverse.com/thing:4974802) for Aquila
 <img src="https://cdn.thingiverse.com/assets/46/79/c1/80/14/card_preview_FantasticFilamentGuideAquilaL.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780) for Aquila
+[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780)
 <img src="https://cdn.thingiverse.com/assets/73/1e/84/38/f1/card_preview_Pi_Zero_Case_holder.png" style="float:left;width:40px;height:40px;" align="left"/>
 
 ---
 
-## Universal Firmware for RET6/RCT6 chips: G32, N32, H32, Creality 4.2.7 and 4.2.2 boards <br> **_<sup><sup><sub>(Also available for BTT SKR Mini E3 and others)</sub></sup></sup>_**
+## Universal Firmware for RET6/RCT6 chips:
+G32, N32, H32, Creality 4.2.7 and 4.2.2 boards <br> 
+**_<sup><sub>(Also available for E3 Free-runs, BTT SKR Mini E3, STM32F401, GD32F303, and others)</sub></sup>_**
 
-### - Please read this: -
+> [!IMPORTANT]
+> **Please read the following:**
+
 > [!NOTE]
 Many Updates have been included in the most recent MRiscoCProUI for the **2025-June** release.
 This release has many changes to the **UI**.
@@ -42,17 +44,19 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 > I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best; easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware.
 
 > [!TIP]
-> If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change state it triggers no filament to **HIGH**, or **LOW** (depending on what is already selected). This is found in the _Prepare_ menu/ _Filament Management_/ _Filament Settings_ -> _Runout Active_.
+> If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change the state in which it triggers "no filament" to **HIGH** or **LOW** (depending on what is already selected).  
+> This is found in:  
+> _Prepare_ -> _Filament Management_ -> _Filament Settings_ -> _Runout Active_
 
-<br>
+---
 
-#### Important Info regarding HC32:
+> [!IMPORTANT]
+> **Information regarding HC32:**
+
 > [!WARNING]
->
-> <ins>**FOREWARNING**</ins>: So far everything has been working great - as normal - except there is an issue with the initialization of the SD card media. If you get a message saying this has failed, just reinsert the card or reboot. Keep trying if this doesn't work the first time. Also using Gcode Thumbnail Preview is giving issues with freezing so this has been disabled for now.
+> <ins>**FOREWARNING**</ins>: So far everything has been working great - as normal - except there is an issue with the initialization of the SD card media. If you get a message saying this has failed, just reinsert the card or reboot. Keep trying if this doesn't work the first time.
 
 > [!CAUTION]
->
 > *G-code Thumbnail Preview* has been disabled for HC32 boards for the time being.
 > When enabled, the screen may **freeze and restart** when the SD card is inserted. This means that everything *so far* seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible *unless* you use USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).
 
@@ -105,11 +109,11 @@ For 64-bit - If you receive an error, then try the following:
 #### Alternative SDL2 Install
 **Copy/Paste Files**
 You may have to first Build so the directory can be created, but you can:
-- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\SDL2\\*, paste into the directory ~\.pio\libdeps\simulator_windows\\**imgui**
+- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**\\*, paste into the directory .pio\libdeps\simulator_windows\\**imgui**
 
 -OR-
 
-- **Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory ~\.pio\libdeps\\*simulator_windows*
+- **Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory .pio\libdeps\\**simulator_windows**
 
 Once all that is done, just Build like you would normally and *MarlinSimulator.exe* will be created.
 
@@ -119,6 +123,8 @@ These are the files you need to install:
 - There may be other basic ones if you don't have already; like python, cmake, pip...
 
 #### Using MarlinSimulator
+- Open the executable program found in **.pio\build\simulator_<windows/linux>**
+- - For Linux, enter in a terminal `./MarlinSimulator`
 - Under `SD Card`, under `Components` on the right side, select or load an image
 - Select Serial Monitor(1)
 - Use like a normal terminal, enter `G28` to watch it Home
@@ -126,8 +132,13 @@ These are the files you need to install:
 <br>
 
 ### Printer Information
-The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6/RCT6 - STMicroelectronics) and it's clones: G32 (GD32F103Rx - GigaDevice), N32 (N32F103Rx / N32G455x - Nation), and H32 (HC32F460x - Huada Semiconductor/HDSC). They can be downloaded from:
-[Latest Release](https://github.com/classicrocker883/MRiscoCProUI/releases/latest)
+The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6/RCT6 - STMicroelectronics) and it's clones: 
+- G32 (GD32F103Rx - GigaDevice)
+- N32 (N32F103Rx / N32G455x - Nation)
+- H32 (HC32F460x - Huada Semiconductor/HDSC)
+
+They can be downloaded here:  
+[Releases](https://github.com/classicrocker883/MRiscoCProUI/releases)
 
 <br>
 
@@ -140,9 +151,9 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 
 ## Donations
 Thank you for your support.
-Please consider making a donation, as large or as small and as often as you'd like.
-[Ko-fi](https://ko-fi.com/classicrocker883)
-[Venmo](https://venmo.com/u/andrewleduc88)
+Please consider making a donation, as large or as small and as often as you'd like.  
+[Ko-fi](https://ko-fi.com/classicrocker883)  
+[Venmo](https://venmo.com/u/andrewleduc88)  
 [Paypal](https://www.paypal.com/paypalme/andrewleduc) - **Single payment**
 
 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal - Monthly Payment**
