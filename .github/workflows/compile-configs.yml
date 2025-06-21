@@ -85,7 +85,6 @@ jobs:
       matrix:
         chip: [GD32,N32]
         inshape: [true,false]
-        s2: [true,false]
         temp: [true,false]
         tjc: [true,false]
         t5: [true,false]
@@ -120,12 +119,11 @@ jobs:
       run: |
         if [ "$AQUILA_VER" = GD32 ]; then AVTMP=_GD32; else AVTMP=_N32; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-        if ($S2); then S2TMP=-S2; else S2TMP=; fi;
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-        echo "filename=${DTMP}Aquila${S2TMP}${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -143,7 +141,7 @@ jobs:
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-        if ($S2); then THMP="61"; DSMP="98"; elif ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+        if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
         sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
         sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
         pio run
@@ -152,7 +150,6 @@ jobs:
       env:
         AQUILA_VER: ${{ matrix.chip }}
         IS: ${{ matrix.inshape }}
-        S2: ${{ matrix.s2 }}
         TP: ${{ matrix.temp }}
         TJC: ${{ matrix.tjc }}
         T5: ${{ matrix.t5 }}
@@ -289,8 +286,6 @@ jobs:
         tjc: [true,false]
         t5: [true,false]
         t13: [true,false]
-        s3: [true,false]
-        x3: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -325,9 +320,7 @@ jobs:
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-        if ($S3); then S3TMP=-S3; else S3TMP=; fi;
-        if ($X3); then X3TMP=-X3; else X3TMP=; fi;
-        echo "filename=${DTMP}Aquila${S3TMP}${X3TMP}${AVTMP}_IND${STMP}${TTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Aquila${AVTMP}_IND${STMP}${TTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -351,7 +344,7 @@ jobs:
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-        if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; elif ($S3); then THMP="61"; DSMP="388"; elif ($X3); then THMP="61"; DSMP="98"; else THMP="1"; DSMP="98"; fi;
+        if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
         sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
         sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
         pio run
@@ -364,8 +357,6 @@ jobs:
         TJC: ${{ matrix.tjc }}
         T5: ${{ matrix.t5 }}
         T13: ${{ matrix.t13 }}
-        S3: ${{ matrix.s3 }}
-        X3: ${{ matrix.x3 }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
@@ -599,7 +590,6 @@ jobs:
     strategy:
       matrix:
         chip: [V3_0,V2_0,V3_0_1]
-        s2: [true,false]
         tjc: [true,false]
         t5: [true,false]
         t13: [true,false]
@@ -635,11 +625,10 @@ jobs:
         elif [ "$SKR" = V2_0 ]; then AVTMP=-V2; SKTMP="STM32F103RC"
         elif [ "$SKR" = V3_0_1 ]; then AVTMP=-V3-0-1; SKTMP="STM32F401RC"
         fi;
-        if ($S2); then S2TMP=-S2; else S2TMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-        echo "filename=${DTMP}Aquila${S2TMP}_SKR-Mini-E3${AVTMP}${STMP}${TTMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Aquila_SKR-Mini-E3${AVTMP}${STMP}${TTMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -664,7 +653,6 @@ jobs:
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-        if ($S2); then THMP="61"; DSMP="98"; elif ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
         if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
         sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
         sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
@@ -673,7 +661,6 @@ jobs:
         mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
       env:
         SKR: ${{ matrix.chip }}
-        S2: ${{ matrix.s2 }}
         TJC: ${{ matrix.tjc }}
         T5: ${{ matrix.t5 }}
         T13: ${{ matrix.t13 }}
@@ -767,7 +754,6 @@ jobs:
       matrix:
         chip: [427,422]
         inshape: [true,false]
-        s2: [true,false]
         temp: [true,false]
         tjc: [true,false]
         t5: [true,false]
@@ -802,12 +788,11 @@ jobs:
       run: |
         if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-        if ($S2); then S2TMP=-S2; else S2TMP=; fi;
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-        echo "filename=${DTMP}Aquila${S2TMP}${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -826,7 +811,7 @@ jobs:
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-        if ($S2); then THMP="61"; DSMP="98"; elif ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+        if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
         sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
         sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
         pio run
@@ -835,7 +820,6 @@ jobs:
       env:
         AQUILA_VER: ${{ matrix.chip }}
         IS: ${{ matrix.inshape }}
-        S2: ${{ matrix.s2 }}
         TP: ${{ matrix.temp }}
         TJC: ${{ matrix.tjc }}
         T5: ${{ matrix.t5 }}
@@ -1067,8 +1051,6 @@ jobs:
         tjc: [true,false]
         t5: [true,false]
         t13: [true,false]
-        s3: [true,false]
-        x3: [true,false]
     steps:
     - uses: actions/checkout@v4.2.2
     - name: Set up node
@@ -1103,9 +1085,7 @@ jobs:
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-        if ($S3); then S3TMP=-S3; else S3TMP=; fi;
-        if ($X3); then X3TMP=-X3; else X3TMP=; fi;
-        echo "filename=${DTMP}Aquila${S3TMP}${X3TMP}${AVTMP}_IND${STMP}${TTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Aquila${AVTMP}_IND${STMP}${TTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -1129,7 +1109,7 @@ jobs:
         if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
         sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
         sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-        if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; elif ($S3); then THMP="61"; DSMP="388"; elif ($X3); then THMP="61"; DSMP="98"; else THMP="1"; DSMP="98"; fi;
+        if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
         sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
         sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
         pio run
@@ -1142,8 +1122,6 @@ jobs:
         TJC: ${{ matrix.tjc }}
         T5: ${{ matrix.t5 }}
         T13: ${{ matrix.t13 }}
-        S3: ${{ matrix.s3 }}
-        X3: ${{ matrix.x3 }}
     - name: Get release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
