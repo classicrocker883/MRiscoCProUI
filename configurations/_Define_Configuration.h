@@ -225,6 +225,9 @@
 // #define MPC_AUTOTUNE_MENU
 // #define MPC_MAX 255
 // #define MPC_HEATER_POWER { 40.0f }
+// #define MPC_PTC
+// #define MPC_HEATER_ALPHA { 0.0028f }
+// #define MPC_HEATER_REFTEMP { 20 }
 // #define MPC_INCLUDE_FAN
 // #define MPC_BLOCK_HEAT_CAPACITY { 16.7f }
 // #define MPC_SENSOR_RESPONSIVENESS { 0.22f }
@@ -244,7 +247,7 @@
 // #define MIN_BED_POWER 0
 // #define PID_BED_DEBUG
 // #define DEFAULT_bedKp 128.06
-// #define DEFAULT_bedKi 24.95
+// #define DEFAULT_bedKi  24.95
 // #define DEFAULT_bedKd 438.07
 // #define BED_LIMIT_SWITCHING
 // #define PELTIER_BED

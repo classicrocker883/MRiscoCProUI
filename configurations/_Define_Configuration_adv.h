@@ -322,6 +322,8 @@
 // #define Z_STEPPER_ALIGN_ACC        0.02
 // #define RESTORE_LEVELING_AFTER_G34
 // #define HOME_AFTER_G34
+// #define EVENT_GCODE_BEFORE_G34 "M300 P440 S200"
+// #define EVENT_GCODE_AFTER_G34 "G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
 // #define ASSISTED_TRAMMING
 // #define TRAMMING_POINT_XY { { 29, 29 }, { 199, 29 }, { 199, 199 }, { 29, 199 } }
 // #define TRAMMING_POINT_NAME_1 "Front-Left"
@@ -943,8 +945,8 @@
 // #define HOLD_MULTIPLIER    0.5
 // #define EDITABLE_HOMING_CURRENT
 // #define INTERPOLATE      true
+// #define TMC2240_RREF        12000
 // #define TMC2240_CURRENT_RANGE   1
-// #define TMC2240_Rref        12000
 // #define TMC2240_SLOPE_CONTROL   0
 // #define X_CURRENT       800
 // #define X_CURRENT_HOME  X_CURRENT

@@ -225,6 +225,9 @@
 // #undef MPC_AUTOTUNE_MENU
 // #undef MPC_MAX
 // #undef MPC_HEATER_POWER
+// #undef MPC_PTC
+// #undef MPC_HEATER_ALPHA
+// #undef MPC_HEATER_REFTEMP
 // #undef MPC_INCLUDE_FAN
 // #undef MPC_BLOCK_HEAT_CAPACITY
 // #undef MPC_SENSOR_RESPONSIVENESS
