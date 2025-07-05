@@ -9,7 +9,14 @@
 
 <br>
 
-**Don't forget to checkout the [thingiverse](https://www.thingiverse.com/classicrocker883/designs) models I've designed:**
+<img src="https://i.ebayimg.com/images/g/kzsAAOSwjF5lrGWD/s-l1600.webp" style="float:right;width:185.6px;height:130.8px;" align="top"/>
+
+**Checkout this [Universal 3D Printer Adapter Breakout Board](https://www.ebay.com/itm/296177134648)  
+I designed and made it to be used for upgrading the hotend.**
+
+---
+
+**And don't forget about the [thingiverse](https://www.thingiverse.com/classicrocker883/designs) models I've designed:**
 
 [Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender-3 V2
 <img src="https://cdn.thingiverse.com/assets/1a/21/e9/e9/f5/card_preview_c60b15d6-69cf-469a-8641-40f6bef37992.png" style="float:left;width:40px;height:40px;" align="left"/>
