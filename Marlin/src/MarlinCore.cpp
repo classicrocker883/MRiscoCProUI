@@ -150,8 +150,8 @@
   #include "feature/encoder_i2c.h"
 #endif
 
-#if (HAS_TRINAMIC_CONFIG || HAS_TMC_SPI) && DISABLED(PSU_DEFAULT_OFF)
-  #include "feature/tmc_util.h"
+#if HAS_TRINAMIC_CONFIG
+  #include "module/stepper/trinamic.h"
 #endif
 
 #if HAS_CUTTER
@@ -1351,8 +1351,11 @@ void setup() {
     #endif
   #endif
 
-  #if HAS_MEDIA && ANY(SDCARD_EEPROM_EMULATION, POWER_LOSS_RECOVERY)
-    SETUP_RUN(card.mount());          // Mount media with settings before first_load
+  #if HAS_MEDIA
+    SETUP_RUN(card.init());           // Prepare for media usage
+    #if ANY(SDCARD_EEPROM_EMULATION, POWER_LOSS_RECOVERY)
+      SETUP_RUN(card.mount());        // Mount media with settings before first_load
+    #endif
   #endif
 
   // Prepare some LCDs to display early

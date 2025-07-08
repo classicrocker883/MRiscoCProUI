@@ -131,6 +131,7 @@
 #define BOARD_KODAMA_BARDO            1164  // Kodama Bardo V1.x (as found in the Kodama Trinus)
 #define BOARD_XTLW_MFF_V1             1165  // XTLW MFF V1.0
 #define BOARD_XTLW_MFF_V2             1166  // XTLW MFF V2.0
+#define BOARD_RUMBA_E3D               1167  // E3D Rumba BigBox
 
 //
 // RAMBo and derivatives
@@ -283,7 +284,7 @@
 
 #define BOARD_DUE3DOM                 3000  // DUE3DOM for Arduino DUE
 #define BOARD_DUE3DOM_MINI            3001  // DUE3DOM MINI for Arduino DUE
-#define BOARD_RADDS                   3002  // RADDS v1.5/v1.6`
+#define BOARD_RADDS                   3002  // RADDS v1.5/v1.6
 #define BOARD_RAMPS_FD_V1             3003  // RAMPS-FD v1
 #define BOARD_RAMPS_FD_V2             3004  // RAMPS-FD v2
 #define BOARD_RAMPS_SMART_EFB         3005  // RAMPS-SMART (Power outputs: Hotend, Fan, Bed)
@@ -386,7 +387,7 @@
 #define BOARD_CREALITY_V422           5039  // Creality v4.2.2 (STM32F103RC / STM32F103RE) ... GD32 Variant Below!
 #define BOARD_CREALITY_V423           5040  // Creality v4.2.3 (STM32F103RC / STM32F103RE)
 #define BOARD_CREALITY_V425           5041  // Creality v4.2.5 (STM32F103RC / STM32F103RE)
-#define BOARD_CREALITY_V427           5042  // Creality v4.2.7 (STM32F103RC / STM32F103RE)
+#define BOARD_CREALITY_V427           5042  // Creality v4.2.7 (STM32F103RC / STM32F103RE) ... GD32 Variant Below!
 #define BOARD_CREALITY_V4210          5043  // Creality v4.2.10 (STM32F103RC / STM32F103RE) as found in the CR-30
 #define BOARD_CREALITY_V431           5044  // Creality v4.3.1 (STM32F103RC / STM32F103RE)
 #define BOARD_CREALITY_V431_A         5045  // Creality v4.3.1a (STM32F103RC / STM32F103RE)
@@ -563,6 +564,7 @@
 //
 
 #define BOARD_CREALITY_V422_GD32_MFL  7400  // Creality V4.2.2 MFL (GD32F303RE) ... STM32 Variant Above!
+#define BOARD_CREALITY_V427_GD32_MFL  7401  // Creality V4.2.7 MFL (GD32F303RE) ... STM32 Variant Above!
 
 //
 // Raspberry Pi

@@ -49,7 +49,7 @@ FWRetract fwretract; // Single instance - this calls the constructor
 
 // public:
 
-fwretract_settings_t FWRetract::settings;     // M207 S F Z W, M208 S F W R
+fwretract_settings_t FWRetract::settings;     // M207 S F W Z, M208 S F W R
 
 #if ENABLED(FWRETRACT_AUTORETRACT)
   bool FWRetract::autoretract_enabled;        // M209 S - Autoretract switch
@@ -64,10 +64,10 @@ void FWRetract::reset() {
   TERN_(FWRETRACT_AUTORETRACT, autoretract_enabled = false);
   settings.retract_length = RETRACT_LENGTH;
   settings.retract_feedrate_mm_s = RETRACT_FEEDRATE;
+  settings.swap_retract_length = RETRACT_LENGTH_SWAP;
   settings.retract_zraise = RETRACT_ZRAISE;
   settings.retract_recover_extra = RETRACT_RECOVER_LENGTH;
   settings.retract_recover_feedrate_mm_s = RETRACT_RECOVER_FEEDRATE;
-  settings.swap_retract_length = RETRACT_LENGTH_SWAP;
   settings.swap_retract_recover_extra = RETRACT_RECOVER_LENGTH_SWAP;
   settings.swap_retract_recover_feedrate_mm_s = RETRACT_RECOVER_FEEDRATE_SWAP;
   current_hop = 0.0;
@@ -228,7 +228,7 @@ void FWRetract::M207_report() {
  *   R[units/min] swap_retract_recover_feedrate_mm_s
  */
 void FWRetract::M208() {
-  if (!parser.seen("SFRW")) return M208_report();
+  if (!parser.seen("SFWR")) return M208_report();
   if (parser.seenval('S')) settings.retract_recover_extra              = parser.value_axis_units(E_AXIS);
   if (parser.seenval('F')) settings.retract_recover_feedrate_mm_s      = MMM_TO_MMS(parser.value_axis_units(E_AXIS));
   if (parser.seenval('W')) settings.swap_retract_recover_extra         = parser.value_axis_units(E_AXIS);

@@ -239,6 +239,9 @@ float Planner::previous_nominal_speed;
 
 #if ENABLED(LIN_ADVANCE)
   float Planner::extruder_advance_K[DISTINCT_E]; // Initialized by settings.load
+  #if ENABLED(SMOOTH_LIN_ADVANCE)
+    uint32_t Planner::extruder_advance_K_q27[DISTINCT_E];
+  #endif
 #endif
 
 #if HAS_POSITION_FLOAT
@@ -1509,10 +1512,12 @@ void Planner::check_axes_activity() {
 
 #if HAS_LEVELING
 
-  IF_DISABLED(PROUI_EX, constexpr) xy_pos_t level_fulcrum = {
-    TERN(Z_SAFE_HOMING, Z_SAFE_HOMING_X_POINT, X_HOME_POS),
-    TERN(Z_SAFE_HOMING, Z_SAFE_HOMING_Y_POINT, Y_HOME_POS)
-  };
+  #if ABL_PLANAR
+    IF_DISABLED(PROUI_EX, constexpr) xy_pos_t level_fulcrum = {
+      TERN(Z_SAFE_HOMING, Z_SAFE_HOMING_X_POINT, X_HOME_POS),
+      TERN(Z_SAFE_HOMING, Z_SAFE_HOMING_Y_POINT, Y_HOME_POS)
+    };
+  #endif
 
   /**
    * rx, ry, rz - Cartesian positions in mm
@@ -1611,7 +1616,7 @@ void Planner::quick_stop() {
   // Restart the block delay for the first movement - As the queue was
   // forced to empty, there's no risk the ISR will touch this.
 
-  delay_before_delivering = TERN_(FT_MOTION, ftMotion.cfg.active ? BLOCK_DELAY_NONE :) BLOCK_DELAY_FOR_1ST_MOVE;
+  delay_before_delivering = TERN0(FT_MOTION, ftMotion.cfg.active) ? BLOCK_DELAY_NONE : BLOCK_DELAY_FOR_1ST_MOVE;
 
   TERN_(HAS_WIRED_LCD, clear_block_buffer_runtime()); // Clear the accumulated runtime
 
@@ -1772,7 +1777,7 @@ bool Planner::_buffer_steps(const xyze_long_t &target
     // As there are no queued movements, the Stepper ISR will not touch this
     // variable, so there is no risk setting this here (but it MUST be done
     // before the following line!!)
-    delay_before_delivering = TERN_(FT_MOTION, ftMotion.cfg.active ? BLOCK_DELAY_NONE :) BLOCK_DELAY_FOR_1ST_MOVE;
+    delay_before_delivering = TERN0(FT_MOTION, ftMotion.cfg.active) ? BLOCK_DELAY_NONE : BLOCK_DELAY_FOR_1ST_MOVE;
   }
 
   // Move buffer head
@@ -2503,7 +2508,7 @@ bool Planner::_populate_block(
   block->acceleration_steps_per_s2 = accel;
   block->acceleration = accel / steps_per_mm;
   #if DISABLED(S_CURVE_ACCELERATION)
-    block->acceleration_rate = uint32_t(accel * (float(1UL << 24) / (STEPPER_TIMER_RATE)));
+    block->acceleration_rate = uint32_t(accel * (float(_BV32(24)) / (STEPPER_TIMER_RATE)));
   #endif
 
   #if HAS_ROUGH_LIN_ADVANCE
@@ -2524,7 +2529,13 @@ bool Planner::_populate_block(
     }
   #elif ENABLED(SMOOTH_LIN_ADVANCE)
     block->use_advance_lead = use_advance_lead;
-    block->e_step_ratio = (block->direction_bits.e ? 1 : -1) * float(block->steps.e) / block->step_event_count;
+    const uint32_t ratio = (uint64_t(block->steps.e) * _BV32(30)) / block->step_event_count;
+    block->e_step_ratio_q30 = block->direction_bits.e ? ratio : -ratio;
+
+    #if ENABLED(INPUT_SHAPING_E_SYNC)
+      const uint32_t xy_steps = TERN0(INPUT_SHAPING_X, block->steps.x) + TERN0(INPUT_SHAPING_Y, block->steps.y);
+      block->xy_length_inv_q30 = xy_steps ? (_BV32(30) / xy_steps) : 0;
+    #endif
   #endif
 
   // Formula for the average speed over a 1 step worth of distance if starting from zero and
@@ -2886,7 +2897,7 @@ void Planner::buffer_sync_block(const BlockFlagBit sync_flag/*=BLOCK_BIT_SYNC_PO
     // As there are no queued movements, the Stepper ISR will not touch this
     // variable, so there is no risk setting this here (but it MUST be done
     // before the following line!!)
-    delay_before_delivering = TERN_(FT_MOTION, ftMotion.cfg.active ? BLOCK_DELAY_NONE :) BLOCK_DELAY_FOR_1ST_MOVE;
+    delay_before_delivering = TERN0(FT_MOTION, ftMotion.cfg.active) ? BLOCK_DELAY_NONE : BLOCK_DELAY_FOR_1ST_MOVE;
   }
 
   block_buffer_head = next_buffer_head;
@@ -3192,7 +3203,7 @@ bool Planner::buffer_line(const xyze_pos_t &cart, const_feedRate_t fr_mm_s,
       // As there are no queued movements, the Stepper ISR will not touch this
       // variable, so there is no risk setting this here (but it MUST be done
       // before the following line!!)
-      delay_before_delivering = TERN_(FT_MOTION, ftMotion.cfg.active ? BLOCK_DELAY_NONE :) BLOCK_DELAY_FOR_1ST_MOVE;
+      delay_before_delivering = TERN0(FT_MOTION, ftMotion.cfg.active) ? BLOCK_DELAY_NONE : BLOCK_DELAY_FOR_1ST_MOVE;
     }
 
     // Move buffer head
@@ -3313,6 +3324,10 @@ void Planner::refresh_acceleration_rates() {
 void Planner::refresh_positioning() {
   #if ENABLED(EDITABLE_STEPS_PER_UNIT)
     LOOP_DISTINCT_AXES(i) mm_per_step[i] = 1.0f / settings.axis_steps_per_mm[i];
+    #if ALL(NONLINEAR_EXTRUSION, SMOOTH_LIN_ADVANCE)
+      stepper.ne.q30.A = _BV32(30) * (stepper.ne.settings.coeff.A * mm_per_step[E_AXIS_N(0)] * mm_per_step[E_AXIS_N(0)]);
+      stepper.ne.q30.B = _BV32(30) * (stepper.ne.settings.coeff.B * mm_per_step[E_AXIS_N(0)]);
+    #endif
   #endif
   set_position_mm(current_position);
   refresh_acceleration_rates();

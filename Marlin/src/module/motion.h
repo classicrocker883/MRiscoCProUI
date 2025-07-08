@@ -58,19 +58,6 @@ extern xyz_pos_t cartes;
   extern abce_pos_t delta;
 #endif
 
-#if HAS_ABL_NOT_UBL
-  extern feedRate_t xy_probe_feedrate_mm_s;
-  #define XY_PROBE_FEEDRATE_MM_S xy_probe_feedrate_mm_s
-#elif defined(XY_PROBE_FEEDRATE)
-  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS(XY_PROBE_FEEDRATE)
-#else
-  #define XY_PROBE_FEEDRATE_MM_S PLANNER_XY_FEEDRATE_MM_S
-#endif
-
-#if HAS_BED_PROBE
-  constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
-#endif
-
 /**
  * Feed rates are often configured with mm/m
  * but the planner and stepper like mm/s units.
@@ -112,6 +99,22 @@ extern feedRate_t feedrate_mm_s;
 extern int16_t feedrate_percentage;
 #define MMS_SCALED(V) ((V) * 0.01f * feedrate_percentage)
 
+#if HAS_ABL_NOT_UBL
+  extern feedRate_t xy_probe_feedrate_mm_s;
+  #define XY_PROBE_FEEDRATE_MM_S xy_probe_feedrate_mm_s
+#elif defined(XY_PROBE_FEEDRATE)
+  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS(XY_PROBE_FEEDRATE)
+#else
+  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS((homing_feedrate_mm_m.x + homing_feedrate_mm_m.y) * 1.5)
+#endif
+
+#ifdef Z_PROBE_FEEDRATE_SLOW
+  TERN(DWIN_LCD_PROUI, const, constexpr) feedRate_t z_probe_slow_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
+#endif
+#ifdef Z_PROBE_FEEDRATE_FAST
+  constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
+#endif
+
 // The active extruder (tool). Set with T<extruder> command.
 #if HAS_MULTI_EXTRUDER
   extern uint8_t active_extruder;
@@ -146,11 +149,11 @@ inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm
     }
 #endif
 
-XYZ_DEFS(float, base_min_pos,  MIN_POS);
-XYZ_DEFS(float, base_max_pos,  MAX_POS);
-XYZ_DEFS(float, base_home_pos, HOME_POS);
-XYZ_DEFS(float, max_length,    MAX_LENGTH);
-XYZ_DEFS(int8_t, home_dir, HOME_DIR);
+XYZ_DEFS(float,  base_min_pos,  MIN_POS);     // base_min_pos(axis)
+XYZ_DEFS(float,  base_max_pos,  MAX_POS);     // base_max_pos(axis)
+XYZ_DEFS(float,  base_home_pos, HOME_POS);    // base_home_pos(axis)
+XYZ_DEFS(float,  max_length,    MAX_LENGTH);  // max_length(axis)
+XYZ_DEFS(int8_t, home_dir,      HOME_DIR);    // home_dir(axis)
 
 // Flags for rotational axes
 constexpr AxisFlags rotational{0 LOGICAL_AXIS_GANG(

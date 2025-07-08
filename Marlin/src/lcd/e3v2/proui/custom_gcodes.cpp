@@ -38,21 +38,26 @@
 
 void CError() {
   SERIAL_ECHO_START();
-  SERIAL_ECHOLNPGM(" This G-code is not implemented in firmware");
+  SERIAL_ECHOLNPGM("C-code Error: Not implemented in firmware");
 }
 
 #if HAS_CUSTOM_COLORS
-// C11 Set color for UI element E
+  // C11 Set color for UI element E
   void C11() {
     const int16_t E = parser.seenval('E') ? parser.value_byte() : 0; // UI element
-    if (E) {
-      HMI_value.Color.r = parser.seenval('R') ? parser.value_byte() : 0;
-      HMI_value.Color.g = parser.seenval('G') ? parser.value_byte() : 0;
-      HMI_value.Color.b = parser.seenval('B') ? parser.value_byte() : 0;
-      DWIN_ApplyColor(E);
-    }
-    else { // Set default colors
-      DWIN_ApplyColor(1);
+    switch (E) {
+      case 0:
+        DWIN_RedrawScreen();
+        break;
+      case 1: // Apply default colors
+        DWIN_ApplyColor(1);
+        break;
+      default:
+        HMI_value.Color.r = parser.seenval('R') ? parser.value_byte() : 0;
+        HMI_value.Color.g = parser.seenval('G') ? parser.value_byte() : 0;
+        HMI_value.Color.b = parser.seenval('B') ? parser.value_byte() : 0;
+        DWIN_ApplyColor(E);
+        break;
     }
   }
 #endif
@@ -70,9 +75,9 @@ void CError() {
 
 // Cancel a Wait for User without an Emergecy Parser
 void C108() {
-  #if DEBUG_DWIN
-    DEBUG_ECHOLNPGM(F("wait_for_user was "), wait_for_user);
-    DEBUG_ECHOLNPGM(F("checkkey was "), checkkey);
+  #if DEBUG_OUT
+    DEBUG_ECHOLNPGM("wait_for_user was ", wait_for_user);
+    DEBUG_ECHOLNPGM("checkkey was ", checkkey);
   #endif
   TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout();)
   if (!ui.backlight) ui.refresh_brightness();
@@ -80,25 +85,26 @@ void C108() {
   DONE_BUZZ(true);
 }
 
-// Enable or disable preview screen
 #if HAS_GCODE_PREVIEW
-void C250() {
-  if (parser.seenval('P')) {
-    HMI_data.EnablePreview = !!parser.value_byte();
+  // Enable or disable preview screen
+  void C250() {
+    if (parser.seenval('P')) {
+      HMI_data.EnablePreview = !!parser.value_byte();
+    }
+    SERIAL_ECHOPGM("G-code Thumbnail Preview: ");
+    SERIAL_ECHOLN(HMI_data.EnablePreview ? F("Enabled") : F("Disabled"));
   }
-  SERIAL_ECHOLNPGM(F("PREVIEW:"), HMI_data.EnablePreview);
-}
 #endif
 
-// lock/unlock screen
 #if HAS_LOCKSCREEN
+  // Lock/Unlock screen
   void C510() {
     if (parser.seenval('U') && parser.value_int()) DWIN_UnLockScreen();
     else DWIN_LockScreen();
   }
 #endif
 
-#if DEBUG_DWIN
+#if DEBUG_OUT
   #include "../../../module/planner.h"
   void C997() {
     DWIN_RebootScreen();
@@ -109,50 +115,48 @@ void C250() {
 
 // Special Creality DWIN G-Codes
 void custom_gcode(const int16_t codenum) {
-  switch(codenum) {
+  switch (codenum) {
     #if HAS_CUSTOM_COLORS
-      case 11: C11(); break;            // Set color for UI element E
+      case 11: C11(); break;           // Set color for UI element E
     #endif
     #if ENABLED(PROUI_ITEM_TRAM)
-      case 35: C35(); break;            // Launch bed tramming wizard
+      case 35: C35(); break;           // Launch bed tramming wizard
     #endif
-    case 108: C108(); break;            // Cancel a Wait for User without an Emergecy Parser
+    case 108: C108(); break;           // Cancel a Wait for User without an Emergecy Parser
     #if HAS_GCODE_PREVIEW
-      case 250: C250(); break;          // Enable or disable preview screen
+      case 250: C250(); break;         // Enable or disable preview screen
     #endif
     #if HAS_LOCKSCREEN
-      case 510: C510(); break;          // lock screen
+      case 510: C510(); break;         // Lock screen
     #endif
-    #if DEBUG_DWIN
-      case 997: C997(); break;          // Simulate a printer freeze
+    #if DEBUG_OUT
+      case 997: C997(); break;         // Simulate a printer freeze
     #endif
     #if PROUI_EX
       #if HAS_MEDIA
-        case 10: ProEx.C10(); break;    // Mark the G-code file as a Configuration file
+        case 10: ProEx.C10(); break;   // Mark the G-code file as a Configuration file
       #endif
       #if HAS_MESH
-        case 29: ProEx.C29(); break;    // Set probing area and mesh leveling settings
+        case 29: ProEx.C29(); break;   // Set probing area and mesh leveling settings
       #endif
-      case 100: ProEx.C100(); break;    // Change Physical minimums
-      case 101: ProEx.C101(); break;    // Change Physical maximums
-      case 102: ProEx.C102(); break;    // Change Bed size
-      case 104: ProEx.C104(); break;    // Set extruder max temperature (limited by maxtemp in thermistor table)
-      case 115: ProEx.C115(); break;    // ProUI Info
+      case 100: ProEx.C100(); break;   // Change Physical minimums
+      case 101: ProEx.C101(); break;   // Change Physical maximums
+      case 102: ProEx.C102(); break;   // Change Bed size
+      case 104: ProEx.C104(); break;   // Set extruder max temperature (limited by maxtemp in thermistor table)
+      case 115: ProEx.C115(); break;   // ProUI Info
       #if ENABLED(NOZZLE_PARK_FEATURE)
-        case 125: ProEx.C125(); break;  // Set park position
+        case 125: ProEx.C125(); break; // Set park position
       #endif
       #if HAS_FILAMENT_SENSOR
-        case 412: ProEx.C412(); break;  // Set runout sensor active mode
+        case 412: ProEx.C412(); break; // Set runout sensor active mode
       #endif
       #if HAS_EXTRUDERS
-        case 562: ProEx.C562(); break;  // Invert Extruder
+        case 562: ProEx.C562(); break; // Invert Extruder
       #endif
       #if HAS_TOOLBAR
-        case 810: ProEx.C810(); break;  // Config toolbar
+        case 810: ProEx.C810(); break; // Config toolbar
       #endif
-      #if HAS_BED_PROBE
-        case 851: ProEx.C851(); break;  // If has a probe set z feed rate and multiprobe, if not, set manual z-offset
-      #endif
+      case 851: ProEx.C851(); break;   // If has probe, set Z feed rate and multiple probes. If not, set manual Z-Offset
     #endif
     default: CError(); break;
   }
@@ -179,9 +183,7 @@ void custom_gcode(const int16_t codenum) {
     #if HAS_TOOLBAR
       ProEx.C810_report(forReplay);
     #endif
-    #if HAS_BED_PROBE
-      ProEx.C851_report(forReplay);
-    #endif
+    ProEx.C851_report(forReplay);
   }
 #endif
 
