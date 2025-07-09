@@ -47,6 +47,13 @@
 #define STRING_DISTRIBUTION_TIME __TIME__
 
 /**
+ * The protocol for communication to the host. Protocol indicates communication
+ * standards such as the use of ASCII, "echo:" and "error:" line prefixes, etc.
+ * (Other behaviors are given by the firmware version and capabilities report.)
+ */
+//#define PROTOCOL_VERSION "1.0"
+
+/**
  * Defines a generic printer name to be output to the LCD after booting Marlin.
  */
 #define MACHINE_NAME "Aquila"

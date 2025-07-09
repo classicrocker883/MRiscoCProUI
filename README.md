@@ -87,11 +87,14 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 ### MarlinSimulator Instructions
 There is a *MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
-The *MarlinSimulator* can only compile for Manual Mesh Bed Leveling for now, so make sure your configuration is set for `MESH_BED_LEVELING`.
-To create *MarlinSimulator* with your own build, start in **Configuration.h** and change the `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`.
-You may need to change `#define INVERT_E0_DIR HMI_data.Invert_E0` to `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **dwin_defines.h**.
-Then in **platformio.ini** change to `simulator_windows` in `default_envs =` (for Windows) / `simulator_linux_release` `default_envs =` (for Linux).
-If there is an error, add `-fno-lto` to `build_flags =` in **native.ini**.
+The *MarlinSimulator* can compile for Manual Mesh Bed Leveling or Auto Bed Leveling w/`BLTOUCH` enabled.  
+Start in **Configuration.h** and change the `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`.  
+Then in **platformio.ini** at `default_envs =` change to `simulator_windows` (for Windows) | `simulator_linux_release` (for Linux).  
+If there is an error run `./buildroot/share/scripts/simulator_error.sh` or change the following manually:
+- Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **proui/dwin_defines.h**.
+- Comment out `#undef Z_MIN_ENDSTOP_HIT_STATE` in **inc/Conditionals-5-post.h**.
+- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]` in **native.ini**.
+
 For MacOS you're on your own...sorry.
 
 Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.
