@@ -214,26 +214,25 @@ jobs:
       id: build_configs
       run: |
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-        if ($PRO); then PRTMP=; else PRTMP=-ProUI-EX; fi;
+        if ($PRO); then PRTMP=-ProUI-EX; else PRTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-        echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_UBL${PRTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_UBL${PRTMP}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
         cp configurations/Voxelab\ Aquila\ HC32/UBL/Configuration.h Marlin/Configuration.h
         cp configurations/Voxelab\ Aquila\ HC32/UBL/Configuration_adv.h Marlin/Configuration_adv.h
         cp configurations/Voxelab\ Aquila\ HC32/UBL/Version.h Marlin/Version.h
-        if ($PRO); then
-        sed -i "s/.*#define PROUI_EX 1/\/\/#define PROUI_EX 1/" Marlin/Configuration.h
-        fi;
+        if ($PRO); then PRTEMP=; else PRTEMP='\/\/'; fi;
+        sed -i "s/.*#define PROUI_EX 1/${PRTEMP}#define PROUI_EX 1/" Marlin/Configuration.h
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
         if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
         sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
         sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
-        if [ "$PRO" = false ] && [ "$TP" = true ]; then
+        if [ "$PRO" = true ] && [ "$TP" = true ]; then
         sed -i "s/.*#define PRINTCOUNTER/\/\/#define PRINTCOUNTER/" Marlin/Configuration.h
         sed -i "s/.*#define EEPROM_CHITCHAT/\/\/#define EEPROM_CHITCHAT/" Marlin/Configuration.h
         sed -i "s/.*#define USE_GRID_MESHVIEWER 1/\/\/#define USE_GRID_MESHVIEWER 1/" Marlin/Configuration.h
@@ -370,6 +369,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        temp: [true,false]
         inshape: [true,false]
         bmp: [true,false]
         t5: [true,false]
@@ -403,12 +403,13 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
+        if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-        echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -416,6 +417,9 @@ jobs:
         cp configurations/Voxelab\ Aquila\ HC32/BLT/Configuration_adv.h Marlin/Configuration_adv.h
         cp configurations/Voxelab\ Aquila\ HC32/BLT/Version.h Marlin/Version.h
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
+        if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+        sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+        sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
         if ($IS); then STEMP=; else STEMP='\/\/'; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
         sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
@@ -437,6 +441,7 @@ jobs:
         mkdir temp
         mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
       env:
+        TP: ${{ matrix.temp }}
         IS: ${{ matrix.inshape }}
         BMP: ${{ matrix.bmp }}
         T5: ${{ matrix.t5 }}
