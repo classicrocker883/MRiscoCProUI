@@ -1342,3 +1342,86 @@ jobs:
         asset_path: temp/build.bin
         asset_name: ${{ steps.build_configs.outputs.filename }}
         asset_content_type: application/x-binary
+  Build-C2-Default-MM:            # CR10 LCD C2 Default/MM
+    name: Build C2 Default/MM Files
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        abl: [MM,Default]
+        temp: [true,false]
+        inshape: [true,false]
+    steps:
+    - uses: actions/checkout@v4.2.2
+    - name: Set up node
+      uses: actions/setup-node@v4.4.0
+      with:
+        node-version: 20
+    - name: Cache pip
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Cache PlatformIO
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.platformio
+        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+    - name: Select Python 3.13
+      uses: actions/setup-python@v5.6.0
+      with:
+        python-version: '3.13'
+    - name: Install PlatformIO
+      run: |
+        python3 -m pip install --upgrade pip wheel platformio
+    - name: Run PlatformIO
+      id: build_configs
+      run: |
+        if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
+        if ($IS); then ISTMP=-IS; else ISTMP=; fi;
+        > Marlin/Configuration.h
+        > Marlin/Configuration_adv.h
+        > Marlin/Version.h
+        if [ "$ABL" = Default ]; then
+        cp configurations/Voxelab\ Aquila\ HC32/C2/Default/Configuration.h Marlin/Configuration.h
+        cp configurations/Voxelab\ Aquila\ HC32/C2/Default/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Voxelab\ Aquila\ HC32/C2/Default/Version.h Marlin/Version.h
+        elif [ "$ABL" = MM ]; then
+        cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Configuration.h Marlin/Configuration.h
+        cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Configuration_adv.h Marlin/Configuration_adv.h
+        cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Version.h Marlin/Version.h
+        fi;
+        echo "filename=C2-N32_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        sed -i "s/default_envs =.*/default_envs = N32F103RC_voxelab_maple/" platformio.ini
+        sed -i "s/.*#define SERIAL_PORT.*/#define SERIAL_PORT 1/" Marlin/Configuration.h
+        sed -i "/^#define SERIAL_PORT.*/a #define NO_AUTO_ASSIGN_WARNING\n#define NO_MAPLE_WARNING" Marlin/Configuration.h
+        sed -i "s/.*#define MOTHERBOARD.*/#define MOTHERBOARD BOARD_VOXELAB_AQUILA/" Marlin/Configuration.h
+        if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+        sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
+        sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+        if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+        sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+        sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+        pio run
+        mkdir temp
+        mv .pio/build/N32F103RC_voxelab_maple/*.bin temp/build.bin
+      env:
+        ABL: ${{ matrix.abl }}
+        TP: ${{ matrix.temp }}
+        IS: ${{ matrix.inshape }}
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+    - name: Upload A Release Asset
+      uses: classicrocker883/upload-a-release-asset@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        asset_path: temp/build.bin
+        asset_name: ${{ steps.build_configs.outputs.filename }}
+        asset_content_type: application/x-binary
