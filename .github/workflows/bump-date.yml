@@ -18,12 +18,12 @@ jobs:
 
     steps:
 
-    - name: Check out 2025-June
+    - name: Check out 2025-July
       uses: actions/checkout@v4.2.2
       with:
-        ref: 2025-June
+        ref: 2025-July
 
-    - name: Bump Date (2025-June)
+    - name: Bump Date (2025-July)
       run: |
         if [[ ! "$( git log -1 --pretty=%B )" =~ ^\[cron\] ]]; then
           shopt -s globstar && \

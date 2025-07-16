@@ -40,7 +40,7 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards <br>
 > **Please read the following:**
 
 > [!NOTE]
-Many Updates have been included in the most recent MRiscoCProUI for the **2025-June** release.
+Many Updates have been included in the most recent MRiscoCProUI for the **2025-July** release.
 This release has many changes to the **UI**.
 New ICON's have been added, and old ones enhanced. Whoever edited them before saved directly as .*JPG* which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
 >
