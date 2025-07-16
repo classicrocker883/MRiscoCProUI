@@ -236,7 +236,7 @@ jobs:
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-        echo "filename=C2-Aquila${AVTMP}${STMP}${TTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=C2${AVTMP}${STMP}${TTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -335,7 +335,7 @@ jobs:
         if ($T5); then STMP=_SPDY5; else STMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=C2-Aquila${AVTMP}${STMP}${TTMP}${MPTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=C2${AVTMP}${STMP}${TTMP}${MPTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
