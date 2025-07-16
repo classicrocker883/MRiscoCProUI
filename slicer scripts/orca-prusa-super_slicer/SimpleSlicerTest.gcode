@@ -9702,7 +9702,7 @@ M73 P100 R0
 ; print_settings_id = 0.28mm SUPERDRAFT @CREALITY - Custom
 ; printer_model = ENDER3V2
 ; printer_notes = Don't remove the following keywords! These keywords are used in the "compatible printer" condition of the print and filament profiles to link the particular print and filament profiles to this printer profile.\nPRINTER_VENDOR_CREALITY\nPRINTER_MODEL_ENDER3\nPRINTER_HAS_BOWDEN
-; printer_settings_id = Ender-3V2
+; printer_settings_id = Ender-3 V2
 ; printer_technology = FFF
 ; printer_variant = 0.4
 ; printer_vendor = 
