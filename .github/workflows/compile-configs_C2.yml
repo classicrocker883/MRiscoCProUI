@@ -64,7 +64,7 @@ jobs:
         cp configurations/Voxelab\ Aquila/MM/Configuration_adv.h Marlin/Configuration_adv.h
         cp configurations/Voxelab\ Aquila/MM/Version.h Marlin/Version.h
         fi;
-        echo "filename=C2-N32${STMP}${TTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=C2_N32${STMP}${TTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         sed -i "s/default_envs =.*/default_envs = N32F103RC_voxelab_maple/" platformio.ini
         sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
         sed -i "s/.*#define DWIN_LCD_PROUI/\/\/#define DWIN_LCD_PROUI/" Marlin/Configuration.h
@@ -157,7 +157,7 @@ jobs:
         cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Configuration_adv.h Marlin/Configuration_adv.h
         cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Version.h Marlin/Version.h
         fi;
-        echo "filename=C2-HC32${STMP}${TTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=C2_HC32${STMP}${TTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
         if ($IS); then STEMP=; else STEMP='\/\/'; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
