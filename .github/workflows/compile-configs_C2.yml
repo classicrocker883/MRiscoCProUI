@@ -158,7 +158,7 @@ jobs:
         cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Version.h Marlin/Version.h
         fi;
         echo "filename=C2_HC32${STMP}${TTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
-        sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_101/" platformio.ini
+        sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_C2/" platformio.ini
         if ($IS); then STEMP=; else STEMP='\/\/'; fi;
         sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
         sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
@@ -171,7 +171,7 @@ jobs:
         sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
         pio run
         mkdir temp
-        mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
+        mv .pio/build/HC32F460C_aquila_C2/*.bin temp/build.bin
       env:
         ABL: ${{ matrix.abl }}
         IS: ${{ matrix.inshape }}
