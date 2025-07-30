@@ -1436,8 +1436,8 @@ void EachMomentUpdate() {
     if (checkkey == PrintProcess) { // Print process
 
       // Progress percent
-      if (_percent_done != card.percentDone()) {
-        _percent_done = card.percentDone();
+      if (_percent_done != ui.get_progress_percent()) {
+        _percent_done = ui.get_progress_percent();
         Draw_Print_ProgressBar();
       }
 
@@ -2079,7 +2079,7 @@ void DWIN_Print_Aborted() {
     HMI_data.Coordinate_Color = Def_Coordinate_Color;
     HMI_data.Bottom_Color     = Def_Bottom_Color;
   }
-#elif (ALT_COLOR_MENU == 2) // 2 = Ender3V2 Default
+#elif (ALT_COLOR_MENU == 2) // 2 = Ender-3 V2 Default
   void DWIN_SetColorDefaults() {
     HMI_data.Background_Color = Def_Background_Color;
     HMI_data.Cursor_Color     = RGB(20, 49, 31); // Grey
