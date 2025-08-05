@@ -533,39 +533,45 @@ void Draw_Print_Labels() {
   TERN_(SHOW_INTERACTION_TIME, DWINUI::Draw_String(100, 215, F("Until Filament Change"));)
 }
 
-static uint8_t _percent_done = 100;
-void Draw_Print_ProgressBar() {
-  DWINUI::Draw_IconWB(ICON_Bar, 15, 93);
-  DWIN_Draw_Rectangle(1, HMI_data.Barfill_Color, 15 + (_percent_done * 242) / 100, 93, 257, 113);
-  DWINUI::Draw_String(HMI_data.PercentTxt_Color, HMI_data.Background_Color, 117, 133, pcttostrpctrj(_percent_done));
-}
+#if ENABLED(SHOW_PROGRESS_PERCENT)
+  static uint8_t _percent_done = 100;
+  void Draw_Print_ProgressBar() {
+    DWINUI::Draw_IconWB(ICON_Bar, 15, 93);
+    DWIN_Draw_Rectangle(1, HMI_data.Barfill_Color, 15 + (_percent_done * 242) / 100, 93, 257, 113);
+    DWINUI::Draw_String(HMI_data.PercentTxt_Color, HMI_data.Background_Color, 117, 133, pcttostrpctrj(_percent_done));
+  }
+#endif
 
-void Draw_Print_ProgressElapsed() {
-  duration_t elapsed = print_job_timer.duration(); // Print timer
-  char buf[16];
-  const bool has_days = (elapsed.value > 60*60*24L);
-  elapsed.toDigital(buf, has_days);
-  DWINUI::Draw_String(HMI_data.Text_Color, HMI_data.Background_Color, 45, 192, buf);
-}
+#if ENABLED(SHOW_ELAPSED_TIME)
+  void Draw_Print_ProgressElapsed() {
+    const duration_t elapsed = print_job_timer.duration(); // Print timer
+    char buf[16];
+    const bool has_days = (elapsed.value > 60*60*24L);
+    elapsed.toDigital(buf, has_days);
+    DWINUI::Draw_String(HMI_data.Text_Color, HMI_data.Background_Color, 45, 192, buf);
+  }
+#endif
 
 #if ENABLED(SHOW_REMAINING_TIME)
-  duration_t _remain_time = 0;
   void Draw_Print_ProgressRemain() {
+    const duration_t remain_time = ui.remaining_time;
     char buf[16];
-    const bool has_days = (_remain_time.value > 60*60*24L);
-    _remain_time.toDigital(buf, has_days);
+    const bool has_days = (remain_time.value > 60*60*24L);
+    remain_time.toDigital(buf, has_days);
     DWINUI::Draw_String(HMI_data.Text_Color, HMI_data.Background_Color, 181, 192, buf);
   }
 #endif
 
 /// TODO: Not ready
 #if ENABLED(SHOW_INTERACTION_TIME)
-  duration_t _interact_time = 0;
   void Draw_Print_ProgressInteract() {
-    char buf[16];
-    const bool has_days = (_interact_time.value > 60*60*24L);
-    _interact_time.toDigital(buf, has_days);
-    DWINUI::Draw_String(HMI_data.Text_Color, HMI_data.Background_Color, 251, 192, buf);
+    const duration_t interact_time = ui.interaction_time;
+    if (printingIsActive() && interact_time.value) {
+      char buf[16];
+      const bool has_days = (interact_time.value > 60*60*24L);
+      interact_time.toDigital(buf, has_days);
+      DWINUI::Draw_String(HMI_data.Text_Color, HMI_data.Background_Color, 251, 192, buf);
+    }
   }
 #endif
 
@@ -606,9 +612,9 @@ void Draw_PrintProcess() {
   Draw_Print_Labels();
   DWINUI::Draw_Icon(ICON_PrintTime, 15, 171);
   DWINUI::Draw_Icon(ICON_RemainTime, 150, 171);
-  Draw_Print_ProgressBar();
-  Draw_Print_ProgressElapsed();
-  Draw_Print_ProgressRemain();
+  TERN_(SHOW_PROGRESS_PERCENT, Draw_Print_ProgressBar();)
+  TERN_(SHOW_ELAPSED_TIME, Draw_Print_ProgressElapsed();)
+  TERN_(SHOW_REMAINING_TIME, Draw_Print_ProgressRemain();)
   TERN_(SHOW_INTERACTION_TIME, Draw_Print_ProgressInteract();)
   ICON_Tune();
   ICON_ResumeOrPause();
@@ -628,6 +634,7 @@ void Goto_PrintProcess() {
 void Draw_PrintDone() {
   TERN_(SET_PROGRESS_PERCENT, ui.set_progress_done();)
   TERN_(SET_REMAINING_TIME, ui.reset_remaining_time();)
+  TERN_(SET_INTERACTION_TIME, ui.reset_interaction_time();)
   Title.ShowCaption(GET_TEXT_F(MSG_PRINT_DONE));
   DWINUI::ClearMainArea();
   DWIN_Print_Header();
@@ -642,12 +649,12 @@ void Draw_PrintDone() {
   #endif
 
   if (!haspreview) {
-    Draw_Print_ProgressBar();
     Draw_Print_Labels();
     DWINUI::Draw_Icon(ICON_PrintTime, 15, 171);
     DWINUI::Draw_Icon(ICON_RemainTime, 150, 171);
-    Draw_Print_ProgressElapsed();
-    Draw_Print_ProgressRemain();
+    TERN_(SHOW_PROGRESS_PERCENT, Draw_Print_ProgressBar();)
+    TERN_(SHOW_ELAPSED_TIME, Draw_Print_ProgressElapsed();)
+    TERN_(SHOW_REMAINING_TIME,Draw_Print_ProgressRemain();)
     TERN_(SHOW_INTERACTION_TIME, Draw_Print_ProgressInteract();)
     DWINUI::Draw_Button(BTN_Confirm, 86, 273, true);
   }
@@ -1436,31 +1443,31 @@ void EachMomentUpdate() {
     if (checkkey == PrintProcess) { // Print process
 
       // Progress percent
-      if (_percent_done != ui.get_progress_percent()) {
-        _percent_done = ui.get_progress_percent();
-        Draw_Print_ProgressBar();
-      }
-
-      // Remaining time
-      #if ENABLED(SHOW_REMAINING_TIME)
-        if (_remain_time != ui.get_remaining_time()) {
-          _remain_time = ui.get_remaining_time();
-          Draw_Print_ProgressRemain();
-        }
-      #endif
-
-      #if ENABLED(SHOW_INTERACTION_TIME)
-        // Interaction time
-        if (_interact_time != ui.get_interaction_time()) {
-          _interact_time = ui.get_interaction_time();
-          Draw_Print_ProgressInteract();
+      #if ENABLED(SHOW_PROGRESS_PERCENT)
+        if (_percent_done != ui.get_progress_percent()) {
+          _percent_done = ui.get_progress_percent();
+          Draw_Print_ProgressBar();
         }
       #endif
 
       // Elapsed print time
-      //const duration_t min = print_job_timer.duration();
-      //if ((min.value % 60) == 0) // 1 minute update, else every second
-      Draw_Print_ProgressElapsed();
+      #if ENABLED(SHOW_ELAPSED_TIME)
+        //const duration_t min = print_job_timer.duration();
+        //if ((min.value % 60) == 0) // 1 minute update, else every second
+        Draw_Print_ProgressElapsed();
+      #endif
+
+      // Remaining time
+      #if ENABLED(SHOW_REMAINING_TIME)
+        ui.remaining_time = ui.get_remaining_time();
+        Draw_Print_ProgressRemain();
+      #endif
+
+      // Interaction time
+      #if ENABLED(SHOW_INTERACTION_TIME)
+        ui.interaction_time = ui.get_interaction_time();
+        Draw_Print_ProgressInteract();
+      #endif
     }
 
     #if HAS_PLR_UI_FLAG
@@ -1975,6 +1982,7 @@ void DWIN_Print_Started() {
   TERN_(HAS_GCODE_PREVIEW, if (Host_Printing()) { preview.invalidate(); })
   TERN_(SET_PROGRESS_PERCENT, ui.progress_reset();)
   TERN_(SET_REMAINING_TIME, ui.reset_remaining_time();)
+  TERN_(SET_INTERACTION_TIME, ui.reset_interaction_time();)
   HMI_flag.pause_flag = false;
   HMI_flag.abort_flag = false;
   #if ENABLED(CV_LASER_MODULE)
