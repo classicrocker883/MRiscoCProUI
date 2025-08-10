@@ -528,8 +528,8 @@ void DWIN_DrawStatusMessage() {
 //=============================================================================
 
 void Draw_Print_Labels() {
-  DWINUI::Draw_String( 46, 173, GET_TEXT_F(MSG_INFO_PRINT_TIME));
-  DWINUI::Draw_String(181, 173, GET_TEXT_F(MSG_REMAINING_TIME));
+  TERN_(SHOW_ELAPSED_TIME, DWINUI::Draw_String( 46, 173, GET_TEXT_F(MSG_INFO_PRINT_TIME));)
+  TERN_(SHOW_REMAINING_TIME, DWINUI::Draw_String(181, 173, GET_TEXT_F(MSG_REMAINING_TIME));)
   TERN_(SHOW_INTERACTION_TIME, DWINUI::Draw_String(100, 215, F("Until Filament Change"));)
 }
 
@@ -610,8 +610,8 @@ void Draw_PrintProcess() {
   DWINUI::ClearMainArea();
   DWIN_Print_Header();
   Draw_Print_Labels();
-  DWINUI::Draw_Icon(ICON_PrintTime, 15, 171);
-  DWINUI::Draw_Icon(ICON_RemainTime, 150, 171);
+  TERN_(SHOW_ELAPSED_TIME, DWINUI::Draw_Icon(ICON_PrintTime, 15, 171);)
+  TERN_(SHOW_REMAINING_TIME, DWINUI::Draw_Icon(ICON_RemainTime, 150, 171);)
   TERN_(SHOW_PROGRESS_PERCENT, Draw_Print_ProgressBar();)
   TERN_(SHOW_ELAPSED_TIME, Draw_Print_ProgressElapsed();)
   TERN_(SHOW_REMAINING_TIME, Draw_Print_ProgressRemain();)
@@ -650,11 +650,11 @@ void Draw_PrintDone() {
 
   if (!haspreview) {
     Draw_Print_Labels();
-    DWINUI::Draw_Icon(ICON_PrintTime, 15, 171);
-    DWINUI::Draw_Icon(ICON_RemainTime, 150, 171);
+    TERN_(SHOW_ELAPSED_TIME, DWINUI::Draw_Icon(ICON_PrintTime, 15, 171);)
+    TERN_(SHOW_REMAINING_TIME, DWINUI::Draw_Icon(ICON_RemainTime, 150, 171);)
     TERN_(SHOW_PROGRESS_PERCENT, Draw_Print_ProgressBar();)
     TERN_(SHOW_ELAPSED_TIME, Draw_Print_ProgressElapsed();)
-    TERN_(SHOW_REMAINING_TIME,Draw_Print_ProgressRemain();)
+    TERN_(SHOW_REMAINING_TIME, Draw_Print_ProgressRemain();)
     TERN_(SHOW_INTERACTION_TIME, Draw_Print_ProgressInteract();)
     DWINUI::Draw_Button(BTN_Confirm, 86, 273, true);
   }
@@ -917,13 +917,6 @@ void update_variable() {
 //=============================================================================
 
 bool DWIN_lcd_sd_status = false;
-
-#if ENABLED(PROUI_ITEM_ABRT)
-  void SetAutoAbort() {
-    Toggle_Chkb_Line(HMI_data.auto_abort);
-    LCD_MESSAGE_F("..Disable Motors on Abort..");
-  }
-#endif
 
 #if ENABLED(PROUI_MEDIASORT)
   void SetMediaSort() {
@@ -2739,6 +2732,13 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 
 #if ENABLED(SHOW_SPEED_IND)
   void SetSpdInd() { Toggle_Chkb_Line(HMI_data.SpdInd); }
+#endif
+
+#if ENABLED(PROUI_ITEM_ABRT)
+  void SetAutoAbort() {
+    Toggle_Chkb_Line(HMI_data.auto_abort);
+    LCD_MESSAGE_F("..Disable Motors on Abort..");
+  }
 #endif
 
 // Park or Raise Head
