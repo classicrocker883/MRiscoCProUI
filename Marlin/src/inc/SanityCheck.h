@@ -133,9 +133,9 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
  * Heated Bed requirements
  */
 #if HAS_HEATED_BED
-  #if !HAS_TEMP_BED
+  #if !PIN_EXISTS(TEMP_BED)
     #error "The Heated Bed requires a TEMP_BED_PIN or Thermocouple."
-  #elif !HAS_HEATER_BED
+  #elif !PIN_EXISTS(HEATER_BED)
     #error "The Heated Bed requires HEATER_BED_PIN."
   #endif
 #endif
@@ -1033,6 +1033,9 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
   #undef MPC_AUTOTUNE_MENU
   #undef MPC_PTC
 #endif
+#if !WITHIN(PID_MAX, 0, 255)
+  #error "PID_MAX must be an integer from 0 to 255."
+#endif
 
 #if ENABLED(MPC_INCLUDE_FAN)
   #if !HAS_FAN
@@ -1052,6 +1055,9 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
  */
 #if ALL(PIDTEMPBED, BED_LIMIT_SWITCHING)
   #error "To use BED_LIMIT_SWITCHING you must disable PIDTEMPBED."
+#endif
+#if !WITHIN(MAX_BED_POWER, 0, 255)
+  #error "MAX_BED_POWER must be an integer from 0 to 255."
 #endif
 
 // Fan Kickstart power

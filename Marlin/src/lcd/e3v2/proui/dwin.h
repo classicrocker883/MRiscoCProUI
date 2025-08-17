@@ -105,7 +105,7 @@ typedef struct {
   rgb_t Color; // Color
 #endif
 #if ALL(LED_CONTROL_MENU, HAS_COLOR_LEDS)
-  LEDColor Led_Color = Def_Leds_Color; // Moved from HMI_data
+  LED1Color_t Led_Color = Def_Leds_Color; // Moved from HMI_data
 #endif
 #if ANY(HAS_PID_HEATING, MPCTEMP, PROUI_ITEM_PLOT)
   tempcontrol_t tempControl = AUTOTUNE_DONE;

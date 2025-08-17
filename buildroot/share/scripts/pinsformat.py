@@ -6,6 +6,7 @@ usage: pinsformat.py [-h] [-v] [infile] [outfile]
 
 With no parameters convert STDIN to STDOUT
 """
+
 import sys, re, argparse
 
 do_log = False
@@ -50,6 +51,7 @@ def format_pins(argv):
     parser.add_argument("-v", action="store_true", help="Enable logging.")
 
     args = parser.parse_args(argv)
+
     src_file = args.infile or "stdin"
     dst_file = args.outfile or None
 

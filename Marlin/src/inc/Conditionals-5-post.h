@@ -1425,10 +1425,9 @@
   #endif
 #endif
 
-//
-// Trinamic Stepper Drivers
-//
-
+/**
+ * Trinamic Stepper Drivers
+ */
 #if HAS_TRINAMIC_CONFIG
   #if ANY(STEALTHCHOP_E, STEALTHCHOP_XY, STEALTHCHOP_Z, STEALTHCHOP_I, STEALTHCHOP_J, STEALTHCHOP_K, STEALTHCHOP_U, STEALTHCHOP_V, STEALTHCHOP_W)
     #define STEALTHCHOP_ENABLED 1
@@ -1847,9 +1846,9 @@
   #undef SENSORLESS_BACKOFF_MM
 #endif
 
-//
-// Set USING_HW_SERIALn flags for used Serial Ports
-//
+/**
+ * Set USING_HW_SERIALn flags for used Serial Ports
+ */
 
 // Flag the indexed hardware serial ports in use
 #define SERIAL_IN_USE(N) (   (defined(SERIAL_PORT)       && N == SERIAL_PORT) \
@@ -2487,9 +2486,60 @@
 #undef NEED_HIT_STATE
 #undef PCAT
 
-//
-// ADC Temp Sensors (Thermistor or Thermocouple with amplifier ADC interface)
-//
+/**
+ * ADC Temp Sensors (Thermistor or Thermocouple with amplifier ADC interface)
+ */
+#if TEMP_SENSOR(0)
+  #define HAS_TEMP_HOTEND 1
+#endif
+#if TEMP_SENSOR(BED)
+  #define HAS_TEMP_BED 1
+#endif
+#if TEMP_SENSOR(CHAMBER)
+  #define HAS_TEMP_CHAMBER 1
+#endif
+#if TEMP_SENSOR(PROBE)
+  #define HAS_TEMP_PROBE 1
+#endif
+#if TEMP_SENSOR(COOLER)
+  #define HAS_TEMP_COOLER 1
+#endif
+#if TEMP_SENSOR(BOARD)
+  #define HAS_TEMP_BOARD 1
+#endif
+#if TEMP_SENSOR(SOC)
+  #define HAS_TEMP_SOC 1
+#endif
+#if TEMP_SENSOR(REDUNDANT)
+  #define HAS_TEMP_REDUNDANT 1
+#endif
+
+// Unused ADC pins can be omitted
+#if ANY(OMIT_ADC_PINS, PINS_DEBUGGING, MARLIN_DEV_MODE)
+  #if !HAS_TEMP_HOTEND
+    #undef TEMP_0_PIN
+  #endif
+  #if !HAS_TEMP_BED
+    #undef TEMP_BED_PIN
+  #endif
+  #if !HAS_TEMP_CHAMBER
+    #undef TEMP_CHAMBER_PIN
+  #endif
+  #if !HAS_TEMP_PROBE
+    #undef TEMP_PROBE_PIN
+  #endif
+  #if !HAS_TEMP_COOLER
+    #undef TEMP_COOLER_PIN
+  #endif
+  #if !HAS_TEMP_BOARD
+    #undef TEMP_BOARD_PIN
+  #endif
+  #if DISABLED(FILAMENT_WIDTH_SENSOR)
+    #undef FILWIDTH_PIN
+    #undef FILWIDTH2_PIN
+  #endif
+#endif
+
 #define HAS_ADC_TEST(P) (TEMP_SENSOR(P) && PIN_EXISTS(TEMP_##P) && !TEMP_SENSOR_IS_MAX_TC(P) && !TEMP_SENSOR_##P##_IS_DUMMY)
 #if HOTENDS > 0 && HAS_ADC_TEST(0)
   #define HAS_TEMP_ADC_0 1
@@ -2515,11 +2565,8 @@
 #if HOTENDS > 7 && HAS_ADC_TEST(7)
   #define HAS_TEMP_ADC_7 1
 #endif
-#if TEMP_SENSOR_BED
-  #define HAS_HEATED_BED 1
-  #if HAS_ADC_TEST(BED)
-    #define HAS_TEMP_ADC_BED 1
-  #endif
+#if HAS_ADC_TEST(BED)
+  #define HAS_TEMP_ADC_BED 1
 #endif
 #if HAS_ADC_TEST(PROBE)
   #define HAS_TEMP_ADC_PROBE 1
@@ -2539,31 +2586,11 @@
 #if HAS_ADC_TEST(REDUNDANT)
   #define HAS_TEMP_ADC_REDUNDANT 1
 #endif
-
-#define HAS_TEMP(N) (TEMP_SENSOR_IS_MAX_TC(N) || HAS_TEMP_ADC_##N || TEMP_SENSOR_##N##_IS_DUMMY)
-#if HAS_HOTEND && HAS_TEMP(0)
-  #define HAS_TEMP_HOTEND 1
+#if PIN_EXISTS(FILWIDTH_PIN)
+  #define HAS_FILWIDTH_ADC 1
 #endif
-#if HAS_TEMP(BED)
-  #define HAS_TEMP_BED 1
-#endif
-#if HAS_TEMP(CHAMBER)
-  #define HAS_TEMP_CHAMBER 1
-#endif
-#if HAS_TEMP(PROBE)
-  #define HAS_TEMP_PROBE 1
-#endif
-#if HAS_TEMP(COOLER)
-  #define HAS_TEMP_COOLER 1
-#endif
-#if HAS_TEMP(BOARD)
-  #define HAS_TEMP_BOARD 1
-#endif
-#if HAS_TEMP(SOC)
-  #define HAS_TEMP_SOC 1
-#endif
-#if HAS_TEMP(REDUNDANT)
-  #define HAS_TEMP_REDUNDANT 1
+#if PIN_EXISTS(FILWIDTH2_PIN)
+  #define HAS_FILWIDTH2_ADC 1
 #endif
 
 #if ENABLED(JOYSTICK)
@@ -2581,7 +2608,9 @@
   #endif
 #endif
 
-// Heaters
+/**
+ * Heater Outputs
+ */
 #if PIN_EXISTS(HEATER_0)
   #define HAS_HEATER_0 1
 #endif
@@ -2606,15 +2635,10 @@
 #if PIN_EXISTS(HEATER_7)
   #define HAS_HEATER_7 1
 #endif
-#if PIN_EXISTS(HEATER_BED)
-  #define HAS_HEATER_BED 1
-#endif
-#if PIN_EXISTS(HEATER_CHAMBER)
-  #define HAS_HEATER_CHAMBER 1
-#endif
 
 // Shorthand for common combinations
-#if HAS_HEATED_BED
+#if HAS_TEMP_BED && PIN_EXISTS(HEATER_BED)
+  #define HAS_HEATED_BED 1
   #ifndef BED_OVERSHOOT
     #define BED_OVERSHOOT 10
   #endif
@@ -2622,6 +2646,16 @@
 #else
   #undef PIDTEMPBED
   #undef PREHEAT_BEFORE_LEVELING
+#endif
+
+#if HAS_TEMP_CHAMBER && PIN_EXISTS(HEATER_CHAMBER)
+  #define HAS_HEATED_CHAMBER 1
+  #ifndef CHAMBER_OVERSHOOT
+    #define CHAMBER_OVERSHOOT 10
+  #endif
+  #define CHAMBER_MAX_TARGET ((CHAMBER_MAXTEMP) - (CHAMBER_OVERSHOOT))
+#else
+  #undef PIDTEMPCHAMBER
 #endif
 
 #if HAS_TEMP_COOLER && PIN_EXISTS(COOLER)
@@ -2633,18 +2667,8 @@
   #define COOLER_MAX_TARGET ((COOLER_MAXTEMP) - (COOLER_OVERSHOOT))
 #endif
 
-#if HAS_TEMP_HOTEND || HAS_HEATED_BED || HAS_TEMP_CHAMBER || HAS_TEMP_PROBE || HAS_TEMP_COOLER || HAS_TEMP_BOARD || HAS_TEMP_SOC
+#if HAS_TEMP_HOTEND || HAS_TEMP_BED || HAS_TEMP_CHAMBER || HAS_TEMP_PROBE || HAS_TEMP_COOLER || HAS_TEMP_BOARD || HAS_TEMP_SOC
   #define HAS_TEMP_SENSOR 1
-#endif
-
-#if HAS_TEMP_CHAMBER && HAS_HEATER_CHAMBER
-  #define HAS_HEATED_CHAMBER 1
-  #ifndef CHAMBER_OVERSHOOT
-    #define CHAMBER_OVERSHOOT 10
-  #endif
-  #define CHAMBER_MAX_TARGET ((CHAMBER_MAXTEMP) - (CHAMBER_OVERSHOOT))
-#else
-  #undef PIDTEMPCHAMBER
 #endif
 
 // PID heating
@@ -2657,10 +2681,10 @@
 #endif
 
 // Thermal protection
-#if ENABLED(THERMAL_PROTECTION_HOTENDS) && WATCH_TEMP_PERIOD > 0
+#if ALL(HAS_HOTEND, THERMAL_PROTECTION_HOTENDS) && WATCH_TEMP_PERIOD > 0
   #define WATCH_HOTENDS 1
 #endif
-#if ENABLED(THERMAL_PROTECTION_BED) && WATCH_BED_TEMP_PERIOD > 0
+#if ALL(HAS_HEATED_BED, THERMAL_PROTECTION_BED) && WATCH_BED_TEMP_PERIOD > 0
   #define WATCH_BED 1
 #endif
 #if ALL(HAS_HEATED_CHAMBER, THERMAL_PROTECTION_CHAMBER) && WATCH_CHAMBER_TEMP_PERIOD > 0
@@ -2672,7 +2696,7 @@
 #if NONE(THERMAL_PROTECTION_HOTENDS, THERMAL_PROTECTION_CHAMBER, THERMAL_PROTECTION_BED, THERMAL_PROTECTION_COOLER)
   #undef THERMAL_PROTECTION_VARIANCE_MONITOR
 #endif
-#if  (ENABLED(THERMAL_PROTECTION_HOTENDS) || !EXTRUDERS) \
+#if  (ENABLED(THERMAL_PROTECTION_HOTENDS) || !HAS_HOTEND) \
   && (ENABLED(THERMAL_PROTECTION_BED)     || !HAS_HEATED_BED) \
   && (ENABLED(THERMAL_PROTECTION_CHAMBER) || !HAS_HEATED_CHAMBER) \
   && (ENABLED(THERMAL_PROTECTION_COOLER)  || !HAS_COOLER)
@@ -2704,14 +2728,14 @@
 #if HOTENDS > 7 && PIN_EXISTS(E7_AUTO_FAN)
   #define HAS_AUTO_FAN_7 1
 #endif
+#if ANY(HAS_AUTO_FAN_0, HAS_AUTO_FAN_1, HAS_AUTO_FAN_2, HAS_AUTO_FAN_3, HAS_AUTO_FAN_4, HAS_AUTO_FAN_5, HAS_AUTO_FAN_6, HAS_AUTO_FAN_7)
+  #define HAS_E_AUTO_FAN 1
+#endif
 #if HAS_TEMP_CHAMBER && PIN_EXISTS(CHAMBER_AUTO_FAN)
   #define HAS_AUTO_CHAMBER_FAN 1
 #endif
 #if HAS_TEMP_COOLER && PIN_EXISTS(COOLER_AUTO_FAN)
   #define HAS_AUTO_COOLER_FAN 1
-#endif
-#if ANY(HAS_AUTO_FAN_0, HAS_AUTO_FAN_1, HAS_AUTO_FAN_2, HAS_AUTO_FAN_3, HAS_AUTO_FAN_4, HAS_AUTO_FAN_5, HAS_AUTO_FAN_6, HAS_AUTO_FAN_7)
-  #define HAS_E_AUTO_FAN 1
 #endif
 #if ANY(HAS_E_AUTO_FAN, HAS_AUTO_CHAMBER_FAN, HAS_AUTO_COOLER_FAN)
   #define HAS_AUTO_FAN 1

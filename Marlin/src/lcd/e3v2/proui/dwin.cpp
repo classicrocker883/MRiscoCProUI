@@ -2588,7 +2588,7 @@ void ApplyMove() {
   #endif
 
   #if HAS_COLOR_LEDS
-    void ApplyLEDColor() { HMI_value.Led_Color = LEDColor({ leds.color.r, leds.color.g, leds.color.b OPTARG(HAS_WHITE_LED, leds.color.w) }); }
+    void ApplyLEDColor() { HMI_value.Led_Color = LED1Color_t({ leds.color.r, leds.color.g, leds.color.b OPTARG(HAS_WHITE_LED, leds.color.w) }); }
     void LiveLEDColor(uint8_t *color) { *color = MenuData.Value; leds.update(); }
     void LiveLEDColorR() { LiveLEDColor(&leds.color.r); }
     void LiveLEDColorG() { LiveLEDColor(&leds.color.g); }
