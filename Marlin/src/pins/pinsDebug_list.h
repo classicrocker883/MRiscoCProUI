@@ -20,10 +20,12 @@
  *
  */
 
-// Please update this list when adding new pins to Marlin.
-// The order doesn't matter.
-// Following this pattern is a must.
-// If the new pin name is over 28 characters long then pinsDebug.h will need to be modified.
+/**
+ * Please update this list when adding new pins to Marlin.
+ * The order doesn't matter.
+ * Following this pattern is a must.
+ * If the new pin name is over 28 characters long then pinsDebug.h will need to be modified.
+ */
 
 #if TARGET_LPC1768
   #define ANALOG_OK(PN) (WITHIN(PN, P0_02, P0_03) || WITHIN(PN, P0_23, P0_26) || WITHIN(PN, P1_30, P1_31))
@@ -38,7 +40,6 @@
 //
 // Analog Pin Assignments
 //
-
 #define _EXISTS(PN,V...) (defined(PN##V) && PN##V >= 0)
 
 #if _EXISTS(EXT_AUX_A0)
@@ -177,7 +178,6 @@
 //
 // Digital Pin Assignments
 //
-
 #if _EXISTS(__FD)
   REPORT_NAME_DIGITAL(__LINE__, __FD)
 #endif

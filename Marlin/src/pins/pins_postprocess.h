@@ -21,12 +21,13 @@
  */
 #pragma once
 
-//
-// File: pins/pins_postprocess.h
-// Post-process pins according to configured settings
-//
+/**
+ * pins_postprocess.h - Post-process pins according to configured settings
+ */
 
+//
 // Define certain undefined pins
+//
 #ifndef X_MS1_PIN
   #define X_MS1_PIN -1
 #endif
@@ -627,7 +628,6 @@
 //
 // Assign endstop pins, with handling for boards that have only 3 connectors
 //
-
 #if HAS_X_AXIS
   #if PIN_EXISTS(X_STOP)
     #if X_HOME_TO_MIN
