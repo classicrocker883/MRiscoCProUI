@@ -33,7 +33,7 @@ I designed and made it to be used for upgrading the hotend.**
 ---
 
 ## Universal Firmware for RET6/RCT6 chips:
-G32, N32, H32, Creality 4.2.7 and 4.2.2 boards <br> 
+G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 **_<sup><sub>(Also available for E3 Free-runs, BTT SKR Mini E3, STM32F401, GD32F303, and others)</sub></sup>_**
 
 > [!IMPORTANT]
@@ -56,6 +56,8 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 > _Prepare_ -> _Filament Management_ -> _Filament Settings_ -> _Runout Active_
 
 ---
+
+## Firmware for HC32 chips:
 
 > [!IMPORTANT]
 > **Information regarding HC32:**
@@ -88,21 +90,34 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 There is a *MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
 The *MarlinSimulator* can compile for Manual Mesh Bed Leveling or Auto Bed Leveling w/`BLTOUCH` enabled.  
-Start in **Configuration.h** and change the `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`.  
-Then in **platformio.ini** at `default_envs =` change to `simulator_windows` (for Windows) | `simulator_linux_release` (for Linux).  
-If there is an error run `./buildroot/share/scripts/simulator_error.sh` or change the following manually:
-- Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **proui/dwin_defines.h**.
-- Comment out `#undef Z_MIN_ENDSTOP_HIT_STATE` in **inc/Conditionals-5-post.h**.
-- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]` in **native.ini**.
+Start in **Configuration.h** and change `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`:
+```y
+#ifndef MOTHERBOARD
+  #define MOTHERBOARD BOARD_SIMULATED
+#endif
+---
+//#define ENDSTOP_INTERRUPTS_FEATURE
+---
+//#define PROUI_EX 1
+```
+<br>
+
+Then in **platformio.ini** for `default_envs =` change to `simulator_windows` (for Windows) | `simulator_linux_release` (for Linux):
+```ini
+default_envs = simulator_windows
+---
+default_envs = simulator_linux_release
+```
 
 For MacOS you're on your own...sorry.
 
-Then you have to extract **SDL2-devel-2.32.2-mingw.zip** from /**docs**.
-Or for the latest releast go to [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for the latest **SDL2** version (**NOT** *SDL3*)
-You can *either* copy/paste the files directly, or install them.
-It's recommended to install them, but if you have any issues, then try copy/paste method.
-
 #### Install Files (Windows)
+If you haven't already, you must install the SDL2 library.  
+**SDL2-devel-2.32.2-mingw.zip** is provided for in /**docs**.  
+Or get the latest release at [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for **SDL2** version (**NOT** *SDL3*)  
+You can *either* copy/paste the files directly, or install them.
+It's recommended to install them, but if you have any issues, then try the alternative copy/paste method.
+
 Navigate to the extracted SDL2 directory in an *MSYS2* or *bash* terminal (Run as Administrator):
 
 To install SDL for native (32-bit) development:
@@ -133,11 +148,21 @@ These are the files you need to install:
 - There may be other basic ones if you don't have already; like python, cmake, pip...
 
 #### Using MarlinSimulator
-- Open the executable program found in **.pio\build\simulator_<windows/linux>**
-- - For Linux, enter in a terminal `./MarlinSimulator`
-- Under `SD Card`, under `Components` on the right side, select or load an image
-- Select Serial Monitor(1)
-- Use like a normal terminal, enter `G28` to watch it Home
+Before building, open a terminal and run `./buildroot/share/scripts/simulator_error.sh`, or change the following manually:
+- Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **proui/dwin_defines.h**.
+- Comment out `#undef Z_MIN_ENDSTOP_HIT_STATE` in **inc/Conditionals-5-post.h**.
+- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]` in **native.ini**.
+
+
+- Open the executable program found in **.pio\build\simulator_<windows|linux_release>**.
+- - For Windows, *MarlinSimulator.exe*
+- - For Linux, enter in a terminal: `./MarlinSimulator`
+
+How to use:
+- Under `SD Card`, under `Components` on the right side, select or load an image.
+- - To simulate an actual print, you may need to use a *.img* file containing the *.gcode*.
+- Select Serial Monitor(1) if you do not see any output.
+- Use like a normal terminal, enter `G28` to watch it Home for example.
 
 <br>
 
@@ -210,7 +235,7 @@ Thanks to Reddit u/schuh8 and GitHub @whasupjohn for donating his board to help 
   <summary>Find me</summary>
 On <a href="https://www.facebook.com/yoboyyy">Facebook</a>
 
-On Reddit: u/<b>In*Us*2</b>
+On Reddit: u/<b>In*Us*2</b> - not actually, but if you know, you know
 </details>
 </p>
 
