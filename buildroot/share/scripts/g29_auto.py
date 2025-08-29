@@ -11,11 +11,11 @@ from __future__ import print_function
 folder = "../"
 my_file = "test.gcode"
 
-# This is the minimum of G0-G1 instructions which should be between 2 different heights
+# The minimum number of G1 instructions that should be between 2 different heights
 min_g = 3
 
-# Maximum number of lines to parse, I don't want to parse the complete file
-# Only the first plane is we are interested in
+# Maximum number of lines to parse. We don't want to parse the
+# whole file since we're only interested in the first plane.
 max_g = 100000000
 
 # G29 keyword
@@ -121,7 +121,7 @@ def z_parse(gcode, start_at_line=0, end_at_line=0):
         z_at_line.append(i)
         temp_line = i - last_i - 1
         line_between_z.append(i - last_i - 1)
-        # last_z = z
+        #last_z = z
         last_i = i
         if 0 < end_at_line <= i or temp_line >= min_g:
             #print("break at line {} at height {}".format(i, z))
@@ -130,7 +130,7 @@ def z_parse(gcode, start_at_line=0, end_at_line=0):
     line_between_z = line_between_z[1:]
     return all_z, line_between_z, z_at_line
 
-# get the lines which should be the first layer
+# Get the lines which should be the first layer
 def get_lines(gcode, minimum):
     i = 0
     all_z, line_between_z, z_at_line = z_parse(gcode, end_at_line=max_g)
@@ -163,7 +163,7 @@ for i in range(start, end):
 
 print("x_min:{} x_max:{}\ny_min:{} y_max:{}".format(min_x, max_x, min_y, max_y))
 
-# resize min/max - values for minimum scan
+# Resize min/max - values for minimum scan
 if max_x - min_x < min_size:
     offset_x = int((min_size - (max_x - min_x)) / 2 + 0.5)  # int round up
     #print("min_x! with {}".format(int(max_x - min_x)))

@@ -22,9 +22,7 @@
 #pragma once
 
 /**
- * File: pins/pins.h
- *
- * Include pins definitions
+ * pins.h - Include pins definitions
  *
  * Pins numbering schemes:
  *
@@ -177,6 +175,8 @@
   #include "ramps/pins_RAMPS_ENDER_4.h"             // ATmega2560                           env:mega2560
 #elif MB(RAMPS_CREALITY)
   #include "ramps/pins_RAMPS_CREALITY.h"            // ATmega2560                           env:mega2560
+#elif MB(CREALITY_V252)
+  #include "ramps/pins_CREALITY_V252.h"             // ATmega2560                           env:mega2560
 #elif MB(DAGOMA_F5)
   #include "ramps/pins_DAGOMA_F5.h"                 // ATmega2560                           env:mega2560
 #elif MB(DAGOMA_D6)
@@ -911,7 +911,7 @@
 //
 
 #elif MB(AQUILA_V101)
-  #include "hc32f4/pins_AQUILA_101.h"               // HC32F460                             env:HC32F460C_aquila_101
+  #include "hc32f4/pins_AQUILA_101.h"               // HC32F460                             env:HC32F460C_aquila_101 env:HC32F460C_aquila_C2
 #elif MB(CREALITY_ENDER2P_V24S4)
   #include "hc32f4/pins_CREALITY_ENDER2P_V24S4.h"   // HC32F460                             env:HC32F460C_e2p24s4
 

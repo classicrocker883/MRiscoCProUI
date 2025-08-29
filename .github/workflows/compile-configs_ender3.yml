@@ -1,4 +1,4 @@
-name: Ender-3V2 Build Configs
+name: Ender-3 V2 Build Configs
 
 ######################### Ender-3 #########################
 
@@ -207,7 +207,7 @@ jobs:
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Ender${TTMP}${MPTMP}_GD32_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender_GD32${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -298,7 +298,7 @@ jobs:
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Ender_SPDY5${MPTMP}_GD32_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender_GD32_SPDY5${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -559,7 +559,7 @@ jobs:
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Ender${MPTMP}_GD32_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender_GD32${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -642,11 +642,11 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if [ "$ENDER_VER" = 427 ]; then EVTMP="427"; DBORD='CREALITY_V427'; else EVTMP="422"; DBORD='CREALITY_V422'; fi;
+        if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-        echo "filename=${DTMP}Ender_${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -723,11 +723,11 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if [ "$ENDER_VER" = 427 ]; then EVTMP="427"; DBORD='CREALITY_V427'; else EVTMP="422"; DBORD='CREALITY_V422'; fi;
+        if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-        echo "filename=${DTMP}Ender_${EVTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender${EVTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -806,13 +806,13 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if [ "$ENDER_VER" = 427 ]; then EVTMP="427"; DBORD='CREALITY_V427'; else EVTMP="422"; DBORD='CREALITY_V422'; fi;
+        if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Ender${TTMP}${MPTMP}_${EVTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender${EVTMP}${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -902,12 +902,12 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if [ "$ENDER_VER" = 427 ]; then EVTMP="427"; DBORD='CREALITY_V427'; else EVTMP="422"; DBORD='CREALITY_V422'; fi;
+        if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Ender_SPDY5${MPTMP}_${EVTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender${EVTMP}_SPDY5${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h
@@ -994,12 +994,12 @@ jobs:
     - name: Run PlatformIO
       id: build_configs
       run: |
-        if [ "$ENDER_VER" = 427 ]; then EVTMP="427"; DBORD='CREALITY_V427'; else EVTMP="422"; DBORD='CREALITY_V422'; fi;
+        if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
         if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
         if ($IS); then ISTMP=-IS; else ISTMP=; fi;
         if ($TJC); then DTMP=TJC-; else DTMP=; fi;
         if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-        echo "filename=${DTMP}Ender_${EVTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}${MPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+        echo "filename=${DTMP}Ender${EVTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}${MPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
         > Marlin/Configuration.h
         > Marlin/Configuration_adv.h
         > Marlin/Version.h

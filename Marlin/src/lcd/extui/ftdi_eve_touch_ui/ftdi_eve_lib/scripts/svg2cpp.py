@@ -20,9 +20,9 @@ import argparse, re, sys, os
 
 from html.parser import HTMLParser
 
-description = """
-This program extracts line segments from a SVG file and writes
-them as coordinates in a C array. The x and y values will be
+USAGE = """
+This program extracts line segments from an SVG file and writes
+them out as coordinates in a C array. The X and Y values will be
 scaled from 0x0000 to 0xFFFE. 0xFFFF is used as path separator.
 
 This program can only interpret straight segments, not curves.
@@ -34,18 +34,17 @@ SVG file into the proper format, use the following procedure:
   - Convert all Strokes to Paths (Path -> Stroke to Path)
   - Combine all paths into one (Path -> Combine) [1]
   - Convert all curves into short line segments [2]
-      (Extensions -> Modify Paths -> Appoximate Curves by Straight Lines...)
+    (Extensions -> Modify Paths -> Appoximate Curves by Straight Lines...)
   - Save as new SVG
   - Convert into a header file using this utility
   - To give paths individual names, break apart paths and
     use the XML Editor to set the "id" attributes.
 
 [1] Combining paths is necessary to remove transforms. You
-could also use inkscape-applytransforms Inkscape extension.
+    could also use the Inkscape extension inkscape-applytransforms.
 
 [2] "Approximate Curves by Straight Lines..." has replaced
-"Flatten Beziers".
-
+    "Flatten Beziers".
 """
 
 header = """
@@ -184,10 +183,8 @@ class SVGParser(HTMLParser):
             self.initial_y = y
 
     def process_svg_path_data_cmd(self, id, cmd, a, b):
-        """
-        Converts the various types of moves into L or M commands
-        and dispatches to process_svg_path_L_or_M for further processing.
-        """
+        """Converts the various types of moves into L or M commands
+        and dispatches to process_svg_path_L_or_M for further processing."""
         if cmd == "Z" or cmd == "z":
             self.process_svg_path_L_or_M("L", self.initial_x, self.initial_y)
         elif cmd == "H":
@@ -211,23 +208,18 @@ class SVGParser(HTMLParser):
             quit()
 
     def eat_token(self, regex):
-        """
-        Looks for a token at the start of self.d.
-        If found, the token is removed.
-        """
+        """Looks for a token at the start of self.d.
+        If found, the token is removed."""
         self.m = re.match(regex, self.d)
         if self.m:
             self.d = self.d[self.m.end() :]
         return self.m
 
     def process_svg_path_data(self, id, d):
-        """
-        Breaks up the "d" attribute into individual commands
-        and calls "process_svg_path_data_cmd" for each
-        """
-
+        """Breaks up the "d" attribute into individual commands
+        and calls "process_svg_path_data_cmd" for each."""
         self.d = d
-        while self.d:
+        while (self.d):
             if self.eat_token(r'\s+'):
                 pass  # Just eat the spaces
 
@@ -309,9 +301,9 @@ class SVGParser(HTMLParser):
             print("Error popping tag off list")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(description=USAGE, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("filename")
-    parser.add_argument("--layer", help="only include layers which have this string in their names")
+    parser.add_argument("--layer", help="Only include layers which have this string in their names")
     args = parser.parse_args()
 
     f = open(args.filename, "r", encoding="utf-8")

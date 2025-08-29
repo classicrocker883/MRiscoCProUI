@@ -8,7 +8,7 @@ name: CI - Build Tests
 on:
   pull_request:
     branches:
-    - 2025-June
+    - 2025-August
     paths-ignore:
     - configurations/**
     - display assets/**
@@ -22,7 +22,7 @@ on:
     - '**/*.md'
   push:
     branches:
-    - 2025-June
+    - 2025-August
     paths-ignore:
     - configurations/**
     - display assets/**
@@ -221,13 +221,6 @@ jobs:
         sudo apt-get install libsdl2-dev
         sudo apt-get install libsdl2-net-dev
         sudo apt-get install libglm-dev
-
-    - name: Checkout Configurations
-      uses: actions/checkout@v4.2.2
-      with:
-        repository: classicrocker883/MRiscoCProUI
-        ref: ${{ env.CONFIG_BRANCH }}
-        path: ConfigurationsRepo
 
     - name: Run ${{ matrix.test-platform }} Tests
       run: |

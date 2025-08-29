@@ -27,14 +27,14 @@
                                // "-" left justify, "39" minimum width of name, pad with blanks
 
 /**
- *  This routine minimizes RAM usage by creating a FLASH resident array to
- *  store the pin names, pin numbers and analog/digital flag.
+ * This routine minimizes RAM usage by creating a FLASH resident array to
+ * store the pin names, pin numbers and analog/digital flag.
  *
- *  Creating the array in FLASH is a two pass process.  The first pass puts the
- *  name strings into FLASH.  The second pass actually creates the array.
+ * Creating the array in FLASH is a two pass process.  The first pass puts the
+ * name strings into FLASH.  The second pass actually creates the array.
  *
- *  Both passes use the same pin list.  The list contains two macro names. The
- *  actual macro definitions are changed depending on which pass is being done.
+ * Both passes use the same pin list.  The list contains two macro names. The
+ * actual macro definitions are changed depending on which pass is being done.
  */
 
 // first pass - put the name strings into FLASH
@@ -90,12 +90,12 @@ typedef struct {
 const PinInfo pin_array[] PROGMEM = {
 
   /**
-   *  [pin name]  [pin number]  [is digital or analog]  1 = digital, 0 = analog
-   *  Each entry takes up 6 bytes in FLASH:
-   *     2 byte pointer to location of the name string
-   *     2 bytes containing the pin number
-   *         analog pin numbers were converted to digital when the array was created
-   *     2 bytes containing the digital/analog bool flag
+   * [pin name]  [pin number]  [is digital or analog]  1 = digital, 0 = analog
+   * Each entry takes up 6 bytes in FLASH:
+   *    2 byte pointer to location of the name string
+   *    2 bytes containing the pin number
+   *        analog pin numbers were converted to digital when the array was created
+   *    2 bytes containing the digital/analog bool flag
    */
 
   #if SERIAL_IN_USE(0)

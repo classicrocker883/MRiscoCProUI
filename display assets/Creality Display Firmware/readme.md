@@ -20,7 +20,7 @@
 1. Turn off the printer and remove the SD card from the screen unit
 1. Reassemble the screen unit
 
->For the Ender3V2, if you want to change only the icons, then you can left only the **9.ICO** file
+>For the Ender-3 V2, if you want to change only the icons, then you can left only the **9.ICO** file
 inside of the DWIN_SET folder.
 
 If you wasn't able to update the display, verify the format of the µSD Card

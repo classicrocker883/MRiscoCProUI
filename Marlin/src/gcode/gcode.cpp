@@ -69,6 +69,10 @@ GcodeSuite gcode;
   #include "../feature/fancheck.h"
 #endif
 
+#if ENABLED(EXTENSIBLE_UI)
+  #include "../lcd/extui/ui_api.h" // for ExtUI::onLevelingDone
+#endif
+
 #include "../MarlinCore.h" // for idle, kill
 
 #if ALL(DWIN_LCD_PROUI, HAS_CGCODE)
