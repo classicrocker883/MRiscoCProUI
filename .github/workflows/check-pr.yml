@@ -9,7 +9,7 @@ on:
   pull_request_target:
     types: [opened]
     branches:
-    - 2024-*
+    - 2025-*
 
 jobs:
   bad_target:
