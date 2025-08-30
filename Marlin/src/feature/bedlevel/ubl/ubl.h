@@ -74,7 +74,7 @@ private:
     static void move_z_with_encoder(const_float_t multiplier);
     static float measure_point_with_encoder();
     static float measure_business_card_thickness();
-    static void manually_probe_remaining_mesh(const xy_pos_t&, const_float_t , const_float_t , const bool) __O0;
+    static void manually_probe_remaining_mesh(const xy_pos_t&, const_float_t, const_float_t, const bool) __O0;
     static void fine_tune_mesh(const xy_pos_t &pos, const bool do_ubl_mesh_map) __O0;
   #endif
 
@@ -294,7 +294,10 @@ public:
 
   static constexpr float get_z_offset() { return 0.0f; }
 
-  #if ENABLED(PROUI_MESH_EDIT)
+  #if ALL(PROUI_EX, PROUI_MESH_EDIT)
+    static float get_mesh_x(const uint8_t i);
+    static float get_mesh_y(const uint8_t j);
+  #elif ENABLED(PROUI_MESH_EDIT)
     static float get_mesh_x(const uint8_t i) {
       return MESH_MIN_X + i * (MESH_X_DIST);
     }

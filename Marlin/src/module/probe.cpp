@@ -82,7 +82,7 @@
   #include "../feature/host_actions.h" // for PROMPT_USER_CONTINUE
 #endif
 
-#if HAS_Z_SERVO_PROBE
+#if HAS_Z_SERVO_PROBE || HAS_MAG_MOUNTED_SERVO_PROBE
   #include "servo.h"
 #endif
 
@@ -109,6 +109,8 @@ xyz_pos_t Probe::offset; // Initialized by settings.load
 
 #if HAS_PROBE_XY_OFFSET
   const xy_pos_t &Probe::offset_xy = Probe::offset;
+#else
+  constexpr xy_pos_t Probe::offset_xy;
 #endif
 
 #if ENABLED(SENSORLESS_PROBING)
@@ -274,6 +276,13 @@ xyz_pos_t Probe::offset; // Initialized by settings.load
   typedef struct { float fr_mm_min; xyz_pos_t where; } mag_probe_move_t;
 
   inline void run_deploy_moves() {
+    #ifdef MAG_MOUNTED_PRE_DEPLOY
+      constexpr mag_probe_move_t pre_deploy = MAG_MOUNTED_PRE_DEPLOY;
+      do_blocking_move_to(pre_deploy.where, MMM_TO_MMS(pre_deploy.fr_mm_min));
+    #endif
+    #if HAS_MAG_MOUNTED_SERVO_PROBE
+      servo[MAG_MOUNTED_PROBE_SERVO_NR].move(servo_angles[MAG_MOUNTED_PROBE_SERVO_NR][0]);
+    #endif
     #ifdef MAG_MOUNTED_DEPLOY_1
       constexpr mag_probe_move_t deploy_1 = MAG_MOUNTED_DEPLOY_1;
       do_blocking_move_to(deploy_1.where, MMM_TO_MMS(deploy_1.fr_mm_min));
@@ -294,9 +303,19 @@ xyz_pos_t Probe::offset; // Initialized by settings.load
       constexpr mag_probe_move_t deploy_5 = MAG_MOUNTED_DEPLOY_5;
       do_blocking_move_to(deploy_5.where, MMM_TO_MMS(deploy_5.fr_mm_min));
     #endif
+    #if HAS_MAG_MOUNTED_SERVO_PROBE
+      servo[MAG_MOUNTED_PROBE_SERVO_NR].move(servo_angles[MAG_MOUNTED_PROBE_SERVO_NR][1]);
+    #endif
   }
 
   inline void run_stow_moves() {
+    #ifdef MAG_MOUNTED_PRE_STOW
+      constexpr mag_probe_move_t pre_stow = MAG_MOUNTED_PRE_STOW;
+      do_blocking_move_to(pre_stow.where, MMM_TO_MMS(pre_stow.fr_mm_min));
+    #endif
+    #if HAS_MAG_MOUNTED_SERVO_PROBE
+      servo[MAG_MOUNTED_PROBE_SERVO_NR].move(servo_angles[MAG_MOUNTED_PROBE_SERVO_NR][0]);
+    #endif
     #ifdef MAG_MOUNTED_STOW_1
       constexpr mag_probe_move_t stow_1 = MAG_MOUNTED_STOW_1;
       do_blocking_move_to(stow_1.where, MMM_TO_MMS(stow_1.fr_mm_min));
@@ -316,6 +335,9 @@ xyz_pos_t Probe::offset; // Initialized by settings.load
     #ifdef MAG_MOUNTED_STOW_5
       constexpr mag_probe_move_t stow_5 = MAG_MOUNTED_STOW_5;
       do_blocking_move_to(stow_5.where, MMM_TO_MMS(stow_5.fr_mm_min));
+    #endif
+    #if HAS_MAG_MOUNTED_SERVO_PROBE
+      servo[MAG_MOUNTED_PROBE_SERVO_NR].move(servo_angles[MAG_MOUNTED_PROBE_SERVO_NR][1]);
     #endif
   }
 
@@ -384,6 +406,10 @@ FORCE_INLINE void probe_specific_action(const bool deploy) {
     //ui.reset_status();
 
   #endif // PAUSE_BEFORE_DEPLOY_STOW
+
+  #if ENABLED(SWITCHING_NOZZLE_LIFT_TO_PROBE)
+    servo[SWITCHING_NOZZLE_SERVO_NR].move(servo_angles[SWITCHING_NOZZLE_SERVO_NR][deploy ? 1 : 0]);
+  #endif
 
   #if ENABLED(SOLENOID_PROBE)
 
@@ -540,7 +566,7 @@ bool Probe::set_deployed(const bool deploy, const bool no_return/*=false*/) {
   #if ENABLED(PROBE_TRIGGERED_WHEN_STOWED_TEST)
 
     // Only deploy/stow if needed
-    if (PROBE_TRIGGERED() == deploy) {
+    if (PROBE_TRIGGERED() == deploy || !deploy) {
       if (!deploy) endstops.enable_z_probe(false); // Switch off triggered when stowed probes early
                                                    // otherwise an Allen-Key probe can't be stowed.
       probe_specific_action(deploy);
@@ -831,7 +857,7 @@ bool Probe::probe_down_to_z(const_float_t z, const_feedRate_t fr_mm_s) {
 
         // Probe downward slowly to find the bed
         if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Slow Probe:");
-        if (try_to_probe(PSTR("SLOW"), z_probe_low_point, MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW), sanity_check)) return NAN;
+        if (try_to_probe(PSTR("SLOW"), z_probe_low_point, z_probe_slow_mm_s, sanity_check)) return NAN;
 
         TERN_(MEASURE_BACKLASH_WHEN_PROBING, backlash.measure_with_probe());
 
@@ -961,7 +987,7 @@ bool Probe::probe_down_to_z(const_float_t z, const_feedRate_t fr_mm_s) {
 
       // Probe downward slowly to find the bed
       if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Slow Probe:");
-      if (try_to_probe(PSTR("SLOW"), z_probe_low_point, MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW), sanity_check)) return NAN;
+      if (try_to_probe(PSTR("SLOW"), z_probe_low_point, z_probe_slow_mm_s, sanity_check)) return NAN;
 
       TERN_(MEASURE_BACKLASH_WHEN_PROBING, backlash.measure_with_probe());
 
@@ -1182,6 +1208,12 @@ float Probe::probe_at_point(
     }
   }
 
+#endif
+
+#if ENABLED(DWIN_LCD_PROUI)
+  float probe_at_point(const_float_t rx, const_float_t ry, const bool raise_after) {
+    return probe.probe_at_point(rx, ry, raise_after ? PROBE_PT_STOW : PROBE_PT_RAISE);
+  }
 #endif
 
 #endif // HAS_BED_PROBE

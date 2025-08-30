@@ -105,7 +105,7 @@ typedef struct {
   rgb_t Color; // Color
 #endif
 #if ALL(LED_CONTROL_MENU, HAS_COLOR_LEDS)
-  LEDColor Led_Color = Def_Leds_Color; // Moved from HMI_data
+  LED1Color_t Led_Color = Def_Leds_Color; // Moved from HMI_data
 #endif
 #if ANY(HAS_PID_HEATING, MPCTEMP, PROUI_ITEM_PLOT)
   tempcontrol_t tempControl = AUTOTUNE_DONE;
@@ -128,8 +128,8 @@ extern HMI_flag_t HMI_flag;
 extern uint8_t checkkey;
 
 inline bool Printing()      { return printingIsActive() || printingIsPaused(); }
-inline bool SD_Printing()   { return Printing() && IS_SD_FILE_OPEN(); }
-inline bool Host_Printing() { return Printing() && !IS_SD_FILE_OPEN(); }
+inline bool SD_Printing()   { return Printing() && card.isStillPrinting(); }
+inline bool Host_Printing() { return Printing() && !card.isStillPrinting(); }
 
 // Popups
 #if HAS_HOTEND || HAS_HEATED_BED

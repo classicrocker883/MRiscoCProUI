@@ -137,39 +137,39 @@ class TMenuEditItem : MenuEditItemBase {
   }; \
   typedef TMenuEditItem<MenuEditItemInfo_##NAME> MenuItem_##NAME
 
-//                         NAME         TYPE      STRFUNC          SCALE         ROUND
-DEFINE_MENU_EDIT_ITEM_TYPE(percent     ,uint8_t  ,ui8tostr4pctrj  , 100.f/255.f, + 0.5f   ); // 100%       right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(percent_3   ,uint8_t  ,pcttostrpctrj   ,   1                   ); // 100%       right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(int3        ,int16_t  ,i16tostr3rj     ,   1                   ); // 123, -12   right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(int4        ,int16_t  ,i16tostr4signrj ,   1                   ); // 1234, -123 right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(int8        ,int8_t   ,i8tostr3rj      ,   1                   ); // 123, -12   right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(uint8       ,uint8_t  ,ui8tostr3rj     ,   1                   ); // 123        right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(uint16_3    ,uint16_t ,ui16tostr3rj    ,   1                   ); // 123        right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(uint16_4    ,uint16_t ,ui16tostr4rj    ,   0.1f                ); // 1234       right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(uint16_5    ,uint16_t ,ui16tostr5rj    ,   0.01f               ); // 12345      right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float3      ,float    ,ftostr3rj       ,   1                   ); // 123        right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float42_52  ,float    ,ftostr42_52     , 100        , + 0.001f ); // _2.34, 12.34, -2.34 or 123.45, -23.45
-DEFINE_MENU_EDIT_ITEM_TYPE(float43     ,float    ,ftostr43sign    ,1000        , + 0.0001f); // -1.234, _1.234, +1.234
-DEFINE_MENU_EDIT_ITEM_TYPE(float53     ,float    ,ftostr53sign    ,1000        , + 0.0001f); // -12.345, _2.345, +2.345
-DEFINE_MENU_EDIT_ITEM_TYPE(float54     ,float    ,ftostr54sign   ,10000       , + 0.00001f); // -1.2345, _1.2345, +1.2345
-DEFINE_MENU_EDIT_ITEM_TYPE(float4      ,float    ,ftostr4sign     ,   1                   ); // 1234       right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float5      ,float    ,ftostr5rj       ,   1                   ); // 12345      right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float5_25   ,float    ,ftostr5rj       ,   0.04f               ); // 12345      right-justified (25 increment)
-DEFINE_MENU_EDIT_ITEM_TYPE(float31     ,float    ,ftostr31rj      ,  10        , + 0.01f  ); // 45.6       right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float41     ,float    ,ftostr41rj      ,  10        , + 0.01f  ); // 345.6      right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float51     ,float    ,ftostr51rj      ,  10        , + 0.01f  ); // 1234.5     right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float61     ,float    ,ftostr61rj      ,  10        , + 0.01f  ); // 12345.6    right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float32     ,float    ,ftostr32rj      , 100        , + 0.001f ); // 1.23
-DEFINE_MENU_EDIT_ITEM_TYPE(float42     ,float    ,ftostr42rj      , 100        , + 0.001f ); // 12.34      right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float52     ,float    ,ftostr52rj      , 100        , + 0.001f ); // 123.45     right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float62     ,float    ,ftostr62rj      , 100        , + 0.001f ); // 1234.56    right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float72     ,float    ,ftostr72rj      , 100        , + 0.001f ); // 12345.67   right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(float31sign ,float    ,ftostr31sign    ,  10        , + 0.01f  ); // +12.3
-DEFINE_MENU_EDIT_ITEM_TYPE(float41sign ,float    ,ftostr41sign    ,  10        , + 0.01f  ); // +123.4
-DEFINE_MENU_EDIT_ITEM_TYPE(float51sign ,float    ,ftostr51sign    ,  10        , + 0.01f  ); // +1234.5
-DEFINE_MENU_EDIT_ITEM_TYPE(float52sign ,float    ,ftostr52sign    , 100        , + 0.001f ); // +123.45
-DEFINE_MENU_EDIT_ITEM_TYPE(long5       ,uint32_t ,ftostr5rj       ,   0.01f               ); // 12345      right-justified
-DEFINE_MENU_EDIT_ITEM_TYPE(long5_25    ,uint32_t ,ftostr5rj       ,   0.04f               ); // 12345      right-justified (25 increment)
+//                          NAME         TYPE      STRFUNC          SCALE         ROUND
+DEFINE_MENU_EDIT_ITEM_TYPE(percent    , uint8_t , ui8tostr4pctrj ,  100.f/255.f, + 0.5f   ); // 100%       right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(percent_3  , uint8_t , pcttostrpctrj  ,    1                   ); // 100%       right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(int3       , int16_t , i16tostr3rj    ,    1                   ); // 123, -12   right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(int4       , int16_t , i16tostr4signrj,    1                   ); // 1234, -123 right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(int8       , int8_t  , i8tostr3rj     ,    1                   ); // 123, -12   right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(uint8      , uint8_t , ui8tostr3rj    ,    1                   ); // 123        right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(uint16_3   , uint16_t, ui16tostr3rj   ,    1                   ); // 123        right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(uint16_4   , uint16_t, ui16tostr4rj   ,    0.1f                ); // 1234       right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(uint16_5   , uint16_t, ui16tostr5rj   ,    0.01f               ); // 12345      right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float3     , float   , ftostr3rj      ,    1                   ); // 123        right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float42_52 , float   , ftostr42_52    ,  100       , + 0.001f  ); // _2.34, 12.34, -2.34 or 123.45, -23.45
+DEFINE_MENU_EDIT_ITEM_TYPE(float43    , float   , ftostr43sign   , 1000       , + 0.0001f ); // -1.234, _1.234, +1.234
+DEFINE_MENU_EDIT_ITEM_TYPE(float53    , float   , ftostr53sign   , 1000       , + 0.0001f ); // -12.345, _2.345, +2.345
+DEFINE_MENU_EDIT_ITEM_TYPE(float54    , float   , ftostr54sign   , 10000      , + 0.00001f); // -1.2345, _1.2345, +1.2345
+DEFINE_MENU_EDIT_ITEM_TYPE(float4     , float   , ftostr4sign    ,    1                   ); // 1234       right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float5     , float   , ftostr5rj      ,    1                   ); // 12345      right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float5_25  , float   , ftostr5rj      ,    0.04f               ); // 12345      right-justified (25 increment)
+DEFINE_MENU_EDIT_ITEM_TYPE(float31    , float   , ftostr31rj     ,   10       , + 0.01f   ); // 45.6       right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float41    , float   , ftostr41rj     ,   10       , + 0.01f   ); // 345.6      right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float51    , float   , ftostr51rj     ,   10       , + 0.01f   ); // 1234.5     right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float61    , float   , ftostr61rj     ,   10       , + 0.01f   ); // 12345.6    right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float32    , float   , ftostr32rj     ,  100       , + 0.001f  ); // 1.23
+DEFINE_MENU_EDIT_ITEM_TYPE(float42    , float   , ftostr42rj     ,  100       , + 0.001f  ); // 12.34      right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float52    , float   , ftostr52rj     ,  100       , + 0.001f  ); // 123.45     right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float62    , float   , ftostr62rj     ,  100       , + 0.001f  ); // 1234.56    right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float72    , float   , ftostr72rj     ,  100       , + 0.001f  ); // 12345.67   right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(float31sign, float   , ftostr31sign   ,   10       , + 0.01f   ); // +12.3
+DEFINE_MENU_EDIT_ITEM_TYPE(float41sign, float   , ftostr41sign   ,   10       , + 0.01f   ); // +123.4
+DEFINE_MENU_EDIT_ITEM_TYPE(float51sign, float   , ftostr51sign   ,   10       , + 0.01f   ); // +1234.5
+DEFINE_MENU_EDIT_ITEM_TYPE(float52sign, float   , ftostr52sign   ,  100       , + 0.001f  ); // +123.45
+DEFINE_MENU_EDIT_ITEM_TYPE(long5      , uint32_t, ftostr5rj      ,    0.01f               ); // 12345      right-justified
+DEFINE_MENU_EDIT_ITEM_TYPE(long5_25   , uint32_t, ftostr5rj      ,    0.04f               ); // 12345      right-justified (25 increment)
 
 #if HAS_BED_PROBE
   #if WITHIN(PROBE_OFFSET_ZMIN, -9, 9)
@@ -191,7 +191,7 @@ class MenuItem_bool : public MenuEditItemBase {
       draw(sel, row, fstr, pget());
     }
     static void action(FSTR_P const fstr, bool * const ptr, const screenFunc_t callbackFunc=nullptr) {
-      *ptr ^= true; ui.refresh();
+      FLIP(*ptr); ui.refresh();
       if (callbackFunc) (*callbackFunc)();
     }
 };
@@ -225,6 +225,9 @@ class MenuItem_bool : public MenuEditItemBase {
  * To avoid repetition and side-effects, function calls for testing menu item conditions
  * should be done before the menu loop (START_MENU / START_SCREEN).
  */
+
+// CAUTION! When using menu items in a lambda or sub-function always use:
+#define INJECT_MENU_ITEMS(FN) { FN; if (ui.screen_changed) return; }
 
 /**
  * SCREEN_OR_MENU_LOOP generates header code for a screen or menu
@@ -276,6 +279,14 @@ class MenuItem_bool : public MenuEditItemBase {
  *   EDIT_ITEM(int3, MSG_SPEED, &feedrate_percentage, SPEED_EDIT_MIN, SPEED_EDIT_MAX)
  *     MenuItem_int3::action(flabel, &feedrate_percentage, SPEED_EDIT_MIN, SPEED_EDIT_MAX)
  *     MenuItem_int3::draw(sel, row, flabel, &feedrate_percentage, SPEED_EDIT_MIN, SPEED_EDIT_MAX)
+ *
+ * Variants use standard suffixes. N:Number Index, S:C-string for substitution, F:F-string label, f:F-string for substitution
+ * _MENU_ITEM_F(TYPE, V...)              Item with optional data
+ * _MENU_ITEM_N_S_F(TYPE, N, S, V...)    Item with index value, C-string, and optional data
+ * _MENU_ITEM_N_f_F(TYPE, N, f, V...)    Item with index value and F-string
+ * _MENU_ITEM_N_F(TYPE, N, V...)         Item with index value
+ * _MENU_ITEM_S_F(TYPE, S, V...)         Item with a unique string
+ * _MENU_ITEM_f_F(TYPE, f, V...)         Item with a unique F-string
  */
 
 #if ENABLED(ENCODER_RATE_MULTIPLIER)
@@ -358,20 +369,24 @@ class MenuItem_bool : public MenuEditItemBase {
 // STATIC_ITEM draws a styled string with no highlight.
 // Parameters: label [, style [, char *value] ]
 
-#define STATIC_ITEM_INNER_F(FLABEL, V...) do{           \
+#define STATIC_SKIP() do{ \
   if (_skipStatic && encoderLine <= _thisItemNr) {      \
     ui.encoderPosition += ENCODER_STEPS_PER_MENU_ITEM;  \
     ++encoderLine;                                      \
   }                                                     \
-  if (ui.should_draw())                                 \
-    MenuItem_static::draw(_lcdLineNr, FLABEL, ##V);     \
-} while(0)
+}while(0)
+
+#define STATIC_ITEM_INNER_F(FLABEL, V...) do{       \
+  STATIC_SKIP();                                    \
+  if (ui.should_draw())                             \
+    MenuItem_static::draw(_lcdLineNr, FLABEL, ##V); \
+}while(0)
 
 #define STATIC_ITEM_F(FLABEL, V...) do{ \
   if (MY_LINE())                        \
     STATIC_ITEM_INNER_F(FLABEL, ##V);   \
   NEXT_ITEM();                          \
-} while(0)
+}while(0)
 
 #define STATIC_ITEM_N_F(N, FLABEL, V...) do{ \
   if (MY_LINE()) {                           \
@@ -381,13 +396,23 @@ class MenuItem_bool : public MenuEditItemBase {
   NEXT_ITEM();                               \
 }while(0)
 
+#define STATIC_ITEM_N_F_C(N, FLABEL, CSTR, V...) do{ \
+  if (MY_LINE()) {                                   \
+    MenuItemBase::init(N, CSTR);                     \
+    STATIC_ITEM_INNER_F(FLABEL, ##V);                \
+  }                                                  \
+  NEXT_ITEM();                                       \
+}while(0)
+
+#define STATIC_ITEM_C(CSTR, V...) STATIC_ITEM_N_F_C(0, F("$"), CSTR, ##V)
+
 // PSTRING_ITEM is like STATIC_ITEM
 // but also takes a PSTR and style.
 
 #define PSTRING_ITEM_F_P(FLABEL, PVAL, STYL) do{ \
   constexpr int m = 20;                          \
   char msg[m + 1];                               \
-  if (_menuLineNr == _thisItemNr) {              \
+  if (MY_LINE()) {                               \
     msg[0] = ':'; msg[1] = ' ';                  \
     strlcpy_P(msg + 2, PVAL, m - 1);             \
     if (msg[m - 1] & 0x80) msg[m - 1] = '\0';    \
@@ -396,8 +421,7 @@ class MenuItem_bool : public MenuEditItemBase {
 }while(0)
 
 #define PSTRING_ITEM_N_F_P(N, V...) do{ \
-  if (_menuLineNr == _thisItemNr)       \
-    MenuItemBase::init(N);              \
+  if (MY_LINE()) MenuItemBase::init(N); \
   PSTRING_ITEM_F_P(V);                  \
 }while(0)
 

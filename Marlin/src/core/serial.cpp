@@ -61,7 +61,7 @@ MAP(_N_LBL, LOGICAL_AXIS_NAMES); MAP(_SP_N_LBL, LOGICAL_AXIS_NAMES);
     SerialLeafT2 msSerial2(ethernet.have_telnet_client, MYSERIAL2, false);
   #endif
 
-  #define __S_LEAF(N) ,SERIAL_LEAF_##N
+  #define __S_LEAF(N) , SERIAL_LEAF_##N
   #define _S_LEAF(N) __S_LEAF(N)
 
   SerialOutputT multiSerial( SERIAL_LEAF_1 REPEAT_S(2, INCREMENT(NUM_SERIAL), _S_LEAF) );
@@ -93,16 +93,18 @@ void SERIAL_ECHO_P(PGM_P pstr) {
 }
 void SERIAL_ECHOLN_P(PGM_P pstr) { SERIAL_ECHO_P(pstr); SERIAL_EOL(); }
 
-void SERIAL_ECHO_START()  { SERIAL_ECHO(F("echo:")); }
-void SERIAL_ERROR_START() { SERIAL_ECHO(F("Error:")); }
-void SERIAL_WARN_START()  { SERIAL_ECHO(F("Warning:")); }
+void SERIAL_ECHO_START()  { SERIAL_ECHO(F("echo: ")); }
+void SERIAL_ERROR_START() { SERIAL_ECHO(F("Error: ")); }
+void SERIAL_WARN_START()  { SERIAL_ECHO(F("Warning: ")); }
 
 void SERIAL_ECHO_SP(uint8_t count) { count *= (PROPORTIONAL_FONT_RATIO); while (count--) SERIAL_CHAR(' '); }
 
-// serial_print_P workaround is undefined without this call to function
-void serial_print_P(PGM_P p) {
+//serial_print_P workaround is undefined without this call to function
+#if ALL(PROUI_EX, HAS_CGCODE, HAS_MESH)
+  void serial_print_P(PGM_P p) {
     SERIAL_ECHO_P(p);
-}
+  }
+#endif
 
 void serial_offset(const_float_t v, const uint8_t sp/*=0*/) {
   if (v == 0 && sp == 1)
@@ -119,10 +121,6 @@ void serial_ternary(FSTR_P const pre, const bool onoff, FSTR_P const on, FSTR_P 
   if (post)          SERIAL_ECHO(post);
 }
 
-void serialprint_onoff(  const bool onoff) { SERIAL_ECHO(onoff ? F(STR_ON) : F(STR_OFF)); }
-void serialprintln_onoff(const bool onoff) { serialprint_onoff(onoff); SERIAL_EOL(); }
-void serialprint_truefalse(const bool tf)  { SERIAL_ECHO(tf ? F("true") : F("false")); }
-
 void print_bin(uint16_t val) {
   for (uint8_t i = 16; i--;) {
     SERIAL_CHAR('0' + TEST(val, i));
@@ -133,9 +131,11 @@ void print_bin(uint16_t val) {
 void _print_xyz(NUM_AXIS_ARGS_(const_float_t) FSTR_P const prefix) {
   if (prefix) SERIAL_ECHO(prefix);
   #if NUM_AXES
-    SERIAL_ECHOPGM_P(
-      LIST_N(DOUBLE(NUM_AXES), SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z, SP_I_STR, i, SP_J_STR, j, SP_K_STR, k, SP_U_STR, u, SP_V_STR, v, SP_W_STR, w)
-    );
+    SERIAL_ECHOPGM_P(NUM_AXIS_PAIRED_LIST(
+      SP_X_STR, x, SP_Y_STR, y, SP_Z_STR, z,
+      SP_I_STR, i, SP_J_STR, j, SP_K_STR, k,
+      SP_U_STR, u, SP_V_STR, v, SP_W_STR, w
+    ));
   #endif
 }
 

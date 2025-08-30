@@ -4,8 +4,9 @@
 
 ## How to install
 
-[**Click to Download DWIN_SET**](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/DWIN_SET) (for DWIN screen units)
-[**Click to Download private**](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/private) (for DACAI screen units)
+- [**Click to Download DWIN_SET**](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/DWIN_SET) (for DWIN screen units)
+- [**Click to Download private**](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/private) (for DACAI screen units)
+- [**Click to Download** `tjc_update`](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) (for TJC LCD Display)
 
 1. Get a Micro SD card of 8GB or less.
 1. Format the SD card to FAT32 with a 4k/4096 sector allocation size
@@ -19,7 +20,7 @@
 1. Turn off the printer and remove the SD card from the screen unit
 1. Reassemble the screen unit
 
->For the Ender3V2, if you want to change only the icons, then you can left only the **9.ICO** file
+>For the Ender-3 V2, if you want to change only the icons, then you can left only the **9.ICO** file
 inside of the DWIN_SET folder.
 
 If you wasn't able to update the display, verify the format of the µSD Card

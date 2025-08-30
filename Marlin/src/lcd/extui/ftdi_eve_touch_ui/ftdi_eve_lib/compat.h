@@ -201,22 +201,24 @@
 
   // SERIAL_ECHOPGM / SERIAL_ECHOPGM_P is used to output a key value pair. The key must be a string and the value can be anything
   // Print up to 12 pairs of values. Odd elements auto-wrapped in PSTR().
-  #define __SEP_N(N,V...)     _SEP_##N(V)
-  #define  _SEP_N(N,V...)      __SEP_N(N,V)
   #define SERIAL_ECHOPGM(str) Serial.print(F(str))
-  #define  _SEP_1(PRE)        SERIAL_ECHOPGM(PRE)
-  #define  _SEP_2(PRE,V)      do{ Serial.print(F(PRE)); Serial.print(V); }while(0)
-  #define  _SEP_3(a,b,c)      do{ _SEP_2(a,b); SERIAL_ECHOPGM(c); }while(0)
-  #define  _SEP_4(a,b,V...)   do{ _SEP_2(a,b); _SEP_2(V); }while(0)
+  #define SERIAL_ECHOPGM(str, val) do{ Serial.print(F(str)); Serial.print(val); }while(0)
+  #define SERIAL_ECHOLNPGM(str) Serial.println(F(str))
+
+  #define __SEP_N(N,V...)   _SEP_##N(V)
+  #define  _SEP_N(N,V...)    __SEP_N(N,V)
+  #define  _SEP_1(PRE)      SERIAL_ECHOPGM(PRE)
+  #define  _SEP_2(PRE,V)    do{ Serial.print(F(PRE)); Serial.print(V); }while(0)
+  #define  _SEP_3(a,b,c)    do{ _SEP_2(a,b); SERIAL_ECHOPGM(c); }while(0)
+  #define  _SEP_4(a,b,V...) do{ _SEP_2(a,b); _SEP_2(V); }while(0)
 
   // Print up to 1 pairs of values followed by newline
-  #define __SELP_N(N,V...)      _SELP_##N(V)
-  #define  _SELP_N(N,V...)       __SELP_N(N,V)
-  #define SERIAL_ECHOLNPGM(str) Serial.println(F(str))
-  #define  _SELP_1(PRE)         SERIAL_ECHOLNPGM(PRE)
-  #define  _SELP_2(PRE,V)       do{ Serial.print(F(PRE)); Serial.println(V); }while(0)
-  #define  _SELP_3(a,b,c)       do{ _SELP_2(a,b); SERIAL_ECHOLNPGM(c); }while(0)
-  #define  _SELP_4(a,b,V...)    do{ _SELP_2(a,b); _SELP_2(V); }while(0)
+  #define __SELP_N(N,V...)   _SELP_##N(V)
+  #define  _SELP_N(N,V...)   __SELP_N(N,V)
+  #define  _SELP_1(PRE)      SERIAL_ECHOLNPGM(PRE)
+  #define  _SELP_2(PRE,V)    do{ Serial.print(F(PRE)); Serial.println(V); }while(0)
+  #define  _SELP_3(a,b,c)    do{ _SELP_2(a,b); SERIAL_ECHOLNPGM(c); }while(0)
+  #define  _SELP_4(a,b,V...) do{ _SELP_2(a,b); _SELP_2(V); }while(0)
 
   #define SERIAL_ECHO_START()
   #define SERIAL_ECHOLNPGM(V...) _SELP_N(NUM_ARGS(V),V)
@@ -282,28 +284,28 @@
   #define _DO_40(W,C,A,V...) (_##W##_1(A) C _DO_39(W,C,V))
   #define __DO_N(W,C,N,V...) _DO_##N(W,C,V)
   #define _DO_N( W,C,N,V...)  __DO_N(W,C,N,V)
-  #define DO(W,C,V...)        (_DO_N(W,C,NUM_ARGS(V),V))
+  #define DO(W,C,V...)         _DO_N(W,C,NUM_ARGS(V),V)
 
   #define _ISENA_     ~,1
   #define _ISENA_1    ~,1
   #define _ISENA_0x1  ~,1
   #define _ISENA_true ~,1
-  #define _ISENA(V...)     IS_PROBE(V)
-  #define _ENA_1(O)        _ISENA(CAT(_IS,CAT(ENA_, O)))
-  #define _DIS_1(O)        NOT(_ENA_1(O))
-  #define ENABLED(V...)    DO(ENA,&&,V)
-  #define DISABLED(V...)   DO(DIS,&&,V)
-  #define ANY(V...)       !DISABLED(V)
-  #define ALL              ENABLED
-  #define NONE             DISABLED
+  #define _ISENA(V...)    IS_PROBE(V)
+  #define _ENA_1(O)       _ISENA(CAT(_IS,CAT(ENA_, O)))
+  #define _DIS_1(O)       NOT(_ENA_1(O))
+  #define ENABLED(V...)   DO(ENA,&&,V)
+  #define DISABLED(V...)  DO(DIS,&&,V)
+  #define ANY(V...)      !DISABLED(V)
+  #define ALL             ENABLED
+  #define NONE            DISABLED
 
-  #define ___TERN(P,V...)  THIRD(P,V)             // If first argument has a comma, A. Else B.
-  #define __TERN(T,V...)   ___TERN(_CAT(_NO,T),V) // Prepend '_NO' to get '_NOT_0' or '_NOT_1'
-  #define _TERN(E,V...)    __TERN(_CAT(T_,E),V)   // Prepend 'T_' to get 'T_0' or 'T_1'
-  #define TERN(O,A,B)      _TERN(_ENA_1(O),B,A)   // OPTION converted to '0' or '1'
-  #define TERN0(O,A)       _TERN(_ENA_1(O),0,A)   // OPTION converted to A or '0'
-  #define TERN1(O,A)       _TERN(_ENA_1(O),1,A)   // OPTION converted to A or '1'
-  #define TERN_(O,A)       _TERN(_ENA_1(O),,A)    // OPTION converted to A or '<nul>'
+  #define ___TERN(P,V...) THIRD(P,V)             // If first argument has a comma, A. Else B.
+  #define __TERN(T,V...)  ___TERN(_CAT(_NO,T),V) // Prepend '_NO' to get '_NOT_0' or '_NOT_1'
+  #define _TERN(E,V...)   __TERN(_CAT(T_,E),V)   // Prepend 'T_' to get 'T_0' or 'T_1'
+  #define TERN(O,A,B)     _TERN(_ENA_1(O),B,A)   // OPTION converted to '0' or '1'
+  #define TERN0(O,A)      _TERN(_ENA_1(O),0,A)   // OPTION converted to A or '0'
+  #define TERN1(O,A)      _TERN(_ENA_1(O),1,A)   // OPTION converted to A or '1'
+  #define TERN_(O,A)      _TERN(_ENA_1(O),,A)    // OPTION converted to A or '<nul>'
   #define IF_DISABLED(O,A) TERN(O,,A)
 
   // Remove compiler warning on an unused variable

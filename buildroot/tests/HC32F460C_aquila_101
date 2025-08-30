@@ -5,11 +5,48 @@
 
 # exit on first failure
 set -e
-
 restore_configs
-opt_set MOTHERBOARD BOARD_AQUILA_V101 SERIAL_PORT 1
-opt_enable EEPROM_SETTINGS SDSUPPORT EMERGENCY_PARSER PINS_DEBUGGING
-exec_test $1 $2 "Default Configuration with Fallback SD EEPROM" "$3"
+#
+# Build with included configs
+#
+use_example_configs "Voxelab Aquila HC32/Default"
+# opt_set
+# opt_disable
+# opt_enable
+# opt_add
+exec_test $1 $2 "Aquila HC32 - ProUI Default" "$3"
 
-# cleanup
-restore_configs
+use_example_configs "Voxelab Aquila HC32/MM"
+# opt_set
+# opt_disable
+# opt_enable
+# opt_add
+exec_test $1 $2 "Aquila HC32 - ProUI Manual Mesh (MM)" "$3"
+
+use_example_configs "Voxelab Aquila HC32/BLT"
+# opt_set
+# opt_disable
+# opt_enable
+# opt_add
+exec_test $1 $2 "Aquila HC32 - ProUI Bilinear (BLT)" "$3"
+
+use_example_configs "Voxelab Aquila HC32/UBL"
+# opt_set
+# opt_disable
+# opt_enable
+# opt_add
+exec_test $1 $2 "Aquila HC32 - ProUI Unified (UBL)" "$3"
+
+use_example_configs "Voxelab Aquila HC32/C2/Default"
+# opt_set
+# opt_disable
+# opt_enable
+# opt_add
+exec_test $1 $2 "Aquila HC32 - ProUI C2 Default" "$3"
+
+use_example_configs "Voxelab Aquila HC32/C2/MM"
+# opt_set
+# opt_disable
+# opt_enable
+# opt_add
+exec_test $1 $2 "Aquila HC32 - ProUI C2 MM" "$3"

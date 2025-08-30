@@ -58,17 +58,6 @@ extern xyz_pos_t cartes;
   extern abce_pos_t delta;
 #endif
 
-#if HAS_ABL_NOT_UBL
-  extern feedRate_t xy_probe_feedrate_mm_s;
-  #define XY_PROBE_FEEDRATE_MM_S xy_probe_feedrate_mm_s
-#elif defined(XY_PROBE_FEEDRATE)
-  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS(XY_PROBE_FEEDRATE)
-#endif
-
-#if HAS_BED_PROBE
-  constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
-#endif
-
 /**
  * Feed rates are often configured with mm/m
  * but the planner and stepper like mm/s units.
@@ -110,6 +99,22 @@ extern feedRate_t feedrate_mm_s;
 extern int16_t feedrate_percentage;
 #define MMS_SCALED(V) ((V) * 0.01f * feedrate_percentage)
 
+#if HAS_ABL_NOT_UBL
+  extern feedRate_t xy_probe_feedrate_mm_s;
+  #define XY_PROBE_FEEDRATE_MM_S xy_probe_feedrate_mm_s
+#elif defined(XY_PROBE_FEEDRATE)
+  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS(XY_PROBE_FEEDRATE)
+#else
+  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS((homing_feedrate_mm_m.x + homing_feedrate_mm_m.y) * 1.5)
+#endif
+
+#ifdef Z_PROBE_FEEDRATE_SLOW
+  TERN(DWIN_LCD_PROUI, const, constexpr) feedRate_t z_probe_slow_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
+#endif
+#ifdef Z_PROBE_FEEDRATE_FAST
+  constexpr feedRate_t z_probe_fast_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_FAST);
+#endif
+
 // The active extruder (tool). Set with T<extruder> command.
 #if HAS_MULTI_EXTRUDER
   extern uint8_t active_extruder;
@@ -130,7 +135,7 @@ extern int16_t feedrate_percentage;
 inline float pgm_read_any(const float *p)   { return TERN(__IMXRT1062__, *p, pgm_read_float(p)); }
 inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm_read_byte(p)); }
 
-#if ENABLED(DWIN_LCD_PROUI)
+#if 0 // ENABLED(DWIN_LCD_PROUI)
   #define XYZ_DEFS(T, NAME, OPT) \
     inline T NAME(const AxisEnum axis) { \
       const XYZval<T> NAME##_P = NUM_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT, U_##OPT, V_##OPT, W_##OPT); \
@@ -144,15 +149,14 @@ inline int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm
     }
 #endif
 
-XYZ_DEFS(float, base_min_pos,  MIN_POS);
-XYZ_DEFS(float, base_max_pos,  MAX_POS);
-XYZ_DEFS(float, base_home_pos, HOME_POS);
-XYZ_DEFS(float, max_length,    MAX_LENGTH);
-XYZ_DEFS(int8_t, home_dir, HOME_DIR);
+XYZ_DEFS(float,  base_min_pos,  MIN_POS);     // base_min_pos(axis)
+XYZ_DEFS(float,  base_max_pos,  MAX_POS);     // base_max_pos(axis)
+XYZ_DEFS(float,  base_home_pos, HOME_POS);    // base_home_pos(axis)
+XYZ_DEFS(float,  max_length,    MAX_LENGTH);  // max_length(axis)
+XYZ_DEFS(int8_t, home_dir,      HOME_DIR);    // home_dir(axis)
 
 // Flags for rotational axes
-constexpr AxisFlags rotational{
-  0 LOGICAL_AXIS_GANG(
+constexpr AxisFlags rotational{0 LOGICAL_AXIS_GANG(
     | 0, | 0, | 0, | 0,
     | (ENABLED(AXIS4_ROTATES)<<I_AXIS),
     | (ENABLED(AXIS5_ROTATES)<<J_AXIS),
@@ -615,10 +619,10 @@ void home_if_needed(const bool keeplev=false);
   extern float inactive_extruder_x,                // Used in mode 0 & 1
                duplicate_extruder_x_offset;        // Used in mode 2 & 3
   extern xyz_pos_t raised_parked_position;         // Used in mode 1
-  extern bool active_extruder_parked;              // Used in mode 1, 2 & 3
   extern millis_t delayed_move_time;               // Used in mode 1
   extern celsius_t duplicate_extruder_temp_offset; // Used in mode 2 & 3
-  extern bool idex_mirrored_mode;                  // Used in mode 3
+  extern bool active_extruder_parked,              // Used in mode 1, 2 & 3
+              idex_mirrored_mode;                  // Used in mode 3
 
   FORCE_INLINE bool idex_is_duplicating() { return dual_x_carriage_mode >= DXC_DUPLICATION_MODE; }
 
@@ -646,6 +650,9 @@ void home_if_needed(const bool keeplev=false);
   void set_home_offset(const AxisEnum axis, const_float_t v);
 #endif
 
+//
+// Trinamic Stepper Drivers
+//
 #if USE_SENSORLESS
   struct sensorless_t;
   sensorless_t start_sensorless_homing_per_axis(const AxisEnum axis);

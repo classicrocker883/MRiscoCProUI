@@ -44,12 +44,12 @@ extern MenuData_t MenuData;
 // Auxiliary Macros ===========================================================
 
 // Create and add a MenuItem object to the menu array
-#define SET_MENU(I,L,V) SetMenu(I, GET_TEXT_F(L), V)
+#define SET_MENU(I,L,V)   SetMenu(I, GET_TEXT_F(L), V)
 #define SET_MENU_F(I,L,V) SetMenu(I, F(L), V)
 
 #define BACK_ITEM(H) MenuItemAdd(ICON_Back, GET_TEXT_F(MSG_BUTTON_BACK), onDrawMenuItem, H)
-#define MENU_ITEM(I,L,V...) MenuItemAdd(I, GET_TEXT_F(L), V)
-#define EDIT_ITEM(I,L,V...) EditItemAdd(I, GET_TEXT_F(L), V)
+#define MENU_ITEM(I,L,V...)   MenuItemAdd(I, GET_TEXT_F(L), V)
+#define EDIT_ITEM(I,L,V...)   EditItemAdd(I, GET_TEXT_F(L), V)
 #define MENU_ITEM_F(I,L,V...) MenuItemAdd(I, F(L), V)
 #define EDIT_ITEM_F(I,L,V...) EditItemAdd(I, F(L), V)
 
@@ -69,7 +69,7 @@ public:
   void (*onClick)() = nullptr;
   CustomMenuItemClass() {};
   CustomMenuItemClass(OnDrawItem ondraw=nullptr, OnClickItem onclick=nullptr);
-  virtual ~CustomMenuItemClass(){};
+  virtual ~CustomMenuItemClass() {};
   virtual void draw(int8_t line);
   void redraw(bool erase=false);
 };
@@ -94,11 +94,11 @@ public:
 
 class MenuClass {
 public:
-  int8_t topline = 0;
+  int8_t topline  = 0;
   int8_t selected = 0;
   TitleClass MenuTitle;
   MenuClass();
-  virtual ~MenuClass(){}
+  virtual ~MenuClass() {}
   inline int8_t line() { return selected - topline; }
   inline int8_t line(uint8_t pos) {return pos - topline; }
   int8_t count();
@@ -134,7 +134,7 @@ void onDrawPInt8Menu(MenuItemClass* menuitem, int8_t line);
 void onDrawPInt32Menu(MenuItemClass* menuitem, int8_t line);
 void onDrawFloatMenu(MenuItemClass* menuitem, int8_t line, uint8_t dp, const float value);
 void onDrawPFloatMenu(MenuItemClass* menuitem, int8_t line, uint8_t dp);
-inline void onDrawPFloatMenu(MenuItemClass* menuitem, int8_t line) { onDrawPFloatMenu(menuitem, line, UNITFDIGITS); }
+inline void onDrawPFloatMenu(MenuItemClass* menuitem, int8_t line)  { onDrawPFloatMenu(menuitem, line, UNITFDIGITS); }
 inline void onDrawPFloat2Menu(MenuItemClass* menuitem, int8_t line) { onDrawPFloatMenu(menuitem, line, 2); }
 inline void onDrawPFloat3Menu(MenuItemClass* menuitem, int8_t line) { onDrawPFloatMenu(menuitem, line, 3); }
 inline void onDrawPFloat4Menu(MenuItemClass* menuitem, int8_t line) { onDrawPFloatMenu(menuitem, line, 4); }

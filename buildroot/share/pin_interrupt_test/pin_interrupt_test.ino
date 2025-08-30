@@ -15,12 +15,12 @@ void setup() {
     if (digitalPinToPCICR(i) || (int)digitalPinToInterrupt(i) != -1) {
       for (int j = 0; j < NUM_ANALOG_INPUTS; j++) {
         if (analogInputToDigitalPin(j) == i) {
-          Serial.print('A');
+          Serial.print("A");
           Serial.print(j);
           Serial.print(" = ");
         }
       }
-      Serial.print('D');
+      Serial.print("D");
       Serial.println(i);
     }
   }

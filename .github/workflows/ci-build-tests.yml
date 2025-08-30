@@ -8,7 +8,7 @@ name: CI - Build Tests
 on:
   pull_request:
     branches:
-    - 2025-January
+    - 2025-August
     paths-ignore:
     - configurations/**
     - display assets/**
@@ -22,7 +22,7 @@ on:
     - '**/*.md'
   push:
     branches:
-    - 2025-January
+    - 2025-August
     paths-ignore:
     - configurations/**
     - display assets/**
@@ -41,6 +41,9 @@ jobs:
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+
+    env:
+      CONFIG_BRANCH: ${{ github.base_ref || github.ref_name }}
 
     strategy:
       fail-fast: true
@@ -120,7 +123,7 @@ jobs:
         # - BTT_GTR_V1_0
         # - BTT_SKR_PRO
         # - FLYF407ZG
-        # - FYSETC_S6
+        # - STM32F446VE_fysetc
         # - LERDGEK
         # - LERDGEX
         # - mks_robin_pro2
@@ -155,13 +158,21 @@ jobs:
         # - STM32F103RE_creality_maple
         # - STM32F103RC_creality_maple
         # - GD32F303RC_creality_maple
-        # - GD32F303RC_creality_maple
         - GD32F103RC_voxelab_maple
         - N32F103RC_voxelab_maple
         # - N32G455RE_voxelab_maple
 
         # STM32G0
         - STM32G0B1RE_btt
+
+        # HC32
+        - HC32F460C_aquila_101
+
+        # GD32F3
+        # - GD32F303RE_creality_mfl
+
+        # GD32F1
+        # - GD32F103RC_aquila_mfl
 
         # LPC176x - Lengthy tests
         # - LPC1768
@@ -173,28 +184,33 @@ jobs:
       uses: actions/checkout@v4.2.2
 
     - name: Cache pip
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.2.3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-build-v1-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-pip-build-v1-
 
     - name: Cache PlatformIO
-      uses: actions/cache@v4.2.0
+      uses: actions/cache@v4.2.3
       with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+        path: |
+          ~/.platformio
+          .pio/build
+          .pio/libdeps
+        key: ${{ runner.os }}-pio-build-v1-${{ hashFiles('**/lockfiles', '**/platformio.ini') }}
+        restore-keys: |
+          ${{ runner.os }}-pio-build-v1-
 
-    - name: Select Python 3.11
-      uses: actions/setup-python@v5.3.0
+    - name: Select Python 3.13
+      uses: actions/setup-python@v5.6.0
       with:
-        python-version: '3.11'
+        python-version: '3.13'
         architecture: 'x64'
 
     - name: Install PlatformIO
       run: |
-        pip install -U pip wheel platformio
+        python3 -m pip install -U pip wheel platformio
         pio upgrade --dev
         pio pkg update --global
 

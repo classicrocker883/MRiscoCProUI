@@ -81,13 +81,14 @@
   #define SOURCE_CODE_URL DEFAULT_SOURCE_CODE_URL
 #endif
 
-// #ifdef CUSTOM_MACHINE_NAME
-//   #undef  MACHINE_NAME
-//   #define MACHINE_NAME CUSTOM_MACHINE_NAME
+#ifdef CUSTOM_MACHINE_NAME
+  #undef  MACHINE_NAME
+  #define MACHINE_NAME CUSTOM_MACHINE_NAME
 // #elif defined(DEFAULT_MACHINE_NAME)
 //   #undef  MACHINE_NAME
 //   #define MACHINE_NAME DEFAULT_MACHINE_NAME
-// #endif
+#endif
+#define MACHINE_NAME_SUBST TERN(CONFIGURABLE_MACHINE_NAME, "$", MACHINE_NAME)
 
 #define MARLIN_WEBSITE_URL "marlinfw.org"
 
@@ -322,6 +323,7 @@
 #define STR_FILAMENT_RUNOUT_SENSOR          "Filament runout sensor"
 #define STR_DRIVER_STEPPING_MODE            "Driver stepping mode"
 #define STR_STEPPER_DRIVER_CURRENT          "Stepper driver current"
+#define STR_HOMING_CURRENT                  "Homing Current (mA)"
 #define STR_TMC_STEALTH                     "StealthChop"
 #define STR_HYBRID_THRESHOLD                "Hybrid Threshold"
 #define STR_STALLGUARD_THRESHOLD            "StallGuard Threshold"

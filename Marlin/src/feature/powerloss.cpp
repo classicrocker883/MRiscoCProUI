@@ -74,6 +74,7 @@ uint32_t PrintJobRecovery::sdpos[BUFSIZE];
   #include "fwretract.h"
 #endif
 
+/// TODO: PROCESS_SUBCOMMANDS_NOW and DEBUG_ECHOLNPGM need work
 #define DEBUG_OUT ENABLED(DEBUG_POWER_LOSS_RECOVERY)
 #include "../core/debug_out.h"
 
@@ -121,7 +122,7 @@ void PrintJobRecovery::enable(const bool onoff) {
 void PrintJobRecovery::changed() {
   if (!enabled)
     purge();
-  else if (IS_SD_PRINTING())
+  else if (card.isStillPrinting())
     save(true);
   TERN_(EXTENSIBLE_UI, ExtUI::onSetPowerLoss(enabled));
 }
@@ -187,7 +188,7 @@ void PrintJobRecovery::prepare() {
  */
 void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=POWER_LOSS_ZRAISE*/, const bool raised/*=false*/) {
 
-  // We don't check IS_SD_PRINTING here so a save may occur during a pause
+  // We don't check isStillPrinting here so a save may occur during a pause
 
   #if ENABLED(CV_LASER_MODULE)
     if (laser_device.is_laser_device()) return;
@@ -219,7 +220,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=POW
 
     // Set Head and Foot to matching non-zero values
     if (!++info.valid_head) ++info.valid_head; // non-zero in sequence
-    //if (!IS_SD_PRINTING()) info.valid_head = 0;
+    //if (!card.isStillPrinting()) info.valid_head = 0;
     info.valid_foot = info.valid_head;
 
     // Machine state
@@ -343,7 +344,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=POW
 
     // Save the current position, distance that Z was (or should be) raised,
     // and a flag whether the raise was already done here.
-    if (IS_SD_PRINTING()) save(true, zraise, ENABLED(BACKUP_POWER_SUPPLY));
+    if (card.isStillPrinting()) save(true, zraise, ENABLED(BACKUP_POWER_SUPPLY));
 
     // Tell the LCD about the outage, even though it is about to die
     TERN_(EXTENSIBLE_UI, ExtUI::onPowerLoss());
@@ -437,8 +438,11 @@ void PrintJobRecovery::resume() {
   #endif
 
   // Interpret the saved Z according to flags
-  const float z_print = resume_pos.z,
-              z_raised = z_print + info.zraise;
+  const float z_print = resume_pos.z;
+
+  #if ANY(Z_HOME_TO_MAX, POWER_LOSS_RECOVER_ZHOME) || DISABLED(BELTPRINTER)
+    const float z_raised = z_print + info.zraise;
+  #endif
 
   //
   // Home the axes that can safely be homed, and
@@ -499,7 +503,7 @@ void PrintJobRecovery::resume() {
     // Restore Z fade and possibly re-enable bed leveling compensation.
     // Leveling may already be enabled due to the ENABLE_LEVELING_AFTER_G28 option.
     /// TODO: Add a G28 parameter to leave leveling disabled.
-    PROCESS_SUBCOMMANDS_NOW(TS(F("M420S"), F('0' + (char)info.flag.leveling), F("Z"), p_float_t(info.fade, 1)));
+    PROCESS_SUBCOMMANDS_NOW(TS(F("M420S"), '0' + (char)info.flag.leveling, F("Z"), p_float_t(info.fade, 1)));
 
     #if !HOMING_Z_DOWN
       // The physical Z was adjusted at power-off so undo the M420S1 correction to Z with G92.9.
@@ -565,7 +569,7 @@ void PrintJobRecovery::resume() {
     }
   #endif
 
-  // Restore retract and hop state from an active `G10` command
+  // Restore retract and hop state from an active 'G10' command
   #if ENABLED(FWRETRACT)
     EXTRUDER_LOOP() {
       if (info.retract[e] != 0.0) {
@@ -598,11 +602,11 @@ void PrintJobRecovery::resume() {
   PROCESS_SUBCOMMANDS_NOW(TS(
     F("G1F3000X"), p_float_t(resume_pos.x, 3), F("Y"), p_float_t(resume_pos.y, 3)
   ));
-  DEBUG_ECHOLNPGM("Move XY: ",cmd);
+  DEBUG_ECHOLNPGM("Move XY: ", resume_pos.x, " | ", resume_pos.y);
 
   // Move back down to the saved Z for printing
   PROCESS_SUBCOMMANDS_NOW(TS(F("G1F600Z"), p_float_t(z_print, 3)));
-  DEBUG_ECHOLNPGM("Move Z: ",cmd);
+  DEBUG_ECHOLNPGM("Move Z: ", z_print);
 
   // Restore the feedrate and percentage
   PROCESS_SUBCOMMANDS_NOW(TS(F("G1F"), info.feedrate));
@@ -613,7 +617,7 @@ void PrintJobRecovery::resume() {
 
   // Restore E position with G92.9
   PROCESS_SUBCOMMANDS_NOW(TS(F("G92.9E"), p_float_t(resume_pos.e, 3)));
-  DEBUG_ECHOLNPGM("Extruder: ",cmd);
+  DEBUG_ECHOLNPGM("Extruder: ", resume_pos.e);
 
   #if ENABLED(CANCEL_OBJECTS)
     cancelable.state = info.cancel_state;

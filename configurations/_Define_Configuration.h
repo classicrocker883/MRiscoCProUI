@@ -21,6 +21,7 @@
 // #define RS485_BUS_BUFFER_SIZE 128
 // #define BLUETOOTH
 // #define CUSTOM_MACHINE_NAME "Aquila"
+// #define CONFIGURABLE_MACHINE_NAME
 // #define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
 // #define X_DRIVER_TYPE TMC2208_STANDALONE
 // #define Y_DRIVER_TYPE TMC2208_STANDALONE
@@ -71,6 +72,7 @@
 // #define SWITCHING_NOZZLE_E1_SERVO_NR 1
 // #define SWITCHING_NOZZLE_SERVO_ANGLES { 0, 90 }
 // #define SWITCHING_NOZZLE_SERVO_DWELL 2500
+// #define SWITCHING_NOZZLE_LIFT_TO_PROBE
 // #define MECHANICAL_SWITCHING_NOZZLE
 // #define PARKING_EXTRUDER
 // #define MAGNETIC_PARKING_EXTRUDER
@@ -207,6 +209,7 @@
 // #define MPCTEMP
 // #define PID_MAX  255
 // #define PID_K1     0.95
+// #define MIN_POWER 0
 // #define PID_DEBUG
 // #define PID_PARAMS_PER_HOTEND
 // #define DEFAULT_Kp_LIST {  22.20,  22.20 }
@@ -222,6 +225,9 @@
 // #define MPC_AUTOTUNE_MENU
 // #define MPC_MAX 255
 // #define MPC_HEATER_POWER { 40.0f }
+// #define MPC_PTC
+// #define MPC_HEATER_ALPHA { 0.0028f }
+// #define MPC_HEATER_REFTEMP { 20 }
 // #define MPC_INCLUDE_FAN
 // #define MPC_BLOCK_HEAT_CAPACITY { 16.7f }
 // #define MPC_SENSOR_RESPONSIVENESS { 0.22f }
@@ -235,14 +241,18 @@
 // #define MPC_STEADYSTATE 0.5f
 // #define MPC_TUNING_POS { X_CENTER, Y_CENTER, 1.0f }
 // #define MPC_TUNING_END_Z 10.0f
+// #define EVENT_GCODE_AFTER_MPC_TUNE "M84"
 // #define MAX_BED_POWER 255
 // #define PIDTEMPBED
 // #define MIN_BED_POWER 0
 // #define PID_BED_DEBUG
 // #define DEFAULT_bedKp 128.06
-// #define DEFAULT_bedKi 24.95
+// #define DEFAULT_bedKi  24.95
 // #define DEFAULT_bedKd 438.07
 // #define BED_LIMIT_SWITCHING
+// #define PELTIER_BED
+// #define PELTIER_DIR_PIN           -1
+// #define PELTIER_DIR_HEAT_STATE   LOW
 // #define BED_ANNEALING_GCODE
 // #define PIDTEMPCHAMBER
 // #define CHAMBER_LIMIT_SWITCHING
@@ -254,7 +264,7 @@
 // #define DEFAULT_chamberKd 655.17
 // #define PID_OPENLOOP
 // #define SLOW_PWM_HEATERS
-// #define PID_FUNCTIONAL_RANGE 10
+// #define PID_FUNCTIONAL_RANGE 20
 // #define PID_EDIT_MENU
 // #define PID_AUTOTUNE_MENU
 // #define PREVENT_COLD_EXTRUSION
@@ -275,6 +285,8 @@
 // #define MARKFORGED_YX
 // #define MARKFORGED_INVERSE
 // #define BELTPRINTER
+// #define ARTICULATED_ROBOT_ARM
+// #define FOAMCUTTER_XYUV
 // #define POLARGRAPH
 // #define POLARGRAPH_MAX_BELT_LEN  1035.0
 // #define DEFAULT_SEGMENTS_PER_SECOND 5
@@ -287,7 +299,6 @@
 // #define DELTA_CALIBRATION_DEFAULT_POINTS 4
 // #define PROBE_MANUALLY_STEP 0.05
 // #define PRINTABLE_RADIUS       140.0
-// #define DELTA_MAX_RADIUS       140.0
 // #define DELTA_DIAGONAL_ROD 250.0
 // #define DELTA_HEIGHT 250.00
 // #define DELTA_ENDSTOP_ADJ { 0.0, 0.0, 0.0 }
@@ -323,8 +334,6 @@
 // #define POLAR_FAST_RADIUS 3.0f
 // #define POLAR_CENTER_OFFSET 0.0f
 // #define FEEDRATE_SCALING
-// #define ARTICULATED_ROBOT_ARM
-// #define FOAMCUTTER_XYUV
 // #define ENDSTOPPULLUPS
 // #define ENDSTOPPULLUP_XMIN
 // #define ENDSTOPPULLUP_YMIN
@@ -452,6 +461,10 @@
 // #define MAG_MOUNTED_PROBE
 // #define PROBE_DEPLOY_FEEDRATE (133*60)
 // #define PROBE_STOW_FEEDRATE   (133*60)
+// #define MAG_MOUNTED_PROBE_SERVO_NR 0
+// #define MAG_MOUNTED_PROBE_SERVO_ANGLES { 90, 0 }
+// #define MAG_MOUNTED_PRE_DEPLOY { PROBE_DEPLOY_FEEDRATE, { 15, 160, 30 } }
+// #define MAG_MOUNTED_PRE_STOW   { PROBE_DEPLOY_FEEDRATE, { 15, 160, 30 } }
 // #define MAG_MOUNTED_DEPLOY_1 { PROBE_DEPLOY_FEEDRATE, { 245, 114, 30 } }
 // #define MAG_MOUNTED_DEPLOY_2 { PROBE_DEPLOY_FEEDRATE, { 210, 114, 30 } }
 // #define MAG_MOUNTED_DEPLOY_3 { PROBE_DEPLOY_FEEDRATE, {   0,   0,  0 } }
@@ -480,13 +493,17 @@
 // #define Z_PROBE_ALLEN_KEY_STOW_3_FEEDRATE XY_PROBE_FEEDRATE
 // #define Z_PROBE_ALLEN_KEY_STOW_4 { 0.0, 0.0, 50.0 }
 // #define Z_PROBE_ALLEN_KEY_STOW_4_FEEDRATE XY_PROBE_FEEDRATE
+// #define NOZZLE_TO_PROBE_OFFSET { 10, 10, -1 }
+// #define NOZZLE_TO_PROBE_OFFSET {-10,  5, -1 }
+// #define NOZZLE_TO_PROBE_OFFSET {  5, -5, -1 }
+// #define NOZZLE_TO_PROBE_OFFSET {-15,-10, -1 }
 // #define NOZZLE_TO_PROBE_OFFSET { -45.0, -7.0, 0 }
 // #define PROBING_TOOL 0
 // #define PROBE_TOOLCHANGE_NO_MOVE
 // #define PROBING_MARGIN 0
-// #define XY_PROBE_FEEDRATE (180*60)
-// #define Z_PROBE_FEEDRATE_FAST (9*60)
-// #define Z_PROBE_FEEDRATE_SLOW (150)
+// #define XY_PROBE_FEEDRATE    (180*60)
+// #define Z_PROBE_FEEDRATE_FAST  (9*60)
+// #define Z_PROBE_FEEDRATE_SLOW   (150)
 // #define PROBE_ACTIVATION_SWITCH
 // #define PROBE_ACTIVATION_SWITCH_STATE LOW
 // #define PROBE_ACTIVATION_SWITCH_PIN PC6
@@ -495,6 +512,7 @@
 // #define PROBE_TARE_DELAY 200
 // #define PROBE_TARE_STATE HIGH
 // #define PROBE_TARE_PIN PA5
+// #define PROBE_TARE_MENU
 // #define PROBE_TARE_ONLY_WHILE_INACTIVE
 // #define PROBE_ENABLE_DISABLE
 // #define PROBE_ENABLE_PIN -1
@@ -525,16 +543,16 @@
 // #define PREHEAT_BEFORE_PROBING
 // #define PROBING_NOZZLE_TEMP 120
 // #define PROBING_BED_TEMP     50
-// #define X_ENABLE_ON 0
-// #define Y_ENABLE_ON 0
-// #define Z_ENABLE_ON 0
-// #define E_ENABLE_ON 0
-// #define I_ENABLE_ON 0
-// #define J_ENABLE_ON 0
-// #define K_ENABLE_ON 0
-// #define U_ENABLE_ON 0
-// #define V_ENABLE_ON 0
-// #define W_ENABLE_ON 0
+// #define X_ENABLE_ON LOW
+// #define Y_ENABLE_ON LOW
+// #define Z_ENABLE_ON LOW
+// #define E_ENABLE_ON LOW
+// #define I_ENABLE_ON LOW
+// #define J_ENABLE_ON LOW
+// #define K_ENABLE_ON LOW
+// #define U_ENABLE_ON LOW
+// #define V_ENABLE_ON LOW
+// #define W_ENABLE_ON LOW
 // #define DISABLE_X
 // #define DISABLE_Y
 // #define DISABLE_Z
@@ -665,6 +683,7 @@
 // #define FILAMENT_RUNOUT_DISTANCE_MM 25
 // #define FILAMENT_MOTION_SENSOR
 // #define FILAMENT_SWITCH_AND_MOTION
+// #define FILAMENT_MOTION_DISTANCE_MM 3.0
 // #define NUM_MOTION_SENSORS   1
 // #define FIL_MOTION1_PIN    -1
 // #define FIL_MOTION1_STATE LOW
@@ -957,8 +976,8 @@
 // #define ANYCUBIC_LCD_I3MEGA
 // #define ANYCUBIC_LCD_GCODE_EXT
 // #define ANYCUBIC_LCD_VYPER
+// #define SOVOL_SV06_RTS
 // #define NEXTION_TFT
-// #define PANELDUE
 // #define EXTENSIBLE_UI
 // #define EXTUI_LOCAL_BEEPER
 // #define MKS_TS35_V2_0

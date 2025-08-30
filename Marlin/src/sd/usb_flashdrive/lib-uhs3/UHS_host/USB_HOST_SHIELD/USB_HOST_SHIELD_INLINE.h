@@ -304,7 +304,7 @@ int16_t UHS_NI MAX3421E_HOST::Init(int16_t mseconds) {
   pinMode(ss_pin, OUTPUT);
   MARLIN_UHS_WRITE_SS(HIGH);
 
-  #ifdef USB_HOST_SHIELD_TIMING_PIN
+  #if PIN_EXISTS(USB_HOST_SHIELD_TIMING)
     pinMode(USB_HOST_SHIELD_TIMING_PIN, OUTPUT);
     // My counter/timer can't work on an inverted gate signal
     // so we gate using a high pulse -- AJK
@@ -864,7 +864,7 @@ void UHS_NI MAX3421E_HOST::ISRbottom() {
       interrupts();
     }
   #endif
-  #ifdef USB_HOST_SHIELD_TIMING_PIN
+  #if PIN_EXISTS(USB_HOST_SHIELD_TIMING)
     // My counter/timer can't work on an inverted gate signal
     // so we gate using a high pulse -- AJK
     UHS_PIN_WRITE(USB_HOST_SHIELD_TIMING_PIN, LOW);
@@ -970,7 +970,7 @@ void UHS_NI MAX3421E_HOST::ISRbottom() {
     if (!sof_countdown && !counted && !usb_task_polling_disabled) {
       DisablePoll();
       //usb_task_polling_disabled++;
-      #ifdef USB_HOST_SHIELD_TIMING_PIN
+      #if PIN_EXISTS(USB_HOST_SHIELD_TIMING)
         // My counter/timer can't work on an inverted gate signal
         // so we gate using a high pulse -- AJK
         UHS_PIN_WRITE(USB_HOST_SHIELD_TIMING_PIN, HIGH);
