@@ -2750,10 +2750,10 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #endif
 
 #if ENABLED(CONTROLLER_FAN_MENU)
+  void SetControllerFanAutoOn()    { controllerFan.settings.auto_mode ^= true; PrepareRefreshMenu(); Draw_ControllerFan_menu(); }
   void SetControllerFanIdleSpeed() { SetIntOnClick(0, 255,          controllerFan.settings.idle_speed,   []{ controllerFan.settings.idle_speed   = MenuData.Value; }); }
   void SetControllerFanSpeed()     { SetIntOnClick(0, 255,          controllerFan.settings.active_speed, []{ controllerFan.settings.active_speed = MenuData.Value; }); }
   void SetControllerFanDuration()  { SetIntOnClick(1, MAX_FAN_IDLE, controllerFan.settings.duration,     []{ controllerFan.settings.duration     = MenuData.Value; }); }
-  void SetControllerFanAutoOn() { controllerFan.settings.auto_mode ^= true; PrepareRefreshMenu(); Draw_ControllerFan_menu(); }
 #endif
 
 #if ENABLED(FAN_KICKSTART_MENU)
@@ -3817,11 +3817,11 @@ void Draw_Tune_Menu() {
       #else
         BACK_ITEM(Draw_Advanced_Menu);
       #endif
-      #if ENABLED(FAN_KICKSTART_MENU)
-        MENU_ITEM(ICON_Motion, MSG_FAN_KICKSTART, onDrawSubMenu, Draw_Kickstart_menu);
-      #endif
       #if ENABLED(CONTROLLER_FAN_MENU)
         MENU_ITEM(ICON_FanSpeed, MSG_CONTROLLER_FAN, onDrawSubMenu, Draw_ControllerFan_menu);
+      #endif
+      #if ENABLED(FAN_KICKSTART_MENU)
+        MENU_ITEM(ICON_Motion, MSG_FAN_KICKSTART, onDrawSubMenu, Draw_Kickstart_menu);
       #endif
       #if (ENABLED(AUTO_FAN_MENU))
         #if HAS_E_AUTO_FAN
