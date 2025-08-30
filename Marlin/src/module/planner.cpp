@@ -114,7 +114,7 @@
 #endif
 
 #if ENABLED(FAN_KICKSTART_EDITABLE)
-  #include "../feature/kickstart.h"
+  #include "../feature/controllerfan.h"
 #endif
 
 // Delay for delivery of first block to the stepper ISR, if the queue contains 2 or
@@ -1220,7 +1220,7 @@ void Planner::recalculate(const_float_t safe_exit_speed_sqr) {
     TERN_(HAS_FAN7, FAN_SET(7));
   }
 
-  #if FAN_KICKSTART_TIME
+  #ifdef FAN_KICKSTART_TIME
 
     void Planner::kickstart_fan(uint8_t (&fan_speed)[FAN_COUNT], const millis_t &ms, const uint8_t f) {
       #if ENABLED(FAN_KICKSTART_EDITABLE)
@@ -1229,7 +1229,7 @@ void Planner::recalculate(const_float_t safe_exit_speed_sqr) {
         static millis_t fan_kick_end[FAN_COUNT] = { 0 };
         if (fan_speed[f] > FAN_OFF_PWM) {
           if (fan_kick_end[f] == 0) {
-            fan_kick_end[f] = ms + kickstart.settings.duration_ms;
+            fan_kick_end[f] = ms + kickstart.settings.duration;
             fan_speed[f] = kickstart.settings.speed;
           }
           else if (PENDING(ms, fan_kick_end[f]))

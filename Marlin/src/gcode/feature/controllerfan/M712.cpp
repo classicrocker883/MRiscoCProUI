@@ -23,7 +23,7 @@
 #if ENABLED(AUTO_FAN_EDITABLE)
 
 #include "../../gcode.h"
-#include "../../../feature/autofans.h"
+#include "../../../feature/controllerfan.h"
 
 /**
  * M712: Set Extruder Auto Fans settings
@@ -42,16 +42,14 @@
 void GcodeSuite::M712() {
 
   const bool seenR = parser.seen('R');
-  if (seenR) autofans.reset();
-
   const bool seenE = parser.seenval('E');
-  if (seenE) autofans.settings.extruder_temp = parser.value_byte();
-
   const bool seenH = parser.seenval('H');
-  if (seenH) autofans.settings.chamber_temp = parser.value_byte();
-
   const bool seenC = parser.seenval('C');
-  if (seenC) autofans.settings.cooler_temp = parser.value_byte();
+
+  if (seenR) autofans.reset();
+  else if (seenE) autofans.settings.extruder_temp = parser.value_byte();
+  else if (seenH) autofans.settings.chamber_temp = parser.value_byte();
+  else if (seenC) autofans.settings.cooler_temp = parser.value_byte();
 
   if (!(seenR || seenE || seenH || seenC))
     M712_report();

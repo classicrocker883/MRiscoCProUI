@@ -88,16 +88,8 @@
   #include "../../../feature/tmc_util.h"
 #endif
 
-#if ENABLED(CONTROLLER_FAN_MENU)
+#if ANY(CONTROLLER_FAN_MENU, FAN_KICKSTART_MENU, AUTO_FAN_MENU)
   #include "../../../feature/controllerfan.h"
-#endif
-
-#if ENABLED(FAN_KICKSTART_MENU)
-  #include "../../../feature/kickstart.h"
-#endif
-
-#if ENABLED(AUTO_FAN_MENU)
-  #include "../../../feature/autofans.h"
 #endif
 
 #if ANY(HAS_GCODE_PREVIEW, CV_LASER_MODULE)
@@ -2765,11 +2757,9 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #endif
 
 #if ENABLED(FAN_KICKSTART_MENU)
-  void SetKickstartEnabled() { kickstart.settings.enabled ^= true; PrepareRefreshMenu(); Draw_Kickstart_menu(); }
-  void SetKickstartSpeed() { SetIntOnClick((FAN_MIN_PWM > 96 ? FAN_MIN_PWM : 96), FAN_MAX_PWM,
-          kickstart.settings.speed, []{ kickstart.settings.speed = MenuData.Value; }); }
-  void SetKickstartDuration() { SetIntOnClick(10, 1500,
-          kickstart.settings.duration_ms, []{ kickstart.settings.duration_ms = MenuData.Value; }); }
+  void SetKickstartEnabled()  { kickstart.settings.enabled ^= true; PrepareRefreshMenu(); Draw_Kickstart_menu(); }
+  void SetKickstartSpeed()    { SetIntOnClick((FAN_MIN_PWM > 96 ? FAN_MIN_PWM : 96), FAN_MAX_PWM, kickstart.settings.speed, []{ kickstart.settings.speed = MenuData.Value; }); }
+  void SetKickstartDuration() { SetIntOnClick(10, 1500, kickstart.settings.duration, []{ kickstart.settings.duration = MenuData.Value; }); }
 #endif
 
 #if ENABLED(AUTO_FAN_MENU)
@@ -3872,7 +3862,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_Motion, MSG_FAN_KICKSTART_ENABLE, onDrawChkbMenu, SetKickstartEnabled, &kickstart.settings.enabled);
       if (kickstart.settings.enabled) {
         EDIT_ITEM(ICON_FanSpeed, MSG_FAN_KICKSTART_POWER, onDrawPInt8Menu, SetKickstartSpeed, &kickstart.settings.speed);
-        EDIT_ITEM(ICON_RemainTime, MSG_FAN_KICKSTART_DURATION, onDrawPIntMenu, SetKickstartDuration, &kickstart.settings.duration_ms);
+        EDIT_ITEM(ICON_RemainTime, MSG_FAN_KICKSTART_DURATION, onDrawPIntMenu, SetKickstartDuration, &kickstart.settings.duration);
       }
     }
     UpdateMenu(KickstartMenu);

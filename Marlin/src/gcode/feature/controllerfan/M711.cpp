@@ -23,7 +23,7 @@
 #if ENABLED(FAN_KICKSTART_EDITABLE)
 
 #include "../../gcode.h"
-#include "../../../feature/kickstart.h"
+#include "../../../feature/controllerfan.h"
 
 /**
  * M711: Set Fan Kickstart settings
@@ -43,16 +43,14 @@
 void GcodeSuite::M711() {
 
   const bool seenR = parser.seen('R');
-  if (seenR) kickstart.reset();
-
   const bool seenS = parser.seenval('S');
-  if (seenS) kickstart.settings.speed = parser.value_byte();
-
   const bool seenD = parser.seenval('D');
-  if (seenD) kickstart.settings.duration_ms = parser.value_ushort();
-
   const bool seenE = parser.seenval('E');
-  if (seenE) kickstart.settings.enabled = parser.value_bool();
+
+  if (seenR) kickstart.reset();
+  else if (seenS) kickstart.settings.speed = parser.value_byte();
+  else if (seenD) kickstart.settings.duration = parser.value_ushort();
+  else if (seenE) kickstart.settings.enabled = parser.value_bool();
 
   if (!(seenR || seenS || seenD || seenE))
     M711_report();
@@ -64,7 +62,7 @@ void GcodeSuite::M711_report(const bool forReplay/*=true*/) {
   report_heading_etc(forReplay, F(STR_FAN_KICKSTART));
   SERIAL_ECHOLNPGM("  M711"
     " S", int(kickstart.settings.speed),
-    " D", int(kickstart.settings.duration_ms),
+    " D", int(kickstart.settings.duration),
     " E", int(kickstart.settings.enabled),
     " ; (", (int(kickstart.settings.speed) * 100) / 255, "%)"
   );

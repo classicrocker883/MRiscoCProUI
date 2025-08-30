@@ -225,15 +225,7 @@
   #include "feature/fancheck.h"
 #endif
 
-#if ENABLED(FAN_KICKSTART_EDITABLE)
-  #include "feature/kickstart.h"
-#endif
-
-#if ENABLED(AUTO_FAN_EDITABLE)
-  #include "feature/autofans.h"
-#endif
-
-#if ENABLED(USE_CONTROLLER_FAN)
+#if ANY(USE_CONTROLLER_FAN, FAN_KICKSTART_EDITABLE, AUTO_FAN_EDITABLE)
   #include "feature/controllerfan.h"
 #endif
 

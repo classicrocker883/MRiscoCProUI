@@ -145,14 +145,8 @@
   #include "../feature/probe_temp_comp.h"
 #endif
 
-#if ENABLED(USE_CONTROLLER_FAN)
+#if ANY(USE_CONTROLLER_FAN, FAN_KICKSTART_EDITABLE, AUTO_FAN_EDITABLE)
   #include "../feature/controllerfan.h"
-#endif
-#if FAN_KICKSTART_TIME
-  #include "../feature/kickstart.h"
-#endif
-#if HAS_AUTO_FAN
-  #include "../feature/autofans.h"
 #endif
 
 #if ENABLED(CASE_LIGHT_ENABLE)
@@ -474,17 +468,17 @@ typedef struct SettingsDataStruct {
   #endif
 
   //
-  // Fan Kickstart settings
+  // Fan Kickstart
   //
-  #if FAN_KICKSTART_TIME
-    kickstart_settings_t kickstart_settings;            // M711
+  #if ENABLED(FAN_KICKSTART_EDITABLE)
+    kickstart_settings_t kickstart_settings;        // M711
   #endif
 
   //
-  // Auto Fans settings
+  // Auto Fans
   //
-  #if HAS_AUTO_FAN
-    autofans_settings_t autofans_settings;              // M712
+  #if ENABLED(AUTO_FAN_EDITABLE)
+    autofans_settings_t autofans_settings;         // M712
   #endif
 
   //
@@ -1472,14 +1466,10 @@ void MarlinSettings::postprocess() {
     //
     // Fan Kickstart
     //
-    #if FAN_KICKSTART_TIME
+    #if ENABLED(FAN_KICKSTART_EDITABLE)
     {
       _FIELD_TEST(kickstart_settings);
-      #if ENABLED(FAN_KICKSTART_EDITABLE)
         const kickstart_settings_t &fks = kickstart.settings;
-      #else
-        constexpr kickstart_settings_t fks = kickstart_defaults;
-      #endif
       EEPROM_WRITE(fks);
     }
     #endif
@@ -1487,15 +1477,11 @@ void MarlinSettings::postprocess() {
     //
     // Auto Fans
     //
-    #if HAS_AUTO_FAN
+    #if ENABLED(AUTO_FAN_EDITABLE)
     {
       _FIELD_TEST(autofans_settings);
-      #if ENABLED(AUTO_FAN_EDITABLE)
-        const autofans_settings_t &eauto = autofans.settings;
-      #else
-        constexpr autofans_settings_t eauto = autofans_defaults;
-      #endif
-      EEPROM_WRITE(eauto);
+      const autofans_settings_t &afs = autofans.settings;
+      EEPROM_WRITE(afs);
     }
     #endif
 
@@ -2633,24 +2619,24 @@ void MarlinSettings::postprocess() {
       //
       // Fan Kickstart
       //
-      #if FAN_KICKSTART_TIME
+      #if ENABLED(FAN_KICKSTART_EDITABLE)
       {
         kickstart_settings_t fks = { 0 };
         _FIELD_TEST(kickstart_settings);
         EEPROM_READ(fks);
-        TERN_(FAN_KICKSTART_EDITABLE, if (!validating) kickstart.settings = fks);
+        if (!validating) kickstart.settings = fks;
       }
       #endif
 
       //
       // Auto Fans
       //
-      #if HAS_AUTO_FAN
+      #if ENABLED(AUTO_FAN_EDITABLE)
       {
-        autofans_settings_t eauto = { 0 };
+        autofans_settings_t afs = { 0 };
         _FIELD_TEST(autofans_settings);
-        EEPROM_READ(eauto);
-        TERN_(AUTO_FAN_EDITABLE, if (!validating) autofans.settings = eauto);
+        EEPROM_READ(afs);
+        if (!validating) autofans.settings = afs;
       }
       #endif
 

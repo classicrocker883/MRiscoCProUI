@@ -24,10 +24,10 @@
 #include "../inc/MarlinConfigPre.h"
 
 typedef struct {
-  uint8_t   active_speed,    // 0-255 (fullspeed); Speed with enabled stepper motors
-            idle_speed;      // 0-255 (fullspeed); Speed after idle period with all motors are disabled
-  uint16_t  duration;        // Duration in seconds for the fan to run after all motors are disabled
-  bool      auto_mode;       // Default true
+  uint8_t   active_speed,   // 0-255 (fullspeed); Speed with enabled stepper motors
+            idle_speed;     // 0-255 (fullspeed); Speed after idle period with all motors are disabled
+  uint16_t  duration;       // Duration in seconds for the fan to run after all motors are disabled
+  bool      auto_mode;      // Default true
 } controllerFan_settings_t;
 
 #ifndef CONTROLLERFAN_SPEED_ACTIVE
@@ -73,3 +73,88 @@ class ControllerFan {
 extern ControllerFan controllerFan;
 
 #endif
+
+/**
+ * Fan Kickstart settings
+ *
+ */
+#if ENABLED(FAN_KICKSTART_EDITABLE)
+
+  typedef struct {
+    uint8_t   speed;        // 0-255 (fullspeed); Fans first start speed
+    uint16_t  duration;  // Duration in milliseconds for the fan to run at kickstart speed
+    bool      enabled;
+  } kickstart_settings_t;
+
+#ifndef FAN_KICKSTART_TIME
+  #define FAN_KICKSTART_TIME  100
+#endif
+#ifndef FAN_KICKSTART_POWER
+  #define FAN_KICKSTART_POWER 180
+#endif
+
+static constexpr kickstart_settings_t kickstart_defaults = {
+  FAN_KICKSTART_TIME,
+  FAN_KICKSTART_POWER,
+  true
+};
+
+class Kickstart {
+  public:
+    static kickstart_settings_t settings;
+
+    static void reset() { settings = kickstart_defaults; }
+    static void setup() { reset(); }
+};
+
+extern Kickstart kickstart;
+
+#endif
+
+/**
+ * Auto Fans settings
+ *
+ */
+#if ENABLED(AUTO_FAN_EDITABLE)
+
+  typedef struct {
+    uint8_t extruder_temp,  // Auto fans temperature thresholds
+            chamber_temp,
+            cooler_temp;
+  } autofans_settings_t;
+
+#ifndef EXTRUDER_AUTO_FAN_TEMPERATURE
+  #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
+#endif
+#ifndef CHAMBER_AUTO_FAN_TEMPERATURE
+  #define CHAMBER_AUTO_FAN_TEMPERATURE 30
+#endif
+#ifndef COOLER_AUTO_FAN_TEMPERATURE
+  #define COOLER_AUTO_FAN_TEMPERATURE 18
+#endif
+
+static constexpr autofans_settings_t autofans_defaults = {
+  EXTRUDER_AUTO_FAN_TEMPERATURE,
+  CHAMBER_AUTO_FAN_TEMPERATURE,
+  COOLER_AUTO_FAN_TEMPERATURE
+};
+
+class Autofans {
+  public:
+    static autofans_settings_t settings;
+
+    static void reset() { settings = autofans_defaults; }
+    static void setup() { reset(); }
+};
+
+extern Autofans autofans;
+
+#undef  EXTRUDER_AUTO_FAN_TEMPERATURE
+#define EXTRUDER_AUTO_FAN_TEMPERATURE (autofans.settings.extruder_temp)
+#undef  CHAMBER_AUTO_FAN_TEMPERATURE
+#define CHAMBER_AUTO_FAN_TEMPERATURE  (autofans.settings.chamber_temp)
+#undef  COOLER_AUTO_FAN_TEMPERATURE
+#define COOLER_AUTO_FAN_TEMPERATURE   (autofans.settings.cooler_temp)
+
+#endif
+

@@ -22,15 +22,24 @@
 
 #include "../inc/MarlinConfig.h"
 
-#if ENABLED(USE_CONTROLLER_FAN)
-
-#include "controllerfan.h"
-#include "../module/stepper.h"
-#include "../module/temperature.h"
+#if ANY(USE_CONTROLLER_FAN, FAN_KICKSTART_EDITABLE, AUTO_FAN_EDITABLE)
+  #include "controllerfan.h"
+#endif
 
 #if ENABLED(FAN_KICKSTART_EDITABLE)
-  #include "kickstart.h"
+  Kickstart kickstart;
+  kickstart_settings_t Kickstart::settings; // {0}
 #endif
+
+#if ENABLED(AUTO_FAN_EDITABLE)
+  Autofans autofans;
+  autofans_settings_t Autofans::settings; // {0}
+#endif
+
+#if ENABLED(USE_CONTROLLER_FAN)
+
+#include "../module/stepper.h"
+#include "../module/temperature.h"
 
 ControllerFan controllerFan;
 
@@ -38,8 +47,8 @@ uint8_t ControllerFan::speed;
 
 #if ENABLED(CONTROLLER_FAN_EDITABLE)
   controllerFan_settings_t ControllerFan::settings; // {0}
- #else
-   const controllerFan_settings_t &ControllerFan::settings = controllerFan_defaults;
+#else
+  const controllerFan_settings_t &ControllerFan::settings = controllerFan_defaults;
 #endif
 
 #if ENABLED(FAN_SOFT_PWM)
@@ -122,7 +131,7 @@ void ControllerFan::update() {
       static millis_t fan_kick_end = 0;
       if (speed > FAN_OFF_PWM && kickstart.settings.enabled) {
         if (!fan_kick_end) {
-          fan_kick_end = ms + kickstart.settings.duration_ms;
+          fan_kick_end = ms + kickstart.settings.duration;
           speed = map(kickstart.settings.speed, 0, 255, 0, CONTROLLERFAN_SPEED_MAX);
           nextFanCheck = ms + 20UL; // Reduce update interval for controller fn check while Kickstart is active.
         }
