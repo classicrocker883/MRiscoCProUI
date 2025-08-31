@@ -2750,14 +2750,14 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #endif
 
 #if ENABLED(CONTROLLER_FAN_MENU)
-  void SetControllerFanAutoOn()    { controllerFan.settings.auto_mode ^= true; PrepareRefreshMenu(); Draw_ControllerFan_menu(); }
+  void SetControllerFanAutoOn()    { FLIP(controllerFan.settings.auto_mode); PrepareRefreshMenu(); Draw_ControllerFan_menu(); }
   void SetControllerFanIdleSpeed() { SetIntOnClick(0, 255,          controllerFan.settings.idle_speed,   []{ controllerFan.settings.idle_speed   = MenuData.Value; }); }
   void SetControllerFanSpeed()     { SetIntOnClick(0, 255,          controllerFan.settings.active_speed, []{ controllerFan.settings.active_speed = MenuData.Value; }); }
   void SetControllerFanDuration()  { SetIntOnClick(1, MAX_FAN_IDLE, controllerFan.settings.duration,     []{ controllerFan.settings.duration     = MenuData.Value; }); }
 #endif
 
 #if ENABLED(FAN_KICKSTART_MENU)
-  void SetKickstartEnabled()  { kickstart.settings.enabled ^= true; PrepareRefreshMenu(); Draw_Kickstart_menu(); }
+  void SetKickstartEnabled()  { FLIP(kickstart.settings.enabled); PrepareRefreshMenu(); Draw_Kickstart_menu(); }
   void SetKickstartSpeed()    { SetIntOnClick((FAN_MIN_PWM > 96 ? FAN_MIN_PWM : 96), FAN_MAX_PWM, kickstart.settings.speed, []{ kickstart.settings.speed = MenuData.Value; }); }
   void SetKickstartDuration() { SetIntOnClick(10, 1500, kickstart.settings.duration, []{ kickstart.settings.duration = MenuData.Value; }); }
 #endif
