@@ -29,14 +29,14 @@
 #endif
 
 typedef struct {
-  int32_t MaxValue     = 0;        // Auxiliar max integer/scaled float value
-  int32_t MinValue     = 0;        // Auxiliar min integer/scaled float value
-  int8_t dp            = 0;        // Auxiliar decimal places
-  int32_t Value        = 0;        // Auxiliar integer / scaled float value
-  int16_t *P_Int       = nullptr;  // Auxiliar pointer to 16 bit integer variable
-  float *P_Float       = nullptr;  // Auxiliar pointer to float variable
-  void (*Apply)()      = nullptr;  // Auxiliar apply function
-  void (*LiveUpdate)() = nullptr;  // Auxiliar live update function
+  int32_t MaxValue     = 0;        // Auxiliary max integer/scaled float value
+  int32_t MinValue     = 0;        // Auxiliary min integer/scaled float value
+  int8_t dp            = 0;        // Auxiliary decimal places
+  int32_t Value        = 0;        // Auxiliary integer / scaled float value
+  int16_t *P_Int       = nullptr;  // Auxiliary pointer to 16 bit integer variable
+  float *P_Float       = nullptr;  // Auxiliary pointer to float variable
+  void (*Apply)()      = nullptr;  // Auxiliary apply function
+  void (*LiveUpdate)() = nullptr;  // Auxiliary live update function
 } MenuData_t;
 
 extern MenuData_t MenuData;

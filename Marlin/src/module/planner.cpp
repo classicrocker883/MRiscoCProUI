@@ -145,7 +145,7 @@ planner_settings_t Planner::settings;           // Initialized by settings.load
 
 /**
  * Set up inline block variables
- * Set laser_power_floor based on SPEED_POWER_MIN to pevent a zero power output state with LASER_POWER_TRAP
+ * Set laser_power_floor based on SPEED_POWER_MIN to prevent a zero power output state with LASER_POWER_TRAP
  */
 #if ENABLED(LASER_FEATURE)
   laser_state_t Planner::laser_inline;          // Current state for blocks
@@ -2553,7 +2553,7 @@ bool Planner::_populate_block(
      * Compute maximum allowable entry speed at junction by centripetal acceleration approximation.
      * Let a circle be tangent to both previous and current path line segments, where the junction
      * deviation is defined as the distance from the junction to the closest edge of the circle,
-     * colinear with the circle center. The circular segment joining the two paths represents the
+     * collinear with the circle center. The circular segment joining the two paths represents the
      * path of centripetal acceleration. Solve for max velocity based on max acceleration about the
      * radius of the circle, defined indirectly by junction deviation. This may be also viewed as
      * path width or max_jerk in the previous Grbl version. This approach does not actually deviate
@@ -3261,7 +3261,7 @@ void Planner::set_machine_position_mm(const abce_pos_t &abce) {
 
 /**
  * Set the machine positions in millimeters (soon) given the native position.
- * Synchonized with the planner queue.
+ * Synchronized with the planner queue.
  *
  *   - Modifiers are applied for skew, leveling, retract, etc.
  *   - Kinematics are applied to remap cartesian positions to stepper positions.
