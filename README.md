@@ -5,7 +5,7 @@
 ![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)  
 [![Latest Firmware Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-release.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases) <sup>- Link to latest releases</sup>
 
-### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about *this* firmware and the features it provides
+### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about _this_ firmware and the features it provides
 
 <br>
 
@@ -33,6 +33,7 @@ I designed and made it to be used for upgrading the hotend.**
 ---
 
 ## Universal Firmware for RET6/RCT6 chips:
+
 G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 **_<sup><sub>(Also available for E3 Free-runs, BTT SKR Mini E3, STM32F401, GD32F303, and others)</sub></sup>_**
 
@@ -40,11 +41,11 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 > **Please read the following:**
 
 > [!NOTE]
-Many Updates have been included in the most recent MRiscoCProUI for the **2025-August** release.
-This release has many changes to the **UI**.
-New ICON's have been added, and old ones enhanced. Whoever edited them before saved directly as .*JPG* which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
+> Many Updates have been included in the most recent MRiscoCProUI for the **2025-September** release.
+> This release has many changes to the **UI**.
+> New ICON's have been added, and old ones enhanced. Whoever edited them before saved directly as ._JPG_ which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
 >
-> > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the *LCD Display* with the new **DWIN_SET**; which is located in the `display assets` folder.
+> > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the _LCD Display_ with the new **DWIN_SET**; which is located in the `display assets` folder.
 >
 > If you encounter any issues, have a suggestion, or feature requests please feel free to post it on the [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues), otherwise if everything is going well please leave a comment on the [Discussions tab](https://github.com/classicrocker883/MRiscoCProUI/discussions).
 >
@@ -66,8 +67,8 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 > <ins>**FOREWARNING**</ins>: So far everything has been working great - as normal - except there is an issue with the initialization of the SD card media. If you get a message saying this has failed, just reinsert the card or reboot. Keep trying if this doesn't work the first time.
 
 > [!CAUTION]
-> *G-code Thumbnail Preview* has been disabled for HC32 boards for the time being.
-> When enabled, the screen may **freeze and restart** when the SD card is inserted. This means that everything *so far* seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible *unless* you use USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).
+> _G-code Thumbnail Preview_ has been disabled for HC32 boards for the time being.
+> When enabled, the screen may **freeze and restart** when the SD card is inserted. This means that everything _so far_ seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible _unless_ you use USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).
 
 > [!NOTE]
 > H32->HC32 support has been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here. You can find the original HC32 repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
@@ -75,6 +76,7 @@ New ICON's have been added, and old ones enhanced. Whoever edited them before sa
 <br>
 
 #### Other Information:
+
 General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release). <br>
 Other changes and updates are [addressed here](https://github.com/classicrocker883/MRiscoCProUI/releases/latest).
 
@@ -83,14 +85,15 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 - [IS - Input Shaping](https://marlinfw.org/docs/features/input_shaping.html)
 - [Firmware Retract](https://marlinfw.org/docs/features/fwretract.html)
 
-
 <br>
 
 ### MarlinSimulator Instructions
-There is a *MarlinSimulator* file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
-The *MarlinSimulator* can compile for Manual Mesh Bed Leveling or Auto Bed Leveling w/`BLTOUCH` enabled.  
+There is a _MarlinSimulator_ file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
+
+The _MarlinSimulator_ can compile for Manual Mesh Bed Leveling or Auto Bed Leveling w/`BLTOUCH` enabled.  
 Start in **Configuration.h** and change `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`:
+
 ```y
 #ifndef MOTHERBOARD
   #define MOTHERBOARD BOARD_SIMULATED
@@ -100,9 +103,11 @@ Start in **Configuration.h** and change `MOTHERBOARD` to `BOARD_SIMULATED`, then
 ---
 //#define PROUI_EX 1
 ```
+
 <br>
 
 Then in **platformio.ini** for `default_envs =` change to `simulator_windows` (for Windows) | `simulator_linux_release` (for Linux):
+
 ```ini
 default_envs = simulator_windows
 ---
@@ -112,62 +117,74 @@ default_envs = simulator_linux_release
 For MacOS you're on your own...sorry.
 
 #### Install Files (Windows)
+
 If you haven't already, you must install the SDL2 library.  
 **SDL2-devel-2.32.2-mingw.zip** is provided for in /**docs**.  
-Or get the latest release at [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for **SDL2** version (**NOT** *SDL3*)  
-You can *either* copy/paste the files directly, or install them.
+Or get the latest release at [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for **SDL2** version (**NOT** _SDL3_)  
+You can _either_ copy/paste the files directly, or install them.
 It's recommended to install them, but if you have any issues, then try the alternative copy/paste method.
 
-Navigate to the extracted SDL2 directory in an *MSYS2* or *bash* terminal (Run as Administrator):
+Navigate to the extracted SDL2 directory in an _MSYS2_ or _bash_ terminal (Run as Administrator):
 
 To install SDL for native (32-bit) development:
+
 >     make native
 
 To install SDL for cross-compiling development:
+
 >     make cross
 
 It's recommended to do both `make native` and `make cross`.
 
 For 64-bit - If you receive an error, then try the following:
+
 >     make install-package arch=x86_64-w64-mingw32 prefix=/usr
 
 #### Alternative SDL2 Install
+
 **Copy/Paste Files**
 You may have to first Build so the directory can be created, but you can:
-- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**\\*, paste into the directory .pio\libdeps\simulator_windows\\**imgui**
+
+- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**\\\*, paste into the directory .pio\libdeps\simulator_windows\\**imgui**
 
 -OR-
 
 - **Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory .pio\libdeps\\**simulator_windows**
 
-Once all that is done, just Build like you would normally and *MarlinSimulator.exe* will be created.
+Once all that is done, just Build like you would normally and _MarlinSimulator.exe_ will be created.
 
 #### Install Files (Linux)
+
 These are the files you need to install:
 `sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev`
+
 - There may be other basic ones if you don't have already; like python, cmake, pip...
 
 #### Using MarlinSimulator
+
 Before building, open a terminal and run `./buildroot/share/scripts/simulator_error.sh`, or change the following manually:
+
 - Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **proui/dwin_defines.h**.
 - Comment out `#undef Z_MIN_ENDSTOP_HIT_STATE` in **inc/Conditionals-5-post.h**.
 - Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]` in **native.ini**.
 
-
-- Open the executable program found in **.pio\build\simulator_<windows|linux_release>**.
-- - For Windows, *MarlinSimulator.exe*
+- Open the executable program found in **.pio\build\simulator\_<windows|linux_release>**.
+- - For Windows, _MarlinSimulator.exe_
 - - For Linux, enter in a terminal: `./MarlinSimulator`
 
 How to use:
+
 - Under `SD Card`, under `Components` on the right side, select or load an image.
-- - To simulate an actual print, you may need to use a *.img* file containing the *.gcode*.
+- - To simulate an actual print, you may need to use a _.img_ file containing the _.gcode_.
 - Select Serial Monitor(1) if you do not see any output.
 - Use like a normal terminal, enter `G28` to watch it Home for example.
 
 <br>
 
 ### Printer Information
-The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6/RCT6 - STMicroelectronics) and it's clones: 
+
+The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6/RCT6 - STMicroelectronics) and it's clones:
+
 - G32 (GD32F103Rx - GigaDevice)
 - N32 (N32F103Rx / N32G455x - Nation)
 - H32 (HC32F460x - Huada Semiconductor/HDSC)
@@ -185,38 +202,42 @@ They can be downloaded here:
 <br>
 
 ## Donations
+
 Thank you for your support.
 Please consider making a donation, as large or as small and as often as you'd like.  
 [Ko-fi](https://ko-fi.com/classicrocker883)  
 [Venmo](https://venmo.com/u/andrewleduc88)  
 [Paypal](https://www.paypal.com/paypalme/andrewleduc) - **Single payment**
 
-[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD)  **PayPal - Monthly Payment**
+[<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD) - **PayPal: Monthly Payment**
 
 <br>
 
 ## Wiki
- - [How to install the firmware](https://github.com/classicrocker883/MRiscoCProUI/wiki/How-to-install-the-firmware)
- - [Installing a 3D/BLTouch](https://github.com/classicrocker883/MRiscoCProUI/wiki/3D-BLTouch)
- - [Color themes](https://github.com/classicrocker883/MRiscoCProUI/wiki/Color-Themes)
- - [How to use with Octoprint](https://github.com/classicrocker883/MRiscoCProUI/wiki/Octoprint)
+
+- [How to install the firmware](https://github.com/classicrocker883/MRiscoCProUI/wiki/How-to-install-the-firmware)
+- [Installing a 3D/BLTouch](https://github.com/classicrocker883/MRiscoCProUI/wiki/3D-BLTouch)
+- [Color themes](https://github.com/classicrocker883/MRiscoCProUI/wiki/Color-Themes)
+- [How to use with Octoprint](https://github.com/classicrocker883/MRiscoCProUI/wiki/Octoprint)
 
 <br>
 
 ## Community links
-* [Voxelab Aquila Facebook Group](https://www.facebook.com/groups/voxelabaquila/?ref=share&mibextid=NSMWBT)
-* [Telegram](https://t.me/ender3v2s1firmware)
-* [r/VoxelabAquila on Reddit](https://www.reddit.com/r/VoxelabAquila)
-* [r/ender3V2 on Reddit](https://www.reddit.com/r/ender3v2)
-* [r/Ender3v2Firmware on Reddit](https://www.reddit.com/r/Ender3v2Firmware)
-* [E3V2 Facebook](https://www.facebook.com/groups/ender3v2firmware)
-* [E3S1 Facebook](https://www.facebook.com/groups/ender3s1printer)
+
+- [Voxelab Aquila Facebook Group](https://www.facebook.com/groups/voxelabaquila/?ref=share&mibextid=NSMWBT)
+- [Telegram](https://t.me/ender3v2s1firmware)
+- [r/VoxelabAquila on Reddit](https://www.reddit.com/r/VoxelabAquila)
+- [r/ender3V2 on Reddit](https://www.reddit.com/r/ender3v2)
+- [r/Ender3v2Firmware on Reddit](https://www.reddit.com/r/Ender3v2Firmware)
+- [E3V2 Facebook](https://www.facebook.com/groups/ender3v2firmware)
+- [E3S1 Facebook](https://www.facebook.com/groups/ender3s1printer)
 
 <!--[](https://raw.githubusercontent.com/mriscoc/Ender3V2S1/Ender3V2S1-Released/screenshots/main.jpg)-->
 
 <br>
 
 ## Marlin Support
+
 The Issue Queue is reserved for Bug Reports and Feature Requests. Please use the following resources for help with configuration and troubleshooting:
 
 - [Marlin Documentation](//marlinfw.org) - Official Marlin documentation
@@ -229,13 +250,16 @@ The Issue Queue is reserved for Bug Reports and Feature Requests. Please use the
 <br>
 
 ## Credits
+
 Thanks to Reddit u/schuh8 and GitHub @whasupjohn for donating his board to help test the firmware.
+
 <p>
 <details>
   <summary>Find me</summary>
 On <a href="https://www.facebook.com/yoboyyy">Facebook</a>
 
 On Reddit: u/<b>In*Us*2</b> - not actually, but if you know, you know
+
 </details>
 </p>
 
@@ -252,6 +276,7 @@ Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
 <br>
 
 ## Star History
+
 <a id="starchart" href="https://star-history.com/#classicrocker883/MRiscoCProUI&Date">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date&theme=dark" />
@@ -275,9 +300,11 @@ Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me wh
 <br>
 
 ## Disclaimer
+
 THIS FIRMWARE AND ALL OTHER FILES IN THE DOWNLOAD ARE PROVIDED FREE OF CHARGE WITH NO WARRANTY OR GUARANTEE. SUPPORT IS NOT INCLUDED JUST BECAUSE YOU DOWNLOADED THE FIRMWARE. WE ARE NOT LIABLE FOR ANY DAMAGE TO YOUR PRINTER, PERSON, OR ANY OTHER PROPERTY DUE TO USE OF THIS FIRMWARE. IF YOU DO NOT AGREE TO THESE TERMS THEN DO NOT USE THE FIRMWARE.
 
 <br>
 
 ## LICENSE
+
 For the license, check the header of each file, if the license is not specified there, the project license will be used. Marlin is licensed under the GPL.

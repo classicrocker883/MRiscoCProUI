@@ -9,8 +9,8 @@ services:
       context: docker
     working_dir: /code
     volumes:
-    - .:/code
-    - platformio-cache:/root/.platformio
+      - .:/code
+      - platformio-cache:/root/.platformio
 
 volumes:
   # This volume holds installed libraries for PlatformIO. If this is deleted you
