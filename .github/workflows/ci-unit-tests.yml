@@ -8,32 +8,32 @@ name: CI - Unit Tests
 on:
   pull_request:
     branches:
-    - 2025-August
+      - 2025-August
     paths-ignore:
-    - configurations/**
-    - display assets/**
-    - data/**
-    - docs/**
-    - docker/**
-    - slicer scripts/**
-    - test/**
-    - themes/**
-    - Marlin/tests/**
-    - '**/*.md'
+      - configurations/**
+      - display assets/**
+      - data/**
+      - docs/**
+      - docker/**
+      - slicer scripts/**
+      - test/**
+      - themes/**
+      - Marlin/tests/**
+      - "**/*.md"
   push:
     branches:
-    - 2025-August
+      - 2025-August
     paths-ignore:
-    - configurations/**
-    - display assets/**
-    - data/**
-    - docs/**
-    - docker/**
-    - slicer scripts/**
-    - test/**
-    - themes/**
-    - Marlin/tests/**
-    - '**/*.md'
+      - configurations/**
+      - display assets/**
+      - data/**
+      - docs/**
+      - docker/**
+      - slicer scripts/**
+      - test/**
+      - themes/**
+      - Marlin/tests/**
+      - "**/*.md"
 
 jobs:
   # This runs all unit tests as a single job. While it should be possible to break this up into
@@ -47,40 +47,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out the PR
-      uses: actions/checkout@v4.2.2
+      - name: Check out the PR
+        uses: actions/checkout@v5.0.0
 
-    - name: Cache pip
-      uses: actions/cache@v4.2.3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-unit-v1-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-unit-v1-
+      - name: Cache pip
+        uses: actions/cache@v4.2.4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-unit-v1-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-unit-v1-
 
-    - name: Cache PlatformIO
-      uses: actions/cache@v4.2.3
-      with:
-        path: |
-          ~/.platformio
-          .pio/build
-          .pio/libdeps
-        key: ${{ runner.os }}-pio-tests-v1-${{ hashFiles('**/lockfiles', '**/platformio.ini') }}
-        restore-keys: |
-          ${{ runner.os }}-pio-tests-v1-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.2.4
+        with:
+          path: |
+            ~/.platformio
+            .pio/build
+            .pio/libdeps
+          key: ${{ runner.os }}-pio-tests-v1-${{ hashFiles('**/lockfiles', '**/platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-pio-tests-v1-
 
-    - name: Select Python 3.13
-      uses: actions/setup-python@v5.6.0
-      with:
-        python-version: '3.13'
-        architecture: 'x64'
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+          architecture: "x64"
 
-    - name: Install PlatformIO
-      run: |
-        python3 -m pip install -U pip wheel platformio
-        pio upgrade --dev
-        pio pkg update --global
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install -U pip wheel platformio
+          pio upgrade --dev
+          pio pkg update --global
 
-    - name: Run All Unit Tests
-      run: |
-        make unit-test-all-local
+      - name: Run All Unit Tests
+        run: |
+          make unit-test-all-local
