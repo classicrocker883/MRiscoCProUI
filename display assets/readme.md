@@ -21,9 +21,11 @@ more info: [TJC issues](https://github.com/MRiscoC/Ender3V2S1/issues/542).
 The `DWIN_SET` display firmware / icon assets only apply to the DWIN display, for the DACAI screens, you should use the `private` display firmware / icon assets.
 
 # Display firmware, boot image and icons compilations
+
 The display assets compilations in this page are compatible with [Professional firmware](https://github.com/classicrocker883/MRiscoCProUI/releases/latest). Each firmware can have its own compatible icon set.
 
 ## How to install
+
 1. Get a Micro SD card of 8GB or less.
 1. Format the SD card to FAT32 with a 4k/4096 sector allocation size
 1. Copy the `DWIN_SET`(DWIN), `private`(DACAI) or `TJC_SET` (TJC) folder in the Root of SD
@@ -44,6 +46,7 @@ If you weren't able to update the display, verify the format of the SD Card
 Be sure to leave **only** the `DWIN_SET` or `private` folder at the root of the card.
 
 ### DACAI firmware update
+
 In order to use all the features of this firmware with DACAI screens it has to be updated.
 If you can't see preview images with this [g-code test file](../slicer%20scripts/cura/SimpleCuraTest.gcode) update your [DACAI screen firmware](dacai_update.zip).
 <br>
@@ -75,7 +78,9 @@ If you can't see preview images with this [g-code test file](../slicer%20scripts
 ---
 
 ### Updating printer firmware
+
 To update your printer firmware and get the latest version go [here](https://github.com/classicrocker883/MRiscoCProUI/releases/latest)
 
 ### Credits
+
 - [**ClassicRocker883**](https://github.com/classicrocker883) for updating the icons
