@@ -42,7 +42,7 @@ These tools must be run from a terminal with access to an installed Python 3 and
 
 Pillow is most easily installed with pip:
 
-  python3 -m pip install pillow
+python3 -m pip install pillow
 
 ## Examples
 
@@ -63,11 +63,12 @@ If you want to edit the individual icons stored in an ICO file (or add more imag
 **Usage:** `splitIco.py #.ICO foldername`
 
 **Splitting .ICO FIle In Windows:**
-* Create `Split-ICO.bat` file in this folder with the following code
-  *     for /f %%f in ('dir *.ICO /B /O:-D') do splitico.py %%f %%f-icons
-* Paste `.ICO` file into this folder
-* Run `Split-ICO.bat`
-* A new folder should appear containing all icons
+
+- Create `Split-ICO.bat` file in this folder with the following code
+  -     for /f %%f in ('dir *.ICO /B /O:-D') do splitico.py %%f %%f-icons
+- Paste `.ICO` file into this folder
+- Run `Split-ICO.bat`
+- A new folder should appear containing all icons
 
 **Example:**
 
@@ -98,14 +99,15 @@ If you want to create an ICO file you'll need to use `makeIco.py`.
 **Usage:** `makeIco.py foldername #.ICO`
 
 **Making .ICO FIle In Windows:**
-* Create `Make-ICO.bat` file in this folder with the following code
-  * ```
+
+- Create `Make-ICO.bat` file in this folder with the following code
+  - ```
     setlocal enabledelayedexpansion
     for /f %%f in ('dir *-icons /B /O:-D') do set f=%%f & makeico.py %%f !f:~0,-7!
     ```
-* Paste folder containing all icons into this folder
-* Run `Make-ICO.bat`
-* A new `.ICO` file should appear
+- Paste folder containing all icons into this folder
+- Run `Make-ICO.bat`
+- A new `.ICO` file should appear
 
 **Example:**
 

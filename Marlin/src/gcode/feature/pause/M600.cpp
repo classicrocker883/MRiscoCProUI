@@ -123,7 +123,7 @@ void GcodeSuite::M600() {
   if (standardM600)
     ui.pause_show_message(PAUSE_MESSAGE_CHANGING, PAUSE_MODE_PAUSE_PRINT, target_extruder);
 
-  TERN_(SOVOL_SV06_RTS, rts.gotoPage(ID_ChangeWait_L, ID_ChangeWait_D)); //given the context it seems this likely should have been pages 6 & 61
+  TERN_(SOVOL_SV06_RTS, rts.gotoPage(ID_ChangeWait_L, ID_ChangeWait_D)); // Given the context it seems this likely should have been pages 6 & 61
 
   // If needed, home before parking for filament change
   TERN_(HOME_BEFORE_FILAMENT_CHANGE, home_if_needed(true));

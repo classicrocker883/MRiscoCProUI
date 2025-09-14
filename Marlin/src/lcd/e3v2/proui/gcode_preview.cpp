@@ -90,6 +90,7 @@ bool Preview::hasPreview() {
   const char * const tbstart = PSTR("; thumbnail begin " STRINGIFY(THUMBWIDTH) "x" STRINGIFY(THUMBHEIGHT));
   const char *posptr = nullptr;
   uint32_t indx = 0;
+  uint32_t prev_indx = 0;
   float tmp = 0;
 
   fileprop.clears();
@@ -101,7 +102,7 @@ bool Preview::hasPreview() {
   uint8_t nbyte = 1;
   while (!fileprop.thumbstart && nbyte > 0 && indx < 4 * sizeof(buf)) {
     nbyte = card.read(buf, sizeof(buf) - 1);
-    if (nbyte > 0) {
+    if (nbyte >= 0) {
       buf[nbyte] = '\0';
       getValue(buf, PSTR(";TIME:"), fileprop.time);
       getValue(buf, PSTR(";Filament used:"), fileprop.filament);
@@ -119,13 +120,17 @@ bool Preview::hasPreview() {
       fileprop.height -= tmp;
       posptr = strstr_P(buf, tbstart);
       if (posptr != nullptr) {
-        fileprop.thumbstart = indx + (posptr - &buf[0]);
+        fileprop.thumbstart = indx + (posptr - buf);
       }
       else {
         indx += _MAX(10, nbyte - (signed)strlen_P(tbstart));
+        if (indx <= prev_indx) break;
+        prev_indx = indx;
         card.setIndex(indx);
       }
     }
+    else
+      break;
   }
 
   if (!fileprop.thumbstart) {
@@ -191,7 +196,6 @@ void Preview::drawFromSD() {
     buf.set(F("Volume: "), p_float_t(fileprop.width, 1), 'x', p_float_t(fileprop.length, 1), 'x', p_float_t(fileprop.height, 1), F(" mm"));
     DWINUI::Draw_String(20, 70, &buf);
   }
-
   if (!fileprop.thumbsize) {
     const uint8_t xpos = ((DWIN_WIDTH)  / 2) - 55,  // 55 = iconW/2
                   ypos = ((DWIN_HEIGHT)  / 2) - 125;
