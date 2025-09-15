@@ -338,15 +338,15 @@
 // #define FT_MOTION
 // #define FTM_IS_DEFAULT_MOTION
 // #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED
-// #define FTM_DEFAULT_SHAPER_X      ftMotionShaper_NONE
-// #define FTM_DEFAULT_SHAPER_Y      ftMotionShaper_NONE
-// #define FTM_SHAPING_DEFAULT_FREQ_X   37.0f
-// #define FTM_SHAPING_DEFAULT_FREQ_Y   37.0f
 // #define FTM_LINEAR_ADV_DEFAULT_ENA   false
 // #define FTM_LINEAR_ADV_DEFAULT_K      0.0f
+// #define FTM_DEFAULT_SHAPER_X      ftMotionShaper_NONE
+// #define FTM_SHAPING_DEFAULT_FREQ_X   37.0f
 // #define FTM_SHAPING_ZETA_X            0.1f
-// #define FTM_SHAPING_ZETA_Y            0.1f
 // #define FTM_SHAPING_V_TOL_X           0.05f
+// #define FTM_DEFAULT_SHAPER_Y      ftMotionShaper_NONE
+// #define FTM_SHAPING_DEFAULT_FREQ_Y   37.0f
+// #define FTM_SHAPING_ZETA_Y            0.1f
 // #define FTM_SHAPING_V_TOL_Y           0.05f
 // #define FT_MOTION_MENU
 // #define FTM_UNIFIED_BWS
@@ -360,7 +360,6 @@
 // #define FTM_STEPPER_FS          30000
 // #define FTM_STEPPERCMD_BUFF_SIZE 6000
 // #define FTM_STEPS_PER_UNIT_TIME (FTM_STEPPER_FS / FTM_FS)
-// #define FTM_CTS_COMPARE_VAL (FTM_STEPS_PER_UNIT_TIME / 2)
 // #define FTM_MIN_TICKS ((STEPPER_TIMER_RATE) / (FTM_STEPPER_FS))
 // #define FTM_MIN_SHAPE_FREQ           10
 // #define FTM_RATIO (FTM_FS / FTM_MIN_SHAPE_FREQ)
@@ -1220,6 +1219,7 @@
 // #define W_STALL_SENSITIVITY  8
 // #define SPI_ENDSTOPS
 // #define IMPROVE_HOMING_RELIABILITY
+// #define SENSORLESS_STALLGUARD_DELAY   0
 // #define TMC_HOME_PHASE { 896, 896, 896 }
 // #define EDGE_STEPPING
 // #define TMC_DEBUG
