@@ -14,7 +14,7 @@ If you have the stock icon set, in principle you **DO NOT** need to update the d
 [![VIEWE](https://user-images.githubusercontent.com/2745567/163235004-1d3f1ed4-e149-4ca8-ae60-438df5f0b70a.png)](https://raw.githubusercontent.com/MRiscoC/Ender3V2S1/Ender3V2S1-Released/display%20assets/displays/SYNWIT1.jpg)
 [![SYNWIT2R](https://user-images.githubusercontent.com/2745567/209407402-25053f01-6a5d-4c76-90c8-da5aec43100c.png)](https://raw.githubusercontent.com/MRiscoC/Ender3V2S1/Ender3V2S1-Released/display%20assets/displays/SYNWIT2.jpg)
 
-**TJC display**, currently this display needs a **special compile** (.bin files having "*TJC-*" prefix) to show leveling numeric data in the mesh viewer and some displays will need [updated firmware](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) to enable G-code preview and boot properly.  
+**TJC display**, currently this display needs a **special compile** (.bin files having "_TJC-_" prefix) to show leveling numeric data in the mesh viewer and some displays will need [updated firmware](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) to enable G-code preview and boot properly.  
 For more info: [TJC issues](https://github.com/MRiscoC/Ender3V2S1/issues/542).  
 [![TJC](https://user-images.githubusercontent.com/2745567/206931166-24185525-e377-472e-9bed-37a39aab24fb.jpg)](https://raw.githubusercontent.com/MRiscoC/Ender3V2S1/Ender3V2S1-Released/display%20assets/displays/TJC.jpg)
 

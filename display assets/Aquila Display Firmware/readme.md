@@ -8,6 +8,7 @@
 - [**Click to Download** `tjc_update`](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) (for TJC LCD Display)
 
 To update the graphics and icons on the display:
+
 - Copy one of the `DWIN_SET`'s from the **Firmware Sets** folder to an SD card (Formatted to FAT32 4096 or 4k allocation size).
 - - Remove the identifier so the folder is just named `DWIN_SET`.
 - Remove the back cover of the display.
