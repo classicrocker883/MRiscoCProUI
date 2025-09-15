@@ -1,16 +1,23 @@
 # Updating the Display
 
-To update the graphics and icons on the display:
+<img src="https://github.com/classicrocker883/MRiscoCProUI/assets/18502096/30ed1822-e5d5-4be5-9283-636390933178" height="400" />
 
-- [DWIN Display](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Aquila%20Display%20Firmware/Firmware%20Sets) direct download link to the Firmware Sets folder.
-- [TJC LCD Display](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) direct download link to `tjc_update.zip`.
-- Copy one of the `DWIN_SET`s from the Firmware Sets folder to an SD card (Formatted to FAT32 4096 or 4k allocation size). Remove the identifier so the folder is just named `DWIN_SET`. Remove the back cover of the display and insert the card into the microSD slot on the back of the display unit's PCB.
+## How to install
+
+- [**Click to Download** `Firmware Sets`](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Aquila%20Display%20Firmware/Firmware%20Sets) (for DWIN screen units)
+- [**Click to Download** `tjc_update`](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) (for TJC LCD Display)
+
+To update the graphics and icons on the display:
+- Copy one of the `DWIN_SET`'s from the **Firmware Sets** folder to an SD card (Formatted to FAT32 4096 or 4k allocation size).
+- - Remove the identifier so the folder is just named `DWIN_SET`.
+- Remove the back cover of the display.
+- - Insert the card into the microSD slot on the back of the display unit's PCB.
 - Power on the machine and wait for the screen to change from blue to orange.
 - Power off the machine.
 - Remove the SD card from the back of the display.
 - Power on to confirm a successful flash.
 
-# Revert to the original font
+### Revert to the original font
 
 You can revert back to the original font simply by downloading the folder "DWIN Font (Original)" (renamed to DWIN_SET) to the SD card and flash to your display.
 

@@ -197,7 +197,7 @@ They can be downloaded here:
 <img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" /><p>
 <img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" /><p>
 <img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" /><p>
-<img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle"  />
+<img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle" />
 
 <br>
 

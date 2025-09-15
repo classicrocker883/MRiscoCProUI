@@ -1,12 +1,12 @@
 # Giadej boot image and icons compilation
 
 <img align="left" src="Boot_by_Giadej.jpg" height="400" />
-<img  src="preview1.jpg"  height="400" />
+<img src="preview1.jpg" height="400" />
 
 ## How to install
 
-- [**Click to Download DWIN_SET**](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Giadej%20compilation/DWIN_SET) (for DWIN screen units)
-- [**Click to Download private**](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Giadej%20compilation/private) (for DACAI screen units)
+- [**Click to Download** `DWIN_SET`](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Giadej%20compilation/DWIN_SET) (for DWIN screen units)
+- [**Click to Download** `private`](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Giadej%20compilation/private) (for DACAI screen units)
 - [**Click to Download** `tjc_update`](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) (for TJC LCD Display)
 
 1. Get a Micro SD card of 8GB or less.
