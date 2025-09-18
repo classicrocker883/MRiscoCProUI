@@ -266,14 +266,15 @@ jobs:
           esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
-          if ($BMP); then sed -i -e "/.*#define BIQU_MICROPROBE_V2.*/a#define NO_MICROPROBE_WARNING" Marlin/Configuration.h; fi;
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          sed -i -e "/.*#define BIQU_MICROPROBE_V2.*/a#define NO_MICROPROBE_WARNING" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
@@ -372,14 +373,15 @@ jobs:
           esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
-          if ($BMP); then sed -i -e "/.*#define BIQU_MICROPROBE_V2.*/a#define NO_MICROPROBE_WARNING" Marlin/Configuration.h; fi;
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          sed -i -e "/.*#define BIQU_MICROPROBE_V2.*/a#define NO_MICROPROBE_WARNING" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin

@@ -50,6 +50,7 @@ jobs:
           if ($IS); then ISTMP=-IS; else ISTMP=; fi;
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          echo "filename=C2_N32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -62,7 +63,6 @@ jobs:
           cp configurations/Voxelab\ Aquila/MM/Configuration_adv.h Marlin/Configuration_adv.h
           cp configurations/Voxelab\ Aquila/MM/Version.h Marlin/Version.h
           fi;
-          echo "filename=C2_N32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           sed -i "s/default_envs =.*/default_envs = N32F103RC_voxelab_maple/" platformio.ini
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
           sed -i "s/.*#define DWIN_LCD_PROUI/\/\/#define DWIN_LCD_PROUI/" Marlin/Configuration.h
@@ -139,6 +139,7 @@ jobs:
           if ($IS); then ISTMP=-IS; else ISTMP=; fi;
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          echo "filename=C2_HC32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -151,7 +152,6 @@ jobs:
           cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Configuration_adv.h Marlin/Configuration_adv.h
           cp configurations/Voxelab\ Aquila\ HC32/C2/MM/Version.h Marlin/Version.h
           fi;
-          echo "filename=C2_HC32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           sed -i "s/default_envs =.*/default_envs = HC32F460C_aquila_C2/" platformio.ini
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
           for axis in X Y Z; do
@@ -289,6 +289,9 @@ jobs:
         t5: [true,false]
         t13: [true,false]
         bmp: [true,false]
+        exclude:
+          - t5: true
+            t13: true
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -358,13 +361,14 @@ jobs:
           esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
