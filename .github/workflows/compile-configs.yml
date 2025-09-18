@@ -245,7 +245,7 @@ jobs:
           if ($IS); then
           sed -i "s/.*#define HAS_CGCODE 1/\/\/#define HAS_CGCODE 1/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
-          else if ($TP); then
+          elif ($TP); then
           sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
           fi;
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
