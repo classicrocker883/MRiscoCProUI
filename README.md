@@ -64,11 +64,12 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 > **Information regarding HC32:**
 
 > [!WARNING]
-> <ins>**FOREWARNING**</ins>: So far everything has been working great - as normal - except there is an issue with the initialization of the SD card media. If you get a message saying this has failed, just reinsert the card or reboot. Keep trying if this doesn't work the first time.
+> <ins>**FOREWARNING**</ins>: So far everything has been working great - as normal - except there may an issue with the initialization of the SD card media. If you get a message saying this has failed, just reinsert the card or reboot. Keep trying if this doesn't work the first time.
 
 > [!CAUTION]
-> _G-code Thumbnail Preview_ has been disabled for HC32 boards for the time being.
-> When enabled, the screen may **freeze and restart** when the SD card is inserted. This means that everything _so far_ seems to work correctly as it should, except for when an **SD card is inserted**, so printing may not be possible _unless_ you use USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).
+> _G-code Thumbnail Preview_ has been disabled for HC32 boards for the time being.  
+> When enabled, _and_ an **SD card is inserted**, the screen may **freeze and restart**. So _this_ means printing may not be possible without the **SD card** _unless_ you use the USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).  
+> That is why this feature has been disabled, otherwise everything works as normal.
 
 > [!NOTE]
 > H32->HC32 support has been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here. You can find the original HC32 repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
@@ -119,7 +120,7 @@ For MacOS you're on your own...sorry.
 #### Install Files (Windows)
 
 If you haven't already, you must install the SDL2 library.  
-**SDL2-devel-2.32.2-mingw.zip** is provided for in /**docs**.  
+**SDL2-devel-2.32.10-mingw.zip** is provided for in /**docs**.  
 Or get the latest release at [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for **SDL2** version (**NOT** _SDL3_)  
 You can _either_ copy/paste the files directly, or install them.
 It's recommended to install them, but if you have any issues, then try the alternative copy/paste method.
@@ -128,37 +129,46 @@ Navigate to the extracted SDL2 directory in an _MSYS2_ or _bash_ terminal (Run a
 
 To install SDL for native (32-bit) development:
 
->     make native
+```
+make native
+```
 
 To install SDL for cross-compiling development:
 
->     make cross
+```
+make cross
+```
 
-It's recommended to do both `make native` and `make cross`.
+<sup>It's recommended to do both `make native` and `make cross`.</sup>
 
 For 64-bit - If you receive an error, then try the following:
 
->     make install-package arch=x86_64-w64-mingw32 prefix=/usr
+```
+make install-package arch=x86_64-w64-mingw32 prefix=/usr
+```
 
 #### Alternative SDL2 Install
 
 **Copy/Paste Files**
 You may have to first Build so the directory can be created, but you can:
 
-- **Copy** the contents of ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**\\\*, paste into the directory .pio\libdeps\simulator_windows\\**imgui**
+- **Copy** the contents of ~\SDL2-2.32.10\x86_64-w64-mingw32\include\\**SDL2**\\\*, paste into the directory .pio\libdeps\simulator_windows\\**imgui**
 
 -OR-
 
-- **Copy** the just folder ~\SDL2-2.32.2\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory .pio\libdeps\\**simulator_windows**
+- **Copy** the just folder ~\SDL2-2.32.10\x86_64-w64-mingw32\include\\**SDL2**, paste into the directory .pio\libdeps\\**simulator_windows**
 
 Once all that is done, just Build like you would normally and _MarlinSimulator.exe_ will be created.
 
 #### Install Files (Linux)
 
 These are the files you need to install:
-`sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev`
 
-- There may be other basic ones if you don't have already; like python, cmake, pip...
+```
+sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev
+```
+
+<sup>There may be other basic ones if you don't have already; like python, cmake, pip...</sup>
 
 #### Using MarlinSimulator
 
@@ -166,18 +176,51 @@ Before building, open a terminal and run `./buildroot/share/scripts/simulator_er
 
 - Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **proui/dwin_defines.h**.
 - Comment out `#undef Z_MIN_ENDSTOP_HIT_STATE` in **inc/Conditionals-5-post.h**.
-- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]` in **native.ini**.
-
-- Open the executable program found in **.pio\build\simulator\_<windows|linux_release>**.
-- - For Windows, _MarlinSimulator.exe_
-- - For Linux, enter in a terminal: `./MarlinSimulator`
+- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]` in **native.ini**.  
+  <sup>Only if you get an error message about it.</sup>
 
 How to use:
 
+- Open the executable program found in **.pio\build\simulator\_<windows|linux>\_release**.
+- - For Windows: `MarlinSimulator.exe`
+- - For Linux: `./MarlinSimulator`  
+    <sup>Enter in a terminal.</sup>
 - Under `SD Card`, under `Components` on the right side, select or load an image.
-- - To simulate an actual print, you may need to use a _.img_ file containing the _.gcode_.
+- - To simulate an actual print, you may need to use a [_.img_ file containing the _.gcode_](#copy-gcode-into-img-file).
 - Select Serial Monitor(1) if you do not see any output.
-- Use like a normal terminal, enter `G28` to watch it Home for example.
+- Use like a normal terminal. For example, enter `G28` to watch it Home.
+
+#### Copy _.gcode_ into _.img_ file
+
+1. Create new image file:
+
+```
+dd if=/dev/zero of=new_fs.img bs=1M count=128
+```
+
+2. Format the image:
+
+```
+sudo mkfs.vfat -F 32 -n SDCARDIMAGE new_fs.img`
+```
+
+3. Copy the _.gcode_ file (in place of **my_stl.gcode**):
+
+```
+sudo mcopy -i ~/new_fs.img my_stl.gcode ::/
+```
+
+4. Check contents of image:
+
+```
+mdir -i ~/new_fs.img ::/
+```
+
+5. Copy the new image to the final destination:
+
+```
+dd if=~/new_fs.img of=~/Marlin/.pio/build/simulator_linux_release/fs.img bs=512>
+```
 
 <br>
 
