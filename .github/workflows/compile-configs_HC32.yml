@@ -143,10 +143,10 @@ jobs:
           done
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define USE_GRID_MESHVIEWER/${PTEMP}#define USE_GRID_MESHVIEWER/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CUSTOM_COLORS/${PTEMP}#define HAS_CUSTOM_COLORS/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_LOCKSCREEN/${PTEMP}#define HAS_LOCKSCREEN/" Marlin/Configuration.h
-          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define CAPABILITIES_REPORT/${PTEMP}#define CAPABILITIES_REPORT/" Marlin/Configuration_adv.h
           sed -i "s/.*#define HAS_LOCKSCREEN/${PTEMP}#define HAS_LOCKSCREEN/" Marlin/Configuration.h
           if [ "$IS" = true ] && [ "$TP" = true ]; then

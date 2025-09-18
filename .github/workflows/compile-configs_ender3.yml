@@ -19,7 +19,6 @@ jobs:
         inshape: [true,false]
         temp: [true,false]
         tjc: [true,false]
-        t5: [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -52,8 +51,7 @@ jobs:
           if ($IS); then ISTMP=-IS; else ISTMP=; fi;
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          echo "filename=${DTMP}Ender_GD32${STMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Ender_GD32_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -81,7 +79,6 @@ jobs:
           IS: ${{ matrix.inshape }}
           TP: ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -159,6 +156,8 @@ jobs:
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; else THMP="1"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           pio run
           mkdir temp
           mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
@@ -367,6 +366,8 @@ jobs:
           false-true) THMP="13"; DSMP="424.9" ;;
           *)          THMP="1";  DSMP="98"    ;;
           esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
           if ($BMP); then
           sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
           sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
@@ -512,7 +513,6 @@ jobs:
         inshape: [true,false]
         temp: [true,false]
         tjc: [true,false]
-        t5: [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -545,8 +545,7 @@ jobs:
           if ($IS); then ISTMP=-IS; else ISTMP=; fi;
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          echo "filename=${DTMP}Ender${EVTMP}${STMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Ender${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -572,7 +571,6 @@ jobs:
           IS: ${{ matrix.inshape }}
           TP: ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -648,6 +646,8 @@ jobs:
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; else THMP="1"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           pio run
           mkdir temp
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
@@ -852,6 +852,8 @@ jobs:
           false-true) THMP="13"; DSMP="424.9" ;;
           *)          THMP="1";  DSMP="98"    ;;
           esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
           if ($BMP); then
           sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
           sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
@@ -1047,6 +1049,8 @@ jobs:
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; else THMP="1"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           pio run
           mkdir temp
           mv .pio/build/STM32F401RE_freeruns/*.bin temp/build.bin
