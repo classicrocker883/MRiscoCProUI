@@ -51,7 +51,7 @@ jobs:
           if ($IS); then ISTMP=-IS; else ISTMP=; fi;
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          echo "filename=${DTMP}Ender_GD32_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Ender_GD32${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -136,7 +136,7 @@ jobs:
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          echo "filename=${DTMP}Ender_GD32${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Ender_GD32${EVTMP}${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -231,7 +231,7 @@ jobs:
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
           if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
           if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-          echo "filename=${DTMP}Ender_GD32${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Ender_GD32${EVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
