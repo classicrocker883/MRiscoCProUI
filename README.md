@@ -41,15 +41,18 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 > **Please read the following:**
 
 > [!NOTE]
-> Many Updates have been included in the most recent MRiscoCProUI for the **2025-September** release.
-> This release has many changes to the **UI**.
-> New ICON's have been added, and old ones enhanced. Whoever edited them before saved directly as ._JPG_ which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
+> I will be working on more updates, features, and tweaks along the way.  
+> Much has been included in MRiscoCProUI releases, the most recent of which is **2025-September**.  
+> There are all kinds of versions and combinations to suite a specific printer, and changes to the **UI** and menu layout which are not available in any other fork.  
+> For information about recent changes visit the [Wiki - What's New in this Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release)
+> Support for _12864 Monochrome_ LCD types is under **C2** model.  
+> For _DWIN_ displays, new ICON's have been added and old ones enhanced. Whoever edited them before saved directly as ._JPG_ which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
 >
-> > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the _LCD Display_ with the new **DWIN_SET**; which is located in the `display assets` folder.
+> > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the _DWIN_ LCD display with the new **DWIN_SET**; which is located in the `display assets` folder.
 >
 > If you encounter any issues, have a suggestion, or feature requests please feel free to post it on the [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues), otherwise if everything is going well please leave a comment on the [Discussions tab](https://github.com/classicrocker883/MRiscoCProUI/discussions).
 >
-> I will be working on more upgrades and features and tweaks along the way. Enjoy using this fork of Marlin as I intend it to be the best; easy to use and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware.
+> Enjoy using this fork of Marlin as I intend it to be the best; intuitive, easy to use, and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware.
 
 > [!TIP]
 > If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change the state in which it triggers "no filament" to **HIGH** or **LOW** (depending on what is already selected).  
