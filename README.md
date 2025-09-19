@@ -44,8 +44,8 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 > I will be working on more updates, features, and tweaks along the way.  
 > Much has been included in MRiscoCProUI releases, the most recent of which is **2025-September**.  
 > There are all kinds of versions and combinations to suite a specific printer, and changes to the **UI** and menu layout which are not available in any other fork.  
-> For information about recent changes visit the [Wiki - What's New in this Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release)
-> Support for _12864 Monochrome_ LCD types is under **C2** model.  
+> For information about recent changes visit the [Wiki - What's New in this Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release).  
+> Support for _12864 Monochrome_ LCD types is under the model **C2**.  
 > For _DWIN_ displays, new ICON's have been added and old ones enhanced. Whoever edited them before saved directly as ._JPG_ which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
 >
 > > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the _DWIN_ LCD display with the new **DWIN_SET**; which is located in the `display assets` folder.
