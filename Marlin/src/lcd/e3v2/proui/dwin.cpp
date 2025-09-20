@@ -3630,7 +3630,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      float editable_k = planner.get_advance_k();
+      float editable_k = static_cast<float>(planner.get_advance_k());
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
         static float editable_u = static_cast<float>(Stepper::get_advance_tau());
@@ -3793,7 +3793,7 @@ void Draw_Motion_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      float editable_k = planner.get_advance_k();
+      float editable_k = static_cast<float>(planner.get_advance_k());
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
         static float editable_u = static_cast<float>(Stepper::get_advance_tau());
