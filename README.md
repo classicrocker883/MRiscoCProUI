@@ -184,7 +184,7 @@ Before building, open a terminal and run `./buildroot/share/scripts/simulator_er
 
 How to use:
 
-- Open the executable program found in **.pio\build\simulator\_<windows|linux>\_release**.
+- Open the executable program found in **.pio\build\simulator\_<windows|linux_release>**.
 - - For Windows: `MarlinSimulator.exe`
 - - For Linux: `./MarlinSimulator`  
     <sup>Enter in a terminal.</sup>
