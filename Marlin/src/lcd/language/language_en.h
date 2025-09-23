@@ -421,9 +421,9 @@ namespace LanguageNarrow_en {
   LSTR MSG_TEMP_TOO_HIGH                  = _UxGT("Temperature too high");
   LSTR MSG_TEMP_TOO_LOW                   = _UxGT("Temperature too low");
 
-  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Autotune failed! Bad extruder.");
-  LSTR MSG_PID_TEMP_TOO_HIGH              = _UxGT("Autotune failed! Temperature too high.");
-  LSTR MSG_PID_TIMEOUT                    = _UxGT("Autotune failed! Timeout.");
+  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Autotune failed! Bad extruder");
+  LSTR MSG_PID_TEMP_TOO_HIGH              = _UxGT("Autotune failed! Temperature too high");
+  LSTR MSG_PID_TIMEOUT                    = _UxGT("Autotune failed! Timeout");
 
   LSTR MSG_SHOW_TEMP_GRAPH                = _UxGT("Show Temp Graph");
   LSTR MSG_HOTEND_TEMP_GRAPH              = _UxGT("Hotend Temp Graph");
