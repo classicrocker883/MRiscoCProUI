@@ -95,28 +95,7 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 
 There is a _MarlinSimulator_ file provided to test out for yourself. It simulates a pre-built configuration of this firmware.
 
-The _MarlinSimulator_ can compile for Manual Mesh Bed Leveling or Auto Bed Leveling w/`BLTOUCH` enabled.  
-Start in **Configuration.h** and change `MOTHERBOARD` to `BOARD_SIMULATED`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX`:
-
-```y
-#ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_SIMULATED
-#endif
----
-//#define ENDSTOP_INTERRUPTS_FEATURE
----
-//#define PROUI_EX 1
-```
-
-<br>
-
-Then in **platformio.ini** for `default_envs =` change to `simulator_windows` (for Windows) | `simulator_linux_release` (for Linux):
-
-```ini
-default_envs = simulator_windows
----
-default_envs = simulator_linux_release
-```
+The _MarlinSimulator_ can compile for Manual Mesh Bed Leveling or Auto Bed Leveling w/`BLTOUCH` enabled.
 
 For MacOS you're on your own...sorry.
 
@@ -175,11 +154,27 @@ sudo apt install libsdl2 libsdl2-dev libsdl2-net-dev libsdl2-2.0-0 libglm-dev
 
 #### Using MarlinSimulator
 
-Before building, open a terminal and run `./buildroot/share/scripts/simulator_error.sh`, or change the following manually:
+Before building, open a terminal and run `./buildroot/share/scripts/simulator_error.sh [linux|windows]`, or change the following manually:
 
-- Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out) in **proui/dwin_defines.h**.
-- Comment out `#undef Z_MIN_ENDSTOP_HIT_STATE` in **inc/Conditionals-5-post.h**.
-- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]` in **native.ini**.  
+1. In **Configuration.h**:
+
+- Add `BOARD_SIMULATED` to `MOTHERBOARD`, then disable `ENDSTOP_INTERRUPTS_FEATURE` and `PROUI_EX 1`.
+
+2. In **platformio.ini**:
+
+- For `default_envs =` add `simulator_windows` (for Windows) | `simulator_linux_release` (for Linux).
+
+3. In **lcd/e3v2/proui/dwin_defines.h**:
+
+- Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out).
+
+4. In **inc/Conditionals-5-post.h**:
+
+- Comment out `#undef Z_MIN_ENDSTOP_HIT_STATE`.
+
+5. In **native.ini**:
+
+- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]`.
   <sup>Only if you get an error message about it.</sup>
 
 How to use:
