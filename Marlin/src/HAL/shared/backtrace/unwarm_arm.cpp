@@ -238,7 +238,12 @@ UnwResult UnwStartArm(UnwState * const state) {
 
           case 1: /* logical right */
             if (!regShift && shiftDist == 0) shiftDist = 32;
-            op2val = state->regData[rm].v >> shiftDist;
+            if (shiftDist >= 32) {
+              op2val = 0;
+            }
+            else {
+              op2val = state->regData[rm].v >> shiftDist;
+            }
             break;
 
           case 2: /* arithmetic right */
