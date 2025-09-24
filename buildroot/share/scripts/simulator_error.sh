@@ -20,8 +20,6 @@ PATTERN3='release_flags.*-flto'
 PATTERN4_BOARD='#define MOTHERBOARD'
 PATTERN4_ENDSTOP='#define ENDSTOP_INTERRUPTS_FEATURE'
 PATTERN4_PROUI='#define PROUI_EX 1'
-PATTERN5_WINDOWS='simulator_windows'
-PATTERN5_LINUX='simulator_linux_release'
 
 # Check for command line argument for platform
 PLATFORM_ENV=""
