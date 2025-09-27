@@ -199,7 +199,7 @@ dd if=/dev/zero of=new_fs.img bs=1M count=128
 2. Format the image:
 
 ```
-sudo mkfs.vfat -F 32 -n SDCARDIMAGE new_fs.img`
+sudo mkfs.vfat -F 32 -n SDCARDIMAGE new_fs.img
 ```
 
 3. Copy the _.gcode_ file (in place of **my_stl.gcode**):
@@ -244,7 +244,17 @@ They can be downloaded here:
 
 ## Donations
 
-Thank you for your support.
+This would not be possible without having to spend my free time working on it.
+
+I would greatly appreciate supporters, helpers, and beta testers whenever possible.
+
+Please show your support by considering making a donation, or giving your input if you end up using this firmware.
+
+It wasn't easy getting it to this point without all the help and input. I am just a basic programmer and the work is mostly trial and error.
+
+Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me what changes need to be made as I make them.
+
+Thank you to all those who have given me their support.  
 Please consider making a donation, as large or as small and as often as you'd like.  
 [Ko-fi](https://ko-fi.com/classicrocker883)  
 [Venmo](https://venmo.com/u/andrewleduc88)  
@@ -325,15 +335,6 @@ Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
     <img height=320 alt="Star History Chart" src="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date" />
   </picture>
 </a>
-
-This work would not be possible without me spending time working on it for free.
-
-I would greatly appreciate supporters, helpers, and beta testers whenever possible.
-
-Please show your support by considering making a donation, or giving your input if you end up using this firmware.
-
-It wasn't easy getting it to this point. I am just a basic programmer and the work is mostly trial and error.
-Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me what changes need to be made as I make them.
 
 - [Marlin Firmware](https://marlinfw.org/) is an Open Source project and owned and maintained by the maker community.
 - VS Code is an IDE program owned and maintained by Microsoft.
