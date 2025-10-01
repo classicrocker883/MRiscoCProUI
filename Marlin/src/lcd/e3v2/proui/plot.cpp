@@ -34,7 +34,7 @@ Plot plot;
 
 Plot::PlotData Plot::data;
 
-void Plot::draw(const frame_rect_t &frame, const_celsius_float_t max, const_celsius_float_t ref/*=0*/) {
+void Plot::draw(const frame_rect_t &frame, const celsius_float_t max, const celsius_float_t ref/*=0*/) {
   data.graphframe = frame;
   data.graphpoints = 0;
   data.scale = frame.h / max;
@@ -47,7 +47,7 @@ void Plot::draw(const frame_rect_t &frame, const_celsius_float_t max, const_cels
   DWIN_Draw_HLine(Color_Red, frame.x, data.r, frame.w);
 }
 
-void Plot::update(const_celsius_float_t value) {
+void Plot::update(const celsius_float_t value) {
   if (!data.scale) { return; }
   const uint16_t y = LROUND((data.y2) - value * data.scale);
   if (data.graphpoints < data.graphframe.w) {

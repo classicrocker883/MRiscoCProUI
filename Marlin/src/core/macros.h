@@ -55,6 +55,14 @@
   #define CYCLES_PER_MICROSECOND (F_CPU / 1000000UL) // 16 or 20 on AVR
 #endif
 
+// Macros to make a string from a macro
+#define STRINGIFY_(M) #M
+#define STRINGIFY(M) STRINGIFY_(M)
+#define CHARIFY(M) STRINGIFY(M)[0]
+
+#define A(CODE) " " CODE "\n\t"
+#define L(CODE) CODE ":\n\t"
+
 // Macros for bit masks
 #undef _BV
 #define _BV(b) (1 << (b))
@@ -793,13 +801,6 @@
 #define _UI_E3S1PRO     107
 #define _DGUS_UI_IS(N) || (CAT(_UI_, DGUS_LCD_UI) == CAT(_UI_, N))
 #define DGUS_UI_IS(V...) (0 MAP(_DGUS_UI_IS, V))
-
-// Macros to make a string from a macro
-#define STRINGIFY_(M) #M
-#define STRINGIFY( M) STRINGIFY_(M)
-
-#define A(CODE) " " CODE "\n\t"
-#define L(CODE) CODE ":\n\t"
 
 // Array shorthand
 #define COUNT(a)            (sizeof(a)/sizeof(*a))
