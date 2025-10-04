@@ -40,7 +40,11 @@
 #include "../core/boards.h"
 
 #if USE_STD_CONFIGS
-  #include "../../Configuration.h"
+  #if __has_include("../../Configuration.h")
+    #include "../../Configuration.h"
+  #else
+    #define MOTHERBOARD BOARD_ERROR
+  #endif
 #endif
 //#include "../../../configurations/_Undef_Configuration.h"  // **EXPERIMENTAL** Uncomment to use
 //#include "../../../configurations/_Define_Configuration.h" // **EXPERIMENTAL** Uncomment to use
