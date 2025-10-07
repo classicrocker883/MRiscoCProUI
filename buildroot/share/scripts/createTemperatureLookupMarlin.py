@@ -23,7 +23,7 @@ from __future__ import print_function, division
 from math import *
 import sys, getopt
 
-"""Constants"""
+# Constants
 ZERO   = 273.15       # Zero point of Kelvin scale
 VADC   = 5            # ADC voltage
 VCC    = 5            # Supply voltage

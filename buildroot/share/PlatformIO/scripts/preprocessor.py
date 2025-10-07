@@ -40,7 +40,7 @@ def run_preprocessor(env, fn=None):
     cmd += ["-D__MARLIN_DEPS__", "-w", "-dM", "-E", "-x", "c++", filename]
     blab(" ".join(cmd))
     try:
-        define_list = subprocess.check_output(cmd).splitlines()
+        define_list = subprocess.check_output(cmd, shell=False).splitlines()
     except:
         define_list = {}
     preprocessor_cache[filename] = define_list

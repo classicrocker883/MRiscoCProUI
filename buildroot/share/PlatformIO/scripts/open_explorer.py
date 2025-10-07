@@ -17,11 +17,11 @@ def open_file_explorer():
             os.startfile(script)
         except OSError:
             try:
-                subprocess.run(["explorer", str(script)], check=True)
+                subprocess.run(["explorer", str(script)], shell=False, check=True)
             except Exception as e:
                 print(f"Could not open File Explorer, an error occurred: {e}")
     elif current_OS == "Linux":
         try:
-            subprocess.run(["xdg-open", str(script)], check=True)
+            subprocess.run(["xdg-open", str(script)], shell=False, check=True)
         except Exception as e:
             print(f"Could not open File Explorer, an error occurred: {e}")
