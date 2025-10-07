@@ -90,7 +90,7 @@ for ALANG in ${LANG_ARG:=$LANGS_DEFAULT} ; do
   sed -i fontutf8-data.h -e 's|fonts//|fonts/|g' -e 's|fonts//|fonts/|g' -e 's|[/0-9a-zA-Z_\-]*buildroot/share/fonts|buildroot/share/fonts|' 2>/dev/null
   cd - >/dev/null
   mv ${DN_WORK}/fontutf8-data.h src/lcd/dogm/fontdata/langdata_${ALANG}.h
-  rm -rf ${DN_WORK}/*
+  rm -rf "${DN_WORK}"/*
 done
 
 rm -rf ${DN_WORK}

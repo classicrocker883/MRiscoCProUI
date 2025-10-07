@@ -19,10 +19,10 @@ if pioutil.is_pio_build():
         return byte
 
     def encrypt_file(input_file, output_file, file_length):
-        input = bytearray(input_file.read())
-        for i, byte in enumerate(input):
-            input[i] = encryptByte(byte)
-        output_file.write(input)
+        input_data = bytearray(input_file.read())
+        for i, byte in enumerate(input_data):
+            input_data[i] = encryptByte(byte)
+        output_file.write(input_data)
 
     # Encrypt ${PROGNAME}.bin and save it with the name given in build.crypt_lerdge
     def encrypt(source, target, env):
