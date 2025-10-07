@@ -243,7 +243,7 @@ def Upload(source, target, env):
                 raise Exception(f"CUSTOM_FIRMWARE_UPLOAD must be enabled in 'Configuration_adv.h' for '{marlin_motherboard}'")
 
             # Init & Open serial port
-            port = serial.Serial(upload_port, baudrate=upload_speed, write_timeout=0, timeout=0.1)
+            port = serial.Serial(upload_port, baudrate = upload_speed, write_timeout = 0, timeout = 0.1)
             _OpenPort()
 
             # Check SD card status

@@ -66,7 +66,7 @@ class Protocol(object):
 
     def __init__(self, device, baud, bsize, simerr, timeout):
         print("pySerial Version:", serial.VERSION)
-        self.port = serial.Serial(device, baudrate=baud, write_timeout=0, timeout=1)
+        self.port = serial.Serial(device, baudrate = baud, write_timeout = 0, timeout = 1)
         self.device = device
         self.baud = baud
         self.block_size = int(bsize)
@@ -96,7 +96,7 @@ class Protocol(object):
             for x in range(10):
                 try:
                     if self.connected:
-                        self.port = serial.Serial(self.device, baudrate=self.baud, write_timeout=0, timeout=1)
+                        self.port = serial.Serial(self.device, baudrate = self.baud, write_timeout = 0, timeout = 1)
                         return
                     else:
                         print("Connection closed")

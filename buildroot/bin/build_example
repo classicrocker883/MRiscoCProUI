@@ -131,6 +131,9 @@ echo "Getting configuration files from $SUB"
 cp "$BASE"/configurations/Voxelab\ Aquila/UBL/*.h Marlin/
 cp "$SUB"/*.h Marlin/
 
+if [ -f Marlin/Configuration-MP.h ]; then
+    rm -f Marlin/Configuration-MP.h
+fi
 rm -f Marlin/Config.h Marlin/Config-export.h
 
 set -e

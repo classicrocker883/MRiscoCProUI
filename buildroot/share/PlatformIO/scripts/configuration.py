@@ -234,9 +234,8 @@ def apply_config_ini(cp):
             ckey = "base"
 
         # (Allow 'example/' as a shortcut for 'examples/')
-        elif not ckey.startswith("configuration/"):
-            ckey = "configurations/" + ckey
-            # ckey = ckey[7:]
+        elif ckey.startswith("configuration/"):
+            ckey = "configurations/" + ckey[7:]
 
         # For 'examples/<path>' fetch an example set from GitHub.
         # For https?:// do a direct fetch of the URL.
