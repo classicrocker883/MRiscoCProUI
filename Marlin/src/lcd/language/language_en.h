@@ -421,9 +421,9 @@ namespace LanguageNarrow_en {
   LSTR MSG_TEMP_TOO_HIGH                  = _UxGT("Temperature too high");
   LSTR MSG_TEMP_TOO_LOW                   = _UxGT("Temperature too low");
 
-  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Autotune failed! Bad extruder.");
-  LSTR MSG_PID_TEMP_TOO_HIGH              = _UxGT("Autotune failed! Temperature too high.");
-  LSTR MSG_PID_TIMEOUT                    = _UxGT("Autotune failed! Timeout.");
+  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Autotune failed! Bad extruder");
+  LSTR MSG_PID_TEMP_TOO_HIGH              = _UxGT("Autotune failed! Temperature too high");
+  LSTR MSG_PID_TIMEOUT                    = _UxGT("Autotune failed! Timeout");
 
   LSTR MSG_SHOW_TEMP_GRAPH                = _UxGT("Show Temp Graph");
   LSTR MSG_HOTEND_TEMP_GRAPH              = _UxGT("Hotend Temp Graph");
@@ -996,6 +996,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_FTM_MZV                        = _UxGT("MZV");
   //LSTR MSG_FTM_ULENDO_FBS               = _UxGT("Ulendo FBS");
   //LSTR MSG_FTM_DISCTF                   = _UxGT("DISCTF");
+  LSTR MSG_FTM_AXIS_SYNC                  = _UxGT("Axis Sync");
   LSTR MSG_FTM_DYN_MODE                   = _UxGT("DF Mode: $");
   LSTR MSG_FTM_Z_BASED                    = _UxGT("Z-based");
   LSTR MSG_FTM_MASS_BASED                 = _UxGT("Mass-based");
@@ -1003,6 +1004,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_FTM_DFREQ_K_N                  = _UxGT("@ Dyn. Freq.");
   LSTR MSG_FTM_ZETA_N                     = _UxGT("@ Damping");
   LSTR MSG_FTM_VTOL_N                     = _UxGT("@ Vib. Level");
+  LSTR MSG_FTM_SMOOTH_TIME_N              = _UxGT("@ Smoothing Time");
 
   LSTR MSG_LEVEL_X_AXIS                   = _UxGT("Level X-Axis");
   LSTR MSG_AUTO_CALIBRATE                 = _UxGT("Auto Calibrate");

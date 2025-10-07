@@ -1958,10 +1958,10 @@ void DWIN_HomingDone() {
   #endif
 
   #if HAS_MESH
-    void DWIN_MeshUpdate(const int8_t xpos, const int8_t ypos, const_float_t zval) {
+    void DWIN_MeshUpdate(const int8_t xpos, const int8_t ypos, const float zval) {
       ui.set_status(TS("X:", p_float_t(xpos, 1), " Y:", p_float_t(ypos, 1), " Z:", p_float_t(zval, 3)));
     }
-    void DWIN_PointUpdate(const int8_t cpos, const int8_t tpos, const_float_t zval) {
+    void DWIN_PointUpdate(const int8_t cpos, const int8_t tpos, const float zval) {
       ui.set_status(TS(GET_TEXT_F(MSG_PROBING_POINT), F(" "), cpos, F("/"), tpos, F(" Z="), p_float_t(zval, 2)));
     }
   #endif
@@ -2007,7 +2007,7 @@ void DWIN_Print_Finished() {
       #ifdef SD_FINISHED_RELEASECOMMAND
         queue.inject(F(SD_FINISHED_RELEASECOMMAND));
       #else
-        const_float_t zpos = current_position.z + TERN(NOZZLE_PARK_FEATURE, NOZZLE_PARK_Z_RAISE_MIN, Z_POST_CLEARANCE);
+        const float zpos = current_position.z + TERN(NOZZLE_PARK_FEATURE, NOZZLE_PARK_Z_RAISE_MIN, Z_POST_CLEARANCE);
         _MIN(zpos, Z_MAX_POS);
         const int16_t ypos = TERN(NOZZLE_PARK_FEATURE, TERN(PROUI_EX, PRO_data.Park_point.y, DEF_NOZZLE_PARK_POINT.y), Y_MAX_POS);
         queue.inject(TS(F("G0F600Z"), zpos, F("\nG0F2000Y"), ypos, F("\nM400")));
@@ -2452,7 +2452,7 @@ void AutoHome() { queue.inject_P(G28_STR); }
   void ApplyZOffset() { (void)settings.save(); }
   void LiveZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
-      const_float_t step_zoffset = round((MenuData.Value / 100.0f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
+      const float step_zoffset = round((MenuData.Value / 100.0f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
       if (BABYSTEP_ALLOWED()) { babystep.add_steps(Z_AXIS, step_zoffset); }
     #endif
   }
@@ -2886,7 +2886,7 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
   #if ENABLED(LCD_BED_TRAMMING)
     constexpr float lfrb[] = BED_TRAMMING_INSET_LFRB;
   #else
-    const_float_t lfrb[] = { ui.screw_pos, ui.screw_pos, TERN(HAS_BED_PROBE, _MAX(((X_BED_SIZE - X_MAX_POS) - probe.offset.x), ui.screw_pos), ui.screw_pos), TERN(HAS_BED_PROBE, _MAX(((Y_BED_SIZE - Y_MAX_POS) - probe.offset.y), ui.screw_pos), ui.screw_pos) };
+    const float lfrb[] = { ui.screw_pos, ui.screw_pos, TERN(HAS_BED_PROBE, _MAX(((X_BED_SIZE - X_MAX_POS) - probe.offset.x), ui.screw_pos), ui.screw_pos), TERN(HAS_BED_PROBE, _MAX(((Y_BED_SIZE - Y_MAX_POS) - probe.offset.y), ui.screw_pos), ui.screw_pos) };
   #endif
   #if HAS_BED_PROBE
     static bool inLev = false;
@@ -3149,9 +3149,10 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
   void ApplyLA_K() { planner.set_advance_k(MenuData.Value / POW(10, 3)); }
   void SetLA_K() { SetFloatOnClick(0, 10, 3, planner.extruder_advance_K[EXT], ApplyLA_K); }
+  void onDrawLA_K(MenuItemClass* menuitem, int8_t line) { onDrawFloatMenu(menuitem, line, 3, planner.get_advance_k()); }
   #if ENABLED(SMOOTH_LIN_ADVANCE)
-    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value / POW(10, MINUNITMULT)); }
-    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 1, ApplySmoothLA); }
+    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value / POW(10, 2)); }
+    void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 2, ApplySmoothLA); }
   #endif
 #endif
 
@@ -3630,11 +3631,11 @@ void Draw_Tune_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      float editable_k = planner.get_advance_k();
-      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_k);
+      static float editable_k = planner.get_advance_k();
+      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawLA_K, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        static float editable_u = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_u);
+        static float editable_u = Stepper::get_advance_tau();
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_u);
       #endif
     #endif
     #if ENABLED(EDITABLE_DISPLAY_TIMEOUT)
@@ -3659,7 +3660,7 @@ void Draw_Tune_Menu() {
 }
 
 #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
-  void SetAdaptiveStepSmoothing() {
+  void ToggleAdaptiveStepSmoothing() {
     Toggle_Chkb_Line(stepper.adaptive_step_smoothing_enabled);
   }
 #endif
@@ -3793,15 +3794,15 @@ void Draw_Motion_Menu() {
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
     #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      float editable_k = planner.get_advance_k();
-      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawPFloat3Menu, SetLA_K, &editable_k);
+      static float editable_k = planner.get_advance_k();
+      EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawLA_K, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        static float editable_u = static_cast<float>(Stepper::get_advance_tau());
-        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloatMenu, SetSmoothLA, &editable_u);
+        static float editable_u = Stepper::get_advance_tau();
+        EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_u);
       #endif
     #endif
     #if ENABLED(ADAPTIVE_STEP_SMOOTHING_TOGGLE)
-      EDIT_ITEM(ICON_CloseMotor, MSG_STEP_SMOOTHING, onDrawChkbMenu, SetAdaptiveStepSmoothing, &stepper.adaptive_step_smoothing_enabled);
+      EDIT_ITEM(ICON_CloseMotor, MSG_STEP_SMOOTHING, onDrawChkbMenu, ToggleAdaptiveStepSmoothing, &stepper.adaptive_step_smoothing_enabled);
     #endif
   }
   UpdateMenu(MotionMenu);

@@ -260,8 +260,8 @@ void DWIN_RebootScreen();
   void HMI_LockScreen();
 #endif
 #if HAS_MESH
-  void DWIN_MeshUpdate(const int8_t xpos, const int8_t ypos, const_float_t zval);
-  void DWIN_PointUpdate(const int8_t cpos, const int8_t tpos, const_float_t zval);
+  void DWIN_MeshUpdate(const int8_t xpos, const int8_t ypos, const float zval);
+  void DWIN_PointUpdate(const int8_t cpos, const int8_t tpos, const float zval);
   void DWIN_MeshViewer();
   #if ENABLED(MESH_BED_LEVELING)
     void ManualMeshSave();

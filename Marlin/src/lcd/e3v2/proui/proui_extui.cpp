@@ -163,12 +163,12 @@ namespace ExtUI {
   #endif
 
   #if HAS_MESH
-    void onMeshUpdate(const int8_t xpos, const int8_t ypos, const_float_t zval) {
+    void onMeshUpdate(const int8_t xpos, const int8_t ypos, const float zval) {
       const int16_t idx = ypos * (GRID_MAX_POINTS_X) + xpos;
       dwinMeshUpdate(_MIN(idx, GRID_MAX_POINTS), int(GRID_MAX_POINTS), zval);
       dwinRedrawScreen();
     }
-    // void onMeshUpdate(const int8_t cpos, const int8_t tpos, const_float_t zval) {
+    // void onMeshUpdate(const int8_t cpos, const int8_t tpos, const float zval) {
     //   ui.set_status(
     //     &MString<32>(GET_TEXT_F(MSG_PROBING_POINT), ' ', cpos, '/', tpos, F(" Z="), p_float_t(zval, 2))
     //   );

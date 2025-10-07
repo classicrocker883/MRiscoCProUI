@@ -35,7 +35,7 @@
 
 #if ENABLED(BABYSTEP_ZPROBE_OFFSET)
 
-  FORCE_INLINE void mod_probe_offset(const_float_t offs) {
+  FORCE_INLINE void mod_probe_offset(const float offs) {
     if (TERN1(BABYSTEP_HOTEND_Z_OFFSET, active_extruder == 0)) {
       probe.offset.z += offs;
       SERIAL_ECHO_MSG(STR_Z_PROBE_OFFSET, probe.offset.z);

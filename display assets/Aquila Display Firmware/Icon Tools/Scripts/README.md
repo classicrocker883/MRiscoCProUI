@@ -65,7 +65,9 @@ If you want to edit the individual icons stored in an ICO file (or add more imag
 **Splitting .ICO FIle In Windows:**
 
 - Create `Split-ICO.bat` file in this folder with the following code
-  -     for /f %%f in ('dir *.ICO /B /O:-D') do splitico.py %%f %%f-icons
+  - ```
+    for /f %%f in ('dir *.ICO /B /O:-D') do splitico.py %%f %%f-icons
+    ```
 - Paste `.ICO` file into this folder
 - Run `Split-ICO.bat`
 - A new folder should appear containing all icons

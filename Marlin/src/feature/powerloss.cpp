@@ -288,7 +288,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=POW
 
   #if ENABLED(BACKUP_POWER_SUPPLY)
 
-    void PrintJobRecovery::retract_and_lift(const_float_t zraise) {
+    void PrintJobRecovery::retract_and_lift(const float zraise) {
       #if POWER_LOSS_RETRACT_LEN || POWER_LOSS_ZRAISE
 
         gcode.set_relative_mode(true);  // Use relative coordinates
@@ -516,7 +516,7 @@ void PrintJobRecovery::resume() {
     #if ENABLED(NOZZLE_PARK_FEATURE)
       gcode.process_subcommands_now(F("G27P3\nG27P2"));
     #else
-      const_float_t zpos = current_position.z + TERN(NOZZLE_PARK_FEATURE, NOZZLE_PARK_Z_RAISE_MIN, Z_POST_CLEARANCE);
+      const float zpos = current_position.z + TERN(NOZZLE_PARK_FEATURE, NOZZLE_PARK_Z_RAISE_MIN, Z_POST_CLEARANCE);
       _MIN(zpos, Z_MAX_POS);
       const int16_t ypos = TERN(NOZZLE_PARK_FEATURE, TERN(PROUI_EX, PRO_data.Park_point.y, DEF_NOZZLE_PARK_POINT.y), Y_MAX_POS);
       gcode.process_subcommands_now(TS(F("G0F600Z"), zpos, F("\nG0F2000Y"), ypos, F("\nM400")));
