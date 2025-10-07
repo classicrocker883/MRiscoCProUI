@@ -124,11 +124,11 @@ else
 fi
 
 # Delete any config files from previous builds
-rm -f Marlin/_Bootscreen.h Marlin/_Statusscreen.h
+# rm -f Marlin/_Bootscreen.h Marlin/_Statusscreen.h
 
 # Copy configurations into the Marlin folder
 echo "Getting configuration files from $SUB"
-cp "$BASE"/configurations/Andrew427/*.h Marlin/
+cp "$BASE"/configurations/Voxelab\ Aquila/UBL/*.h Marlin/
 cp "$SUB"/*.h Marlin/
 
 rm -f Marlin/Config.h Marlin/Config-export.h

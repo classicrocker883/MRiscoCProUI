@@ -112,7 +112,7 @@ def main():
     else:
       config_path = arg
   else:
-    config_path = "Andrew427"
+    config_path = "configurations"
 
   try:
     subprocess.run(['restore_configs'], check=True)

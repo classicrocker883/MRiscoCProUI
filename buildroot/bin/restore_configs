@@ -3,8 +3,8 @@
 import os, sys, subprocess
 
 files_to_remove = [
-  "Marlin/_Bootscreen.h",
-  "Marlin/_Statusscreen.h",
+  # "Marlin/_Bootscreen.h",
+  # "Marlin/_Statusscreen.h",
   "marlin_config.json",
   ".pio/build/mc.zip"
 ]

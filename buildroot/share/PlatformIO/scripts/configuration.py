@@ -132,8 +132,7 @@ def fetch_example(url):
     if not url.startswith("http"):
         brch = "HEAD"
         if "@" in url: url, brch = map(str.strip, url.split("@"))
-        if url == "configurations": url = "Andrew427"
-        url = f"https://raw.githubusercontent.com/classicrocker883/MRiscoCProUI/{brch}/configurations/{url}"
+        url = f"https://raw.githubusercontent.com/classicrocker883/MRiscoCProUI/{brch}/{url}"
     url = url.replace("%", "%25").replace(" ", "%20")
 
     # Find a suitable fetch command
@@ -234,8 +233,9 @@ def apply_config_ini(cp):
             ckey = "base"
 
         # (Allow 'example/' as a shortcut for 'examples/')
-        elif ckey.startswith("configuration/"):
-            ckey = "configurations" + ckey[7:]
+        elif not ckey.startswith("configuration/"):
+            ckey = "configurations/" + ckey
+            # ckey = ckey[7:]
 
         # For 'examples/<path>' fetch an example set from GitHub.
         # For https?:// do a direct fetch of the URL.
