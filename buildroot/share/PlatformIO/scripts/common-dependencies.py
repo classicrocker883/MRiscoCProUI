@@ -18,14 +18,15 @@ if pioutil.is_pio_build():
 
     def validate_pio():
         PIO_VERSION_MIN = (6, 0, 1)
+        WEIGHTS = (1000, 100, 1)
+
+        def weighted_sum(version):
+            return sum(w * float(re.sub(r'[^0-9]', '.', str(v))) for w, v in zip(WEIGHTS, version))
+
         try:
             from platformio import VERSION as PIO_VERSION
-            weights = (1000, 100, 1)
-            version_min = sum([x[0] * float(re.sub(r'[^0-9]', ".", str(x[1]))) for x in zip(weights, PIO_VERSION_MIN)])
-            version_cur = sum([x[0] * float(re.sub(r'[^0-9]', ".", str(x[1]))) for x in zip(weights, PIO_VERSION)])
-            if version_cur < version_min:
-                print()
-                print("**************************************************")
+            if weighted_sum(PIO_VERSION) < weighted_sum(PIO_VERSION_MIN):
+                print("\n" + "*" * 50)
                 print("******      An update to PlatformIO is      ******")
                 print("******  required to build Marlin Firmware.  ******")
                 print("******                                      ******")
@@ -33,17 +34,16 @@ if pioutil.is_pio_build():
                 print("******      Current Version: ", PIO_VERSION, "    ******")
                 print("******                                      ******")
                 print("******   Update PlatformIO and try again.   ******")
-                print("**************************************************")
-                print()
+                print("*" * 50 + "\n")
                 exit(1)
         except SystemExit:
             exit(1)
         except:
             print("Can't detect PlatformIO Version")
 
-    def blab(str, level=1):
+    def blab(msg, level=1):
         if verbose >= level:
-            print("[deps] %s" % str)
+            print("[deps] %s" % msg)
 
     def add_to_feat_cnf(feature, flines):
 
@@ -162,7 +162,7 @@ if pioutil.is_pio_build():
                         del deps_to_add[name]
 
                 # Is there anything left?
-                if len(deps_to_add) > 0:
+                if deps_to_add:
                     # Only add the missing dependencies
                     set_env_field("lib_deps", deps + list(deps_to_add.values()))
 

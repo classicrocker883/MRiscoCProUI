@@ -12,7 +12,7 @@ abm/js/schema.js in the MarlinFirmware/AutoBuildMarlin project, which has been e
 evaluate conditions and can determine what options are actually enabled, not just which
 options are uncommented. That will be migrated to this script for standalone migration.
 
-Usage: schema.py [-h] [some|json|jsons|group|yml|yaml]
+Usage: schema.py [-h|--help] [some|json|jsons|group|yml|yaml]
 
 Process Marlin firmware configuration files (Configuration.h and Configuration_adv.h)
 to produce structured output suitable for documentation, tooling, or automated processing.
@@ -32,7 +32,7 @@ Optional arguments:
 import re, json
 from pathlib import Path
 
-def extend_dict(d: dict, k: tuple):
+def extend_dict(d:dict, k:tuple):
     if len(k) >= 1 and k[0] not in d:
         d[k[0]] = {}
     if len(k) >= 2 and k[1] not in d[k[0]]:
@@ -134,7 +134,7 @@ def extract_files(filekey):
         ERROR         = 9  # Syntax error
 
     # A JSON object to store the data
-    sch_out = {key: {} for key in filekey.values()}
+    sch_out = {key:{} for key in filekey.values()}
     # Regex for #define NAME [VALUE] [COMMENT] with sanitized line
     defgrep = re.compile(r'^(//)?\s*(#define)\s+([A-Za-z0-9_]+)\s*(.*?)\s*(//.+)?$')
     # Pattern to match a float value
@@ -338,7 +338,7 @@ def extract_files(filekey):
                     cparts = line.split()
                     iselif, iselse = cparts[0] == "#elif", cparts[0] == "#else"
                     if iselif or iselse or cparts[0] == "#endif":
-                        if len(conditions) == 0:
+                        if not conditions:
                             raise Exception(f"no #if block at line {line_number}")
 
                         # Pop the last condition-array from the stack
@@ -381,7 +381,7 @@ def extract_files(filekey):
                         value_type = \
                              "switch"  if val == "" \
                         else "int"     if re.match(r'^[-+]?\s*\d+$', val) \
-                        else "ints"    if re.match(r'^([-+]?\s*\d+)(\s*,\s*[-+]?\s*\d+)+$', val) \
+                        else "ints"    if re.match(r'^[-+]?\s*\d+(?:\s*,\s*[-+]?\s*\d+)+$', val) \
                         else "floats"  if re.match(rf"({flt}(\s*,\s*{flt})+)", val) \
                         else "float"   if re.match(f"^({flt})$", val) \
                         else "string"  if val[0] == '"' \
@@ -389,7 +389,7 @@ def extract_files(filekey):
                         else "bool"    if val in ("true", "false") \
                         else "state"   if val in ("HIGH", "LOW") \
                         else "enum"    if re.match(r'^[A-Za-z0-9_]{3,}$', val) \
-                        else "int[]"   if re.match(r'^{\s*[-+]?\s*\d+(\s*,\s*[-+]?\s*\d+)*\s*}$', val) \
+                        else "int[]"   if re.match(r'^{\s*[-+]?\s*\d+(?:\s*,\s*[-+]?\s*\d+)*\s*}$', val) \
                         else "float[]" if re.match(r'^{{\s*{flt}(\s*,\s*{flt})*\s*}}$', val) \
                         else "array"   if val[0] == "{" \
                         else ""
@@ -498,7 +498,7 @@ def main():
         # Get the command line arguments after the script name
         import sys
         args = sys.argv[1:]
-        if len(args) == 0: args = ["some"]
+        if not args: args = ["some"]
 
         # Does the given array intersect at all with args?
         def inargs(c): return len(set(args) & set(c)) > 0
@@ -507,7 +507,7 @@ def main():
         unk = not inargs(["some", "json", "jsons", "group", "yml", "yaml", "-h", "--help"])
         if (unk): print(f"Unknown option: '{args[0]}'")
         if inargs(["-h", "--help"]) or unk:
-            print("usage: schema.py [-h][--help] [some|json|jsons|group|yml|yaml]")
+            print("Usage: schema.py [-h|--help] [some|json|jsons|group|yml|yaml]")
             print("       some  = json + yml")
             print("       jsons = json + group")
             return

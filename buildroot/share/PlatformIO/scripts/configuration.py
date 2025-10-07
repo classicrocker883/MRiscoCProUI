@@ -6,9 +6,10 @@
 import re, os, shutil, configparser, datetime
 from pathlib import Path
 
-verbose = 0
-def blab(str, level=1):
-    if verbose >= level: print(f"[config] {str}")
+verbose = 1
+
+def blab(msg, level=1):
+    if verbose >= level: print(f"[config] {msg}")
 
 def config_path(cpath):
     return Path("Marlin", cpath)
@@ -261,9 +262,9 @@ if __name__ == "__main__":
     #
     # From command line use the given file name
     #
-    import sys, os.path
+    import sys
     args = sys.argv[1:]
-    if len(args) > 0:
+    if args:
         if args[0].endswith(".ini"):
             ini_file = args[0]
         else:

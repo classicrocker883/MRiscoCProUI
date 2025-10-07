@@ -8,28 +8,29 @@ https://en.wikipedia.org/wiki/Steinhart-Hart_equation
 The main use is for Arduino programs that read data from the circuit board described here:
 https://reprap.org/wiki/Temperature_Sensor_v2.0
 
-usage: python createTemperatureLookupMarlin.py [options]
+Usage: createTemperatureLookupMarlin.py [options]
 
-options:
-  -h, --help        show this help message and exit
-  --rp=...          pull-up resistor
-  --t1=ttt:rrr      low temperature temperature:resistance point (around 25 degC)
-  --t2=ttt:rrr      middle temperature temperature:resistance point (around 150 degC)
-  --t3=ttt:rrr      high temperature temperature:resistance point (around 250 degC)
-  --num-temps=...   the number of temperature points to calculate (default: 36)
+Optional arguments:
+  -h, --help        Show this help
+  --rp=...          Pull-up resistor
+  --t1=ttt:rrr      Low temperature temperature:resistance point (around 25 degC)
+  --t2=ttt:rrr      Middle temperature temperature:resistance point (around 150 degC)
+  --t3=ttt:rrr      High temperature temperature:resistance point (around 250 degC)
+  --num-temps=...   The number of temperature points to calculate (default: 36)
 """
+
 from __future__ import print_function, division
 from math import *
 import sys, getopt
 
-"Constants"
-ZERO   = 273.15                             # Zero point of Kelvin scale
-VADC   = 5                                  # ADC voltage
-VCC    = 5                                  # Supply voltage
-ARES   = pow(2, 10)                         # 10 Bit ADC resolution
-VSTEP  = VADC / ARES                        # ADC voltage resolution
-TMIN   = 0                                  # Lowest temperature in table
-TMAX   = 350                                # Highest temperature in table
+"""Constants"""
+ZERO   = 273.15       # Zero point of Kelvin scale
+VADC   = 5            # ADC voltage
+VCC    = 5            # Supply voltage
+ARES   = pow(2, 10)   # 10 Bit ADC resolution
+VSTEP  = VADC / ARES  # ADC voltage resolution
+TMIN   = 0            # Lowest temperature in table
+TMAX   = 350          # Highest temperature in table
 
 class Thermistor:
     """Class to do the thermistor maths"""
@@ -38,7 +39,7 @@ class Thermistor:
         l1 = log(r1)
         l2 = log(r2)
         l3 = log(r3)
-        y1 = 1.0 / (t1 + ZERO)              # Adjust scale
+        y1 = 1.0 / (t1 + ZERO)  # Adjust scale
         y2 = 1.0 / (t2 + ZERO)
         y3 = 1.0 / (t3 + ZERO)
         x = (y2 - y1) / (l2 - l1)
@@ -52,40 +53,40 @@ class Thermistor:
             print("// WARNING: Negative coefficient 'c'! Something may be wrong with the measurements! //")
             print("//////////////////////////////////////////////////////////////////////////////////////")
             c = -c
-        self.c1 = a                         # Steinhart-Hart coefficients
+        self.c1 = a  # Steinhart-Hart coefficients
         self.c2 = b
         self.c3 = c
-        self.rp = rp                        # Pull-up resistance
+        self.rp = rp  # Pull-up resistance
 
     def resol(self, adc):
-        "Convert ADC reading into a resolution"
+        """Convert ADC reading into a resolution"""
         res = self.temp(adc) - self.temp(adc + 1)
         return res
 
     def voltage(self, adc):
-        "Convert ADC reading into a Voltage"
-        return adc * VSTEP                  # Convert the 10 bit ADC value to a voltage
+        """Convert ADC reading into a Voltage"""
+        return adc * VSTEP  # Convert the 10 bit ADC value to a voltage
 
     def resist(self, adc):
-        "Convert ADC reading into a resistance in Ohms"
+        """Convert ADC reading into a resistance in Ohms"""
         r = self.rp * self.voltage(adc) / (VCC - self.voltage(adc))  # Resistance of thermistor
         return r
 
     def temp(self, adc):
-        "Convert ADC reading into a temperature in Celsius"
+        """Convert ADC reading into a temperature in Celsius"""
         l = log(self.resist(adc))
         Tinv = self.c1 + self.c2 * l + self.c3 * l**3  # Inverse temperature
-        return (1 / Tinv) - ZERO                       # Temperature
+        return (1 / Tinv) - ZERO  # Temperature
 
     def adc(self, temp):
-        "Convert temperature into a ADC reading"
+        """Convert temperature into a ADC reading"""
         x = (self.c1 - (1.0 / (temp + ZERO))) / (2 * self.c3)
         y = sqrt((self.c2 / (3 * self.c3)) ** 3 + x**2)
         r = exp((y - x) ** (1.0 / 3) - (y + x) ** (1.0 / 3))
         return (r / (self.rp + r)) * ARES
 
 def main(argv):
-    "Default values"
+    """Default values"""
     t1 = 25         # Low temperature in Kelvin (25 degC)
     r1 = 100000     # Resistance at low temperature (10 kOhm)
     t2 = 150        # Middle temperature in Kelvin (150 degC)
@@ -144,7 +145,9 @@ def main(argv):
         print("    { OV(%7.2f), %4s }%s // v=%.3f\tr=%.3f\tres=%.3f degC/count" %
             (adc, temp,
             "," if temp != temps[-1] else " ",
-            t.voltage(adc), t.resist(adc), t.resol(adc))
+            t.voltage(adc),
+            t.resist( adc),
+            t.resol(  adc))
         )
     print("};")
 

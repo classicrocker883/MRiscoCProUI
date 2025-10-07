@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 #
-#  mftest                             Select a test to apply and build
-#  mftest -b [#]                      Build the auto-detected environment
-#  mftest -u [#]                      Upload the auto-detected environment
-#  mftest -tname -n# [-y]             Set config options and optionally build a test
+#  mftest                  Select a test to apply and build
+#  mftest -a [#]           Build the auto-detected environment
+#  mftest -u [#]           Upload the auto-detected environment
+#  mftest -tname -n# [-y]  Set config options and optionally build a test
 #
 
-[[ -d Marlin/src ]] || { echo "Please 'cd' to the Marlin repo root." ; exit 1 ; }
-
-which pio >/dev/null || { echo "Make sure 'pio' is in your execution PATH." ; exit 1 ;  }
-
-perror() { echo -e "$0: \033[0;31m$1 -- $2\033[0m" ; }
+# Error helpers
 errout() { echo -e "\033[0;31m$1\033[0m" ; }
+perror() { errout "$0: $1 -- $2" ; }
 bugout() { ((DEBUG)) && echo -e "\033[0;32m$1\033[0m" ; }
+
+# Ensure we are in root and PlatformIO is available
+[[ -d Marlin/src ]] || { errout "Please 'cd' to the Marlin repo root." ; exit 1 ; }
+command -v pio &>/dev/null || { errout "Make sure 'pio' is in your PATH." ; exit 1 ; }
 
 usage() {
   echo "
@@ -57,12 +58,13 @@ TESTENV='-'
 CHOICE=0
 DEBUG=0
 
-while getopts 'adhmn:rst:uvy-:' OFLAG; do
+while getopts 'acdhmn:rst:uvy-:' OFLAG; do
   case "${OFLAG}" in
     a) AUTO_BUILD=1 ; bugout "Auto-Build target..." ;;
+    c) CLEAN_BUILD=1 ; bugout "Clean build..." ;;
     d) DL_DEFAULTS=1 ; bugout "Restore to defaults..." ;;
     h) EXIT_USAGE=1 ;;
-    m) USE_MAKE=1 ; bugout "Using make with Docker..." ;;
+    m) USE_MAKE=1 ; bugout "Using Make with Docker..." ;;
     n) case "$OPTARG" in
          *[!0-9]*) perror "option requires a number" $OFLAG ; EXIT_USAGE=2 ;;
                 *) CHOICE="$OPTARG" ; bugout "Got a number: $CHOICE" ;;
@@ -79,6 +81,7 @@ while getopts 'adhmn:rst:uvy-:' OFLAG; do
          help) [[ -z "$OVAL" ]] || perror "option can't take value $OVAL" $ONAM ; EXIT_USAGE=1 ;;
     autobuild) AUTO_BUILD=1 ; bugout "Auto-Build target..."  ;;
    autoupload) AUTO_BUILD=2 ; bugout "Auto-Upload target..." ;;
+        clean) CLEAN_BUILD=1 ; bugout "Clean build..." ;;
           env) case "$OVAL" in
                  '') perror "option requires a value" $ONAM ; EXIT_USAGE=2 ;;
                   *) TESTENV="$OVAL" ; bugout "Got a target: $TESTENV" ;;
@@ -86,7 +89,7 @@ while getopts 'adhmn:rst:uvy-:' OFLAG; do
                ;;
           num) case "$OVAL" in
                  [0-9]+) CHOICE="$OVAL" ; bugout "Got a number: $CHOICE" ;;
-                      *) perror "option requires a value" $ONAM ; EXIT_USAGE=2 ;;
+                      *) perror "option requires a number" $ONAM ; EXIT_USAGE=2 ;;
                esac
                ;;
       rebuild) REBUILD=1  ; bugout "Rebuilding previous..." ;;
@@ -101,7 +104,7 @@ debug|verbose) DEBUG=1    ; bugout "Debug ON" ;;
                esac
                bugout "Build will initiate? ($BUILD_YES)"
                ;;
-            *) perror "Unknown flag" "$OPTARG" ; EXIT_USAGE=2 ;;
+            *) perror "Unknown value" "$OPTARG" ; EXIT_USAGE=2 ;;
        esac
        ;;
     *) EXIT_USAGE=2 ;;
@@ -113,11 +116,18 @@ shift $((OPTIND - 1))
 
 if ((REBUILD)); then
   bugout "Rebuilding previous..."
-  # Build with the last-built env
-  [[ -f "$STATE_FILE" ]] || { errout "No previous (-r) build state found." ; exit 1 ; }
-  read TESTENV <"$STATE_FILE"
-  pio run $SILENT_FLAG -d . -e $TESTENV
-  exit 0
+  [[ -f $STATE_FILE ]] || { errout "No previous (-r) build state found." ; exit 1 ; }
+  read -r TESTENV <"$STATE_FILE"
+  pio run ${SILENT_FLAG:-} -d . -e $TESTENV
+  exit $? # Exit with the status of pio run
+fi
+
+if ((CLEAN_BUILD)); then
+  bugout "Cleaning build env..."
+  [[ -f $STATE_FILE ]] || { errout "No previous (-r) build state found." ; exit 1 ; }
+  read -r TESTENV <"$STATE_FILE"
+  pio run ${SILENT_FLAG:-} -d . -e $TESTENV -t clean
+  exit $? # Exit with the status of pio run
 fi
 
 case $TESTENV in
@@ -146,9 +156,7 @@ lp9|lpc9) TESTENV='LPC1769' ;;
 esac
 
 if ((AUTO_BUILD)); then
-  #
   # List environments that apply to the current MOTHERBOARD.
-  #
   case $(uname | tr '[:upper:]' '[:lower:]') in
     darwin) SYS='mac' ;;
     *linux) SYS='lin' ;;
@@ -160,17 +168,15 @@ if ((AUTO_BUILD)); then
   esac
   echo ; echo -n "Auto " ; ((AUTO_BUILD == 2)) && echo "Upload..." || echo "Build..."
 
-  #
   # Get the MOTHERBOARD define value from the .h file and strip off the "BOARD_" prefix
-  #
   ACODE='/^[[:space:]]*#define[[:space:]]MOTHERBOARD[[:space:]]/ { sub(/^BOARD_/, "", $3); print $3 }'
   MB=$(awk "$ACODE" Marlin/Configuration.h 2>/dev/null)
   [[ -z $MB ]] && MB=$(awk "$ACODE" Marlin/Config.h 2>/dev/null)
-  [[ -z $MB ]] && { echo "Error - Can't read MOTHERBOARD setting." ; exit 1 ; }
+  [[ -z $MB ]] && { errout "Error - Can't read MOTHERBOARD setting." ; exit 1 ; }
   BLINE=$( grep -E "define\s+BOARD_$MB\b" Marlin/src/core/boards.h )
   BNUM=$( sed -E 's/^.+BOARD_[^ ]+ +([0-9]+).+$/\1/' <<<"$BLINE" )
   BDESC=$( sed -E 's/^.+\/\/ *(.+)$/\1/' <<<"$BLINE" )
-  [[ -z $BNUM ]] && { echo "Error - Can't find BOARD_$MB in core/boards.h." ; exit 1 ; }
+  [[ -z $BNUM ]] && { errout "Error - Can't find BOARD_$MB in core/boards.h." ; exit 1 ; }
   ENVS=( $( grep -EA1 "MB\(.*\b$MB\b.*\)" Marlin/src/pins/pins.h | grep -E "#include.+//.+(env|$SYS):[^ ]+" | grep -oE "(env|$SYS):[^ ]+" | sed -E "s/(env|$SYS)://" ) )
   # If AUTO_BUILD is not 2 (upload), strip envs ending in '_xfer' from $ENVS
   if [[ $AUTO_BUILD != 2 ]]; then
@@ -196,7 +202,7 @@ if ((AUTO_BUILD)); then
         for (( ; ; ))
         do
           read -p "Select a target for '$MB' (1-$ECOUNT) : " CHOICE
-          [[ -z "$CHOICE" ]] && { echo '(canceled)' ; exit 1 ; }
+          [[ -z "$CHOICE" ]] && { errout '(canceled)' ; exit 1 ; }
           [[ $CHOICE =~ $ISNUM ]] && ((CHOICE >= 1 && CHOICE <= ECOUNT)) && break
           errout ">>> Invalid environment choice '$CHOICE'."
         done
@@ -204,7 +210,7 @@ if ((AUTO_BUILD)); then
       fi
     else
       echo "Detected \"$BDESC\" | $MB ($BNUM)."
-      [[ $CHOICE > $ECOUNT ]] && { echo "Environment selection out of range." ; exit 66 ; }
+      [[ $CHOICE > $ECOUNT ]] && { errout "Environment selection out of range." ; exit 66 ; }
     fi
     TARGET="${ENVS[$CHOICE-1]}"
     if [[ $MB == 'SIMULATED' && $TARGET == 'linux_native' ]]; then
@@ -225,10 +231,7 @@ if ((AUTO_BUILD)); then
   exit $?
 fi
 
-#
 # List available tests and ask for selection
-#
-
 if [[ $TESTENV == '-' ]]; then
   IND=0
   NAMES=()
@@ -306,14 +309,10 @@ if [[ $CHOICE == 0 ]]; then
   fi
 fi
 
-#
-# Restore to defaults if requested
-#
+# Restore defaults if requested
 ((DL_DEFAULTS)) && use_example_configs
 
-#
 # Run the specified test lines
-#
 echo -ne "\033[0;33m"
 echo "$OUT" | {
   IND=0
@@ -322,20 +321,18 @@ echo "$OUT" | {
   while IFS= read -r LINE
   do
     if [[ $LINE =~ $ISCMD || $GOTX == 1 ]]; then
-      ((!IND)) && let IND++
+      (( !IND )) && ((IND++))
       if [[ $LINE =~ $ISEXEC ]]; then
         ((IND++ > CHOICE)) && break
-      else
-        ((!HEADER)) && {
+      elif ((IND == CHOICE)); then
+        if ! ((HEADER)); then
           HEADER=1
-          echo -e "\n#\n# Test $TESTENV ($CHOICE) $DESC\n#"
-        }
-        ((IND == CHOICE)) && {
+          echo -e "\n#\n# Test $TESTENV ($CHOICE): $DESC\n#"
           GOTX=1
-          [[ -n $DL_DEFAULTS && $LINE =~ $ISRST ]] && LINE="use_example_configs"
-          [[ $CMD == "" ]] && CMD="$LINE" || CMD=$( echo -e "$CMD$LINE" | sed -e 's/\\//g' | sed -E 's/ +/ /g' )
-          [[ $LINE =~ $ISCONT ]] || { echo "$CMD" ; eval "$CMD" ; CMD="" ; }
-        }
+        fi
+        [[ -n $DL_DEFAULTS && $LINE =~ $ISRST ]] && LINE="use_example_configs"
+        [[ $CMD == "" ]] && CMD="$LINE" || CMD=$( echo -e "$CMD$LINE" | sed -e 's/\\//g' | sed -E 's/ +/ /g' )
+        [[ $LINE =~ $ISCONT ]] || { echo "$CMD" ; eval "$CMD" ; CMD="" ; }
       fi
     fi
   done
@@ -345,14 +342,14 @@ echo -ne "\033[0m"
 # Make clear it's a TEST
 opt_set CUSTOM_MACHINE_NAME "\"Test $TESTENV ($CHOICE)\""
 
-# Build the test too?
-if [[ -z "$BUILD_YES" ]]; then
+# Build if requested
+if [[ -z $BUILD_YES ]]; then
   echo
-  read -p "Build $TESTENV test #$CHOICE (y/N) ? " BUILD_YES
+  read -r -p "Build $TESTENV test #$CHOICE (y/N)? " BUILD_YES
 fi
 
-[[ $BUILD_YES == 'Y' || $BUILD_YES == 'Yes' ]] && {
+[[ $BUILD_YES =~ ^(Y|Yes)$ ]] && {
   ((USE_MAKE)) && make tests-single-local TEST_TARGET=$TESTENV ONLY_TEST=$CHOICE
-  ((USE_MAKE)) || pio run $SILENT_FLAG -d . -e $TESTENV
+  ((USE_MAKE)) || pio run ${SILENT_FLAG:-} -d . -e $TESTENV
   echo "$TESTENV" >"$STATE_FILE"
 }
