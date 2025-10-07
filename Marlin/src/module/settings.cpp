@@ -260,7 +260,7 @@ typedef struct SettingsDataStruct {
   //
   bool runout_sensor_enabled;                           // M412 S
   float runout_distance_mm;                             // M412 D
-  float motion_distance_mm;                             // M412 M
+  float motion_distance_mm;                             // M412 L
 
   //
   // ENABLE_LEVELING_FADE_HEIGHT
@@ -4261,6 +4261,11 @@ void MarlinSettings::reset() {
     // M281 Servo Angles
     //
     TERN_(EDITABLE_SERVO_ANGLES, gcode.M281_report(forReplay));
+
+    //
+    // M401 BLTouch High Speed Mode
+    //
+    TERN_(BLTOUCH_HS_MODE, gcode.M401_report(forReplay));
 
     //
     // M665 Kinematic Settings

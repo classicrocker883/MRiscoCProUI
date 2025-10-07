@@ -50,13 +50,26 @@ if download:
     exit(0)
 
 lines = csvdata.splitlines()
-print(lines)
-reader = csv.reader(lines, delimiter=",")
+rows = list(csv.reader(lines, delimiter=","))
+header = rows[0]
+languages = header[1:]
+
+# Process each row
+for row in rows[1:]:
+    name = row[0]
+    print(f"--- {name} ---")
+    for i, translation in enumerate(row[1:]):
+        # Only print the translation if it's not empty
+        if translation:
+            language = languages[i]
+            print(f"  {language}: {translation}")
+    print()
+
 gothead = False
-columns = [""]
+columns = []
 numcols = 0
 strings_per_lang = {}
-for row in reader:
+for row in rows:
     if not gothead:
         gothead = True
         numcols = len(row)
@@ -85,15 +98,15 @@ for row in reader:
     for i in range(1, numcols):
         str_key = row[i]
         if str_key:
-            col = columns[i]
+            col = columns[i - 1]
             strings_per_lang[col["lang"]][col["style"]][name] = str_key
 
 # Create a folder for the imported language outfiles
 from pathlib import Path
 Path.mkdir(Path(OUTDIR), exist_ok=True)
 
-FILEHEADER = \
-"""/**
+FILEHEADER = """
+/**
  * Marlin 3D Printer Firmware
  * Copyright (c) 2023 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -141,8 +154,8 @@ FILEHEADER = \
 f = None
 gotlang = {}
 for i in range(1, numcols):
-    #if i > 6: break # Testing
-    col = columns[i]
+    #if i > 6: break  # Testing
+    col = columns[i - 1]
     lang, style = col["lang"], col["style"]
 
     # If we haven't already opened a file for this language, do so now
@@ -157,9 +170,7 @@ for i in range(1, numcols):
 
         # Write the opening header for the new language file
         #f.write(FILEHEADER % namebyid(lang))
-        f.write("/**\n * Imported from %s on %s at %s\n */\n" %
-            (FILEPATH, datetime.date.today(), datetime.datetime.now().strftime("%H:%M:%S"))
-        )
+        f.write("/**\n * Imported from %s on %s at %s\n */\n" % (FILEPATH, datetime.date.today(), datetime.datetime.now().strftime("%H:%M:%S")))
 
     # Start a namespace for the language and style
     f.write("\nnamespace Language%s_%s {\n" % (style, lang))
@@ -190,7 +201,7 @@ for i in range(1, numcols):
         else:
             bars = 0
         # Escape backslashes, substitute quotes, and wrap in _UxGT("...")
-        val = "_UxGT('%s')" % val.replace("\\", "\\\\").replace('"', "$$$")
+        val = '_UxGT("%s")' % val.replace('\\', '\\\\').replace('"', '\\"')
         # Move named references outside of the macro
         val = re.sub(r'\(([A-Z0-9]+_[A-Z0-9_]+)\)', r'") \1 _UxGT("', val)
         # Remove all empty _UxGT("") that result from the above
@@ -201,9 +212,7 @@ for i in range(1, numcols):
         if bars:
             # Wrap the string in MSG_#_LINE(...) and split on bars
             val = re.sub(r'^_UxGT\((.+)\)', r'_UxGT(MSG_%s_LINE(\1))' % bars, val)
-            val = val.replace("|", '", "')
-        # Restore quotes inside the string
-        val = val.replace("$$$", '\\"')
+            val = val.replace('|', '", "')
         # Add a comment with the English string for reference
         comm = ""
         if lang != "en" and "en" in strings_per_lang:

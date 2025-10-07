@@ -337,6 +337,8 @@
 // #define TRAMMING_SCREW_THREAD M4_CW
 // #define FT_MOTION
 // #define FTM_IS_DEFAULT_MOTION
+// #define FT_MOTION_MENU
+// #define FTM_HOME_AND_PROBE
 // #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED
 // #define FTM_LINEAR_ADV_DEFAULT_ENA   false
 // #define FTM_LINEAR_ADV_DEFAULT_K      0.0f
@@ -348,22 +350,34 @@
 // #define FTM_SHAPING_DEFAULT_FREQ_Y   37.0f
 // #define FTM_SHAPING_ZETA_Y            0.1f
 // #define FTM_SHAPING_V_TOL_Y           0.05f
-// #define FT_MOTION_MENU
+// #define FTM_SHAPER_Z
+// #define FTM_DEFAULT_SHAPER_Z      ftMotionShaper_NONE
+// #define FTM_SHAPING_DEFAULT_FREQ_Z   21.0f
+// #define FTM_SHAPING_ZETA_Z            0.03f
+// #define FTM_SHAPING_V_TOL_Z           0.05f
+// #define FTM_SHAPER_E
+// #define FTM_DEFAULT_SHAPER_E      ftMotionShaper_NONE
+// #define FTM_SHAPING_DEFAULT_FREQ_E   21.0f
+// #define FTM_SHAPING_ZETA_E            0.03f
+// #define FTM_SHAPING_V_TOL_E           0.05f
+// #define FTM_SMOOTHING
+// #define FTM_MAX_SMOOTHING_TIME      0.10f
+// #define FTM_SMOOTHING_TIME_X        0.00f
+// #define FTM_SMOOTHING_TIME_Y        0.00f
+// #define FTM_SMOOTHING_TIME_Z        0.00f
+// #define FTM_SMOOTHING_TIME_E        0.02f
+// #define FTM_TRAJECTORY_TYPE   TRAPEZOIDAL
+// #define FTM_POLY6_ACCELERATION_OVERSHOOT 1.875f
 // #define FTM_UNIFIED_BWS
 // #define FTM_BW_SIZE               100
 // #define FTM_WINDOW_SIZE           200
 // #define FTM_BATCH_SIZE            100
 // #define FTM_FS                     1000
-// #define FTM_TS                        0.001f
 // #define FTM_STEPPER_FS          20000
 // #define FTM_STEPPERCMD_BUFF_SIZE 3000
 // #define FTM_STEPPER_FS          30000
 // #define FTM_STEPPERCMD_BUFF_SIZE 6000
-// #define FTM_STEPS_PER_UNIT_TIME (FTM_STEPPER_FS / FTM_FS)
-// #define FTM_MIN_TICKS ((STEPPER_TIMER_RATE) / (FTM_STEPPER_FS))
 // #define FTM_MIN_SHAPE_FREQ           10
-// #define FTM_RATIO (FTM_FS / FTM_MIN_SHAPE_FREQ)
-// #define FTM_ZMAX (FTM_RATIO * 2)
 // #define INPUT_SHAPING_X
 // #define INPUT_SHAPING_Y
 // #define INPUT_SHAPING_Z

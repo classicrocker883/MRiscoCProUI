@@ -6,9 +6,9 @@ import subprocess
 nocache = 1
 verbose = 0
 
-def blab(str):
+def blab(msg):
     if verbose:
-        print(str)
+        print(msg)
 
 ################################################################################
 #
@@ -26,7 +26,7 @@ def run_preprocessor(env, fn=None):
     build_flags = env.ParseFlagsExtended(build_flags)
 
     cxx = search_compiler(env)
-    cmd = [f'"{cxx}"']
+    cmd = [cxx]
 
     # Build flags from board.json
     #if 'BOARD' in env:
@@ -37,12 +37,10 @@ def run_preprocessor(env, fn=None):
         else:
             cmd += [f"-D{s}"]
 
-    cmd += ["-D__MARLIN_DEPS__ -w -dM -E -x c++"]
-    depcmd = cmd + [filename]
-    cmd = " ".join(depcmd)
-    blab(cmd)
+    cmd += ["-D__MARLIN_DEPS__", "-w", "-dM", "-E", "-x", "c++", filename]
+    blab(" ".join(cmd))
     try:
-        define_list = subprocess.check_output(cmd, shell=True).splitlines()
+        define_list = subprocess.check_output(cmd).splitlines()
     except:
         define_list = {}
     preprocessor_cache[filename] = define_list

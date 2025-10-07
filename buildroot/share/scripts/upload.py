@@ -243,7 +243,7 @@ def Upload(source, target, env):
                 raise Exception(f"CUSTOM_FIRMWARE_UPLOAD must be enabled in 'Configuration_adv.h' for '{marlin_motherboard}'")
 
             # Init & Open serial port
-            port = serial.Serial(upload_port, baudrate=upload_speed, write_timeout=0, timeout=0.1)
+            port = serial.Serial(upload_port, baudrate = upload_speed, write_timeout = 0, timeout = 0.1)
             _OpenPort()
 
             # Check SD card status
@@ -260,7 +260,7 @@ def Upload(source, target, env):
                 FirmwareFiles[1 : len(FirmwareFiles) - 2],
                 marlin_long_filename_host_support
             )  # Skip header and footers of list
-            if len(OldFirmwareFiles) == 0:
+            if not OldFirmwareFiles:
                 print("No old firmware files to delete")
             else:
                 print(f"Remove {len(OldFirmwareFiles)} old firmware file{'s' if len(OldFirmwareFiles) != 1 else ''}:")

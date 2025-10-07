@@ -17,25 +17,29 @@ body:
       options:
         - Yes, and the problem still exists.
         - No, but I will try it!
+      default: 0
     validations:
       required: true
 
   - type: markdown
     attributes:
       value: |
-        ## Bug Description
+        ## Bug Details
 
   - type: textarea
     attributes:
       label: Bug Description
-      description: >-
+      description: |
         Describe the bug in this section. Be clear and concise of the
-        problem and include as many details as possible.
-
+        problem and include as many details as possible.  
         Use ` ```y ` before and  ` ``` ` after (on its own line) when pasting formatted code.
       placeholder: |
-        A does B, supposed to do C.
-        X doesn't work.
+        **Expected behavior:**  
+        A does B.
+
+        **Actual behavior:**  
+        A does C,  
+        Now X doesn't work.
 
         Please describe the steps needed to reproduce the issue.
         1. [First Step] ...
@@ -50,30 +54,37 @@ body:
       value: |
         # Your Setup
 
+  - type: input
+    attributes:
+      label: Firmware File
+      description: |
+        What is the filename used to flash?
+      placeholder: Aquila_GD32_UBL-ProUI-EX-10-01.bin
+
   - type: dropdown
     attributes:
       label: Printer Model
       description: >-
         Which Printer are you using?
       options:
+        - "- Select -"
         - Voxelab Aquila
         - Creality Ender-3
         - Other (explain below)
+      default: 0
 
   - type: input
     attributes:
       label: Model Type
-      description: >-
-        Aquila [OG, X2, X3, S2, S3, D1, Pro]
-
+      description: |
+        Aquila [OG, X2, X3, S2, S3, D1, Pro]  
         Ender-3 [V2, S1, Neo, Pro, Max]
 
   - type: dropdown
     attributes:
-      label: Your Mainboard
-      description: >-
-        Which Chip?
+      label: Your Mainboard or Chipset
       options:
+        - "- Select -"
         - Aquila GD32
         - Aquila N32
         - Aquila HC32
@@ -83,15 +94,14 @@ body:
         - BTT SKR MINI E3 v3.0.1
         - BTT SKR MINI E3 v3.0
         - BTT SKR MINI E3 v2.0/1.2/1.0
-        - Other (other than listed)
+        - Other (not listed)
+      default: 0
 
   - type: input
     attributes:
       label: Other Mainboard Type
       description: >-
-        If not listed above
-
-        (Optional) Enter chip full model number
+        If not listed above, enter board or chip model number
 
   - type: input
     attributes:
@@ -104,22 +114,25 @@ body:
       description: >-
         Are you using ProUI-EX?
       options:
+        - "- Select -"
         - "Yes"
-        - "No (formerly NoPro)"
+        - "No"
+      default: 0
     validations:
       required: true
-
 
   - type: dropdown
     attributes:
       label: Bed Leveling
       description: >-
-        What kind of bed leveling are you using?
+        What bed leveling are you using?
       options:
+        - "- Select -"
         - UBL - Unified Bed Leveling
         - BLT - BL Touch Bilinear mesh
         - MM - Manual Mesh Bed Leveling
-        - Default - No Probe / No Bed Leveling
+        - Default/No Probe - No Bed Leveling
+      default: 0
     validations:
       required: true
 
@@ -145,7 +158,6 @@ body:
   - type: textarea
     attributes:
       label: Additional information & file uploads
-      description: >-
-        If you've made any other modifications to the firmware, please describe them in detail.
-
+      description: |
+        If you've made any other modifications to the firmware, please describe them in detail.  
         Don't forget to put ` ```y ` before and  ` ``` ` after (on its own line) when pasting formatted code.

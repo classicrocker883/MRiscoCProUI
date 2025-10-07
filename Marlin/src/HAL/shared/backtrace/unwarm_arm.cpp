@@ -238,17 +238,14 @@ UnwResult UnwStartArm(UnwState * const state) {
 
           case 1: /* logical right */
             if (!regShift && shiftDist == 0) shiftDist = 32;
-            if (shiftDist >= 32) {
+            if (shiftDist >= 32)
               op2val = 0;
-            }
-            else {
+            else
               op2val = state->regData[rm].v >> shiftDist;
-            }
             break;
 
           case 2: /* arithmetic right */
             if (!regShift && shiftDist == 0) shiftDist = 32;
-
             if (state->regData[rm].v & 0x80000000) {
               /* Register shifts maybe greater than 32 */
               if (shiftDist >= 32)
@@ -261,7 +258,6 @@ UnwResult UnwStartArm(UnwState * const state) {
             break;
 
           case 3: /* rotate right */
-
             if (!regShift && shiftDist == 0) {
               /* Rotate right with extend.
                *  This uses the carry bit and so always has an

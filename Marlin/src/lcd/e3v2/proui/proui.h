@@ -130,7 +130,7 @@ public:
   static void HeatedBed();
   static void StopLeveling();
   static bool QuitLeveling();
-  static void MeshUpdate(const int8_t x, const int8_t y, const_float_t zval);
+  static void MeshUpdate(const int8_t x, const int8_t y, const float zval);
   static void LevelingDone();
 #endif
 #if HAS_FILAMENT_SENSOR
