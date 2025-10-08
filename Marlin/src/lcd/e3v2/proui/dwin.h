@@ -163,7 +163,6 @@ void ResetEeprom();
   void SetHSMode();
 #endif
 #if !PROUI_EX && ENABLED(MESH_BED_LEVELING)
-  void ApplyPhySet();
   void SetData();
 #endif
 #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)

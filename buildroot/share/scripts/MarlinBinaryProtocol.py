@@ -33,7 +33,7 @@ class ReadTimeout(Exception):
     pass
 class FatalError(Exception):
     pass
-class SycronisationError(Exception):
+class SynchronizationError(Exception):
     pass
 class PayloadOverflow(Exception):
     pass
@@ -66,7 +66,7 @@ class Protocol(object):
 
     def __init__(self, device, baud, bsize, simerr, timeout):
         print("pySerial Version:", serial.VERSION)
-        self.port = serial.Serial(device, baudrate=baud, write_timeout=0, timeout=1)
+        self.port = serial.Serial(device, baudrate = baud, write_timeout = 0, timeout = 1)
         self.device = device
         self.baud = baud
         self.block_size = int(bsize)
@@ -96,7 +96,7 @@ class Protocol(object):
             for x in range(10):
                 try:
                     if self.connected:
-                        self.port = serial.Serial(self.device, baudrate=self.baud, write_timeout=0, timeout=1)
+                        self.port = serial.Serial(self.device, baudrate = self.baud, write_timeout = 0, timeout = 1)
                         return
                     else:
                         print("Connection closed")
@@ -274,7 +274,7 @@ class Protocol(object):
         except ValueError:
             return
         if packet_id != self.sync:
-            raise SycronisationError()
+            raise SynchronizationError()
         self.sync = (self.sync + 1) % 256
         self.packet_status = 1
 
@@ -284,17 +284,13 @@ class Protocol(object):
         if not self.syncronised:
             print("Retrying syncronisation")
         elif packet_id != self.sync:
-            raise SycronisationError()
+            raise SynchronizationError()
 
     def response_stream_sync(self, data):
         sync, max_block_size, protocol_version = data.split(",")
         self.sync = int(sync)
         self.max_block_size = int(max_block_size)
-        self.block_size = (
-            self.max_block_size
-            if self.max_block_size < self.block_size
-            else self.block_size
-        )
+        self.block_size = self.max_block_size if self.max_block_size < self.block_size else self.block_size
         self.protocol_version = protocol_version
         self.packet_status = 1
         self.syncronised = True
@@ -365,7 +361,7 @@ class FileTransferProtocol(object):
         print("File Transfer version: {0}, compression: {1}".format(self.version, self.compression["algorithm"]))
 
     def open(self, filename, compression, dummy):
-        payload =  b"\1" if dummy else b"\0"              # dummy transfer
+        payload =  b"\1" if dummy else b"\0"              # Dummy transfer
         payload += b"\1" if compression else b"\0"        # Payload compression
         payload += (bytearray(filename, "utf8") + b"\0")  # Target filename + null terminator
 

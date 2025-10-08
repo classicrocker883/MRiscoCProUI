@@ -8,10 +8,10 @@ name: CI - Validate Source Files
 on:
   pull_request:
     branches:
-      - 2025-September
+      - 2025-October
   push:
     branches:
-      - 2025-September
+      - 2025-October
 
 jobs:
   validate_source_files:

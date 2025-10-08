@@ -258,7 +258,7 @@ typedef struct SettingsDataStruct {
   //
   bool runout_sensor_enabled;                           // M412 S
   float runout_distance_mm;                             // M412 D
-  float motion_distance_mm;                             // M412 M
+  float motion_distance_mm;                             // M412 L
 
   //
   // ENABLE_LEVELING_FADE_HEIGHT

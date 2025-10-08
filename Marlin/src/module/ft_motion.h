@@ -26,6 +26,10 @@
 #include "stepper.h"      // For stepper motion and direction
 
 #include "ft_types.h"
+#include "ft_motion/trajectory_generator.h"
+#include "ft_motion/trapezoidal_trajectory_generator.h"
+#include "ft_motion/poly5_trajectory_generator.h"
+#include "ft_motion/poly6_trajectory_generator.h"
 
 #if HAS_X_AXIS && (HAS_Z_AXIS || HAS_EXTRUDERS)
   #define HAS_DYNAMIC_FREQ 1
@@ -69,6 +73,8 @@ typedef struct FTConfig {
     float linearAdvK = FTM_LINEAR_ADV_DEFAULT_K;          // Linear advance gain.
   #endif
 
+  TrajectoryType trajectory_type = TrajectoryType::TRAPEZOIDAL; // Trajectory generator type
+  float poly6_acceleration_overshoot; // Overshoot factor for Poly6 (1.25 to 2.0)
 } ft_config_t;
 
 class FTMotion {
@@ -117,6 +123,10 @@ class FTMotion {
         cfg.linearAdvK = FTM_LINEAR_ADV_DEFAULT_K;
       #endif
 
+      cfg.poly6_acceleration_overshoot = FTM_POLY6_ACCELERATION_OVERSHOOT;
+
+      setTrajectoryType(TrajectoryType::FTM_TRAJECTORY_TYPE);
+
       reset();
     }
 
@@ -147,6 +157,10 @@ class FTMotion {
 
     static void reset();                                  // Reset all states of the fixed time conversion to defaults.
 
+    // Trajectory generator selection
+    static void setTrajectoryType(const TrajectoryType type);
+    static TrajectoryType getTrajectoryType() { return trajectoryType; }
+
     FORCE_INLINE static bool axis_is_moving(const AxisEnum axis) {
       return cfg.active ? PENDING(millis(), axis_move_end_ti[axis]) : stepper.axis_is_moving(axis);
     }
@@ -162,18 +176,18 @@ class FTMotion {
     static bool blockProcRdy;
     static bool batchRdy, batchRdyForInterp;
 
-    // Trapezoid data variables.
+    // Block data variables.
     static xyze_pos_t   startPos,         // (mm) Start position of block
                         endPos_prevBlock; // (mm) End position of previous block
     static xyze_float_t ratio;            // (ratio) Axis move ratio of block
-    static float accel_P, decel_P,
-                 F_P,
-                 f_s,
-                 s_1e,
-                 s_2e;
+    static float tau;                     // (s) Time since start of block
 
-    static uint32_t N1, N2, N3;
-    static uint32_t max_intervals;
+    // Trajectory generators
+    static TrapezoidalTrajectoryGenerator trapezoidalGenerator;
+    static Poly5TrajectoryGenerator poly5Generator;
+    static Poly6TrajectoryGenerator poly6Generator;
+    static TrajectoryGenerator& currentGenerator;
+    static TrajectoryType trajectoryType;
 
     // Number of batches needed to propagate the current trajectory to the stepper.
     static constexpr uint32_t PROP_BATCHES = CEIL((FTM_WINDOW_SIZE) / (FTM_BATCH_SIZE)) - 1;
@@ -258,13 +272,15 @@ class FTMotion {
 extern FTMotion ftMotion;
 
 typedef struct FTMotionDisableInScope {
-  bool isactive;
-  FTMotionDisableInScope() {
-    isactive = ftMotion.cfg.active;
-    ftMotion.cfg.active = false;
-  }
-  ~FTMotionDisableInScope() {
-    ftMotion.cfg.active = isactive;
-    if (isactive) ftMotion.init();
-  }
+  #if DISABLED(FTM_HOME_AND_PROBE)
+    bool isactive;
+    FTMotionDisableInScope() {
+      isactive = ftMotion.cfg.active;
+      ftMotion.cfg.active = false;
+    }
+    ~FTMotionDisableInScope() {
+      ftMotion.cfg.active = isactive;
+      if (isactive) ftMotion.init();
+    }
+  #endif
 } FTMotionDisableInScope_t;

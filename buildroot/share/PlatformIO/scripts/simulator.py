@@ -4,19 +4,14 @@
 #
 import pioutil
 if pioutil.is_pio_build():
-
     # Get the environment thus far for the build
     env = pioutil.env
     #print(env.Dump())
 
-    #
     # Give the binary a distinctive name
-    #
     env["PROGNAME"] = "MarlinSimulator"
 
-    #
     # Check for a valid GCC and available OpenGL on macOS
-    #
     emsg = ""
     fatal = 0
     import sys
@@ -32,9 +27,7 @@ if pioutil.is_pio_build():
             fatal = 1
         else:
 
-            #
             # Silence half of the ranlib warnings. (No equivalent for 'ARFLAGS')
-            #
             env["RANLIBFLAGS"] += ["-no_warning_for_no_symbols"]
 
             # Default paths for Xcode and a lucky GL/gl.h dropped by Mesa

@@ -6,24 +6,21 @@ contact_links:
   - name: 📖 Marlin Documentation
     url: https://marlinfw.org/
     about: Lots of documentation on using Marlin.
-  - name: 👤 MarlinFirmware Facebook group
-    url: https://www.facebook.com/groups/1049718498464482
+  - name: 💬 Voxelab Aquila Reddit group
+    url: https://www.reddit.com/r/VoxelabAquila
     about: Please ask and answer questions here.
-  - name: 👤 Professional Firmware Facebook group
-    url: https://www.facebook.com/groups/513889302986197
+  - name: 💬 Ender-3 V2 Reddit group
+    url: https://www.reddit.com/r/ender3v2
     about: Please ask and answer questions here.
   - name: 👤 Professional Firmware Reddit group
     url: https://www.reddit.com/r/Ender3v2Firmware
     about: Please ask and answer questions here.
-  - name: 🕹 Marlin on Discord
-    url: https://discord.com/servers/marlin-firmware-461605380783472640
-    about: Join the Discord server for support and discussion.
-  - name: 🔗 Marlin Discussion Forum
-    url: https://reprap.org/forum/list.php?415
-    about: A searchable web forum hosted by RepRap dot org.
-  - name: 📺 Marlin Videos on YouTube
-    url: https://www.youtube.com/results?search_query=marlin+firmware
-    about: Tutorials and more from Marlin users all around the world. Great for new users!
-  - name: 💸 Want to donate?
+  - name: 💸 Want to donate? - PayPal
     url: https://www.paypal.com/paypalme/andrewleduc
-    about: Your contribution to this project is always welcome!
+    about: PayPal contribution
+  - name: 💸 Want to donate? - Ko-fi
+    url: https://ko-fi.com/classicrocker883
+    about: Buy me a coffee!
+  - name: 💸 Want to donate?- Venmo
+    url: https://venmo.com/u/andrewleduc88
+    about: Venmo contribution

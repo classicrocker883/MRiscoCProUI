@@ -338,6 +338,7 @@
 // #define FT_MOTION
 // #define FTM_IS_DEFAULT_MOTION
 // #define FT_MOTION_MENU
+// #define FTM_HOME_AND_PROBE
 // #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED
 // #define FTM_LINEAR_ADV_DEFAULT_ENA   false
 // #define FTM_LINEAR_ADV_DEFAULT_K      0.0f
@@ -365,6 +366,8 @@
 // #define FTM_SMOOTHING_TIME_Y        0.00f
 // #define FTM_SMOOTHING_TIME_Z        0.00f
 // #define FTM_SMOOTHING_TIME_E        0.02f
+// #define FTM_TRAJECTORY_TYPE   TRAPEZOIDAL
+// #define FTM_POLY6_ACCELERATION_OVERSHOOT 1.875f
 // #define FTM_UNIFIED_BWS
 // #define FTM_BW_SIZE               100
 // #define FTM_WINDOW_SIZE           200
