@@ -105,7 +105,7 @@ def Upload(source, target, env):
                 Space = FWFile.find(" ")
                 if Space >= 0: Space = FWFile.find(" ", Space + 1)
                 if Space >= 0: FWFile = FWFile[Space + 1 :]
-            if not "/" in FWFile and ".BIN" in FWFile.upper():
+            if "/" not in FWFile and ".BIN" in FWFile.upper():
                 Firmwares.append(FWFile[: FWFile.upper().index(".BIN") + 4])
         return Firmwares
 

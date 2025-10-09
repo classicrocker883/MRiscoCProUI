@@ -20,13 +20,13 @@ Optional arguments:
 """
 
 from __future__ import print_function, division
-from math import *
+import math
 import sys, getopt
 
 # Constants
 ZERO   = 273.15       # Zero point of Kelvin scale
-VADC   = 5            # ADC voltage
-VCC    = 5            # Supply voltage
+VADC   = 5.0          # ADC voltage
+VCC    = 5.0          # Supply voltage
 ARES   = pow(2, 10)   # 10 Bit ADC resolution
 VSTEP  = VADC / ARES  # ADC voltage resolution
 TMIN   = 0            # Lowest temperature in table
@@ -36,17 +36,17 @@ class Thermistor:
     """Class to do the thermistor maths"""
 
     def __init__(self, rp, t1, r1, t2, r2, t3, r3):
-        l1 = log(r1)
-        l2 = log(r2)
-        l3 = log(r3)
+        l1 = math.log(r1)
+        l2 = math.log(r2)
+        l3 = math.log(r3)
         y1 = 1.0 / (t1 + ZERO)  # Adjust scale
         y2 = 1.0 / (t2 + ZERO)
         y3 = 1.0 / (t3 + ZERO)
         x = (y2 - y1) / (l2 - l1)
         y = (y3 - y1) / (l3 - l1)
         c = (y - x) / ((l3 - l2) * (l1 + l2 + l3))
-        b = x - c * (l1**2 + l2**2 + l1 * l2)
-        a = y1 - (b + l1**2 * c) * l1
+        b = x - c * (l1**2 + l1 * l2 + l2**2)
+        a = y1 - (b + c * l1**2) * l1
 
         if c < 0:
             print("//////////////////////////////////////////////////////////////////////////////////////")
@@ -69,20 +69,22 @@ class Thermistor:
 
     def resist(self, adc):
         """Convert ADC reading into a resistance in Ohms"""
-        r = self.rp * self.voltage(adc) / (VCC - self.voltage(adc))  # Resistance of thermistor
-        return r
+        v = self.voltage(adc)
+        return self.rp * v / (VCC - v)
 
     def temp(self, adc):
         """Convert ADC reading into a temperature in Celsius"""
-        l = log(self.resist(adc))
-        Tinv = self.c1 + self.c2 * l + self.c3 * l**3  # Inverse temperature
-        return (1 / Tinv) - ZERO  # Temperature
+        r = self.resist(adc)
+        l = math.log(r)
+        inv_T = self.c1 + self.c2 * l + self.c3 * (l ** 3)  # Inverse temperature
+        return (1.0 / inv_T) - ZERO  # Temperature
 
     def adc(self, temp):
         """Convert temperature into a ADC reading"""
-        x = (self.c1 - (1.0 / (temp + ZERO))) / (2 * self.c3)
-        y = sqrt((self.c2 / (3 * self.c3)) ** 3 + x**2)
-        r = exp((y - x) ** (1.0 / 3) - (y + x) ** (1.0 / 3))
+        inv_T = 1.0 / (temp + ZERO)
+        x = (self.c1 - inv_T) / (2 * self.c3)
+        y = math.sqrt((self.c2 / (3 * self.c3)) ** 3 + x**2)
+        r = math.exp((y - x) ** (1.0 / 3) - (y + x) ** (1.0 / 3))
         return (r / (self.rp + r)) * ARES
 
 def main(argv):
@@ -111,27 +113,30 @@ def main(argv):
             rp = int(arg)
         elif opt == "--t1":
             arg = arg.split(":")
-            t1 = float(arg[0])
-            r1 = float(arg[1])
+            t1  = float(arg[0])
+            r1  = float(arg[1])
         elif opt == "--t2":
             arg = arg.split(":")
-            t2 = float(arg[0])
-            r2 = float(arg[1])
+            t2  = float(arg[0])
+            r2  = float(arg[1])
         elif opt == "--t3":
             arg = arg.split(":")
-            t3 = float(arg[0])
-            r3 = float(arg[1])
+            t3  = float(arg[0])
+            r3  = float(arg[1])
         elif opt == "--num-temps":
             num_temps = int(arg)
 
     t = Thermistor(rp, t1, r1, t2, r2, t3, r3)
-    increment = int((ARES - 1) / (num_temps - 1))
-    step = int((TMIN - TMAX) / (num_temps - 1))
     low_bound = t.temp(ARES - 1)
     up_bound = t.temp(1)
-    min_temp = int(TMIN if TMIN > low_bound else low_bound)
-    max_temp = int(TMAX if TMAX < up_bound else up_bound)
-    temps = list(range(max_temp, TMIN + step, step))
+    min_temp = max(TMIN, low_bound)
+    max_temp = min(TMAX, up_bound)
+    step_size = (max_temp - min_temp) / (num_temps - 1)
+    temps = []
+    for i in range(num_temps):
+        temp = min_temp + (i * step_size)
+        temps.append(int(round(temp)))
+    temps.reverse()
 
     print("// Thermistor lookup table for Marlin")
     print("// ./createTemperatureLookupMarlin.py --rp=%s --t1=%s:%s --t2=%s:%s --t3=%s:%s --num-temps=%s" % (rp, t1, r1, t2, r2, t3, r3, num_temps))
@@ -140,14 +145,16 @@ def main(argv):
     print()
     print("const short temptable[][2] PROGMEM = {")
 
-    for temp in temps:
+    for i, temp in enumerate(temps):
         adc = t.adc(temp)
-        print("    { OV(%7.2f), %4s }%s // v=%.3f\tr=%.3f\tres=%.3f degC/count" %
-            (adc, temp,
-            "," if temp != temps[-1] else " ",
-            t.voltage(adc),
-            t.resist( adc),
-            t.resol(  adc))
+        voltage = t.voltage(adc)
+        resistance = t.resist(adc)
+        resolution = t.resol(adc)
+
+        comma = "," if i < len(temps) - 1 else " "
+
+        print(
+            f"    {{ OV({adc:7.2f}), {temp:4d} }}{comma} // v={voltage:.3f}\tr={resistance:.3f}\tres={resolution:.3f} degC/count"
         )
     print("};")
 

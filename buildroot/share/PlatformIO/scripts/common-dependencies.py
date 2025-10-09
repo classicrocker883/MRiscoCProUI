@@ -70,7 +70,7 @@ if pioutil.is_pio_build():
                 for dep in re.split(r',\s*', line):
                     lib_name = (re.sub(r'@([~^]|[<>]=?)?[\d.]+', "", dep.strip()) .split("=") .pop(0))
                     lib_re = re.compile("(?!^" + lib_name + "\\b)")
-                    if not "lib_deps" in feat: feat["lib_deps"] = {}
+                    if "lib_deps" not in feat: feat["lib_deps"] = {}
                     feat["lib_deps"] = list(filter(lib_re.match, feat["lib_deps"])) + [dep]
                     blab("[%s] lib_deps = %s" % (feature, dep), 3)
 
@@ -78,7 +78,7 @@ if pioutil.is_pio_build():
         blab("========== Gather [features] entries...")
         for key in ProjectConfig().items("features"):
             feature = key[0].upper()
-            if not feature in FEATURE_CONFIG:
+            if feature not in FEATURE_CONFIG:
                 FEATURE_CONFIG[feature] = {"lib_deps": []}
             add_to_feat_cnf(feature, key[1])
 
@@ -101,7 +101,7 @@ if pioutil.is_pio_build():
         known_libs = []
         for feature in FEATURE_CONFIG:
             feat = FEATURE_CONFIG[feature]
-            if not "lib_deps" in feat:
+            if "lib_deps" not in feat:
                 continue
             for dep in feat["lib_deps"]:
                 known_libs.append(PackageSpec(dep).name)

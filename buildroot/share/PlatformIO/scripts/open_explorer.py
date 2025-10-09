@@ -8,12 +8,12 @@ def open_file_explorer():
 
     env = DefaultEnvironment()
     BUILD_PATH = Path(env["PROJECT_BUILD_DIR"], env["PIOENV"])
-    script = f"{BUILD_PATH}"
+    script = str(BUILD_PATH)
     import platform
     current_OS = platform.system()
     if current_OS == "Windows":
-        import os
         try:
+            import os
             os.startfile(script)
         except OSError:
             try:

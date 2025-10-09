@@ -267,8 +267,9 @@ class SVGParser(HTMLParser):
         """Are we in the correct layer?"""
         if not self.args.layer:
             return True
-        for l in self.groups:
-            if l and l.find(self.args.layer) != -1:
+        target_layer = self.args.layer
+        for group_name in self.groups:
+            if group_name and target_layer in group_name:
                 return True
         return False
 
