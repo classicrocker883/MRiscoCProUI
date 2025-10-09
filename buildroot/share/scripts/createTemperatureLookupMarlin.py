@@ -75,8 +75,8 @@ class Thermistor:
     def temp(self, adc):
         """Convert ADC reading into a temperature in Celsius"""
         r = self.resist(adc)
-        l = math.log(r)
-        inv_T = self.c1 + self.c2 * l + self.c3 * (l ** 3)  # Inverse temperature
+        log_r = math.log(r)
+        inv_T = self.c1 + self.c2 * log_r + self.c3 * (log_r ** 3)  # Inverse temperature
         return (1.0 / inv_T) - ZERO  # Temperature
 
     def adc(self, temp):
