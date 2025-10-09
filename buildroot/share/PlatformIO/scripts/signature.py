@@ -38,7 +38,7 @@ def enabled_defines(filepath):
 
     if not Path(filepath).is_file(): return outdict
 
-    f = open(filepath, encoding="utf8").read().split("\n")
+    f = open(filepath, encoding="utf-8").read().split("\n")
 
     incomment = False
     for line in f:
@@ -535,7 +535,7 @@ def compute_build_signature(env):
         for line in sec_lines[1:]: sec_list += "\n" + ext_fmt.format("", line)
 
         config_ini = build_path / "config.ini"
-        with config_ini.open("w", encoding="utf-8") as outfile:
+        with config_ini.open("w", encoding="utf-8", newline="") as outfile:
             filegrp = {
                 "Configuration.h"    :"config:basic",
                 "Configuration_adv.h":"config:advanced"

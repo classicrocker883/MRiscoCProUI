@@ -52,7 +52,7 @@
   #include "delta.h"
 #endif
 
-#if ENABLED(SENSORLESS_PROBING)
+#if HAS_DELTA_SENSORLESS_PROBING
   abc_float_t offset_sensorless_adj{0};
   float largest_sensorless_adj = 0;
 #endif
@@ -1208,7 +1208,7 @@ float Probe::probe_at_point(
     }
   }
 
-#endif
+#endif // HAS_DELTA_SENSORLESS_PROBING
 
 #if ENABLED(DWIN_LCD_PROUI)
   float probe_at_point(const float rx, const float ry, const bool raise_after) {
