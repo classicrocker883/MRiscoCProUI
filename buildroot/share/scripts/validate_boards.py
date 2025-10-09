@@ -53,7 +53,7 @@ def boards_checks(argv):
     #
     # Examine boards.h to check the formatting of the file
     #
-    last_number, last_groun = (-1, -1)
+    last_number = -1
 
     for board, number, comment in boards:
         logmsg("Checking:", board)
@@ -78,7 +78,6 @@ def boards_checks(argv):
             if comment == board or comment == cshor or comment == cbore:
                 warn(board, f"comment needs more detail")
         last_number = number
-        last_group = number % 100
 
     #
     # Validate that pins.h has all the boards mentioned in it
@@ -112,10 +111,11 @@ def boards_checks(argv):
                 print(f" boards.h missing: {b}")
 
     # Check that boards_boards and pins_boards are in the same order
-    for i in range(len(boards_boards)):
-        if boards_boards[i] != pins_boards[i]:
+    for i, board_name in enumerate(boards_boards):
+        pins_name = pins_boards[i]
+        if board_name != pins_name:
             ERRS += 1
-            print(f"[ERROR] Non-matching boards order in pins.h. Expected {bshort(boards_boards[i])} but got {bshort(pins_boards[i])}")
+            print(f"[ERROR] Non-matching boards order in pins.h. Expected {bshort(board_name)} but got {bshort(pins_name)}")
             break
 
     return ERRS

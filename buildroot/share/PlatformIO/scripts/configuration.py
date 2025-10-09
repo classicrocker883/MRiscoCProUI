@@ -222,7 +222,6 @@ def apply_config_ini(cp):
 
     # For each ini_use_config item perform an action
     for ckey in config_keys:
-        addbase = False
 
         # For a key ending in .ini load and parse another .ini file
         if ckey.endswith(".ini"):

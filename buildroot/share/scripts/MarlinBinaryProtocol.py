@@ -91,9 +91,9 @@ class Protocol(object):
                         return
 
         def reconnect():
-            print("Reconnecting..")
+            print("Reconnecting...")
             self.port.close()
-            for x in range(10):
+            for _ in range(10):
                 try:
                     if self.connected:
                         self.port = serial.Serial(self.device, baudrate = self.baud, write_timeout = 0, timeout = 1)
@@ -143,7 +143,7 @@ class Protocol(object):
                 self.await_response()
             except ReadTimeout:
                 self.errors += 1
-                #print("Packetloss detected..")
+                #print("Packetloss detected...")
         self.packet_transit = None
 
     def await_response(self):
@@ -180,7 +180,7 @@ class Protocol(object):
                     self.await_response_ascii()
             except ReadTimeout:
                 self.errors += 1
-                #print("Packetloss detected..")
+                #print("Packetloss detected...")
             except serial.SerialException:
                 return
         self.packet_transit = None

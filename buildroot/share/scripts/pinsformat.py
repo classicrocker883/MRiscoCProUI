@@ -93,7 +93,6 @@ def format_pins(argv):
 # Find the pin pattern so non-pin defines can be skipped
 def get_pin_pattern(txt):
     r = ""
-    m = 0
     match_count = [0, 0, 0, 0]
 
     # Find the most common matching pattern

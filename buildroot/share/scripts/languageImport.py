@@ -88,9 +88,9 @@ for row in rows:
                 else "Narrow"
             )
             columns.append({"lang": lang, "style": style})
-            if not lang in strings_per_lang:
+            if lang not in strings_per_lang:
                 strings_per_lang[lang] = {}
-            if not style in strings_per_lang[lang]:
+            if style not in strings_per_lang[lang]:
                 strings_per_lang[lang][style] = {}
         continue
     # Add the named string for all the included languages
@@ -159,7 +159,7 @@ for i in range(1, numcols):
     lang, style = col["lang"], col["style"]
 
     # If we haven't already opened a file for this language, do so now
-    if not lang in gotlang:
+    if lang not in gotlang:
         gotlang[lang] = {}
         if f: f.close()
         fn = "%s/language_%s.h" % (OUTDIR, lang)

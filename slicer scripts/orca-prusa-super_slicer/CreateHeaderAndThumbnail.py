@@ -42,10 +42,10 @@ def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 # Get the g-code source file name
-sourceFile = sys.argv[1]
+SOURCE_FILE = sys.argv[1]
 
 # Read the ENTIRE g-code file into memory
-with open(sourceFile, "r") as f:
+with open(SOURCE_FILE, "r") as f:
     lines = f.read()
 
 thumb_expresion = "; thumbnail begin.*?\n((.|\n)*?); thumbnail end"
@@ -98,7 +98,7 @@ if match is not None:
     s = int(s[1]) if s is not None else 0
     time = h * 3600 + m * 60 + s
 
-match = re.search("; filament used \[mm\] = ([0-9.]+)", lines)
+match = re.search(r'; filament used \[mm\] = ([0-9.]+)', lines)
 filament = float(match[1]) / 1000 if match is not None else 0
 
 match = os.getenv("SLIC3R_LAYER_HEIGHT")
@@ -124,7 +124,7 @@ minz = 0
 
 # Generate output file
 try:
-    with open(sourceFile, "w+") as of:
+    with open(SOURCE_FILE, "w+") as of:
         # Write header values
         if ph is not None: of.write(ph[0])
         of.write(";FLAVOR:Marlin\n")
