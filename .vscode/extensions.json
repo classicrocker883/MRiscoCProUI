@@ -6,5 +6,5 @@
         "marlinfirmware.auto-build",
         "ms-vscode.cpptools-extension-pack",
         "platformio.platformio-ide"
-    ],
+    ]
 }

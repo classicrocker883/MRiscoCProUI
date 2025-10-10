@@ -54,7 +54,7 @@ def Upload(source, target, env):
 
     def _Send(data):
         debugPrint(f">> {data}")
-        strdata = bytearray(data, "utf8") + b"\n"
+        strdata = bytearray(data, "utf-8") + b"\n"
         port.write(strdata)
         time.sleep(0.010)
 
@@ -64,7 +64,7 @@ def Upload(source, target, env):
         for Resp in responses:
             # Suppress invalid chars (coming from debug info)
             try:
-                clean_response = Resp.decode("utf8").rstrip().lstrip()
+                clean_response = Resp.decode("utf-8").rstrip().lstrip()
                 clean_responses.append(clean_response)
                 debugPrint(f"<< {clean_response}")
             except:
@@ -105,7 +105,7 @@ def Upload(source, target, env):
                 Space = FWFile.find(" ")
                 if Space >= 0: Space = FWFile.find(" ", Space + 1)
                 if Space >= 0: FWFile = FWFile[Space + 1 :]
-            if not "/" in FWFile and ".BIN" in FWFile.upper():
+            if "/" not in FWFile and ".BIN" in FWFile.upper():
                 Firmwares.append(FWFile[: FWFile.upper().index(".BIN") + 4])
         return Firmwares
 
@@ -243,7 +243,7 @@ def Upload(source, target, env):
                 raise Exception(f"CUSTOM_FIRMWARE_UPLOAD must be enabled in 'Configuration_adv.h' for '{marlin_motherboard}'")
 
             # Init & Open serial port
-            port = serial.Serial(upload_port, baudrate=upload_speed, write_timeout=0, timeout=0.1)
+            port = serial.Serial(upload_port, baudrate = upload_speed, write_timeout = 0, timeout = 0.1)
             _OpenPort()
 
             # Check SD card status
@@ -260,7 +260,7 @@ def Upload(source, target, env):
                 FirmwareFiles[1 : len(FirmwareFiles) - 2],
                 marlin_long_filename_host_support
             )  # Skip header and footers of list
-            if len(OldFirmwareFiles) == 0:
+            if not OldFirmwareFiles:
                 print("No old firmware files to delete")
             else:
                 print(f"Remove {len(OldFirmwareFiles)} old firmware file{'s' if len(OldFirmwareFiles) != 1 else ''}:")

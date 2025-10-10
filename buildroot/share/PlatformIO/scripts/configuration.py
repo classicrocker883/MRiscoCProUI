@@ -6,9 +6,10 @@
 import re, os, shutil, configparser, datetime
 from pathlib import Path
 
-verbose = 0
-def blab(str, level=1):
-    if verbose >= level: print(f"[config] {str}")
+verbose = 1
+
+def blab(msg, level=1):
+    if verbose >= level: print(f"[config] {msg}")
 
 def config_path(cpath):
     return Path("Marlin", cpath)
@@ -132,8 +133,7 @@ def fetch_example(url):
     if not url.startswith("http"):
         brch = "HEAD"
         if "@" in url: url, brch = map(str.strip, url.split("@"))
-        if url == "configurations": url = "Andrew427"
-        url = f"https://raw.githubusercontent.com/classicrocker883/MRiscoCProUI/{brch}/configurations/{url}"
+        url = f"https://raw.githubusercontent.com/classicrocker883/MRiscoCProUI/{brch}/{url}"
     url = url.replace("%", "%25").replace(" ", "%20")
 
     # Find a suitable fetch command
@@ -222,7 +222,6 @@ def apply_config_ini(cp):
 
     # For each ini_use_config item perform an action
     for ckey in config_keys:
-        addbase = False
 
         # For a key ending in .ini load and parse another .ini file
         if ckey.endswith(".ini"):
@@ -235,7 +234,7 @@ def apply_config_ini(cp):
 
         # (Allow 'example/' as a shortcut for 'examples/')
         elif ckey.startswith("configuration/"):
-            ckey = "configurations" + ckey[7:]
+            ckey = "configurations/" + ckey[7:]
 
         # For 'examples/<path>' fetch an example set from GitHub.
         # For https?:// do a direct fetch of the URL.
@@ -261,9 +260,9 @@ if __name__ == "__main__":
     #
     # From command line use the given file name
     #
-    import sys, os.path
+    import sys
     args = sys.argv[1:]
-    if len(args) > 0:
+    if args:
         if args[0].endswith(".ini"):
             ini_file = args[0]
         else:

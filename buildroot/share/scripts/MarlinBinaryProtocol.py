@@ -33,7 +33,7 @@ class ReadTimeout(Exception):
     pass
 class FatalError(Exception):
     pass
-class SycronisationError(Exception):
+class SynchronizationError(Exception):
     pass
 class PayloadOverflow(Exception):
     pass
@@ -56,7 +56,7 @@ class Protocol(object):
     simulate_errors = 0
     sync = 0
     connected = False
-    syncronised = False
+    syncronized = False
     worker_thread = None
 
     response_timeout = 1000
@@ -66,7 +66,7 @@ class Protocol(object):
 
     def __init__(self, device, baud, bsize, simerr, timeout):
         print("pySerial Version:", serial.VERSION)
-        self.port = serial.Serial(device, baudrate=baud, write_timeout=0, timeout=1)
+        self.port = serial.Serial(device, baudrate = baud, write_timeout = 0, timeout = 1)
         self.device = device
         self.baud = baud
         self.block_size = int(bsize)
@@ -91,12 +91,12 @@ class Protocol(object):
                         return
 
         def reconnect():
-            print("Reconnecting..")
+            print("Reconnecting...")
             self.port.close()
-            for x in range(10):
+            for _ in range(10):
                 try:
                     if self.connected:
-                        self.port = serial.Serial(self.device, baudrate=self.baud, write_timeout=0, timeout=1)
+                        self.port = serial.Serial(self.device, baudrate = self.baud, write_timeout = 0, timeout = 1)
                         return
                     else:
                         print("Connection closed")
@@ -107,7 +107,7 @@ class Protocol(object):
 
         while self.connected:
             try:
-                data = self.port.readline().decode("utf8").rstrip()
+                data = self.port.readline().decode("utf-8").rstrip()
                 if len(data):
                     #print(data)
                     dispatch(data)
@@ -143,7 +143,7 @@ class Protocol(object):
                 self.await_response()
             except ReadTimeout:
                 self.errors += 1
-                #print("Packetloss detected..")
+                #print("Packetloss detected...")
         self.packet_transit = None
 
     def await_response(self):
@@ -164,7 +164,7 @@ class Protocol(object):
             switch[token](data)
 
     def send_ascii(self, data, send_and_forget=False):
-        self.packet_transit = bytearray(data, "utf8") + b"\n"
+        self.packet_transit = bytearray(data, "utf-8") + b"\n"
         self.packet_status = 0
         self.transmit_attempt = 0
 
@@ -180,7 +180,7 @@ class Protocol(object):
                     self.await_response_ascii()
             except ReadTimeout:
                 self.errors += 1
-                #print("Packetloss detected..")
+                #print("Packetloss detected...")
             except serial.SerialException:
                 return
         self.packet_transit = None
@@ -266,7 +266,7 @@ class Protocol(object):
 
     def disconnect(self):
         self.send(0, 2)
-        self.syncronised = False
+        self.syncronized = False
 
     def response_ok(self, data):
         try:
@@ -274,30 +274,26 @@ class Protocol(object):
         except ValueError:
             return
         if packet_id != self.sync:
-            raise SycronisationError()
+            raise SynchronizationError()
         self.sync = (self.sync + 1) % 256
         self.packet_status = 1
 
     def response_resend(self, data):
         packet_id = int(data)
         self.errors += 1
-        if not self.syncronised:
-            print("Retrying syncronisation")
+        if not self.syncronized:
+            print("Retrying synchronization")
         elif packet_id != self.sync:
-            raise SycronisationError()
+            raise SynchronizationError()
 
     def response_stream_sync(self, data):
         sync, max_block_size, protocol_version = data.split(",")
         self.sync = int(sync)
         self.max_block_size = int(max_block_size)
-        self.block_size = (
-            self.max_block_size
-            if self.max_block_size < self.block_size
-            else self.block_size
-        )
+        self.block_size = self.max_block_size if self.max_block_size < self.block_size else self.block_size
         self.protocol_version = protocol_version
         self.packet_status = 1
-        self.syncronised = True
+        self.syncronized = True
         print("Connection synced [{0}], binary protocol version {1}, {2} byte payload buffer".format(self.sync, self.protocol_version, self.max_block_size))
 
     def response_fatal_error(self, data):
@@ -365,9 +361,9 @@ class FileTransferProtocol(object):
         print("File Transfer version: {0}, compression: {1}".format(self.version, self.compression["algorithm"]))
 
     def open(self, filename, compression, dummy):
-        payload =  b"\1" if dummy else b"\0"              # dummy transfer
-        payload += b"\1" if compression else b"\0"        # Payload compression
-        payload += (bytearray(filename, "utf8") + b"\0")  # Target filename + null terminator
+        payload =  b"\1" if dummy else b"\0"               # Dummy transfer
+        payload += b"\1" if compression else b"\0"         # Payload compression
+        payload += (bytearray(filename, "utf-8") + b"\0")  # Target filename + null terminator
 
         timeout = TimeOut(5000)
         token = None

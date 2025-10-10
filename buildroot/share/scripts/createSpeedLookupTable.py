@@ -10,7 +10,7 @@ __license__ = "GPL"
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("-f", "--cpu-freq", type=int, default=16, help="CPU clockrate in MHz (default=16)")
-parser.add_argument("-d", "--divider", type=int, default=8, help="timer/counter pre-scale divider (default=8)")
+parser.add_argument("-d", "--divider", type=int, default=8, help="Timer/counter pre-scale divider (default=8)")
 args = parser.parse_args()
 
 cpu_freq = args.cpu_freq * 1000000
@@ -22,8 +22,8 @@ print("#if F_CPU == %d" % cpu_freq)
 print()
 
 print("  const struct { uint16_t base; uint8_t gain; } speed_lookuptable_fast[256] PROGMEM = {")
-a = [0 for i in range(8)] + [int(0.5 + float(timer_freq) / (i * 256)) for i in range(8, 256)]
-b = [0 for i in range(8)] + [a[i] - a[i + 1] for i in range(8, 255)]
+a = [0] * 8 + [int(0.5 + float(timer_freq) / (i * 256)) for i in range(8, 256)]
+b = [0] * 8 + [a[i] - a[i + 1] for i in range(8, 255)]
 b.append(b[-1])
 for i in range(32):
     print("    ", end="")

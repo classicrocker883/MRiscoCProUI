@@ -3,9 +3,9 @@
 Utility to compress Marlin RGB565 TFT data to RLE16 format.
 Reads the existing Marlin RGB565 cpp file and generates a new file with the additional RLE16 data.
 
-usage: rle16_compress_cpp_image_data.py INPUT_FILE.cpp OUTPUT_FILE.cpp
+Usage: rle16_compress_cpp_image_data.py INPUT_FILE.cpp OUTPUT_FILE.cpp
 """
-import sys, struct, re
+import sys, re
 
 def addCompressedData(input_file, output_file):
     ofile = open(output_file, "wt")
@@ -14,8 +14,6 @@ def addCompressedData(input_file, output_file):
     c_skip_data    = False
     c_footer       = False
     raw_data       = []
-    rle_value      = []
-    rle_count      = []
     arrname        = ""
 
     line = input_file.readline()
@@ -93,7 +91,6 @@ def addCompressedData(input_file, output_file):
         return data
 
     def rle_emit(ofile, arrname, rledata, rawsize):
-        col = 0
         i = 0
         outstr = ""
         size = 0
@@ -119,7 +116,7 @@ def addCompressedData(input_file, output_file):
         outstr = outstr.rstrip()[:-1]
         ofile.write("\n// Saves %i bytes\nconst uint8_t %s_rle16[%d] = {\n%s\n};\n" % (rawsize - size, arrname, size, outstr))
 
-        (w, h, d) = arrname.split("_")[-1].split("x")
+        (w, h) = arrname.split("_")[-1].split("x")
         ofile.write("\nconst tImage MarlinLogo{0}x{1}x16 = MARLIN_LOGO_CHOSEN({0}, {1});\n".format(w, h))
         ofile.write("\n#endif // HAS_GRAPHICAL_TFT && SHOW_BOOTSCREEN\n".format(w, h))
 
@@ -131,7 +128,7 @@ def addCompressedData(input_file, output_file):
 if len(sys.argv) <= 2:
     print("Utility to compress Marlin RGB565 TFT data to RLE16 format.")
     print("Reads a Marlin RGB565 cpp file and generates a new file with the additional RLE16 data.")
-    print("usage: rle16_compress_cpp_image_data.py INPUT_FILE.cpp OUTPUT_FILE.cpp")
+    print("Usage: rle16_compress_cpp_image_data.py INPUT_FILE.cpp OUTPUT_FILE.cpp")
     exit(1)
 
 output_cpp = sys.argv[2]

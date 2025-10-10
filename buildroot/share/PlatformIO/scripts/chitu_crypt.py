@@ -62,7 +62,6 @@ if pioutil.is_pio_build():
     def encrypt_file(input, output_file, file_length):
         input_file = bytearray(input.read())
         block_size = 0x800
-        key_length = 0x18
 
         uid_value = uuid.uuid4()
         file_key = int(uid_value.hex[0:8], 16)

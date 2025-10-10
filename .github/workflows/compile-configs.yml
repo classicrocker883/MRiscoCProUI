@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         chip: [GD32,N32]
+        temp: [true,false]
         tjc: [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
@@ -46,8 +47,9 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = GD32 ]; then AVTMP=_GD32; else AVTMP=_N32; fi;
+          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          echo "filename=${DTMP}Aquila${AVTMP}_Default$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Aquila${AVTMP}_Default${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -55,6 +57,9 @@ jobs:
           cp configurations/Voxelab\ Aquila/Default/Configuration_adv.h Marlin/Configuration_adv.h
           cp configurations/Voxelab\ Aquila/Default/Version.h Marlin/Version.h
           sed -i "s/default_envs =.*/default_envs = ${AQUILA_VER}F103RC_voxelab_maple/" platformio.ini
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
@@ -63,6 +68,7 @@ jobs:
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
+          TP: ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -88,7 +94,6 @@ jobs:
         temp: [true,false]
         tjc: [true,false]
         t5: [true,false]
-        t13: [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -122,7 +127,6 @@ jobs:
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
           echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -132,18 +136,17 @@ jobs:
           cp configurations/Voxelab\ Aquila/MM/Version.h Marlin/Version.h
           sed -i "s/default_envs =.*/default_envs = ${AQUILA_VER}F103RC_voxelab_maple/" platformio.ini
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          if ($T5); then THMP="5"; else THMP="1"; fi;
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
-          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
           pio run
           mkdir temp
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
@@ -153,7 +156,6 @@ jobs:
           TP: ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
           T5: ${{ matrix.t5 }}
-          T13: ${{ matrix.t13 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -180,6 +182,12 @@ jobs:
         t5: [true,false]
         t13: [true,false]
         bmp: [true,false]
+        ind: [true,false]
+        exclude:
+          - t5: true
+            t13: true
+          - bmp: true
+            ind: true
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -215,41 +223,55 @@ jobs:
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
           if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
           if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-          echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          if ($IND); then IDTMP=_IND; else IDTMP=; fi;
+          echo "filename=${DTMP}Aquila${AVTMP}${IDTMP}${STMP}${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
+          if ($IND); then
+          cp configurations/Voxelab\ Aquila/X3/Configuration.h Marlin/Configuration.h
+          cp configurations/Voxelab\ Aquila/X3/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Voxelab\ Aquila/X3/Version.h Marlin/Version.h
+          else
           cp configurations/Voxelab\ Aquila/UBL/Configuration.h Marlin/Configuration.h
           cp configurations/Voxelab\ Aquila/UBL/Configuration_adv.h Marlin/Configuration_adv.h
           cp configurations/Voxelab\ Aquila/UBL/Version.h Marlin/Version.h
+          fi;
           sed -i "s/default_envs =.*/default_envs = ${AQUILA_VER}F103RC_voxelab_maple/" platformio.ini
-          if ($IS); then STEMP=; CTEMP='\/\/'; else STEMP='\/\/'; CTEMP=; fi;
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define EXTENDED_CAPABILITIES_REPORT/${CTEMP}#define EXTENDED_CAPABILITIES_REPORT/" Marlin/Configuration_adv.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($IS); then
+          sed -i "s/.*#define HAS_CGCODE 1/\/\/#define HAS_CGCODE 1/" Marlin/Configuration.h
+          sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
+          elif ($TP); then
+          sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
+          fi;
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
-          sed -i "s/.*#define SHOW_SPEED_IND/${PTEMP}#define SHOW_SPEED_IND/" Marlin/Configuration.h
-          sed -i "s/.*#define LONG_FILENAME_WRITE_SUPPORT/${PTEMP}#define LONG_FILENAME_WRITE_SUPPORT/" Marlin/Configuration_adv.h
           if [ "$IS" = true ] && [ "$TP" = true ]; then
-          sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
           sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
           fi;
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
@@ -261,102 +283,7 @@ jobs:
           T5: ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload A Release Asset
-        uses: classicrocker883/upload-a-release-asset@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: temp/build.bin
-          asset_name: ${{ steps.build_configs.outputs.filename }}
-          asset_content_type: application/x-binary
-  Build-UBL-EX-IND-A:            # UBL EX IND for Aquila S3/X3
-    name: Build UBL EX IND Files A
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        chip: [GD32,N32]
-        inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-    steps:
-      - uses: actions/checkout@v5.0.0
-      - name: Set up node
-        uses: actions/setup-node@v5.0.0
-        with:
-          node-version: 20
-      - name: Cache pip
-        uses: actions/cache@v4.2.4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
-        with:
-          path: ~/.platformio
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-      - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
-        with:
-          python-version: "3.13"
-      - name: Install PlatformIO
-        run: |
-          python3 -m pip install --upgrade pip wheel platformio
-      - name: Run PlatformIO
-        id: build_configs
-        run: |
-          if [ "$AQUILA_VER" = GD32 ]; then AVTMP=_GD32; else AVTMP=_N32; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          echo "filename=${DTMP}Aquila${AVTMP}_IND${STMP}${TTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
-          > Marlin/Configuration.h
-          > Marlin/Configuration_adv.h
-          > Marlin/Version.h
-          cp configurations/Voxelab\ Aquila/X3/Configuration.h Marlin/Configuration.h
-          cp configurations/Voxelab\ Aquila/X3/Configuration_adv.h Marlin/Configuration_adv.h
-          cp configurations/Voxelab\ Aquila/X3/Version.h Marlin/Version.h
-          sed -i "s/default_envs =.*/default_envs = ${AQUILA_VER}F103RC_voxelab_maple/" platformio.ini
-          if ($IS); then STEMP=; ITEMP='\/\/'; else STEMP='\/\/'; ITEMP=; fi;
-          sed -i "s/.*#define HAS_CGCODE 1/${ITEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
-          sed -i "s/.*#define HAS_CUSTOM_COLORS 1/${ITEMP}#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
-          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
-          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
-          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
-          sed -i "s/.*#define HAS_CUSTOM_COLORS 1/${PTEMP}#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
-          if [ "$IS" = true ] && [ "$TP" = true ]; then
-          sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
-          fi;
-          if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
-          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
-          sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
-          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
-          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          pio run
-          mkdir temp
-          mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
-        env:
-          AQUILA_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
-          T13: ${{ matrix.t13 }}
+          IND: ${{ matrix.ind }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -378,12 +305,15 @@ jobs:
       matrix:
         chip: [GD32,N32]
         proex: [true,false]
-        temp: [true,false]
         inshape: [true,false]
+        temp: [true,false]
         tjc: [true,false]
         t5: [true,false]
         t13: [true,false]
         bmp: [true,false]
+        exclude:
+          - t5: true
+            t13: true
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -431,9 +361,9 @@ jobs:
           if ($EX); then XTEMP=; else XTEMP='\/\/'; fi;
           sed -i "s/.*#define PROUI_EX 1/${XTEMP}#define PROUI_EX 1/" Marlin/Configuration.h
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
@@ -443,16 +373,21 @@ jobs:
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
@@ -489,6 +424,9 @@ jobs:
         t5: [true,false]
         t13: [true,false]
         bmp: [true,false]
+        exclude:
+          - t5: true
+            t13: true
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -551,16 +489,21 @@ jobs:
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
@@ -592,7 +535,6 @@ jobs:
         chip: [V3_0,V2_0,V3_0_1]
         tjc: [true,false]
         t5: [true,false]
-        t13: [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -627,7 +569,6 @@ jobs:
           fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
           echo "filename=${DTMP}Aquila_SKR-Mini-E3${AVTMP}${STMP}${TTMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -653,9 +594,8 @@ jobs:
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          if ($T5); then THMP="5"; else THMP="1"; fi;
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
-          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
           pio run
           mkdir temp
           mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
@@ -663,7 +603,6 @@ jobs:
           SKR: ${{ matrix.chip }}
           TJC: ${{ matrix.tjc }}
           T5: ${{ matrix.t5 }}
-          T13: ${{ matrix.t13 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -684,6 +623,7 @@ jobs:
     strategy:
       matrix:
         chip: [427,422]
+        temp: [true,false]
         tjc: [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
@@ -714,8 +654,9 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
+          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          echo "filename=${DTMP}Aquila${AVTMP}_Default$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Aquila${AVTMP}_Default${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -724,6 +665,9 @@ jobs:
           cp configurations/Voxelab\ Aquila\ 427/Default/Version.h Marlin/Version.h
           sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
           sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
@@ -732,6 +676,7 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
+          TP: ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -757,7 +702,6 @@ jobs:
         temp: [true,false]
         tjc: [true,false]
         t5: [true,false]
-        t13: [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -791,7 +735,6 @@ jobs:
           if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-; else DTMP=; fi;
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
           echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -802,18 +745,17 @@ jobs:
           sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
           sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          if ($T5); then THMP="5"; else THMP="1"; fi;
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
-          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
           pio run
           mkdir temp
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
@@ -823,7 +765,6 @@ jobs:
           TP: ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
           T5: ${{ matrix.t5 }}
-          T13: ${{ matrix.t13 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -850,6 +791,12 @@ jobs:
         t5: [true,false]
         t13: [true,false]
         bmp: [true,false]
+        ind: [true,false]
+        exclude:
+          - t5: true
+            t13: true
+          - bmp: true
+            ind: true
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -885,7 +832,8 @@ jobs:
           if ($T5); then STMP=_SPDY5; else STMP=; fi;
           if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
           if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-          echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          if ($IND); then IDTMP=_IND; else IDTMP=; fi;
+          echo "filename=${DTMP}Aquila${AVTMP}${IDTMP}${STMP}${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -895,25 +843,37 @@ jobs:
           sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
           sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          if ($IND); then
+          sed -i "s/.*#define Z_MIN_PROBE_PIN.*/#define Z_MIN_PROBE_PIN PB0/" Marlin/Configuration.h
+          sed -i "/.*#define Z_MIN_PROBE_PIN.*/a\#define SERVO0_PIN PB1" Marlin/Configuration.h
+          sed -i "s/.*#define FIX_MOUNTED_PROBE.*/#define FIX_MOUNTED_PROBE/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH.*/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define NOZZLE_TO_PROBE_OFFSET { -45.*/#define NOZZLE_TO_PROBE_OFFSET { -30.0, 0, 0 }/" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
@@ -925,6 +885,7 @@ jobs:
           T5: ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
+          IND: ${{ matrix.ind }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -951,6 +912,9 @@ jobs:
         t5: [true,false]
         t13: [true,false]
         bmp: [true,false]
+        exclude:
+          - t5: true
+            t13: true
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -996,25 +960,30 @@ jobs:
           sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
           sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
           sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
           sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then MPDEMP=; MPEMP='\/\/'; MPHS="LOW"; else MPDEMP='\/\/'; MPEMP=; MPHS="HIGH"; fi;
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/${MPDEMP}#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE ${MPHS}/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/${MPEMP}#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/${MPDEMP}#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/${MPDEMP}#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
           pio run
           mkdir temp
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
@@ -1026,102 +995,6 @@ jobs:
           T5: ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload A Release Asset
-        uses: classicrocker883/upload-a-release-asset@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: temp/build.bin
-          asset_name: ${{ steps.build_configs.outputs.filename }}
-          asset_content_type: application/x-binary
-  Build-UBL-EX-IND-A4:            # UBL EX for Aquila S3/X3 427
-    name: Build UBL EX IND Files A4
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        chip: [427,422]
-        inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-    steps:
-      - uses: actions/checkout@v5.0.0
-      - name: Set up node
-        uses: actions/setup-node@v5.0.0
-        with:
-          node-version: 20
-      - name: Cache pip
-        uses: actions/cache@v4.2.4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
-        with:
-          path: ~/.platformio
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-      - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
-        with:
-          python-version: "3.13"
-      - name: Install PlatformIO
-        run: |
-          python3 -m pip install --upgrade pip wheel platformio
-      - name: Run PlatformIO
-        id: build_configs
-        run: |
-          if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          echo "filename=${DTMP}Aquila${AVTMP}_IND${STMP}${TTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
-          > Marlin/Configuration.h
-          > Marlin/Configuration_adv.h
-          > Marlin/Version.h
-          cp configurations/Voxelab\ Aquila\ 427/UBL/Configuration.h Marlin/Configuration.h
-          cp configurations/Voxelab\ Aquila\ 427/UBL/Configuration_adv.h Marlin/Configuration_adv.h
-          cp configurations/Voxelab\ Aquila\ 427/UBL/Version.h Marlin/Version.h
-          sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
-          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_PIN.*/#define Z_MIN_PROBE_PIN PB0/" Marlin/Configuration.h
-          sed -i "/.*#define Z_MIN_PROBE_PIN.*/a\#define SERVO0_PIN PB1" Marlin/Configuration.h
-          sed -i "s/.*#define FIX_MOUNTED_PROBE.*/#define FIX_MOUNTED_PROBE/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH.*/\/\/#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define NOZZLE_TO_PROBE_OFFSET { -45.*/#define NOZZLE_TO_PROBE_OFFSET { -30.0, 0, 0 }/" Marlin/Configuration.h
-          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
-          sed -i "s/.*#define INPUT_SHAPING_X/${STEMP}#define INPUT_SHAPING_X/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Y/${STEMP}#define INPUT_SHAPING_Y/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define INPUT_SHAPING_Z/${STEMP}#define INPUT_SHAPING_Z/" Marlin/Configuration_adv.h
-          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
-          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
-          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
-          if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
-          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
-          sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; elif ($T13); then THMP="13"; DSMP="424.9"; else THMP="1"; DSMP="98"; fi;
-          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
-          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          pio run
-          mkdir temp
-          mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
-        env:
-          AQUILA_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
-          T13: ${{ matrix.t13 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2

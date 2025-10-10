@@ -8,20 +8,20 @@ def open_file_explorer():
 
     env = DefaultEnvironment()
     BUILD_PATH = Path(env["PROJECT_BUILD_DIR"], env["PIOENV"])
-    script = f"{BUILD_PATH}"
+    script = str(BUILD_PATH)
     import platform
     current_OS = platform.system()
     if current_OS == "Windows":
-        import os
         try:
+            import os
             os.startfile(script)
-        except:
+        except OSError:
             try:
-                subprocess.run(["explorer", script], shell=True, text=True, check=True)
+                subprocess.run(["explorer", str(script)], shell=False, check=True)
             except Exception as e:
                 print(f"Could not open File Explorer, an error occurred: {e}")
     elif current_OS == "Linux":
         try:
-            subprocess.run(["xdg-open", script], text=True, check=True)
+            subprocess.run(["xdg-open", str(script)], shell=False, check=True)
         except Exception as e:
             print(f"Could not open File Explorer, an error occurred: {e}")

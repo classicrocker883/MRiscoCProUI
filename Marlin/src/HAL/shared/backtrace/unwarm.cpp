@@ -112,7 +112,7 @@ bool UnwReportRetAddr(UnwState * const state, uint32_t addr) {
       // Check if name descriptor is valid
       if ((v & 0xFFFFFF00) == 0xFF000000 && (v & 0xFF) > 1) {
         // Assume the name was found!
-        entry.name = ((const char*)pf) - 4 - (v & 0xFF);
+        entry.name = reinterpret_cast<const char*>(pf) - 4 - (v & 0xFF);
         entry.function = pf;
         break;
       }
@@ -125,7 +125,7 @@ bool UnwReportRetAddr(UnwState * const state, uint32_t addr) {
   /* Cast away const from reportData.
    *  The const is only to prevent the unw module modifying the data.
    */
-  return state->cb->report((void *)state->reportData, &entry);
+  return state->cb->report(const_cast<void *>(state->reportData), &entry);
 }
 
 /**

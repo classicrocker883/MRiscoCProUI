@@ -12,7 +12,7 @@ on:
 jobs:
   bad_target:
     name: Bad PR Target
-    if: github.repository == 'classicrocker883/MRiscoCProUI' && github.event.pull_request.base.ref != '2025-August'
+    if: github.repository == 'classicrocker883/MRiscoCProUI' && github.event.pull_request.base.ref != '2025-October'
 
     runs-on: ubuntu-latest
 

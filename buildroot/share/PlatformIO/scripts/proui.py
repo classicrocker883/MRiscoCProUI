@@ -31,6 +31,7 @@ if "MARLIN_FEATURES" in env:
     stm32g0 = _GetMarlinEnv(MarlinEnv, "MCU_STM32G0")
     gd32f10 = _GetMarlinEnv(MarlinEnv, "MAPLE_STM32F1")
     hc32f46 = _GetMarlinEnv(MarlinEnv, 'ARDUINO_ARCH_HC32')
+    gd32f30 = _GetMarlinEnv(MarlinEnv, 'ARDUINO_ARCH_MFL')
 
     # Select correct architecture
     if stm32f1:
@@ -48,6 +49,9 @@ if "MARLIN_FEATURES" in env:
     elif (hc32f46):
         arch = 'gd32f10/'
         print('HC32F46x Architecture detected')
+    elif (gd32f30):
+        arch = 'stm32f1/'
+        print('GD32F3 Architecture detected')
     else:
         print(NotImplementedError("Error: Can't detect the correct architecture"))
         exit(1)

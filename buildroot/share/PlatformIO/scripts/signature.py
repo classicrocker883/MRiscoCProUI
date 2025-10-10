@@ -36,7 +36,9 @@ def enabled_defines(filepath):
     section = "user"
     spatt = re.compile(r'.*@section +([-a-zA-Z0-9_\s]+)$')  # @section ...
 
-    f = open(filepath, encoding="utf8").read().split("\n")
+    if not Path(filepath).is_file(): return outdict
+
+    f = open(filepath, encoding="utf-8").read().split("\n")
 
     incomment = False
     for line in f:
@@ -66,6 +68,7 @@ def enabled_defines(filepath):
 # Compute the SHA256 hash of a file
 def get_file_sha256sum(filepath):
     sha256_hash = hashlib.sha256()
+    if not Path(filepath).is_file(): return ""
     with open(filepath, "rb") as f:
         # Read and update hash string value in blocks of 4K
         for byte_block in iter(lambda: f.read(4096), b""):
@@ -532,7 +535,7 @@ def compute_build_signature(env):
         for line in sec_lines[1:]: sec_list += "\n" + ext_fmt.format("", line)
 
         config_ini = build_path / "config.ini"
-        with config_ini.open("w", encoding="utf-8") as outfile:
+        with config_ini.open("w", encoding="utf-8", newline="") as outfile:
             filegrp = {
                 "Configuration.h"    :"config:basic",
                 "Configuration_adv.h":"config:advanced"

@@ -1,11 +1,11 @@
 # Stock display assets, boot images and icons
 
-<img  src="preview1.jpg"  height="400" />
+<img src="preview1.jpg" height="400" />
 
 ## How to install
 
-- [**Click to Download DWIN_SET**](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/DWIN_SET) (for DWIN screen units)
-- [**Click to Download private**](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/private) (for DACAI screen units)
+- [**Click to Download** `DWIN_SET`](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/DWIN_SET) (for DWIN screen units)
+- [**Click to Download** `private`](https://downgit.github.io/#/home?url=https://github.com/classicrocker883/MRiscoCProUI/tree/HEAD/display%20assets/Creality%20Display%20Firmware/private) (for DACAI screen units)
 - [**Click to Download** `tjc_update`](https://github.com/classicrocker883/MRiscoCProUI/blob/HEAD/display%20assets/tjc_update.zip?raw=true) (for TJC LCD Display)
 
 1. Get a Micro SD card of 8GB or less.
@@ -26,7 +26,7 @@
 If you wasn't able to update the display, verify the format of the µSD Card
 (MBR, FAT32 and allocation unit of 4096 bytes) and the CRC of the files.
 
-<img src="../DWIN_SET-folder.jpg"  height="350" />
+<img src="../DWIN_SET-folder.jpg" height="350" />
 
 Be sure to leave **only** the `DWIN_SET` or `private` folder at the root of the card.
 

@@ -51,16 +51,18 @@ def format_text(argv):
             return
 
         # Open and read the file src_file
-        with open(src_file, 'r', encoding='utf-8') as rf: file_text = rf.read()
+        with open(src_file, 'r', encoding='utf-8') as rf:
+            file_text = rf.read()
 
-    if len(file_text) == 0:
+    if not file_text:
         print('No text to process')
         return
 
     # Read from file or STDIN until it terminates
     filtered = re.sub(r'\s+$', '', file_text) + '\n'
     if dst_file:
-        with open(dst_file, 'w', encoding='utf-8') as wf: wf.write(filtered)
+        with open(dst_file, 'w', encoding='utf-8', newline='') as wf:
+            wf.write(filtered)
     else:
         print(filtered)
 
