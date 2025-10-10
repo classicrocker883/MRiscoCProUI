@@ -409,8 +409,13 @@ void ADC_Initial(ADC_Module* NS_ADCx) {
   ADC_Init(NS_ADCx, &ADC_InitStructure);
 
   /* ADC regular channel14 configuration */
+  #if HAS_AQUILA_D1
+  ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_07_PC1, 1, ADC_SAMP_TIME_55CYCLES5);
+  ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_08_PC2, 2, ADC_SAMP_TIME_55CYCLES5);
+  #else
   ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_05_PC4, 2, ADC_SAMP_TIME_55CYCLES5);
   ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_12_PC5, 1, ADC_SAMP_TIME_55CYCLES5);
+  #endif
 
   /** 使能ADC DMA */
   ADC_EnableDMA(NS_ADCx, 1);

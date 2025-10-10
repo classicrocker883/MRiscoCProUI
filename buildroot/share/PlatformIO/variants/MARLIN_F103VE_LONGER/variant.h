@@ -177,6 +177,6 @@ extern "C" {
   //                            pins are NOT connected to anything by default.
   #define SERIAL_PORT_MONITOR       Serial1
   #define SERIAL_PORT_HARDWARE      Serial1
-  #define SERIAL_PORT_HARDWARE_OPEN Serial2
+  //#define SERIAL_PORT_HARDWARE_OPEN Serial2 // Aquila D1 disable
 #endif
 

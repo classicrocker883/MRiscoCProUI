@@ -136,7 +136,11 @@ void flashFirmware(const int16_t);
 
 #define HAL_CAN_SET_PWM_FREQ      // This HAL supports PWM Frequency adjustment
 #ifndef PWM_FREQUENCY
-  #define PWM_FREQUENCY      1000 // Default PWM Frequency
+  #if HAS_AQUILA_D1
+    #define PWM_FREQUENCY      20000
+  #else
+    #define PWM_FREQUENCY      1000 // Default PWM Frequency
+  #endif
 #endif
 
 // ------------------------

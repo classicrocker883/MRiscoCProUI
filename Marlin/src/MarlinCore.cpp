@@ -1339,6 +1339,7 @@ void setup() {
   #if ENABLED(SOVOL_SV06_RTS)
     SETUP_RUN(RTS_Update());
   #else
+    delay(800);
     SETUP_RUN(ui.init());
   #endif
 
@@ -1695,6 +1696,8 @@ void setup() {
     SETUP_RUN(ftMotion.init());
   #endif
 
+  SET_INPUT(PA0);
+  OUT_WRITE(PB0, HIGH);
   marlin_state = MarlinState::MF_RUNNING;
 
   #ifdef STARTUP_TUNE

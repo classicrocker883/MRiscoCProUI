@@ -41,7 +41,7 @@
   #define EEPROM_WRITE_DELAY    10
 #endif
 #ifndef EEPROM_DEVICE_ADDRESS
-  #define EEPROM_DEVICE_ADDRESS (0x50 << 1)
+  #define EEPROM_DEVICE_ADDRESS (0xA0) // (0x50 << 1)
 #endif
 
 #ifdef ARDUINO_ARCH_MFL
@@ -50,12 +50,14 @@
 
 // IO direction setting
 #ifdef __STM32F1__
-  #define SDA_IN()  do{ PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH &= 0XFFFF0FFF; PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH |= 8 << 12; }while(0)
-  #define SDA_OUT() do{ PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH &= 0XFFFF0FFF; PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH |= 3 << 12; }while(0)
+  // #define SDA_IN()  do{ PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH &= 0XFFFF0FFF; PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH |= 8 << 12; }while(0)
+  // #define SDA_OUT() do{ PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH &= 0XFFFF0FFF; PIN_MAP[IIC_EEPROM_SDA].gpio_device->regs->CRH |= 3 << 12; }while(0)
 #elif ANY(STM32F1, STM32F4, ARDUINO_ARCH_HC32, ARDUINO_ARCH_MFL)
   #define SDA_IN()  SET_INPUT(IIC_EEPROM_SDA)
   #define SDA_OUT() SET_OUTPUT(IIC_EEPROM_SDA)
 #endif
+  #define SDA_IN()  SET_INPUT_PULLUP(IIC_EEPROM_SDA)
+  #define SDA_OUT() SET_OUTPUT(IIC_EEPROM_SDA)
 
 // IO ops
 #define IIC_SCL_0() WRITE(IIC_EEPROM_SCL, LOW)

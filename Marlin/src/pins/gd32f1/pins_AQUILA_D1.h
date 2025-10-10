@@ -31,7 +31,7 @@
   #error "Longer3D only supports 1 hotend / E stepper."
 #endif
 
-#define BOARD_INFO_NAME "Longer3D"
+#define BOARD_INFO_NAME "Aquila D1 - N32"
 
 #define BOARD_NO_NATIVE_USB
 
@@ -91,6 +91,12 @@
 
 #define FAN0_PIN                            PE13  // PA15 (4cm Fan)
 
+#ifdef MAPLE_STM32F1
+  #define FAN_SOFT_PWM
+  #define FAN_MIN_PWM                         35
+  #define FAN_MAX_PWM                        255
+#endif
+
 #if TERN(MAPLE_STM32F1, ENABLED(FAN_SOFT_PWM), ENABLED(FAST_PWM_FAN)) && FAN_MIN_PWM < 5 // Required to avoid issues with heating or STLink
   #error "FAN_MIN_PWM must be 5 or higher."       // Fan will not start in 1-30 range
 #endif
@@ -103,12 +109,6 @@
   #elif FAST_PWM_FAN_FREQUENCY > 65535
     #error "FAST_PWM_FAN_FREQUENCY must be less than 65536."
   #endif
-#endif
-
-#ifdef MAPLE_STM32F1
-  #define FAN_SOFT_PWM
-  #define FAN_MIN_PWM                         35
-  #define FAN_MAX_PWM                        255
 #endif
 
 #define MOTOR_CURRENT_PWM_X_PIN          PB8   // VREF2/3 CONTROL XY
