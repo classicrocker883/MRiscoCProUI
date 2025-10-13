@@ -20,9 +20,9 @@ def set(file_path, define_name, value):
         content = f.readlines()
 
     modified = False
-    for i in range(len(content)):
+    for i, line in enumerate(content):
         # Regex to match the desired pattern
-        match = re.match(r'^(\s*)(/*)(\s*)(#define\s+{})\s+(.*?)\s*(//.*)?$'.format(re.escape(define_name)), content[i])
+        match = re.match(r'^(\s*)(/*)(\s*)(#define\s+{})\s+(.*?)\s*(//.*)?$'.format(re.escape(define_name)), line)
         if match:
             modified = True
             comm = "" if match[6] is None else " " + match[6]

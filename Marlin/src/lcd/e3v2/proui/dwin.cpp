@@ -4478,23 +4478,28 @@ void Draw_MaxAccel_Menu() {
     void ApplyMeshInset() { ResetMeshInset(); ReDrawItem(); }
     void SetXMeshInset() { SetPFloatOnClick(0, X_BED_SIZE, UNITFDIGITS, OPTITEM(PROUI_EX, SetMeshArea) ApplyMeshInset); }
     void SetYMeshInset() { SetPFloatOnClick(0, Y_BED_SIZE, UNITFDIGITS, OPTITEM(PROUI_EX, SetMeshArea) ApplyMeshInset); }
+
     void MaxMeshArea() {
       TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = 0;
       TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_BED_SIZE;
       TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = 0;
       TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_BED_SIZE;
+
       ResetMeshInset();
       ReDrawMenu();
     }
+
     void CenterMeshArea() {
-      float max = (MESH_MIN_X + MESH_MIN_Y) * 0.5;
-      if (max < X_BED_SIZE - MESH_MAX_X) { max = X_BED_SIZE - MESH_MAX_X; }
-      if (max < MESH_MIN_Y) { max = MESH_MIN_Y; }
-      if (max < Y_BED_SIZE - MESH_MAX_Y) { max = Y_BED_SIZE - MESH_MAX_Y; }
-      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = max;
-      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_BED_SIZE - max;
-      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = max;
-      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_BED_SIZE - max;
+      const float width  = MESH_MAX_X + MESH_MIN_X;
+      const float height = MESH_MAX_Y + MESH_MIN_Y;
+      const float center_x = X_BED_SIZE * 0.5;
+      const float center_y = Y_BED_SIZE * 0.5;
+
+      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = center_x - width  * 0.5;
+      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = center_x + width  * 0.5;
+      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = center_y - height * 0.5;
+      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = center_y + height * 0.5;
+
       ResetMeshInset();
       ReDrawMenu();
     }
