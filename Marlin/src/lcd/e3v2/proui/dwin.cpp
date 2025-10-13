@@ -4490,8 +4490,8 @@ void Draw_MaxAccel_Menu() {
     }
 
     void CenterMeshArea() {
-      const float width  = MESH_MAX_X + MESH_MIN_X;
-      const float height = MESH_MAX_Y + MESH_MIN_Y;
+      const float width  = MESH_MAX_X - MESH_MIN_X;
+      const float height = MESH_MAX_Y - MESH_MIN_Y;
       const float center_x = X_BED_SIZE * 0.5;
       const float center_y = Y_BED_SIZE * 0.5;
 
