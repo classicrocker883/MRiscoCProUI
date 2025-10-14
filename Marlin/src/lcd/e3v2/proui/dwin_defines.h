@@ -21,7 +21,7 @@
 #pragma once
 
 #include "../../../inc/MarlinConfigPre.h"
-
+#define PROUI_ITEM_CONF
 //#define DEBUG_DWIN 1
 //#define TJC_DISPLAY         // Enable for TJC display
 //#define DACAI_DISPLAY       // Enable for DACAI display
