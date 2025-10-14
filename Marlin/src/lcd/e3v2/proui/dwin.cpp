@@ -417,6 +417,7 @@ void ICON_Stop() {
 // Popups & Status Messages
 //=============================================================================
 
+// Pause or Stop popup
 void Popup_window_PauseOrStop() {
   switch (select_print.now) {
     case PRINT_PAUSE_RESUME:
@@ -427,6 +428,14 @@ void Popup_window_PauseOrStop() {
       break;
     default: break;
   }
+}
+void OnClick_PauseOrStop() {
+  switch (select_print.now) {
+    case PRINT_PAUSE_RESUME: if (HMI_flag.select_flag) { ui.pause_print(); } break; // confirm pause
+    case PRINT_STOP: if (HMI_flag.select_flag) { ui.abort_print(); } break; // stop confirmed then abort print
+    default: break;
+  }
+  Goto_PrintProcess();
 }
 
 #if HAS_HOTEND || HAS_HEATED_BED || HAS_HEATED_CHAMBER
@@ -1175,95 +1184,86 @@ void Draw_Info_Menu() {
 // Main Process
 void HMI_MainMenu() {
   EncoderState encoder_diffState = get_encoder_state();
-  if (encoder_diffState == ENCODER_DIFF_NO) return;
-
-  if (encoder_diffState == ENCODER_DIFF_CW) {
-    if (select_page.inc(PAGE_COUNT)) {
-      switch (select_page.now) {
-        case PAGE_PRINT:   ICON_Print(); break;
-        case PAGE_PREPARE: ICON_Print();   ICON_Prepare(); break;
-        case PAGE_CONTROL: ICON_Prepare(); ICON_Control(); break;
-        case PAGE_ADVANCE: ICON_Control(); ICON_AdvSettings(); break;
-        OPTCODE(HAS_TOOLBAR,
-        case PAGE_TOOLBAR: ICON_AdvSettings(); Goto_ToolBar(); break)
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_CCW) {
-    if (select_page.dec()) {
-      switch (select_page.now) {
-        case PAGE_PRINT:   ICON_Print();   ICON_Prepare(); break;
-        case PAGE_PREPARE: ICON_Prepare(); ICON_Control(); break;
-        case PAGE_CONTROL: ICON_Control(); ICON_AdvSettings(); break;
-        case PAGE_ADVANCE: ICON_AdvSettings(); break;
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_ENTER) {
-    switch (select_page.now) {
-      case PAGE_PRINT:
-        if (HMI_data.MediaAutoMount) {
-          card.mount();
-          safe_delay(800);
+  switch (encoder_diffState) {
+    case ENCODER_DIFF_NO: return;
+    case ENCODER_DIFF_CW:
+      if (select_page.inc(PAGE_COUNT)) {
+        switch (select_page.now) {
+          case PAGE_PRINT:   ICON_Print(); break;
+          case PAGE_PREPARE: ICON_Print();   ICON_Prepare(); break;
+          case PAGE_CONTROL: ICON_Prepare(); ICON_Control(); break;
+          case PAGE_ADVANCE: ICON_Control(); ICON_AdvSettings(); break;
+          OPTCODE(HAS_TOOLBAR,
+          case PAGE_TOOLBAR: ICON_AdvSettings(); Goto_ToolBar(); break)
         }
-        Draw_Print_File_Menu();
-        break;
-      case PAGE_PREPARE: Draw_Prepare_Menu(); break;
-      case PAGE_CONTROL: Draw_Control_Menu(); break;
-      case PAGE_ADVANCE: Draw_AdvancedSettings_Menu(); break;
-    }
+      }
+      break;
+    case ENCODER_DIFF_CCW:
+      if (select_page.dec()) {
+        switch (select_page.now) {
+          case PAGE_PRINT:   ICON_Print();   ICON_Prepare(); break;
+          case PAGE_PREPARE: ICON_Prepare(); ICON_Control(); break;
+          case PAGE_CONTROL: ICON_Control(); ICON_AdvSettings(); break;
+          case PAGE_ADVANCE: ICON_AdvSettings(); break;
+        }
+      }
+      break;
+    case ENCODER_DIFF_ENTER:
+      switch (select_page.now) {
+        case PAGE_PRINT:
+          if (HMI_data.MediaAutoMount) {
+            card.mount();
+            safe_delay(800);
+          }
+          Draw_Print_File_Menu();
+          break;
+        case PAGE_PREPARE: Draw_Prepare_Menu(); break;
+        case PAGE_CONTROL: Draw_Control_Menu(); break;
+        case PAGE_ADVANCE: Draw_AdvancedSettings_Menu(); break;
+      }
+      break;
   }
   DWIN_UpdateLCD();
-}
-
-// Pause or Stop popup
-void OnClick_PauseOrStop() {
-  switch (select_print.now) {
-    case PRINT_PAUSE_RESUME: if (HMI_flag.select_flag) { ui.pause_print(); } break; // confirm pause
-    case PRINT_STOP: if (HMI_flag.select_flag) { ui.abort_print(); } break; // stop confirmed then abort print
-    default: break;
-  }
-  Goto_PrintProcess();
 }
 
 // Printing
 void HMI_Printing() {
   EncoderState encoder_diffState = get_encoder_state();
-  if (encoder_diffState == ENCODER_DIFF_NO) return;
-  // Avoid flicker by updating only the previous menu
-  if (encoder_diffState == ENCODER_DIFF_CW) {
-    if (select_print.inc(PRINT_COUNT)) {
-      switch (select_print.now) {
-        case PRINT_SETUP: ICON_Tune(); break;
-        case PRINT_PAUSE_RESUME: ICON_Tune(); ICON_ResumeOrPause(); break;
-        case PRINT_STOP: ICON_ResumeOrPause(); ICON_Stop(); break;
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_CCW) {
-    if (select_print.dec()) {
-      switch (select_print.now) {
-        case PRINT_SETUP: ICON_Tune(); ICON_ResumeOrPause(); break;
-        case PRINT_PAUSE_RESUME: ICON_ResumeOrPause(); ICON_Stop(); break;
-        case PRINT_STOP: ICON_Stop(); break;
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_ENTER) {
-    switch (select_print.now) {
-      case PRINT_SETUP: Draw_Tune_Menu(); break;
-      case PRINT_PAUSE_RESUME:
-        if (print_job_timer.isPaused()) { // If printer is already in pause
-          ui.resume_print();
-          break;
+  switch (encoder_diffState) {
+    case ENCODER_DIFF_NO: return;
+    // Avoid flicker by updating only the previous menu
+    case ENCODER_DIFF_CW:
+      if (select_print.inc(PRINT_COUNT)) {
+        switch (select_print.now) {
+          case PRINT_SETUP: ICON_Tune(); break;
+          case PRINT_PAUSE_RESUME: ICON_Tune(); ICON_ResumeOrPause(); break;
+          case PRINT_STOP: ICON_ResumeOrPause(); ICON_Stop(); break;
         }
-        Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
-        return;
-      case PRINT_STOP:
-        Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
-        return;
-      default: break;
-    }
+      }
+      break;
+    case ENCODER_DIFF_CCW:
+      if (select_print.dec()) {
+        switch (select_print.now) {
+          case PRINT_SETUP: ICON_Tune(); ICON_ResumeOrPause(); break;
+          case PRINT_PAUSE_RESUME: ICON_ResumeOrPause(); ICON_Stop(); break;
+          case PRINT_STOP: ICON_Stop(); break;
+        }
+      }
+      break;
+    case ENCODER_DIFF_ENTER:
+      switch (select_print.now) {
+        case PRINT_SETUP: Draw_Tune_Menu(); break;
+        case PRINT_PAUSE_RESUME:
+          if (print_job_timer.isPaused()) { // If printer is already in pause
+            ui.resume_print();
+            break;
+          }
+          Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+          return;
+        case PRINT_STOP:
+          Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+          return;
+      }
   }
   DWIN_UpdateLCD();
 }
@@ -2769,10 +2769,15 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
       pause_menu_response = PAUSE_RESPONSE_RESUME_PRINT; // "Continue" button
     }
   }
-
+  void Popup_FilamentPurge() {
+    DWIN_Draw_Popup(ICON_AutoLeveling, GET_TEXT_F(MSG_ADVANCED_PAUSE), GET_TEXT_F(MSG_FILAMENT_CHANGE_PURGE_CONTINUE));
+    DWINUI::Draw_Button(BTN_Purge, 26, 280);
+    DWINUI::Draw_Button(BTN_Continue, 146, 280);
+    Draw_Select_Highlight(true);
+  }
   void Goto_FilamentPurge() {
     pause_menu_response = PAUSE_RESPONSE_WAIT_FOR;
-    Goto_Popup(Draw_Popup_FilamentPurge, OnClick_FilamentPurge);
+    Goto_Popup(Popup_FilamentPurge, OnClick_FilamentPurge);
   }
 
   void ChangeFilament() {
@@ -3618,11 +3623,11 @@ void Draw_Tune_Menu() {
     #if ALL(PROUI_ITEM_PLR, POWER_LOSS_RECOVERY)
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
     #endif
-    #if ENABLED(SHOW_SPEED_IND)
-      EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
-    #endif
     #if ENABLED(PROUI_ITEM_ABRT)
       EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+    #endif
+    #if ENABLED(SHOW_SPEED_IND)
+      EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
     #if ENABLED(FWRETRACT)
       MENU_ITEM(ICON_FWRetLength, MSG_FWRETRACT, onDrawSubMenu, Draw_FWRetract_Menu);
