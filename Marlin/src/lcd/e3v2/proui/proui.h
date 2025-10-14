@@ -225,6 +225,7 @@ typedef struct {
   OPTCODE(MESH_BED_LEVELING, uint8_t z_after_homing)
   IF_DISABLED(HAS_BED_PROBE, float ManualZOffset;)
   OPTCODE(PROUI_ITEM_ABRT, bool auto_abort)
+  OPTCODE(PROUI_ITEM_CONF, bool auto_confirm)
 #if !PROUI_EX
   OPTCODE(PROUI_GRID_PNTS, uint8_t grid_max_points = DEF_GRID_MAX_POINTS)
 #if HAS_BED_PROBE

@@ -1038,6 +1038,7 @@
 // #define ENC_MENU_ITEM
 // #define SHOW_SPEED_IND
 // #define PROUI_ITEM_ABRT
+// #define PROUI_ITEM_CONF
 // #define NO_BLINK_IND
 // #define CR10_STOCKDISPLAY
 // #define RET6_12864_LCD
