@@ -2743,20 +2743,23 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #endif
 
 #if ENABLED(SHOW_SPEED_IND)
-  void SetSpdInd() { Toggle_Chkb_Line(HMI_data.SpdInd); }
+  void SetSpdInd() {
+    Toggle_Chkb_Line(HMI_data.SpdInd);
+    LCD_MESSAGE_F("Enable Print Speed Indicator");
+  }
 #endif
 
 #if ENABLED(PROUI_ITEM_ABRT)
   void SetAutoAbort() {
     Toggle_Chkb_Line(HMI_data.auto_abort);
-    LCD_MESSAGE_F("..Disable Motors on Abort..");
+    LCD_MESSAGE_F("Disable Motors on Abort");
   }
 #endif
 
 #if ENABLED(PROUI_ITEM_CONF)
   void SetAutoConfirm() {
     Toggle_Chkb_Line(HMI_data.auto_confirm);
-    LCD_MESSAGE_F("..Enable Auto Confirm..");
+    LCD_MESSAGE_F("Auto Confirm Stop/Pause");
   }
 #endif
 
@@ -3646,7 +3649,7 @@ void Draw_Tune_Menu() {
       EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(PROUI_ITEM_CONF)
-      EDIT_ITEM_F(ICON_File, "Auto Confirm Pause/Stop", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
+      EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
     #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
@@ -4841,7 +4844,7 @@ void Draw_AdvancedSettings_Menu() {
       EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
     #endif
     #if ENABLED(PROUI_ITEM_CONF)
-      EDIT_ITEM_F(ICON_File, "Auto Confirm Pause/Stop", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
+      EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
     #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
@@ -4904,7 +4907,7 @@ void Draw_AdvancedSettings_Menu() {
         EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
       #endif
       #if ENABLED(PROUI_ITEM_CONF)
-        EDIT_ITEM_F(ICON_File, "Auto Confirm Pause/Stop", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
+        EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
       #endif
       #if ENABLED(SHOW_SPEED_IND)
         EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);

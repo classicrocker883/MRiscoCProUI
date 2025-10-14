@@ -103,7 +103,7 @@ def main():
     if branch.startswith("2025-"):
         branch = branch
     else:
-        branch = "2025-October"
+        branch = "2025-October-PR"
 
     if len(sys.argv) > 1:
         arg = sys.argv[1]
