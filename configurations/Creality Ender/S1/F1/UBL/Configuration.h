@@ -3545,8 +3545,9 @@
 //#define DACAI_DISPLAY
 //#define TJC_DISPLAY
 
-#if ENABLED(DWIN_LCD_PROUI)
 // Professional firmware features:
+#if ENABLED(DWIN_LCD_PROUI)
+
   #define PROUI_EX 1            // Extended UI features (15152 bytes of flash)
   //#define CV_LASER_MODULE
   #define HAS_GCODE_PREVIEW 1
@@ -3573,7 +3574,6 @@
   #define ENC_MENU_ITEM         // Menu item: faster/slower encoder rate (272 bytes of flash)
   #define SHOW_SPEED_IND        // Menu item: blink speed in mm/s along with speed percentage (296 bytes of flash)
   #define PROUI_ITEM_ABRT       // Menu item: enable/disable preconfigured abort commands (224 bytes of flash)
-  #define PROUI_ITEM_CONF       // Menu item: enable/disable auto confirm pause/stop print (160 bytes of flash)
   //#define NO_BLINK_IND        // Disables dashboard icon blink indicator highlighted background
 
 #endif

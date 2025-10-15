@@ -3548,8 +3548,9 @@
 //#define DACAI_DISPLAY
 //#define TJC_DISPLAY
 
-#if ENABLED(DWIN_LCD_PROUI)
 // Professional firmware features:
+#if ENABLED(DWIN_LCD_PROUI)
+
   //#define PROUI_EX 1          // Extended UI features (15152 bytes of flash)
   //#define CV_LASER_MODULE
   //#define HAS_GCODE_PREVIEW 1
@@ -3565,7 +3566,7 @@
     #define HS_MENU_ITEM        // BLTOUCH_HS_MODE menu option (56 bytes of flash)
   #endif
   #define PROUI_ITEM_PLOT       // Temp Plot Graph item in Tune/Prepare Menu (688 bytes of flash)
-  //#define PROUI_ITEM_PLR      // Power-loss Recovery option in Tune Menu (POWER_LOSS_RECOVERY 3400 bytes of flash)
+  #define PROUI_ITEM_PLR        // Power-loss Recovery option in Tune Menu (POWER_LOSS_RECOVERY 3400 bytes of flash)
   //#define PROUI_ITEM_JD       // Juntion Deviation item in Tune Menu (only if JD is enabled)
   #define PROUI_ITEM_ADVK       // Linear Advance item in Tune Menu (only if LA is enabled)
   #define SHOW_REAL_POS
@@ -3575,7 +3576,7 @@
   #define PROUI_ITEM_ENC        // Menu item: enable to reverse encoder direction (144 bytes of flash)
   //#define ENC_MENU_ITEM       // Menu item: faster/slower encoder rate (272 bytes of flash)
   #define SHOW_SPEED_IND        // Menu item: blink speed in mm/s along with speed percentage (296 bytes of flash)
-  #define PROUI_ITEM_ABRT       // Menu item: enable/disable preconfigured abort commands (88 bytes of flash)
+  #define PROUI_ITEM_ABRT       // Menu item: enable/disable preconfigured abort commands (224 bytes of flash)
   //#define NO_BLINK_IND        // Disables dashboard icon blink indicator highlighted background
 
 #endif
