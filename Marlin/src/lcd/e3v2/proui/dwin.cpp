@@ -4497,7 +4497,7 @@ void Draw_MaxAccel_Menu() {
     void CenterMeshArea() {
       const float half_width  = 0.5 * (MESH_MAX_X - MESH_MIN_X);
       const float half_height = 0.5 * (MESH_MAX_Y - MESH_MIN_Y);
-      const float half_extent = min({half_width, half_height, X_CENTER, Y_CENTER});
+      const float half_extent = min(min(half_width, half_height), min(X_CENTER, Y_CENTER));
 
       TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = X_CENTER - half_extent;
       TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_CENTER + half_extent;
