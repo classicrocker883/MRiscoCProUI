@@ -2041,7 +2041,7 @@ void DWIN_Print_Aborted() {
   safe_delay(200);
   ui.reset_status(true);
   if (auto_abort) {
-    LCD_MESSAGE_F("..Disable Motors on Abort..");
+    LCD_MESSAGE_F("Disable Motors on Abort");
     safe_delay(100);
     queue.clear();
     quickstop_stepper();
@@ -2737,7 +2737,7 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #if ENABLED(PROUI_ITEM_ABRT)
   void SetAutoAbort() {
     Toggle_Chkb_Line(HMI_data.auto_abort);
-    LCD_MESSAGE_F("..Disable Motors on Abort..");
+    LCD_MESSAGE_F("Disable Motors on Abort");
   }
 #endif
 
@@ -4497,7 +4497,7 @@ void Draw_MaxAccel_Menu() {
     void CenterMeshArea() {
       const float half_width  = 0.5 * (MESH_MAX_X - MESH_MIN_X);
       const float half_height = 0.5 * (MESH_MAX_Y - MESH_MIN_Y);
-      const float half_extent = min(min(half_width, half_height), min(X_CENTER, Y_CENTER));
+      const float half_extent = min(min(half_width, half_height), min((float)X_CENTER, (float)Y_CENTER));
 
       TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = X_CENTER - half_extent;
       TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_CENTER + half_extent;
@@ -4767,7 +4767,7 @@ void Draw_AdvancedSettings_Menu() {
   }
   ui.reset_status(true);
   UpdateMenu(AdvancedSettings);
-  TERN_(AUTO_BED_LEVELING_BILINEAR, if (!leveling_is_valid()) { LCD_MESSAGE_F("..Mesh is Invalid. Save after making changes to reload"); })
+  TERN_(AUTO_BED_LEVELING_BILINEAR, if (!leveling_is_valid()) { LCD_MESSAGE_F("..Mesh is Invalid. Save after making changes to reload."); })
 }
 
 #elif ENABLED(MESH_BED_LEVELING)
