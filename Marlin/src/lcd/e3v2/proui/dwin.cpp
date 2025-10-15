@@ -4495,15 +4495,14 @@ void Draw_MaxAccel_Menu() {
     }
 
     void CenterMeshArea() {
-      const float width  = MESH_MAX_X - MESH_MIN_X;
-      const float height = MESH_MAX_Y - MESH_MIN_Y;
-      const float center_x = X_BED_SIZE * 0.5;
-      const float center_y = Y_BED_SIZE * 0.5;
+      const float half_width  = 0.5 * (MESH_MAX_X - MESH_MIN_X);
+      const float half_height = 0.5 * (MESH_MAX_Y - MESH_MIN_Y);
+      const float half_extent = min({half_width, half_height, X_CENTER, Y_CENTER});
 
-      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = center_x - width  * 0.5;
-      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = center_x + width  * 0.5;
-      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = center_y - height * 0.5;
-      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = center_y + height * 0.5;
+      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = X_CENTER - half_extent;
+      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_CENTER + half_extent;
+      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = Y_CENTER - half_extent;
+      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_CENTER + half_extent;
 
       ResetMeshInset();
       ReDrawMenu();
