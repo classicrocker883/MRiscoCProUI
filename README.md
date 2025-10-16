@@ -3,6 +3,7 @@
 ![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)  
 ![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)  
 ![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)  
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/499802890a1348d0b2295ed2f92d8301)](https://app.codacy.com/gh/classicrocker883/MRiscoCProUI?utm_source=github.com&utm_medium=referral&utm_content=classicrocker883/MRiscoCProUI&utm_campaign=Badge_Grade)
 [![Latest Firmware Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-release.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases) <sup>- Link to latest releases</sup>
 
 ### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about _this_ firmware and the features it provides
