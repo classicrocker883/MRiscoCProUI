@@ -771,10 +771,10 @@ f"""/**
     # Generate a C source file containing the entire ZIP file as an array
     with open("Marlin/src/mczip.h", "wb") as result_file:
         result_file.write(
-              b"#ifndef NO_CONFIGURATION_EMBEDDING_WARNING\n"
-            + b"  #warning \"Generated file 'mc.zip' is embedded (Define NO_CONFIGURATION_EMBEDDING_WARNING to suppress this warning.)\"\n"
-            + b"#endif\n"
-            + b"const unsigned char mc_zip[] PROGMEM = {\n "
+            b"#ifndef NO_CONFIGURATION_EMBEDDING_WARNING\n"
+          + b"  #warning \"Generated file 'mc.zip' is embedded (Define NO_CONFIGURATION_EMBEDDING_WARNING to suppress this warning.)\"\n"
+          + b"#endif\n"
+          + b"const unsigned char mc_zip[] PROGMEM = {\n "
         )
         count = 0
         for b in (build_path / "mc.zip").open("rb").read():

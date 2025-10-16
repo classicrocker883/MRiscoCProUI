@@ -160,7 +160,6 @@ class DWIN_ICO_File:
                 count += 1
             except Exception as e:
                 print("Whoops: ", e)
-                pass
         print("...Scanned %d icon files" % (count))
 
         # 2. Scan over valid header entries and update offsets
