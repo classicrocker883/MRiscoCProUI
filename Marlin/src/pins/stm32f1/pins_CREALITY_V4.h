@@ -82,14 +82,26 @@
 //
 // Limit Switches
 //
-#ifndef X_STOP_PIN
-  #define X_STOP_PIN                        PA5
-#endif
-#ifndef Y_STOP_PIN
-  #define Y_STOP_PIN                        PA6
-#endif
-#ifndef Z_STOP_PIN
-  #define Z_STOP_PIN                        PA7
+#if HAS_N32_CR10
+  #ifndef X_STOP_PIN
+    #define X_STOP_PIN                      PA6
+  #endif
+  #ifndef Y_STOP_PIN
+    #define Y_STOP_PIN                      PA7
+  #endif
+  #ifndef Z_STOP_PIN
+    #define Z_STOP_PIN                      PC4
+  #endif
+#else
+  #ifndef X_STOP_PIN
+    #define X_STOP_PIN                      PA5
+  #endif
+  #ifndef Y_STOP_PIN
+    #define Y_STOP_PIN                      PA6
+  #endif
+  #ifndef Z_STOP_PIN
+    #define Z_STOP_PIN                      PA7
+  #endif
 #endif
 
 #ifndef Z_MIN_PROBE_PIN
@@ -106,7 +118,7 @@
 //
 // Filament Runout Sensor
 //
-#ifndef FIL_RUNOUT_PIN
+#if !defined(FIL_RUNOUT_PIN) && !HAS_N32_CR10
   #define FIL_RUNOUT_PIN                    PA4   // "Pulled-high"
 #endif
 
@@ -148,8 +160,13 @@
 //
 // Temperature Sensors
 //
-#define TEMP_0_PIN                          PC5   // TH1
-#define TEMP_BED_PIN                        PC4   // TB1
+#if HAS_N32_CR10
+  #define TEMP_0_PIN                        PA5   // TH1
+  #define TEMP_BED_PIN                      PA4   // TB1
+#else
+  #define TEMP_0_PIN                        PC5   // TH1
+  #define TEMP_BED_PIN                      PC4   // TB1
+#endif
 
 //
 // Heaters / Fans
@@ -157,11 +174,20 @@
 #ifndef HEATER_0_PIN
   #define HEATER_0_PIN                      PA1   // HEATER1
 #endif
-#ifndef HEATER_BED_PIN
-  #define HEATER_BED_PIN                    PA2   // HOT BED
-#endif
-#ifndef FAN0_PIN
-  #define FAN0_PIN                          PA0   // FAN
+#if HAS_N32_CR10
+  #ifndef HEATER_BED_PIN
+    #define HEATER_BED_PIN                  PA0   // HOT BED
+  #endif
+  #ifndef FAN0_PIN
+    #define FAN0_PIN                        PA2   // FAN
+  #endif
+#else
+  #ifndef HEATER_BED_PIN
+    #define HEATER_BED_PIN                  PA2   // HOT BED
+  #endif
+  #ifndef FAN0_PIN
+    #define FAN0_PIN                        PA0   // FAN
+  #endif
 #endif
 #define FAN_SOFT_PWM_REQUIRED
 
@@ -247,7 +273,21 @@
   #error "Define RET6_12864_LCD or VET6_12864_LCD to select pins for the LCD with the Creality V4 controller."
 #endif
 
-#if ENABLED(CR10_STOCKDISPLAY)
+#if HAS_N32_CR10
+
+  #define LCD_PINS_RS                PB12 // EXP3_07_PIN
+  #define LCD_PINS_EN                PB15 // EXP3_08_PIN
+  #define LCD_PINS_D4                PB13 // EXP3_06_PIN
+
+  #define BTN_ENC                    PB1  // EXP3_02_PIN Z_MIN_PROBE_PIN
+  #define BTN_EN1                    PC6  // EXP3_03_PIN EXP3_01_PIN
+  #define BTN_EN2                    PB14 // EXP3_05_PIN
+
+  #ifndef HAS_PIN_27_BOARD
+    #define BEEPER_PIN               PB0  // EXP3_01_PIN SERVO0_PIN
+  #endif
+
+#elif ENABLED(CR10_STOCKDISPLAY)
 
   #define LCD_PINS_RS                EXP3_07_PIN
   #define LCD_PINS_EN                EXP3_08_PIN

@@ -108,6 +108,9 @@ typedef int8_t pin_t;
 // ADC
 // ------------------------
 
+#if HAS_N32_CR10
+  #define ADC_RESOLUTION 10
+#endif
 #ifdef ADC_RESOLUTION
   #define HAL_ADC_RESOLUTION ADC_RESOLUTION
 #else
