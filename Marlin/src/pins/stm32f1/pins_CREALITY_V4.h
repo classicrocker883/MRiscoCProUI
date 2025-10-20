@@ -275,16 +275,16 @@
 
 #if HAS_N32_CR10
 
-  #define LCD_PINS_RS                PB12 // EXP3_07_PIN
-  #define LCD_PINS_EN                PB15 // EXP3_08_PIN
-  #define LCD_PINS_D4                PB13 // EXP3_06_PIN
+  #define LCD_PINS_RS                       PB12  // EXP3_07_PIN
+  #define LCD_PINS_EN                       PB15  // EXP3_08_PIN
+  #define LCD_PINS_D4                       PB13  // EXP3_06_PIN
 
-  #define BTN_ENC                    PB1  // EXP3_02_PIN Z_MIN_PROBE_PIN
-  #define BTN_EN1                    PC6  // EXP3_03_PIN EXP3_01_PIN
-  #define BTN_EN2                    PB14 // EXP3_05_PIN
+  #define BTN_ENC                           PB1   // EXP3_02_PIN Z_MIN_PROBE_PIN
+  #define BTN_EN1                           PC6   // EXP3_03_PIN EXP3_01_PIN
+  #define BTN_EN2                           PB14  // EXP3_05_PIN
 
   #ifndef HAS_PIN_27_BOARD
-    #define BEEPER_PIN               PB0  // EXP3_01_PIN SERVO0_PIN
+    #define BEEPER_PIN                      PB0   // EXP3_01_PIN SERVO0_PIN
   #endif
 
 #elif ENABLED(CR10_STOCKDISPLAY)
