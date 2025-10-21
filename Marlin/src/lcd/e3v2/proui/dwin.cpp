@@ -1262,6 +1262,7 @@ void HMI_Printing() {
           if (auto_confirm) {
             ui.pause_print();
             Goto_PrintProcess();
+            break;
           }
           else
             Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
@@ -1270,6 +1271,7 @@ void HMI_Printing() {
           if (auto_confirm) {
             ui.abort_print();
             Goto_PrintProcess();
+            break;
           }
           else
             Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
