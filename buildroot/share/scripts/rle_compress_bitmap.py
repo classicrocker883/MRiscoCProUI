@@ -168,8 +168,8 @@ def addCompressedData(input_file, output_file):
 
         outstr = ""
         rows = [rledata[i : i + 16] for i in range(0, len(rledata), 16)]
-        for i in range(0, len(rows)):
-            rows[i] = ["0x{0:02X}".format(v) for v in rows[i]]
+        for i, row in enumerate(rows):
+            rows[i] = ["0x{0:02X}".format(v) for v in row]
             outstr += f"  {', '.join(rows[i])},\n"
 
         outstr = outstr[:-2]
@@ -184,9 +184,9 @@ def addCompressedData(input_file, output_file):
 
     # Validate that code properly compressed (and decompressed) the data
     checkdata = bitwise_rle_decode(isext, rledata)
-    for i in range(0, len(checkdata)):
-        if raw_data[i] != checkdata[i]:
-            print(f"Data mismatch at byte offset {i} (should be {raw_data[i]} but got {checkdata[i]})")
+    for i, (raw, check) in enumerate(zip(raw_data, checkdata)):
+        if raw != check:
+            print(f"Data mismatch at byte offset {i} (should be {raw} but got {check})")
             break
 
 if len(sys.argv) <= 2:

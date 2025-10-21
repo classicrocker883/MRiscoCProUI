@@ -50,8 +50,8 @@ def add(file_path, define_name, value=""):
         value = " " + value
 
     # Find the first blank line to insert the new define
-    for i in range(len(content)):
-        if content[i].strip() == "":
+    for i, line in enumerate(content):
+        if line.strip() == "":
             # Insert the define at the first blank line
             content.insert(i, f"#define {define_name}{value}\n")
             break

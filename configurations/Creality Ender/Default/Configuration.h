@@ -3546,8 +3546,9 @@
 //#define DACAI_DISPLAY
 //#define TJC_DISPLAY
 
-#if ENABLED(DWIN_LCD_PROUI)
 // Professional firmware features:
+#if ENABLED(DWIN_LCD_PROUI)
+
   //#define PROUI_EX 1          // Extended UI features (15152 bytes of flash)
   //#define CV_LASER_MODULE
   #define HAS_GCODE_PREVIEW 1
@@ -3558,7 +3559,7 @@
   #define USE_GRID_MESHVIEWER 1 // Enable two mesh graph types : one (1560 bytes of flash)
   #define HAS_CUSTOM_COLORS 1   // Able to change display colors (2040 bytes of flash)
   #define ALT_COLOR_MENU 2      // Color palette options >> 0 = Voxelab Default | 1 = Alternate Aquila | 2 = Ender-3 V2 Default
-  #define ACTIVATE_MESH_ITEM    // Active Mesh Leveling menu option (152 bytes of flash)
+  //#define ACTIVATE_MESH_ITEM  // Active Mesh Leveling menu option (152 bytes of flash)
   #if ENABLED(BLTOUCH)
     //#define HS_MENU_ITEM      // BLTOUCH_HS_MODE menu option (56 bytes of flash)
   #endif

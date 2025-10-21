@@ -1,4 +1,4 @@
-/** Ender-3S1-F4 UBL ProUI-EX
+/** Ender-3S1-F1 UBL ProUI-EX
  * Marlin 3D Printer Firmware
  * Copyright (c) 2022 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
@@ -74,7 +74,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_CREALITY_V24S1_301F4  // Ender 3S1 v301F4 - BOARD_CREALITY_V24S1_301
+  #define MOTHERBOARD BOARD_CREALITY_V24S1_301
 #endif
 
 // @section serial
@@ -134,7 +134,7 @@
 //#define BLUETOOTH
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "Ender3S1-F4"
+#define CUSTOM_MACHINE_NAME "Ender-3 S1-F1"
 //#define CONFIGURABLE_MACHINE_NAME // Add G-code M550 to set/report the machine name
 
 // Printer's unique ID, used by some programs to differentiate between machines.
@@ -2213,7 +2213,7 @@
   /**
    * Enable the G26 Mesh Validation Pattern tool.
    */
-  //#define G26_MESH_VALIDATION
+  #define G26_MESH_VALIDATION
   #if ENABLED(G26_MESH_VALIDATION)
     #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
     #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for G26.
@@ -2521,16 +2521,16 @@
 //#define PREHEAT_1_TEMP_CHAMBER 35
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
-//#define PREHEAT_2_LABEL       "ABS" // PETG
-//#define PREHEAT_2_TEMP_HOTEND 240
-//#define PREHEAT_2_TEMP_BED     75
+#define PREHEAT_2_LABEL       "ABS" // PETG
+#define PREHEAT_2_TEMP_HOTEND 240
+#define PREHEAT_2_TEMP_BED     75
 //#define PREHEAT_2_TEMP_CHAMBER 35
-//#define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
+#define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
-//#define PREHEAT_3_LABEL       "Warmup"
-//#define PREHEAT_3_TEMP_HOTEND 200
-//#define PREHEAT_3_TEMP_BED     50
-//#define PREHEAT_3_FAN_SPEED     0
+#define PREHEAT_3_LABEL       "Warmup"
+#define PREHEAT_3_TEMP_HOTEND 200
+#define PREHEAT_3_TEMP_BED     50
+#define PREHEAT_3_FAN_SPEED     0
 
 //#define PREHEAT_4_LABEL       "TPU"
 //#define PREHEAT_4_TEMP_HOTEND 230
@@ -2604,7 +2604,7 @@
  *
  *   Caveats: The ending Z should be the same as starting Z.
  */
-//#define NOZZLE_CLEAN_FEATURE
+#define NOZZLE_CLEAN_FEATURE
 
 #if ENABLED(NOZZLE_CLEAN_FEATURE)
   #define NOZZLE_CLEAN_PATTERN_LINE     // Provide 'G12 P0' - a simple linear cleaning pattern
@@ -3545,35 +3545,35 @@
 //#define DACAI_DISPLAY
 //#define TJC_DISPLAY
 
-#if ENABLED(DWIN_LCD_PROUI)
 // Professional firmware features:
+#if ENABLED(DWIN_LCD_PROUI)
+
   #define PROUI_EX 1            // Extended UI features (15152 bytes of flash)
   //#define CV_LASER_MODULE
   #define HAS_GCODE_PREVIEW 1
   #define DISABLE_TUNING_GRAPH 0// PID/MPC Tuning Plot Graph (1624 bytes of flash)
-  //#define HAS_ESDIAG 1        // View End-stop switch continuity (560 bytes of flash)
-  //#define HAS_CGCODE 1        // Extra Gcode options (3320 bytes of flash)
-  //#define HAS_LOCKSCREEN 1    // Simple lockscreen as to not accidentally change something (568 bytes of flash)
-  //#define USE_GRID_MESHVIEWER 1 // Enable two mesh graph types : one (1560 bytes of flash)
-  //#define HAS_CUSTOM_COLORS 1 // Able to change display colors (2040 bytes of flash)
+  #define HAS_ESDIAG 1          // View End-stop switch continuity (560 bytes of flash)
+  #define HAS_CGCODE 1          // Extra Gcode options (3320 bytes of flash)
+  #define HAS_LOCKSCREEN 1      // Simple lockscreen as to not accidentally change something (568 bytes of flash)
+  #define USE_GRID_MESHVIEWER 1 // Enable two mesh graph types : one (1560 bytes of flash)
+  #define HAS_CUSTOM_COLORS 1   // Able to change display colors (2040 bytes of flash)
   #define ALT_COLOR_MENU 2      // Color palette options >> 0 = Voxelab Default | 1 = Alternate Aquila | 2 = Ender-3 V2 Default
   //#define ACTIVATE_MESH_ITEM  // Active Mesh Leveling menu option (152 bytes of flash)
   #if ENABLED(BLTOUCH)
     #define HS_MENU_ITEM        // BLTOUCH_HS_MODE menu option (56 bytes of flash)
   #endif
-  //#define PROUI_ITEM_PLOT     // Temp Plot Graph item in Tune/Prepare Menu (688 bytes of flash)
-  //#define PROUI_ITEM_PLR      // Power-loss Recovery option in Tune Menu (POWER_LOSS_RECOVERY 3400 bytes of flash)
+  #define PROUI_ITEM_PLOT       // Temp Plot Graph item in Tune/Prepare Menu (688 bytes of flash)
+  #define PROUI_ITEM_PLR        // Power-loss Recovery option in Tune Menu (POWER_LOSS_RECOVERY 3400 bytes of flash)
   //#define PROUI_ITEM_JD       // Juntion Deviation item in Tune Menu (only if JD is enabled)
   #define PROUI_ITEM_ADVK       // Linear Advance item in Tune Menu (only if LA is enabled)
   #define SHOW_REAL_POS
-  //#define CCLOUD_PRINT_SUPPORT// Menu item: enable/disable Creality Cloud Print Support (192 bytes of flash)
-  //#define PROUI_ITEM_TRAM     // Menu item: enable Tramming Wizard (2304 bytes of flash)
+  #define CCLOUD_PRINT_SUPPORT  // Menu item: enable/disable Creality Cloud Print Support (192 bytes of flash)
+  #define PROUI_ITEM_TRAM       // Menu item: enable Tramming Wizard (2304 bytes of flash)
   #define PROUI_MEDIASORT       // Menu item: enable/disable file list sorting (104 bytes of flash)
-  //#define PROUI_ITEM_ENC      // Menu item: enable to reverse encoder direction (144 bytes of flash)
-  //#define ENC_MENU_ITEM       // Menu item: faster/slower encoder rate (272 bytes of flash)
-  //#define SHOW_SPEED_IND      // Menu item: blink speed in mm/s along with speed percentage (296 bytes of flash)
+  #define PROUI_ITEM_ENC        // Menu item: enable to reverse encoder direction (144 bytes of flash)
+  #define ENC_MENU_ITEM         // Menu item: faster/slower encoder rate (272 bytes of flash)
+  #define SHOW_SPEED_IND        // Menu item: blink speed in mm/s along with speed percentage (296 bytes of flash)
   #define PROUI_ITEM_ABRT       // Menu item: enable/disable preconfigured abort commands (224 bytes of flash)
-  #define PROUI_ITEM_CONF       // Menu item: enable/disable auto confirm pause/stop print (160 bytes of flash)
   //#define NO_BLINK_IND        // Disables dashboard icon blink indicator highlighted background
 
 #endif

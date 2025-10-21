@@ -58,7 +58,7 @@ class QualityFinder:
     # has a size of target_size * 94%, then the value is accepted, because 0.94 >= 0.9
     acceptable_bound: float
 
-    def __init__(self, compute_image_size: Callable[[int], int], target_size: int, acceptable_bound: float=DEFAULT_ACCEPTABLE_BOUND) -> None:
+    def __init__(self, compute_image_size: Callable[[int], int], target_size: int, acceptable_bound: float = DEFAULT_ACCEPTABLE_BOUND) -> None:
         self.compute_image_size = compute_image_size
         self.closest_match = None
         self.target_size = target_size
@@ -144,7 +144,7 @@ class CreateJPEGThumbnail(Script):
         except Exception:
             Logger.logException("w", "Failed to encode snapshot image")
 
-    def _convertSnapshotToGcode(self, encoded_snapshot: str, width: int, height: int, chunk_size: int=CHUNK_SIZE) -> list[str]:
+    def _convertSnapshotToGcode(self, encoded_snapshot: str, width: int, height: int, chunk_size: int = CHUNK_SIZE) -> list[str]:
         gcode = []
         encoded_snapshot_length = len(encoded_snapshot)
         gcode.append(";")

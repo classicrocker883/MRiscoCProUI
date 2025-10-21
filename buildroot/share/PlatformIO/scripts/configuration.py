@@ -36,8 +36,7 @@ def apply_opt(name, val, conf=None):
         fullpath = config_path(file)
         lines = fullpath.read_text(encoding="utf-8").split("\n")
         found = False
-        for i in range(len(lines)):
-            line = lines[i]
+        for i, line in enumerate(lines):
             match = regex.match(line)
             if match and match[4].upper() == name.upper():
                 found = True
@@ -106,8 +105,7 @@ def disable_all_options():
         fullpath = config_path(file)
         lines = fullpath.read_text(encoding="utf-8").split("\n")
         found = False
-        for i in range(len(lines)):
-            line = lines[i]
+        for i, line in enumerate(lines):
             match = regex.match(line)
             if match:
                 name = match[3].upper()

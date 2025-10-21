@@ -3548,8 +3548,9 @@
 //#define DACAI_DISPLAY
 //#define TJC_DISPLAY
 
-#if ENABLED(DWIN_LCD_PROUI)
 // Professional firmware features:
+#if ENABLED(DWIN_LCD_PROUI)
+
   #define PROUI_EX 1            // Extended UI features (15152 bytes of flash)
   //#define CV_LASER_MODULE
   #define HAS_GCODE_PREVIEW 1
