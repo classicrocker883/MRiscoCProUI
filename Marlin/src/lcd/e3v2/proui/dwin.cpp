@@ -1251,6 +1251,7 @@ void HMI_Printing() {
       }
       break;
     case ENCODER_DIFF_ENTER:
+      const bool auto_confirm = TERN0(PROUI_ITEM_CONF, HMI_data.auto_confirm);
       switch (select_print.now) {
         case PRINT_SETUP: Draw_Tune_Menu(); break;
         case PRINT_PAUSE_RESUME:
@@ -1258,10 +1259,22 @@ void HMI_Printing() {
             ui.resume_print();
             break;
           }
-          Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+          if (auto_confirm) {
+            ui.pause_print();
+            Goto_PrintProcess();
+            break;
+          }
+          else
+            Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
           return;
         case PRINT_STOP:
-          Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+          if (auto_confirm) {
+            ui.abort_print();
+            Goto_PrintProcess();
+            break;
+          }
+          else
+            Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
           return;
       }
   }
@@ -2163,6 +2176,7 @@ void DWIN_SetDataDefaults() {
   #endif
   TERN_(HAS_GCODE_PREVIEW, HMI_data.EnablePreview = true;)
   TERN_(PROUI_ITEM_ABRT, HMI_data.auto_abort = false;)
+  TERN_(PROUI_ITEM_CONF, HMI_data.auto_confirm = true;)
   #if ENABLED(PROUI_MESH_EDIT)
     meshSet.mesh_min_x = DEF_MESH_MIN_X;
     meshSet.mesh_max_x = DEF_MESH_MAX_X;
@@ -2731,13 +2745,23 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #endif
 
 #if ENABLED(SHOW_SPEED_IND)
-  void SetSpdInd() { Toggle_Chkb_Line(HMI_data.SpdInd); }
+  void SetSpdInd() {
+    Toggle_Chkb_Line(HMI_data.SpdInd);
+    LCD_MESSAGE_F("Enable Print Speed Indicator");
+  }
 #endif
 
 #if ENABLED(PROUI_ITEM_ABRT)
   void SetAutoAbort() {
     Toggle_Chkb_Line(HMI_data.auto_abort);
     LCD_MESSAGE_F("Disable Motors on Abort");
+  }
+#endif
+
+#if ENABLED(PROUI_ITEM_CONF)
+  void SetAutoConfirm() {
+    Toggle_Chkb_Line(HMI_data.auto_confirm);
+    LCD_MESSAGE_F("Auto Confirm Stop/Pause");
   }
 #endif
 
@@ -3589,7 +3613,7 @@ void Draw_Tune_Menu() {
     }
   #endif
   checkkey = Menu;
-  if (SET_MENU(TuneMenu, MSG_TUNE, 24)) {
+  if (SET_MENU(TuneMenu, MSG_TUNE, 25)) {
     BACK_ITEM(Goto_PrintProcess);
     #if HAS_LCD_BRIGHTNESS
       MENU_ITEM(ICON_Box, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
@@ -3625,6 +3649,9 @@ void Draw_Tune_Menu() {
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
       EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+    #endif
+    #if ENABLED(PROUI_ITEM_CONF)
+      EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
     #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
@@ -4796,7 +4823,7 @@ void Draw_AdvancedSettings_Menu() {
 #else // Default-No Probe
 void Draw_AdvancedSettings_Menu() {
   checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 20)) {
+  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 21)) {
     BACK_ITEM(Goto_Main_Menu);
     #if ENABLED(EEPROM_SETTINGS)
       MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
@@ -4816,6 +4843,9 @@ void Draw_AdvancedSettings_Menu() {
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
       EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+    #endif
+    #if ENABLED(PROUI_ITEM_CONF)
+      EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
     #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
@@ -4856,7 +4886,7 @@ void Draw_AdvancedSettings_Menu() {
 #if HAS_MESH
   void Draw_Advanced_Menu() { // From Control_Menu (Control) || Default-NP AdvancedSettings_Menu (Level)
     checkkey = Menu;
-    if (SET_MENU(AdvancedMenu, MSG_ADVANCED_SETTINGS, 20)) {
+    if (SET_MENU(AdvancedMenu, MSG_ADVANCED_SETTINGS, 21)) {
       BACK_ITEM(Draw_Control_Menu);
       #if ENABLED(EEPROM_SETTINGS)
         MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
@@ -4876,6 +4906,9 @@ void Draw_AdvancedSettings_Menu() {
       #endif
       #if ENABLED(PROUI_ITEM_ABRT)
         EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      #endif
+      #if ENABLED(PROUI_ITEM_CONF)
+        EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
       #endif
       #if ENABLED(SHOW_SPEED_IND)
         EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
