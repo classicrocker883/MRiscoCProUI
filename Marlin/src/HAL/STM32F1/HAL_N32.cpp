@@ -87,6 +87,7 @@ void ADC_DeInit(ADC_Module* NS_ADCx) {
     reg_temp        = ADC_RCC_AHBPRST;
     reg_temp       |= RCC_AHB_PERIPH_ADC1;
     ADC_RCC_AHBPRST = reg_temp;             // ADC module reunion position
+    TERN_(HAS_N32_CR10, for(volatile int i=0; i<10; i++) {})
     ADC_RCC_AHBPRST = 0x00000000;           // ADC module reset and clear
   }
   else if (NS_ADCx == NS_ADC2) {
@@ -94,6 +95,7 @@ void ADC_DeInit(ADC_Module* NS_ADCx) {
     reg_temp        = ADC_RCC_AHBPRST;
     reg_temp       |= RCC_AHB_PERIPH_ADC2;
     ADC_RCC_AHBPRST = reg_temp;             // ADC module reunion position
+    TERN_(HAS_N32_CR10, for(volatile int i=0; i<10; i++) {})
     ADC_RCC_AHBPRST = 0x00000000;           // ADC module reset and clear
   }
   else if (NS_ADCx == NS_ADC3) {
@@ -101,6 +103,7 @@ void ADC_DeInit(ADC_Module* NS_ADCx) {
     reg_temp        = ADC_RCC_AHBPRST;
     reg_temp       |= RCC_AHB_PERIPH_ADC3;
     ADC_RCC_AHBPRST = reg_temp;             // ADC module reunion position
+    TERN_(HAS_N32_CR10, for(volatile int i=0; i<10; i++) {})
     ADC_RCC_AHBPRST = 0x00000000;           // ADC module reset and clear
   }
   else if (NS_ADCx == NS_ADC4) {
@@ -108,6 +111,7 @@ void ADC_DeInit(ADC_Module* NS_ADCx) {
     reg_temp        = ADC_RCC_AHBPRST;
     reg_temp       |= RCC_AHB_PERIPH_ADC4;
     ADC_RCC_AHBPRST = reg_temp;             // ADC module reunion position
+    TERN_(HAS_N32_CR10, for(volatile int i=0; i<10; i++) {})
     ADC_RCC_AHBPRST = 0x00000000;           // ADC module reset and clear
   }
 }
@@ -399,21 +403,25 @@ void enable_adc_clk(uint8_t cmd) {
 void ADC_Initial(ADC_Module* NS_ADCx) {
   ADC_InitType ADC_InitStructure;
 
+  TERN_(HAS_N32_CR10, ADC_DeInit(NS_ADCx));
+
   /* ADC configuration ------------------------------------------------------*/
   ADC_InitStructure.WorkMode       = ADC_WORKMODE_INDEPENDENT;    // Independent mode
-  ADC_InitStructure.MultiChEn      = 1;                           // Multi-channel enable
-  ADC_InitStructure.ContinueConvEn = 1;                           // Continuous enable
+  ADC_InitStructure.MultiChEn      = TERN(HAS_N32_CR10, 0, 1);    // Multi-channel enable
+  ADC_InitStructure.ContinueConvEn = TERN(HAS_N32_CR10, 0, 1);    // Continuous enable
   ADC_InitStructure.ExtTrigSelect  = ADC_EXT_TRIGCONV_NONE;       // Non-trigger
   ADC_InitStructure.DatAlign       = ADC_DAT_ALIGN_R;             // Right alignment
-  ADC_InitStructure.ChsNumber      = 2;                           // Scan channel number
+  ADC_InitStructure.ChsNumber      = TERN(HAS_N32_CR10, 1, 2);    // Scan channel number
   ADC_Init(NS_ADCx, &ADC_InitStructure);
 
-  /* ADC regular channel14 configuration */
-  ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_05_PC4, 2, ADC_SAMP_TIME_55CYCLES5);
-  ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_12_PC5, 1, ADC_SAMP_TIME_55CYCLES5);
+  #if !HAS_N32_CR10
+    /* ADC regular channel14 configuration */
+    ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_05_PC4, 2, ADC_SAMP_TIME_55CYCLES5);
+    ADC_ConfigRegularChannel(NS_ADCx, ADC2_Channel_12_PC5, 1, ADC_SAMP_TIME_55CYCLES5);
 
-  /** 使能ADC DMA */
-  ADC_EnableDMA(NS_ADCx, 1);
+    /** 使能ADC DMA */
+    ADC_EnableDMA(NS_ADCx, 1);
+  #endif
 
   /* Enable ADC */
   ADC_Enable(NS_ADCx, 1);
@@ -424,7 +432,7 @@ void ADC_Initial(ADC_Module* NS_ADCx) {
   while (ADC_GetCalibrationStatus(NS_ADCx));
 
   /* Start ADC Software Conversion */
-  ADC_EnableSoftwareStartConv(NS_ADCx, 1);
+  IF_DISABLED(HAS_N32_CR10, ADC_EnableSoftwareStartConv(NS_ADCx, 1));
 }
 
 /**================================================================
@@ -432,13 +440,20 @@ void ADC_Initial(ADC_Module* NS_ADCx) {
  ================================================================*/
 uint16_t ADC_GetData(ADC_Module* NS_ADCx, uint8_t ADC_Channel) {
   uint16_t dat;
+  TERN_(HAS_N32_CR10, uint8_t timeOut);
 
   /** Set channel parameters */
-  ADC_ConfigRegularChannel(NS_ADCx, ADC_Channel, 1, ADC_SAMP_TIME_239CYCLES5);
+  ADC_ConfigRegularChannel(NS_ADCx, ADC_Channel, 1, TERN(HAS_N32_CR10, ADC_SAMP_TIME_71CYCLES5, ADC_SAMP_TIME_239CYCLES5));
+
+  #if HAS_N32_CR10
+    ADC_ClearFlag(NS_ADCx, ADC_FLAG_ENDC);
+	  ADC_ClearFlag(NS_ADCx, ADC_FLAG_STR);
+  #endif
 
   /* Start ADC Software Conversion */
+  TERN_(HAS_N32_CR10, timeOut = 0xFF);
   ADC_EnableSoftwareStartConv(NS_ADCx, 1);
-  while(ADC_GetFlagStatus(NS_ADCx, ADC_FLAG_ENDC) == 0);
+	while((ADC_GetFlagStatus(NS_ADCx, ADC_FLAG_ENDC) == 0) TERN_(HAS_N32_CR10, && (timeOut--)));
 
   ADC_ClearFlag(NS_ADCx, ADC_FLAG_ENDC);
   ADC_ClearFlag(NS_ADCx, ADC_FLAG_STR);
@@ -630,8 +645,8 @@ void MarlinHAL::adc_init() {
   //NS_GPIOC_PL_CFG = reg_temp;     // PC4/5 analog input
 
   enable_adc_clk(1);                // Make ADC clock
-  ADC_DMA_init();                   // DMA initialization
-  ADC_Initial(NS_ADC2);             // ADC initialization
+  IF_DISABLED(HAS_N32_CR10, ADC_DMA_init()); // DMA initialization
+  ADC_Initial(USE_ADC);             // ADC initialization
 
   delay(2);
   //NS_PINRT("get adc1 = ", adc_results[0], "\r\n");

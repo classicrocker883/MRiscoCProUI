@@ -284,9 +284,17 @@
 
   #define IS_RRD_FG_SC 1
   #define NO_LCD_SDCARD
-  #define LCD_ST7920_DELAY_1           125
-  #define LCD_ST7920_DELAY_2           125
-  #define LCD_ST7920_DELAY_3           125
+
+  #ifdef VOXELAB_N32
+    #define LCD_ST7920_DELAY_1         0
+    #define LCD_ST7920_DELAY_2         80
+    #define LCD_ST7920_DELAY_3         450
+    #define HAS_N32_CR10 1
+  #else
+    #define LCD_ST7920_DELAY_1         125
+    #define LCD_ST7920_DELAY_2         125
+    #define LCD_ST7920_DELAY_3         125
+  #endif
 
 #elif ANY(ANET_FULL_GRAPHICS_LCD, CTC_A10S_A13)
 
