@@ -63,21 +63,6 @@ typedef struct {
   __IO uint32_t SAMPT3;
 } ADC_Module;
 
-#if HAS_N32_CR10
-  #define     __IM     volatile const      /*! Defines 'read only' structure member permissions */
-  #define     __OM     volatile            /*! Defines 'write only' structure member permissions */
-  #define     __IOM    volatile            /*! Defines 'read / write' structure member permissions */
-  typedef struct
-  {
-    __IOM uint32_t CTRL;                   /*!< Offset: 0x000 (R/W)  SysTick Control and Status Register */
-    __IOM uint32_t LOAD;                   /*!< Offset: 0x004 (R/W)  SysTick Reload Value Register */
-    __IOM uint32_t VAL;                    /*!< Offset: 0x008 (R/W)  SysTick Current Value Register */
-    __IM  uint32_t CALIB;                  /*!< Offset: 0x00C (R/ )  SysTick Calibration Register */
-  } SysTick_Type;
-  #define SysTick_BASE        (SCS_BASE +  0x0010UL)                    /*!< SysTick Base Address */
-  #define SysTick             ((SysTick_Type   *)     SysTick_BASE  )   /*!< SysTick configuration struct */
-#endif
-
 #define NS_ADC1_BASE ((uint32_t)0x40020800)
 #define NS_ADC2_BASE ((uint32_t)0x40020c00)
 #define NS_ADC3_BASE ((uint32_t)0x40021800)
