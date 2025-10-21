@@ -66,7 +66,7 @@ void MeshViewerClass::DrawMeshPoint(const uint8_t x, const uint8_t y, const floa
   TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout();)
 
   const uint8_t fs = DWINUI::fontWidth(Title.meshfont);
-  const int16_t v = round(z * 100);
+  const int16_t v = isnan(z) ? int16_t(0) : int16_t(LROUND(z * 100));
   NOLESS(max, z); NOMORE(min, z);
 
   const uint16_t color = DWINUI::RainbowInt(v, zmin, zmax);

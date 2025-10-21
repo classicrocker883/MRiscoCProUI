@@ -2466,13 +2466,13 @@ void AutoHome() { queue.inject_P(G28_STR); }
   void ApplyZOffset() { (void)settings.save(); }
   void LiveZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
-      const float step_zoffset = round((MenuData.Value / 100.0f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
+      const float step_zoffset = roundf((MenuData.Value * 0.01f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
       if (BABYSTEP_ALLOWED()) { babystep.add_steps(Z_AXIS, step_zoffset); }
     #endif
   }
   void SetZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
-      babystep.accum = round(planner.settings.axis_steps_per_mm[Z_AXIS] * BABY_Z_VAR);
+      babystep.accum = LROUND(planner.settings.axis_steps_per_mm[Z_AXIS] * BABY_Z_VAR);
     #endif
     SetPFloatOnClick(PROBE_OFFSET_ZMIN, PROBE_OFFSET_ZMAX, 2, ApplyZOffset, LiveZOffset);
   }
