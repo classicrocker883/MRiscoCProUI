@@ -64,6 +64,7 @@ jobs:
           cp configurations/Voxelab\ Aquila/MM/Version.h Marlin/Version.h
           fi;
           sed -i "s/default_envs =.*/default_envs = N32F103RC_voxelab_maple/" platformio.ini
+          sed -i "s/.*#define FILAMENT_RUNOUT_SENSOR/\/\/#define FILAMENT_RUNOUT_SENSOR/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
           sed -i "s/.*#define DWIN_LCD_PROUI/\/\/#define DWIN_LCD_PROUI/" Marlin/Configuration.h
           sed -i "s/.*#define CR10_STOCKDISPLAY/#define CR10_STOCKDISPLAY/" Marlin/Configuration.h
