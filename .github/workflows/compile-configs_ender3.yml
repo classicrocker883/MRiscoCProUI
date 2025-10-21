@@ -446,9 +446,9 @@ jobs:
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
-          cp configurations/Creality\ Ender/S1/UBL/F4/Configuration.h Marlin/Configuration.h
-          cp configurations/Creality\ Ender/S1/UBL/F4/Configuration_adv.h Marlin/Configuration_adv.h
-          cp configurations/Creality\ Ender/S1/UBL/F4/Version.h Marlin/Version.h
+          cp configurations/Creality\ Ender/S1/F4/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/S1/F4/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/S1/F1/UBL/Version.h Marlin/Version.h
           sed -i "s/default_envs =.*/default_envs = STM32F401RC_creality/" platformio.ini
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
@@ -543,9 +543,9 @@ jobs:
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
-          cp configurations/Creality\ Ender/S1/UBL/F1/Configuration.h Marlin/Configuration.h
-          cp configurations/Creality\ Ender/S1/UBL/F1/Configuration_adv.h Marlin/Configuration_adv.h
-          cp configurations/Creality\ Ender/S1/UBL/F1/Version.h Marlin/Version.h
+          cp configurations/Creality\ Ender/S1/F1/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/S1/F1/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/S1/F1/UBL/Version.h Marlin/Version.h
           sed -i "s/default_envs =.*/default_envs = STM32F103RC_creality/" platformio.ini
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
