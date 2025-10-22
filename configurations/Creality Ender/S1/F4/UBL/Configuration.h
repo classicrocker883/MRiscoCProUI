@@ -3560,7 +3560,7 @@
   #define ALT_COLOR_MENU 2      // Color palette options >> 0 = Voxelab Default | 1 = Alternate Aquila | 2 = Ender-3 V2 Default
   //#define ACTIVATE_MESH_ITEM  // Active Mesh Leveling menu option (152 bytes of flash)
   #if ENABLED(BLTOUCH)
-    #define HS_MENU_ITEM        // BLTOUCH_HS_MODE menu option (56 bytes of flash)
+    //#define HS_MENU_ITEM      // BLTOUCH_HS_MODE menu option (56 bytes of flash)
   #endif
   #define PROUI_ITEM_PLOT       // Temp Plot Graph item in Tune/Prepare Menu (688 bytes of flash)
   //#define PROUI_ITEM_PLR      // Power-loss Recovery option in Tune Menu (POWER_LOSS_RECOVERY 3400 bytes of flash)

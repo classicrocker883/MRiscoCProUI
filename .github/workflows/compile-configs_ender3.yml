@@ -448,12 +448,13 @@ jobs:
           > Marlin/Version.h
           cp configurations/Creality\ Ender/S1/F4/UBL/Configuration.h Marlin/Configuration.h
           cp configurations/Creality\ Ender/S1/F4/UBL/Configuration_adv.h Marlin/Configuration_adv.h
-          cp configurations/Creality\ Ender/S1/F1/UBL/Version.h Marlin/Version.h
+          cp configurations/Creality\ Ender/S1/F4/UBL/Version.h Marlin/Version.h
           sed -i "s/default_envs =.*/default_envs = STM32F401RC_creality/" platformio.ini
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_GCODE_PREVIEW.*/${PTEMP}#define HAS_GCODE_PREVIEW 1/" Marlin/Configuration.h
+          sed -i "s/.*#define HAS_ESDIAG.*/${PTEMP}#define HAS_ESDIAG 1/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CGCODE.*/${PTEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
           sed -i "s/.*#define FWRETRACT/${MTEMP}#define FWRETRACT/" Marlin/Configuration_adv.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
