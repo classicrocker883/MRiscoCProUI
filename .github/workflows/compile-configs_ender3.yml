@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -48,9 +48,9 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+          if ($IS);  then ISTMP=-IS;  else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC; else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;  else DTMP=;  fi;
           echo "filename=${DTMP}Ender_GD32${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -76,8 +76,8 @@ jobs:
           mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -98,11 +98,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -132,10 +132,10 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=${DTMP}Ender_GD32${EVTMP}${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -163,10 +163,10 @@ jobs:
           mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -186,15 +186,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
       - uses: actions/checkout@v5.0.0
@@ -225,12 +225,12 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=${DTMP}Ender_GD32${EVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -271,10 +271,10 @@ jobs:
           mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -296,15 +296,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
       - uses: actions/checkout@v5.0.0
@@ -335,12 +335,12 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=${DTMP}Ender_GD32${EVTMP}${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -381,10 +381,10 @@ jobs:
           mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -407,9 +407,9 @@ jobs:
     strategy:
       matrix:
         temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        bmp: [true,false]
+        tjc:  [true,false]
+        t5:   [true,false]
+        bmp:  [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -438,10 +438,10 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=_SPRT13; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=;       fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;        fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=_SPRT13; fi;
+          if ($BMP); then MPTMP=_BMP;  else MPTMP=;       fi;
           echo "filename=${DTMP}Ender-S1-F4${STMP}${MPTMP}_UBL-ProUI-EX${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -456,7 +456,6 @@ jobs:
           sed -i "s/.*#define HAS_GCODE_PREVIEW.*/${PTEMP}#define HAS_GCODE_PREVIEW 1/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CGCODE.*/${PTEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
           sed -i "s/.*#define FWRETRACT/${MTEMP}#define FWRETRACT/" Marlin/Configuration_adv.h
-          fi;
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           if ($T5); then THMP="5"; DSMP="98"; else THMP="13"; DSMP="424.9"; fi;
@@ -480,9 +479,9 @@ jobs:
           mkdir temp
           mv .pio/build/STM32F401RC_creality/*.bin temp/build.bin
         env:
-          TP: ${{ matrix.temp }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
         id: get_release
@@ -504,9 +503,9 @@ jobs:
     strategy:
       matrix:
         temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        bmp: [true,false]
+        tjc:  [true,false]
+        t5:   [true,false]
+        bmp:  [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -535,10 +534,10 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=_SPRT13; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=;       fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;        fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=_SPRT13; fi;
+          if ($BMP); then MPTMP=_BMP;  else MPTMP=;       fi;
           echo "filename=${DTMP}Ender-S1-F1${STMP}${MPTMP}_UBL-ProUI-EX${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -567,9 +566,9 @@ jobs:
           mkdir temp
           mv .pio/build/STM32F103RC_creality/*.bin temp/build.bin
         env:
-          TP: ${{ matrix.temp }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
         id: get_release
@@ -590,10 +589,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -623,9 +622,9 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+          if ($IS);  then ISTMP=-IS;  else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC; else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;  else DTMP=;  fi;
           echo "filename=${DTMP}Ender${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -649,8 +648,8 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -671,11 +670,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -705,10 +704,10 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=${DTMP}Ender${EVTMP}${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -734,10 +733,10 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -757,15 +756,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
       - uses: actions/checkout@v5.0.0
@@ -796,12 +795,12 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=${DTMP}Ender${EVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -840,10 +839,10 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -865,15 +864,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
       - uses: actions/checkout@v5.0.0
@@ -904,12 +903,12 @@ jobs:
         id: build_configs
         run: |
           if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=${DTMP}Ender${EVTMP}${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -948,10 +947,10 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           ENDER_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -974,13 +973,13 @@ jobs:
     strategy:
       matrix:
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
       - uses: actions/checkout@v5.0.0
@@ -1010,12 +1009,12 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=${DTMP}Ender_E3-Free-runs${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -1052,10 +1051,10 @@ jobs:
           mkdir temp
           mv .pio/build/STM32F401RE_freeruns/*.bin temp/build.bin
         env:
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -1078,9 +1077,9 @@ jobs:
     strategy:
       matrix:
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -1109,10 +1108,10 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=${DTMP}Ender_E3-Free-runs${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -1160,12 +1159,12 @@ jobs:
     strategy:
       matrix:
         chip: [V3_0,V2_0,V3_0_1]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        tjc:  [true,false]
+        t5:   [true,false]
+        t13:  [true,false]
+        bmp:  [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
       - uses: actions/checkout@v5.0.0
@@ -1195,14 +1194,14 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if [ "$SKR" = V3_0 ]; then AVTMP="V3"; SKTMP="STM32G0B1RE"
-          elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; SKTMP="STM32F103RC"
+          if   [ "$SKR" = V3_0 ];   then AVTMP="V3";     SKTMP="STM32G0B1RE"
+          elif [ "$SKR" = V2_0 ];   then AVTMP="V2";     SKTMP="STM32F103RC"
           elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
           fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -1253,7 +1252,7 @@ jobs:
         env:
           SKR: ${{ matrix.chip }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -1276,8 +1275,8 @@ jobs:
     strategy:
       matrix:
         chip: [V3_0,V2_0,V3_0_1]
-        tjc: [true,false]
-        t5: [true,false]
+        tjc:  [true,false]
+        t5:   [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -1306,12 +1305,12 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if [ "$SKR" = V3_0 ]; then AVTMP="V3"; SKTMP="STM32G0B1RE"
-          elif [ "$SKR" = V2_0 ]; then AVTMP="V2"; SKTMP="STM32F103RC"
+          if   [ "$SKR" = V3_0 ];   then AVTMP="V3";     SKTMP="STM32G0B1RE"
+          elif [ "$SKR" = V2_0 ];   then AVTMP="V2";     SKTMP="STM32F103RC"
           elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
           fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=; fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=; fi;
           echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${STMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -1348,7 +1347,7 @@ jobs:
         env:
           SKR: ${{ matrix.chip }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2

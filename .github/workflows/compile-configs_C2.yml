@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        abl: [MM,Default]
+        abl:     [MM,Default]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -47,9 +47,9 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS); then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP); then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($T5); then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=C2_N32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -83,9 +83,9 @@ jobs:
           mv .pio/build/N32F103RC_voxelab_maple/*.bin temp/build.bin
         env:
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -105,10 +105,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        abl: [MM,Default]
+        abl:     [MM,Default]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -137,9 +137,9 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS); then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP); then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($T5); then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=C2_HC32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -168,9 +168,9 @@ jobs:
           mv .pio/build/HC32F460C_aquila_C2/*.bin temp/build.bin
         env:
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -190,11 +190,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
-        abl: [MM,Default]
+        chip:    [427,422]
+        abl:     [MM,Default]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
     steps:
       - uses: actions/checkout@v5.0.0
       - name: Set up node
@@ -224,9 +224,9 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS); then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP); then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($T5); then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=C2${AVTMP}${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -261,9 +261,9 @@ jobs:
         env:
           AQUILA_VER: ${{ matrix.chip }}
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -283,15 +283,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
-        abl: [UBL,BLT]
+        chip:    [427,422]
+        abl:     [UBL,BLT]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
       - uses: actions/checkout@v5.0.0
@@ -322,11 +322,11 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=C2${AVTMP}${STMP}${TTMP}${MPTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -376,9 +376,9 @@ jobs:
         env:
           AQUILA_VER: ${{ matrix.chip }}
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
