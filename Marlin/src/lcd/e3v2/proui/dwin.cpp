@@ -1465,14 +1465,18 @@ void EachMomentUpdate() {
 
       // Remaining time
       #if ENABLED(SHOW_REMAINING_TIME)
-        ui.remaining_time = ui.get_remaining_time();
-        Draw_Print_ProgressRemain();
+        if (ui.remaining_time != ui.get_remaining_time()) {
+          ui.remaining_time = ui.get_remaining_time();
+          Draw_Print_ProgressRemain();
+        }
       #endif
 
       // Interaction time
       #if ENABLED(SHOW_INTERACTION_TIME)
-        ui.interaction_time = ui.get_interaction_time();
-        Draw_Print_ProgressInteract();
+        if (ui.interaction_time != ui.get_interaction_time()) {
+          ui.interaction_time = ui.get_interaction_time();
+          Draw_Print_ProgressInteract();
+        }
       #endif
     }
 
