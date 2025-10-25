@@ -64,7 +64,7 @@ void GcodeSuite::M48() {
     bltouch.high_speed_mode = false;
   #endif
   #if ENABLED(DWIN_LCD_PROUI)
-    TERN_(ADVANCED_PAUSE_FEATURE, DWIN_Popup_Pause(GET_TEXT_F(MSG_M48_TEST));)
+    TERN_(ADVANCED_PAUSE_FEATURE, Popup_Pause(GET_TEXT_F(MSG_M48_TEST));)
   #endif
 
   if (homing_needed_error()) TERN(DWIN_LCD_PROUI, return HMI_ReturnScreen(), return);

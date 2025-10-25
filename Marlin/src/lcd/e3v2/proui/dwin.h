@@ -132,9 +132,6 @@ inline bool SD_Printing()   { return Printing() && card.isStillPrinting(); }
 inline bool Host_Printing() { return Printing() && !card.isStillPrinting(); }
 
 // Popups
-#if HAS_HOTEND || HAS_HEATED_BED
-  void DWIN_Popup_Temperature(const int_fast8_t heater_id, const uint8_t state);
-#endif
 #if ENABLED(POWER_LOSS_RECOVERY)
   void Popup_PowerLossRecovery();
 #endif

@@ -1741,7 +1741,7 @@ void Temperature::_temp_error(
 void Temperature::maxtemp_error(const heater_id_t heater_id OPTARG(ERR_INCLUDE_TEMP, const celsius_float_t deg)) {
   #if HAS_HOTEND || HAS_HEATED_BED
     TERN_(SOVOL_SV06_RTS, rts.gotoPageBeep(ID_KillBadTemp_L, ID_KillBadTemp_D));
-    TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(heater_id, 1);)
+    TERN_(HAS_DWIN_E3V2_BASIC, Popup_Temperature(heater_id, 1));
     TERN_(EXTENSIBLE_UI, ExtUI::onMaxTempError(heater_id));
   #endif
   _TEMP_ERROR(heater_id, F(STR_T_MAXTEMP), MSG_ERR_MAXTEMP, deg);
@@ -1757,7 +1757,7 @@ void Temperature::maxtemp_error(const heater_id_t heater_id OPTARG(ERR_INCLUDE_T
 void Temperature::mintemp_error(const heater_id_t heater_id OPTARG(ERR_INCLUDE_TEMP, const celsius_float_t deg)) {
   #if HAS_HOTEND || HAS_HEATED_BED
     TERN_(SOVOL_SV06_RTS, rts.gotoPageBeep(ID_KillBadTemp_L, ID_KillBadTemp_D));
-    TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(heater_id, 0);)
+    TERN_(HAS_DWIN_E3V2_BASIC, Popup_Temperature(heater_id, 0));
     TERN_(EXTENSIBLE_UI, ExtUI::onMinTempError(heater_id));
   #endif
   _TEMP_ERROR(heater_id, F(STR_T_MINTEMP), MSG_ERR_MINTEMP, deg);
@@ -2012,7 +2012,7 @@ void Temperature::mintemp_error(const heater_id_t heater_id OPTARG(ERR_INCLUDE_T
             start_watching_hotend(e);               // If temp reached, turn off elapsed check
           else {
             TERN_(SOVOL_SV06_RTS, rts.gotoPageBeep(ID_KillHeat_L, ID_KillHeat_D));
-            TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(e, 0));
+            TERN_(HAS_DWIN_E3V2_BASIC, Popup_Temperature(e, 0));
             TERN_(EXTENSIBLE_UI, ExtUI::onHeatingError(e));
             _TEMP_ERROR(e, FPSTR(str_t_heating_failed), MSG_ERR_HEATING_FAILED, temp);
           }
@@ -2052,7 +2052,7 @@ void Temperature::mintemp_error(const heater_id_t heater_id OPTARG(ERR_INCLUDE_T
           start_watching_bed();                 // If temp reached, turn off elapsed check
         else {
           TERN_(SOVOL_SV06_RTS, rts.gotoPageBeep(ID_KillHeat_L, ID_KillHeat_D));
-          TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(H_BED, 0));
+          TERN_(HAS_DWIN_E3V2_BASIC, Popup_Temperature(H_BED, 0));
           TERN_(EXTENSIBLE_UI, ExtUI::onHeatingError(H_BED));
           _TEMP_ERROR(H_BED, FPSTR(str_t_heating_failed), MSG_ERR_HEATING_FAILED, deg);
         }
@@ -3556,14 +3556,14 @@ void Temperature::init() {
 
       case TRRunaway:
         TERN_(SOVOL_SV06_RTS, rts.gotoPageBeep(ID_KillRunaway_L, ID_KillRunaway_D));
-        TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(heater_id, 0));
+        TERN_(HAS_DWIN_E3V2_BASIC, Popup_Temperature(heater_id, 0));
         TERN_(EXTENSIBLE_UI, ExtUI::onHeatingError(heater_id));
         _TEMP_ERROR(heater_id, FPSTR(str_t_thermal_runaway), MSG_ERR_THERMAL_RUNAWAY, current);
         break;
 
       #if ENABLED(THERMAL_PROTECTION_VARIANCE_MONITOR)
         case TRMalfunction:
-          TERN_(HAS_DWIN_E3V2_BASIC, DWIN_Popup_Temperature(heater_id, 0));
+          TERN_(HAS_DWIN_E3V2_BASIC, Popup_Temperature(heater_id, 0));
           TERN_(EXTENSIBLE_UI, ExtUI::onHeatingError(heater_id));
           _TEMP_ERROR(heater_id, F(STR_T_THERMAL_MALFUNCTION), MSG_ERR_TEMP_MALFUNCTION, current);
           break;
