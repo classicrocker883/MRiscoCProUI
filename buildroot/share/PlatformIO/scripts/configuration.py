@@ -151,6 +151,7 @@ def fetch_example(url):
     for fn in (
         "Configuration.h",
         "Configuration_adv.h",
+        "Version.h",
         "_Bootscreen.h",
         "_Statusscreen.h"
     ):

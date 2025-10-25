@@ -623,6 +623,14 @@ void Goto_PrintProcess() {
 }
 
 void Draw_PrintDone() {
+  #if ENABLED(PROUI_ITEM_CONF)
+    if (HMI_data.auto_confirm) {
+      wait_for_user = false;
+      select_page.reset();
+      Goto_Main_Menu();
+      return;
+    }
+  #endif
   TERN_(SET_PROGRESS_PERCENT, ui.set_progress_done();)
   TERN_(SET_REMAINING_TIME, ui.reset_remaining_time();)
   TERN_(SET_INTERACTION_TIME, ui.reset_interaction_time();)

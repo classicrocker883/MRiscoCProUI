@@ -18,7 +18,7 @@ import os, subprocess, sys, urllib.request, urllib.error
 from pathlib import Path
 
 DEBUGGING = False
-CONFIG_FILES = ("Configuration.h", "Configuration_adv.h", "_Bootscreen.h", "_Statusscreen.h")
+CONFIG_FILES = ("Configuration.h", "Configuration_adv.h", "Version.h", "_Bootscreen.h", "_Statusscreen.h")
 
 def debug_print(s):
     if DEBUGGING: print(s)

@@ -1125,7 +1125,6 @@ void CardReader::selectFileByIndex(const int16_t nr) {
   #endif
   workDir.rewind();
   selectByIndex(workDir, nr);
-  hal.watchdog_refresh(); // Prevent watchdog reset in long listings
 }
 
 //

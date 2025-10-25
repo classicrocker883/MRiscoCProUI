@@ -26,6 +26,7 @@ else:
   files_to_checkout = [
     "Marlin/Configuration.h",
     "Marlin/Configuration_adv.h",
+    "Marlin/Version.h",
     "Marlin/config.ini",
     "Marlin/src/pins/*/pins_*.h"
   ]
