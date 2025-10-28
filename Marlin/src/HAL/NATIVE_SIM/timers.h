@@ -36,7 +36,7 @@
 #endif
 
 typedef uint64_t hal_timer_t;
-#define HAL_TIMER_TYPE_MAX 0xFFFFFFFFFFFFFFFF
+#define HAL_TIMER_TYPE_MAX 0xFFFF'FFFF'FFFF'FFFFULL
 
 #define HAL_TIMER_RATE         ((SystemCoreClock) / 4)  // frequency of timers peripherals
 
@@ -54,11 +54,11 @@ typedef uint64_t hal_timer_t;
 #endif
 #define SYSTICK_TIMER_FREQUENCY 1000
 
-#define TEMP_TIMER_RATE        1000000
-#define TEMP_TIMER_FREQUENCY   1000 // temperature interrupt frequency
+#define TEMP_TIMER_RATE        1'000'000
+#define TEMP_TIMER_FREQUENCY        1000 // temperature interrupt frequency
 
 #define STEPPER_TIMER_RATE     HAL_TIMER_RATE   // frequency of stepper timer (HAL_TIMER_RATE / STEPPER_TIMER_PRESCALE)
-#define STEPPER_TIMER_TICKS_PER_US ((STEPPER_TIMER_RATE) / 1000000) // stepper timer ticks per µs
+#define STEPPER_TIMER_TICKS_PER_US ((STEPPER_TIMER_RATE) / 1'000'000) // stepper timer ticks per µs
 #define STEPPER_TIMER_PRESCALE (CYCLES_PER_MICROSECOND / STEPPER_TIMER_TICKS_PER_US)
 
 #define PULSE_TIMER_RATE       STEPPER_TIMER_RATE   // frequency of pulse timer
