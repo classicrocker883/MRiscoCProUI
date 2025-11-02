@@ -511,7 +511,7 @@ typedef struct SettingsDataStruct {
   //
   // Linear Advance
   //
-  #if ENABLED(LIN_ADVANCE)
+  #if HAS_LIN_ADVANCE_K
     float planner_extruder_advance_K[DISTINCT_E];       // M900 K  planner.extruder_advance_K
     #if ENABLED(SMOOTH_LIN_ADVANCE)
       float stepper_extruder_advance_tau[DISTINCT_E];   // M900 U  stepper.extruder_advance_tau
@@ -1655,7 +1655,7 @@ void MarlinSettings::postprocess() {
     //
     // Linear Advance
     //
-    #if ENABLED(LIN_ADVANCE)
+    #if HAS_LIN_ADVANCE_K
     {
       _FIELD_TEST(planner_extruder_advance_K);
       EEPROM_WRITE(planner.extruder_advance_K);
@@ -2799,7 +2799,7 @@ void MarlinSettings::postprocess() {
       //
       // Linear Advance
       //
-      #if ENABLED(LIN_ADVANCE)
+      #if HAS_LIN_ADVANCE_K
       {
         float extruder_advance_K[DISTINCT_E];
         _FIELD_TEST(planner_extruder_advance_K);
@@ -2815,7 +2815,7 @@ void MarlinSettings::postprocess() {
             DISTINCT_E_LOOP() stepper.set_advance_tau(tau[e], e);
         #endif
       }
-      #endif
+      #endif // HAS_LIN_ADVANCE_K
 
       //
       // HAS_MOTOR_CURRENT_(SPI|PWM)
@@ -4333,7 +4333,7 @@ void MarlinSettings::reset() {
     //
     // M900 Linear Advance
     //
-    TERN_(LIN_ADVANCE, gcode.M900_report(forReplay));
+    TERN_(HAS_LIN_ADVANCE_K, gcode.M900_report(forReplay));
 
     //
     // M907 Stepper motor currents

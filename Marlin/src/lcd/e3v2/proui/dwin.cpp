@@ -133,7 +133,7 @@
 // Junction deviation limits
 #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
   #define MIN_JD_MM 0.01f
-  #define MAX_JD_MM TERN(LIN_ADVANCE, 0.3f, 0.5f)
+  #define MAX_JD_MM TERN(HAS_LIN_ADVANCE_K, 0.3f, 0.5f)
 #endif
 
 #if HAS_TRINAMIC_CONFIG
@@ -3165,16 +3165,16 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
     void SetMaxJerkE() { HMI_value.axis = E_AXIS; SetFloatOnClick(min_jerk_edit_values.e, max_jerk_edit_values.e, UNITFDIGITS, planner.max_jerk.e, ApplyMaxJerk); }
   #endif
 #elif ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
-  void ApplyJDmm() { TERN_(LIN_ADVANCE, planner.recalculate_max_e_jerk();) }
+  void ApplyJDmm() { TERN_(HAS_LIN_ADVANCE_K, planner.recalculate_max_e_jerk();) }
   void SetJDmm() { SetPFloatOnClick(MIN_JD_MM, MAX_JD_MM, 3, ApplyJDmm); }
 #endif
 
-#if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
+#if ALL(PROUI_ITEM_ADVK, HAS_LIN_ADVANCE_K)
   void ApplyLA_K() { planner.set_advance_k(MenuData.Value / POW(10, 3)); }
   void SetLA_K() { SetFloatOnClick(0, 10, 3, planner.extruder_advance_K[EXT], ApplyLA_K); }
   void onDrawLA_K(MenuItemClass* menuitem, int8_t line) { onDrawFloatMenu(menuitem, line, 3, planner.get_advance_k()); }
   #if ENABLED(SMOOTH_LIN_ADVANCE)
-    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value / POW(10, 2)); }
+    void ApplySmoothLA() { stepper.set_advance_tau(MenuData.Value / POW(10, 2)); }
     void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 2, ApplySmoothLA); }
   #endif
 #endif
@@ -3656,11 +3656,13 @@ void Draw_Tune_Menu() {
     #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
-    #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      static float editable_k = planner.get_advance_k();
+    #if ALL(PROUI_ITEM_ADVK, HAS_LIN_ADVANCE_K)
+      static float editable_k;
+      editable_k = planner.get_advance_k();
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawLA_K, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        static float editable_u = Stepper::get_advance_tau();
+        static float editable_u;
+        editable_u = stepper.get_advance_tau();
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_u);
       #endif
     #endif
@@ -3819,11 +3821,13 @@ void Draw_Motion_Menu() {
     #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
-    #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      static float editable_k = planner.get_advance_k();
+    #if ALL(PROUI_ITEM_ADVK, HAS_LIN_ADVANCE_K)
+      static float editable_k;
+      editable_k = planner.get_advance_k();
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawLA_K, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        static float editable_u = Stepper::get_advance_tau();
+        static float editable_u;
+        editable_u = stepper.get_advance_tau();
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_u);
       #endif
     #endif
