@@ -166,7 +166,7 @@
 #endif
 
 /**
- * Note: Alfawise U20/U30 boards DON'T use SPI2, as the hardware designer
+ * NOTE: Alfawise U20/U30 boards DON'T use SPI2, as the hardware designer
  * mixed up MOSI and MISO pins. SPI is managed in SW, and needs pins
  * declared below.
  */

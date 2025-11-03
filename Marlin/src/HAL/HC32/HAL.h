@@ -23,7 +23,7 @@
 /**
  * HAL for HC32F460 based boards
  *
- * Note: MarlinHAL class is in MarlinHAL.h/cpp
+ * NOTE: MarlinHAL class is in MarlinHAL.h/cpp
  */
 
 #define CPU_32_BIT

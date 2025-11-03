@@ -232,7 +232,7 @@ void FTMotion::discard_planner_block_protected() {
     planner.release_current_block();  // FTM uses release_current_block() instead of discard_current_block(),
                                       // as in block_phase_isr(). This change is to avoid invoking axis_did_move.reset().
                                       // current_block = nullptr is added to replicate discard without axis_did_move reset.
-                                      // Note invoking axis_did_move.reset() causes no issue since FTM's stepper refreshes
+                                      /// NOTE: Invoking axis_did_move.reset() causes no issue since FTM's stepper refreshes
                                       // its values every ISR.
   }
 }
@@ -504,7 +504,7 @@ stepper_plan_t FTMotion::calc_stepper_plan(xyze_float_t traj_coords) {
       /* 3) Set per-iteration advance dividend Q0.32 */                                                      \
       uint64_t delta_uq32_32 = ABS(delta_q32_32);                                                            \
       /* dividend = delta_q32_32 / ITERATIONS_PER_TRAJ, but avoiding division and an intermediate int128 */  \
-      /* Note the integer part would overflow if there is eq or more than 1 steps per isr */                 \
+      /** NOTE: The integer part would overflow if there is eq or more than 1 steps per isr */                 \
       uint32_t integer_part = (delta_uq32_32 >> 32) * ITERATIONS_PER_TRAJ_INV_uq0_32;                        \
       uint32_t fractional_part = ((delta_uq32_32 & UINT32_MAX) * ITERATIONS_PER_TRAJ_INV_uq0_32) >> 32;      \
       stepper_plan.advance_dividend_q0_32.A = integer_part + fractional_part;                                \

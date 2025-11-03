@@ -280,7 +280,7 @@
  *   W    What?       Display valuable UBL data.
  *
  *
- *   Release Notes:
+ *   NOTES:
  *   You MUST do M502, M500 to initialize the storage. Failure to do this will cause all
  *   kinds of problems. Enabling EEPROM Storage is required.
  *

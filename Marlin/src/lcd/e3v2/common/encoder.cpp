@@ -110,7 +110,7 @@ EncoderState encoderReceiveAnalyze() {
 
       // Encoder rate multiplier
       if (encoderRate.enabled) {
-        // Note that the rate is always calculated between two passes through the
+        /// NOTE: The rate is always calculated between two passes through the
         // loop and that the abs of the temp_diff value is tracked.
         const float encoderStepRate = ((float(abs_diff) / float(ENCODER_PULSES_PER_STEP)) * 1000.0f) / float(ms - encoderRate.lastEncoderTime);
         encoderRate.lastEncoderTime = ms;

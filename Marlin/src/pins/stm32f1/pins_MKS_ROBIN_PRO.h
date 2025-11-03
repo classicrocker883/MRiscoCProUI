@@ -186,7 +186,7 @@
 #define FAN0_PIN                            PB1   // +FAN-
 
 //
-// Note: Using SPI2 interface. Make sure stm32duino is configured accordingly
+/// NOTE: Using SPI2 interface. Make sure stm32duino is configured accordingly
 //
 //#define TEMP_0_CS_PIN                     PE5   // TC1 - CS1
 //#define TEMP_0_CS_PIN                     PF11  // TC2 - CS2
@@ -324,7 +324,7 @@
 //
 #if HAS_FSMC_TFT
   /**
-   * Note: MKS Robin TFT screens use various TFT controllers
+   * NOTE: MKS Robin TFT screens use various TFT controllers
    * Supported screens are based on the ILI9341, ST7789V and ILI9328 (320x240)
    * ILI9488 is not supported
    * Define init sequences for other screens in u8g_dev_tft_320x240_upscale_from_128x64.cpp

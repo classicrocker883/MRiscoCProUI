@@ -153,7 +153,7 @@ void DWIN_Frame_Clear(const uint16_t color) {
   //  map_columns: columns in theh point map. each column is a byte in the map and contains 8 points
   //  map_rows: rows in the point map
   //  map: point bitmap. 2D array of points, 1 bit per point
-  // Note: somewhat similar to U8G's drawBitmap() function, see https://github.com/olikraus/u8glib/wiki/userreference#drawbitmap
+  /// NOTE: Somewhat similar to U8G's drawBitmap() function, see https://github.com/olikraus/u8glib/wiki/userreference#drawbitmap
   void DWIN_Draw_PointMap(
     const uint16_t color,
     const uint8_t point_width, const uint8_t point_height,

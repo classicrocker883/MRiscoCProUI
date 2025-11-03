@@ -33,7 +33,8 @@ typedef struct stepper_plan {
 // Stepping plan handles steps for a while frame (trajectory point delta)
 typedef struct Stepping {
   stepper_plan_t stepper_plan;
-  xyze_ulong_t advance_dividend_reciprocal{0}; // Note this 32 bit reciprocal underestimates quotients by at most one.
+  xyze_ulong_t advance_dividend_reciprocal{0};
+  /// NOTE: This 32 bit reciprocal underestimates quotients by at most one.
   xyze_ulong_t delta_error_q32{ LOGICAL_AXIS_LIST_1(_BV32(31)) };
   AxisBits step_bits;
   uint32_t bresenham_iterations_pending;

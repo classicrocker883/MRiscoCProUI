@@ -121,7 +121,7 @@ void AxisShaping::set_axis_shaping_A(const ftMotionShaper_t shaper, const float 
 // Refresh the indices used by shaping functions.
 // Ai[] must be precomputed (if zeta or vtol change, call set_axis_shaping_A first)
 void AxisShaping::set_axis_shaping_N(const ftMotionShaper_t shaper, const float f, const float zeta) {
-  // Note that protections are omitted for DBZ and for index exceeding array length.
+  /// NOTE: That protections are omitted for DBZ and for index exceeding array length.
   const float df = sqrt ( 1.f - sq(zeta) );
   switch (shaper) {
     case ftMotionShaper_ZV:

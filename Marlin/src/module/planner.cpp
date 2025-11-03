@@ -1140,7 +1140,7 @@ void Planner::recalculate_trapezoids(const float safe_exit_speed_sqr) {
               // calculate_trapezoid_for_block() can handle it, albeit sub-optimally.
               next->initial_rate = block->final_rate;
             }
-            // Note that at this point next_entry_speed is (still) 0.
+            /// NOTE: At this point next_entry_speed is (still) 0.
           }
           else {
             // Block is not BUSY: we won the race against the ISR or recalculate was already set
