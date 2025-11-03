@@ -5040,6 +5040,10 @@ void Temperature::isr() {
 
         #if ALL(PROUI_EX, HAS_AUTOLEVEL)
           ProEx.HeatedBed();
+        #elif ALL(DWIN_LCD_PROUI, HAS_AUTOLEVEL)
+          if (HMI_flag.cancel_lev) {
+            wait_for_heatup = false;
+          }
         #endif
 
         #if TEMP_BED_RESIDENCY_TIME > 0
