@@ -303,6 +303,7 @@
 #define STR_ABL                             "Auto Bed Leveling"
 #define STR_X_TWIST_CORRECTION              "X-Twist Correction"
 #define STR_SERVO_ANGLES                    "Servo Angles"
+#define STR_AUTOTEMP                        "Auto Temp Control"
 #define STR_HOTEND_PID                      "Hotend PID"
 #define STR_BED_PID                         "Bed PID"
 #define STR_CHAMBER_PID                     "Chamber PID"

@@ -238,6 +238,24 @@ struct Flags<N, false> {
   FI bool operator[](const int n) const      { return test(n); }
   FI int size() const                        { return sizeof(b); }
   FI operator bool() const                   { return b != 0; }
+
+  FI Flags<N>& operator|=(Flags<N> &p) const { b |= p.b; return *this; }
+  FI Flags<N>& operator&=(Flags<N> &p) const { b &= p.b; return *this; }
+  FI Flags<N>& operator^=(Flags<N> &p) const { b ^= p.b; return *this; }
+
+  FI Flags<N>& operator|=(const flagbits_t &p) { b |= flagbits_t(p); return *this; }
+  FI Flags<N>& operator&=(const flagbits_t &p) { b &= flagbits_t(p); return *this; }
+  FI Flags<N>& operator^=(const flagbits_t &p) { b ^= flagbits_t(p); return *this; }
+
+  FI Flags<N> operator|(Flags<N> &p) const { return Flags<N>(b | p.b); }
+  FI Flags<N> operator&(Flags<N> &p) const { return Flags<N>(b & p.b); }
+  FI Flags<N> operator^(Flags<N> &p) const { return Flags<N>(b ^ p.b); }
+  FI Flags<N> operator~()            const { return Flags<N>(~b); }
+
+  FI flagbits_t operator|(const flagbits_t &p) const { return b | flagbits_t(p); }
+  FI flagbits_t operator&(const flagbits_t &p) const { return b & flagbits_t(p); }
+  FI flagbits_t operator^(const flagbits_t &p) const { return b ^ flagbits_t(p); }
+
 };
 
 // Flag bits for more than 64 states
@@ -635,6 +653,21 @@ struct XYval {
   FI bool operator==(const T &p) const { return x == p && y == p; }
   FI bool operator!=(const T &p) const { return !operator==(p); }
 
+  FI bool operator< (const XYval<T>   &rs) const { return x <  rs.x && y <  rs.y; }
+  FI bool operator<=(const XYval<T>   &rs) const { return x <= rs.x && y <= rs.y; }
+  FI bool operator> (const XYval<T>   &rs) const { return x >  rs.x && y >  rs.y; }
+  FI bool operator>=(const XYval<T>   &rs) const { return x >= rs.x && y >= rs.y; }
+
+  FI bool operator< (const XYZval<T>  &rs) const { return true XY_GANG(&& x <  rs.x, && y <  rs.y); }
+  FI bool operator<=(const XYZval<T>  &rs) const { return true XY_GANG(&& x <= rs.x, && y <= rs.y); }
+  FI bool operator> (const XYZval<T>  &rs) const { return true XY_GANG(&& x >  rs.x, && y >  rs.y); }
+  FI bool operator>=(const XYZval<T>  &rs) const { return true XY_GANG(&& x >= rs.x, && y >= rs.y); }
+
+  FI bool operator< (const XYZEval<T> &rs) const { return true XY_GANG(&& x <  rs.x, && y <  rs.y); }
+  FI bool operator<=(const XYZEval<T> &rs) const { return true XY_GANG(&& x <= rs.x, && y <= rs.y); }
+  FI bool operator> (const XYZEval<T> &rs) const { return true XY_GANG(&& x >  rs.x, && y >  rs.y); }
+  FI bool operator>=(const XYZEval<T> &rs) const { return true XY_GANG(&& x >= rs.x, && y >= rs.y); }
+
 };
 
 //
@@ -793,6 +826,16 @@ struct XYZval {
   // Exact comparison to a single value
   FI bool operator==(const T &p) const { return ENABLED(HAS_X_AXIS) NUM_AXIS_GANG(&& x == p, && y == p, && z == p, && i == p, && j == p, && k == p, && u == p, && v == p, && w == p); }
   FI bool operator!=(const T &p) const { return !operator==(p); }
+
+  FI bool operator< (const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x <  rs.x, && y <  rs.y, && z <  rs.z, && i <  rs.i, && j <  rs.j, && k <  rs.k, && u <  rs.u, && v <  rs.v, && w <  rs.w); }
+  FI bool operator<=(const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x <= rs.x, && y <= rs.y, && z <= rs.z, && i <= rs.i, && j <= rs.j, && k <= rs.k, && u <= rs.u, && v <= rs.v, && w <= rs.w); }
+  FI bool operator> (const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x >  rs.x, && y >  rs.y, && z >  rs.z, && i >  rs.i, && j >  rs.j, && k >  rs.k, && u >  rs.u, && v >  rs.v, && w >  rs.w); }
+  FI bool operator>=(const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x >= rs.x, && y >= rs.y, && z >= rs.z, && i >= rs.i, && j >= rs.j, && k >= rs.k, && u >= rs.u, && v >= rs.v, && w >= rs.w); }
+
+  FI bool operator< (const XYZEval<T> &rs) const { return true NUM_AXIS_GANG(&& x <  rs.x, && y <  rs.y, && z <  rs.z, && i <  rs.i, && j <  rs.j, && k <  rs.k, && u <  rs.u, && v <  rs.v, && w <  rs.w); }
+  FI bool operator<=(const XYZEval<T> &rs) const { return true NUM_AXIS_GANG(&& x <= rs.x, && y <= rs.y, && z <= rs.z, && i <= rs.i, && j <= rs.j, && k <= rs.k, && u <= rs.u, && v <= rs.v, && w <= rs.w); }
+  FI bool operator> (const XYZEval<T> &rs) const { return true NUM_AXIS_GANG(&& x >  rs.x, && y >  rs.y, && z >  rs.z, && i >  rs.i, && j >  rs.j, && k >  rs.k, && u >  rs.u, && v >  rs.v, && w >  rs.w); }
+  FI bool operator>=(const XYZEval<T> &rs) const { return true NUM_AXIS_GANG(&& x >= rs.x, && y >= rs.y, && z >= rs.z, && i >= rs.i, && j >= rs.j, && k >= rs.k, && u >= rs.u, && v >= rs.v, && w >= rs.w); }
 
 };
 
@@ -956,6 +999,16 @@ struct XYZEval {
   // Exact comparison to a single value
   FI bool operator==(const T &p) const { return ENABLED(HAS_X_AXIS) LOGICAL_AXIS_GANG(&& e == p, && x == p, && y == p, && z == p, && i == p, && j == p, && k == p, && u == p, && v == p, && w == p); }
   FI bool operator!=(const T &p) const { return !operator==(p); }
+
+  FI bool operator< (const XYZEval<T> &rs) const { return true LOGICAL_AXIS_GANG(&& e <  rs.e, && x <  rs.x, && y <  rs.y, && z <  rs.z, && i <  rs.i, && j <  rs.j, && k <  rs.k, && u <  rs.u, && v <  rs.v, && w <  rs.w); }
+  FI bool operator<=(const XYZEval<T> &rs) const { return true LOGICAL_AXIS_GANG(&& e <= rs.e, && x <= rs.x, && y <= rs.y, && z <= rs.z, && i <= rs.i, && j <= rs.j, && k <= rs.k, && u <= rs.u, && v <= rs.v, && w <= rs.w); }
+  FI bool operator> (const XYZEval<T> &rs) const { return true LOGICAL_AXIS_GANG(&& e >  rs.e, && x >  rs.x, && y >  rs.y, && z >  rs.z, && i >  rs.i, && j >  rs.j, && k >  rs.k, && u >  rs.u, && v >  rs.v, && w >  rs.w); }
+  FI bool operator>=(const XYZEval<T> &rs) const { return true LOGICAL_AXIS_GANG(&& e >= rs.e, && x >= rs.x, && y >= rs.y, && z >= rs.z, && i >= rs.i, && j >= rs.j, && k >= rs.k, && u >= rs.u, && v >= rs.v, && w >= rs.w); }
+
+  FI bool operator< (const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x <  rs.x, && y <  rs.y, && z <  rs.z, && i <  rs.i, && j <  rs.j, && k <  rs.k, && u <  rs.u, && v <  rs.v, && w <  rs.w); }
+  FI bool operator<=(const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x <= rs.x, && y <= rs.y, && z <= rs.z, && i <= rs.i, && j <= rs.j, && k <= rs.k, && u <= rs.u, && v <= rs.v, && w <= rs.w); }
+  FI bool operator> (const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x >  rs.x, && y >  rs.y, && z >  rs.z, && i >  rs.i, && j >  rs.j, && k >  rs.k, && u >  rs.u, && v >  rs.v, && w >  rs.w); }
+  FI bool operator>=(const XYZval<T>  &rs) const { return true NUM_AXIS_GANG(&& x >= rs.x, && y >= rs.y, && z >= rs.z, && i >= rs.i, && j >= rs.j, && k >= rs.k, && u >= rs.u, && v >= rs.v, && w >= rs.w); }
 
 };
 
@@ -1263,6 +1316,7 @@ public:
   FI AxisBits operator|(const AxisBits &p) const { return AxisBits(bits | p.bits); }
   FI AxisBits operator&(const AxisBits &p) const { return AxisBits(bits & p.bits); }
   FI AxisBits operator^(const AxisBits &p) const { return AxisBits(bits ^ p.bits); }
+  FI AxisBits operator~()                  const { return AxisBits(~bits); }
 
   FI operator bool()     const { return !!bits; }
   FI operator uint16_t() const { return uint16_t(bits & 0xFFFF); }
