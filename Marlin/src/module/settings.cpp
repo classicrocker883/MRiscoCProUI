@@ -752,6 +752,13 @@ typedef struct SettingsDataStruct {
     // uint32_t material_changes
   #endif
 
+  //
+  // GCODE_MACROS
+  //
+  #if ENABLED(GCODE_MACROS_EEPROM)
+    char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1];
+  #endif
+
 } SettingsData;
 
 //static_assert(sizeof(SettingsData) <= MARLIN_EEPROM_SIZE, "EEPROM too small to contain SettingsData!");
@@ -780,7 +787,7 @@ void MarlinSettings::postprocess() {
 
   TERN_(PIDTEMP, thermalManager.updatePID());
 
-  #if DISABLED(NO_VOLUMETRICS)
+  #if HAS_VOLUMETRIC_EXTRUSION
     planner.calculate_volumetric_multipliers();
   #elif EXTRUDERS
     for (uint8_t i = COUNT(planner.e_factor); i--;)
@@ -1494,7 +1501,7 @@ void MarlinSettings::postprocess() {
     {
       _FIELD_TEST(parser_volumetric_enabled);
 
-      #if DISABLED(NO_VOLUMETRICS)
+      #if HAS_VOLUMETRIC_EXTRUSION
 
         EEPROM_WRITE(parser.volumetric_enabled);
         EEPROM_WRITE(planner.filament_size);
@@ -1941,6 +1948,14 @@ void MarlinSettings::postprocess() {
       EEPROM_WRITE(mmu3.cutter_mode); // EEPROM_MMU_CUTTER_ENABLED
       EEPROM_WRITE(mmu3.stealth_mode); // EEPROM_MMU_STEALTH
       EEPROM_WRITE(mmu3.mmu_hw_enabled); // EEPROM_MMU_ENABLED
+    #endif
+
+    //
+    // GCODE_MACROS
+    //
+    #if ENABLED(GCODE_MACROS_EEPROM)
+      _FIELD_TEST(gcode_macros);
+      EEPROM_WRITE(gcode.macros);
     #endif
 
     //
@@ -2638,7 +2653,7 @@ void MarlinSettings::postprocess() {
         _FIELD_TEST(parser_volumetric_enabled);
         EEPROM_READ(storage);
 
-        #if DISABLED(NO_VOLUMETRICS)
+        #if HAS_VOLUMETRIC_EXTRUSION
           if (!validating) {
             parser.volumetric_enabled = storage.volumetric_enabled;
             COPY(planner.filament_size, storage.filament_size);
@@ -3167,6 +3182,13 @@ void MarlinSettings::postprocess() {
       #endif
 
       //
+      // GCODE_MACROS
+      //
+      #if ENABLED(GCODE_MACROS_EEPROM)
+        EEPROM_READ(gcode.macros);
+      #endif
+
+      //
       // Validate Final Size and CRC
       //
       const uint16_t eeprom_total = eeprom_index - (EEPROM_OFFSET);
@@ -3311,7 +3333,7 @@ void MarlinSettings::postprocess() {
   #if ENABLED(AUTO_BED_LEVELING_UBL)
 
     inline void ubl_invalid_slot(const int s) {
-      DEBUG_ECHOLNPGM("?Invalid slot.\n", s, " mesh slots available.");
+      DEBUG_ECHOLN(F("?Invalid "), F("slot.\n"), s, F(" mesh slots available."));
       UNUSED(s);
     }
 
@@ -3819,7 +3841,7 @@ void MarlinSettings::reset() {
   //
   // Volumetric Extrusion & Filament Diameter
   //
-  #if DISABLED(NO_VOLUMETRICS)
+  #if HAS_VOLUMETRIC_EXTRUSION
     parser.volumetric_enabled = ENABLED(VOLUMETRIC_DEFAULT_ON);
     for (uint8_t q = 0; q < COUNT(planner.filament_size); ++q)
       planner.filament_size[q] = DEFAULT_NOMINAL_FILAMENT_DIA;
@@ -4018,6 +4040,11 @@ void MarlinSettings::reset() {
   #endif
 
   //
+  // G-code Macros
+  //
+  TERN_(GCODE_MACROS_EEPROM, gcode.reset_macros());
+
+  //
   // Hotend Idle Timeout
   //
   TERN_(HOTEND_IDLE_TIMEOUT, hotend_idle.cfg.set_defaults());
@@ -4081,7 +4108,7 @@ void MarlinSettings::reset() {
     //
     // M200 Volumetric Extrusion
     //
-    IF_DISABLED(NO_VOLUMETRICS, gcode.M200_report(forReplay));
+    TERN_(HAS_VOLUMETRIC_EXTRUSION, gcode.M200_report(forReplay));
 
     //
     // M92 Steps per Unit
@@ -4269,6 +4296,11 @@ void MarlinSettings::reset() {
     // Homing Feedrate
     //
     TERN_(EDITABLE_HOMING_FEEDRATE, gcode.M210_report(forReplay));
+
+    //
+    // M820 G-Code Macros
+    //
+    TERN_(GCODE_MACROS, gcode.M810_819_report(forReplay));
 
     //
     // M851 Probe Offset
