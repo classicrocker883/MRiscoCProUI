@@ -773,7 +773,7 @@ void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
   const bool old_relative_mode = relative_mode;
   if (!relative_mode) queue.enqueue_now(F("G91"));
 
-  // TODO: Use MString / TS() ...
+  /// TODO: Use MString / TS() ...
 
   char buf[32]; // G1 X9999.99 F12345
   char sign[] = "\0";
@@ -999,7 +999,8 @@ void DGUSScreenHandlerMKS::filamentLoadUnload(DGUS_VP_Variable &var, void *val_p
   #endif
 
   if (swap_tool) {
-    char buf[30]; // TODO: Use MString / TS()
+    char buf[30];
+    /// TODO: Use MString / TS()
     snprintf_P(buf, 30,
       #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
         PSTR("M1002T%cE%dF%d"), char('0' + swap_tool - 1)
@@ -1019,7 +1020,8 @@ void DGUSScreenHandlerMKS::filamentLoadUnload(DGUS_VP_Variable &var, void *val_p
 void GcodeSuite::M1002() {
   #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
   {
-    char buf[3]; // TODO: Use MString / TS()
+    char buf[3];
+    /// TODO: Use MString / TS()
     sprintf_P(buf, PSTR("T%c"), char('0' + parser.intval('T')));
     process_subcommands_now(buf);
   }
@@ -1029,7 +1031,8 @@ void GcodeSuite::M1002() {
   set_e_relative(); // M83
 
   {
-    char buf[20]; // TODO: Use MString / TS()
+    char buf[20];
+    /// TODO: Use MString / TS()
     snprintf_P(buf, 20, PSTR("G1E%dF%d"), parser.intval('E'), parser.intval('F'));
     process_subcommands_now(buf);
   }

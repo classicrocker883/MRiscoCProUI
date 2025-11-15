@@ -50,7 +50,7 @@ void SpoolJoin::toggle() {
   FLIP(enabled);
 
   // Following Prusa's implementation let's save the value to the EEPROM
-  // TODO: Move to settings.cpp
+  /// TODO: Move to settings.cpp
   #if ENABLED(EEPROM_SETTINGS)
     persistentStore.access_start();
     persistentStore.write_data(epprom_addr, enabled);

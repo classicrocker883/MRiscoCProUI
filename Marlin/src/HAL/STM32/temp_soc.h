@@ -326,7 +326,7 @@
   #define TS_CAL2_REGOFFSET 0x1FFF75CA
 #endif
 
-// TODO implement voltage scaling (calibrated Vrefint) and ADC resolution scaling (when applicable)
+/// TODO: implement voltage scaling (calibrated Vrefint) and ADC resolution scaling (when applicable)
 
 /**
  * When provided in datasheet, the use of calibrated values (TS_CAL1, TS_CAL2) should always be preferred over typical values.

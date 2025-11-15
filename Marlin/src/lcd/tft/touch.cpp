@@ -134,7 +134,7 @@ void Touch::idle() {
       else {
         // Initiate a touch on the first control containing the touch position
         // If this is a button the touch initiates the action on the button.
-        // TODO: Apply standard UI practice for Tap events:
+        /// TODO: Apply standard UI practice for Tap events:
         //  - Take a short press-and-release as a Tap.
         //  - If more taps occur before "tap detect time" elapses, increment taps counter.
         //  - When "tap detect time" elapses activate the button, sending the number of taps.

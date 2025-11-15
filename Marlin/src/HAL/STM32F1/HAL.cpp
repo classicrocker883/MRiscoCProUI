@@ -293,7 +293,8 @@ void MarlinHAL::idletask() {
      * command so drives can be released as needed.
      */
     /* Copied from LPC1768 framework. Should be fixed later to process HAS_SD_HOST_DRIVE */
-    //if (!drive_locked()) // TODO
+    //if (!drive_locked())
+    /// TODO:
     MarlinMSC.loop(); // Process USB mass storage device class loop
   #endif
 }

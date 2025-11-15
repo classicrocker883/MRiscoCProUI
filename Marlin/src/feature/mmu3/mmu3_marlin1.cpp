@@ -135,12 +135,12 @@ namespace MMU3 {
 
   void marlin_refresh_print_state_in_ram() {
     // refresh_print_state_in_ram();
-    // TODO: I don't see a comparable implementation in Marlin.
+    /// TODO: I don't see a comparable implementation in Marlin.
   }
 
   void marlin_clear_print_state_in_ram() {
     // clear_print_state_in_ram();
-    // TODO: I don't see a comparable implementation in Marlin.
+    /// TODO: I don't see a comparable implementation in Marlin.
   }
 
   void marlin_stop_and_save_print_to_ram() {

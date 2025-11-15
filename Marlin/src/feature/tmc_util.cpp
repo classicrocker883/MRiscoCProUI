@@ -1176,7 +1176,7 @@
   bool tmc_enable_stallguard(TMC2240Stepper &st) {
     const bool stealthchop_was_enabled = st.en_pwm_mode();
 
-    // TODO: Use StallGuard4 when stealthChop is enabled
+    /// TODO: Use StallGuard4 when stealthChop is enabled
     //       and leave stealthChop state unchanged.
 
     st.TCOOLTHRS(0xFFFFF);
@@ -1192,7 +1192,7 @@
   }
 
   bool tmc_enable_stallguard(TMC2660Stepper) {
-    // TODO
+    /// TODO:
     return false;
   }
   void tmc_disable_stallguard(TMC2660Stepper, const bool) { }

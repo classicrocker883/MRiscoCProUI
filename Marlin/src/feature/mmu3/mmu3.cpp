@@ -84,7 +84,7 @@ namespace MMU3 {
   int MMU3::cutter_mode_addr;   // Initialized by settings.load
   uint8_t MMU3::stealth_mode;   // Initialized by settings.load
   int MMU3::stealth_mode_addr;  // Initialized by settings.load
-  // TODO: Currently, by logic, the value stored in the EEPROM for is ignored and
+  /// TODO: Currently, by logic, the value stored in the EEPROM for is ignored and
   //       mmu_hw_enabled is always overwritten by the MMU State. Thus restarting
   //       printer will always set the MMU as senabled.
   bool MMU3::mmu_hw_enabled;    // Initialized by settings.load
@@ -114,7 +114,7 @@ namespace MMU3 {
 
     #if ENABLED(EEPROM_SETTINGS)
       // Save mmu_hw_enabled to EEPROM
-      // TODO: Move to settings.cpp (for now)
+      /// TODO: Move to settings.cpp (for now)
       persistentStore.access_start();
       persistentStore.write_data(mmu_hw_enabled_addr, mmu_hw_enabled);
       persistentStore.access_finish();

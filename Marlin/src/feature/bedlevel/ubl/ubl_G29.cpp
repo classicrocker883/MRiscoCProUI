@@ -1129,11 +1129,11 @@ void set_message_with_feedback(FSTR_P const fstr) {
         set_message_with_feedback(GET_TEXT_F(MSG_EDITING_STOPPED));
       })) break;
 
-      // TODO: Disable leveling here so the Z value becomes the 'native' Z value.
+      /// TODO: Disable leveling here so the Z value becomes the 'native' Z value.
 
       z_values[lpos.x][lpos.y] = new_z;                   // Save the updated Z value
 
-      // TODO: Re-enable leveling here so Z is correctly based on the updated mesh.
+      /// TODO: Re-enable leveling here so Z is correctly based on the updated mesh.
 
       TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(location, new_z));
 

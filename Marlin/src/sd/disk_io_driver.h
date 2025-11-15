@@ -33,7 +33,7 @@ class DiskIODriver {
 public:
   /**
    * Initialize an SD flash memory card with default clock rate and chip
-   * select pin.  See sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin).
+   * select pin. See sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin).
    *
    * \return true for success or false for failure.
    */

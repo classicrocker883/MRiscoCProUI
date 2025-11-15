@@ -232,7 +232,7 @@ namespace MMU3 {
     #endif
     uint8_t len = Protocol::EncodeRequest(rq, txbuff);
     #if defined(__AVR__) || defined(TARGET_LPC1768)
-      // TODO: I'm not sure if this is the correct approach with AVR
+      // @@TODO I'm not sure if this is the correct approach with AVR
       for ( uint8_t i = 0; i < len; i++) {
         MMU_SERIAL.write(txbuff[i]);
       }
@@ -252,7 +252,7 @@ namespace MMU3 {
     uint8_t len = Protocol::EncodeWriteRequest(rq.value, rq.value2, txbuff);
 
     #if defined(__AVR__) || defined(TARGET_LPC1768)
-      // TODO: I'm not sure if this is the correct approach with AVR
+      // @@TODO I'm not sure if this is the correct approach with AVR
       for ( uint8_t i = 0; i < len; i++) {
         MMU_SERIAL.write(txbuff[i]);
       }

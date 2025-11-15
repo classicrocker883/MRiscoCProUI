@@ -120,7 +120,7 @@ timer_dev* HAL_get_timer_dev(int number);
 
 #define HAL_timer_get_count(timer_num) timer_get_count(TIMER_DEV(timer_num))
 
-// TODO change this
+/// TODO: change this
 
 #ifndef HAL_TEMP_TIMER_ISR
   #define HAL_TEMP_TIMER_ISR() extern "C" void tempTC_Handler()

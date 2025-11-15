@@ -311,7 +311,7 @@ namespace MMU3 {
 
       START_MENU();
       #ifndef __AVR__
-        // TODO: I couldn't make this work on AVR
+        /// TODO: I couldn't make this work on AVR
         STATIC_ITEM_F(PrusaErrorTitle(ei), SS_DEFAULT | SS_INVERT);
 
         // Write the help page and error code

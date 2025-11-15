@@ -1056,7 +1056,8 @@ void RTS::handleData() {
     case FilamentCheckKey:
       switch (recdat.data[0]) {
         case 1:
-          TERN_(CHECKFILAMENT, gotoPage(runout.filament_ran_out ? ID_NoFilament_L : ID_Load_L, runout.filament_ran_out ? ID_NoFilament_D : ID_Load_D)); // TODO: add page enum
+          TERN_(CHECKFILAMENT, gotoPage(runout.filament_ran_out ? ID_NoFilament_L : ID_Load_L, runout.filament_ran_out ? ID_NoFilament_D : ID_Load_D));
+          /// TODO: add page enum
           break;
         case 2:
           gotoPage(ID_Settings_L, ID_Settings_D);
@@ -1585,7 +1586,7 @@ void RTS::onIdle() {
 
   next_rts_update_ms = ms + RTS_UPDATE_INTERVAL + update_time_value;
 
-  // TODO: optimize the following
+  /// TODO: optimize the following
   if (print_job_timer.duration() != 0) {
     duration_t elapsed = print_job_timer.duration();
     static uint8_t last_cardpercentValue = 100;
