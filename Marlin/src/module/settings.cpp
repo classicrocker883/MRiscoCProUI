@@ -4091,12 +4091,12 @@ void MarlinSettings::reset() {
     gcode.say_units(); // " (in/mm)"
 
     //
-    // M104 settings for AUTOTEMP
+    // M104 Auto Temp Control
     //
     TERN_(AUTOTEMP, gcode.M104_report());
 
     //
-    // M149 Temperature units
+    // M149 Temperature Units
     //
     #if ENABLED(TEMPERATURE_UNITS_SUPPORT)
       gcode.M149_report(forReplay);
@@ -4116,7 +4116,7 @@ void MarlinSettings::reset() {
     TERN_(EDITABLE_STEPS_PER_UNIT, gcode.M92_report(forReplay));
 
     //
-    // M203 Maximum feedrates (units/s)
+    // M203 Maximum Feedrates (units/s)
     //
     gcode.M203_report(forReplay);
 
@@ -4223,7 +4223,7 @@ void MarlinSettings::reset() {
     TERN_(IS_KINEMATIC, gcode.M665_report(forReplay));
 
     //
-    // M666 Endstop adjustment
+    // M666 Endstop Adjustment
     //
     #if ANY(DELTA, HAS_EXTRA_ENDSTOPS)
       gcode.M666_report(forReplay);
@@ -4235,7 +4235,7 @@ void MarlinSettings::reset() {
     TERN_(Z_STEPPER_AUTO_ALIGN, gcode.M422_report(forReplay));
 
     //
-    // M145 Material heatup parameters
+    // M145 Material Heatup Parameters
     //
     TERN_(HAS_PREHEAT, gcode.M145_report(forReplay));
 
@@ -4249,7 +4249,7 @@ void MarlinSettings::reset() {
     TERN_(PIDTEMPCHAMBER, gcode.M309_report(forReplay));
 
     //
-    // M305 User thermistors
+    // M305 User Thermistors
     //
     #if HAS_USER_THERMISTORS
       for (uint8_t i = 0; i < USER_THERMISTORS; ++i)
@@ -4293,7 +4293,7 @@ void MarlinSettings::reset() {
     #endif
 
     //
-    // Homing Feedrate
+    // M210 Homing Feedrate
     //
     TERN_(EDITABLE_HOMING_FEEDRATE, gcode.M210_report(forReplay));
 
@@ -4335,7 +4335,7 @@ void MarlinSettings::reset() {
     TERN_(EDITABLE_HOMING_CURRENT, gcode.M920_report(forReplay));
 
     //
-    // M569 TMC Driver stepping mode
+    // M569 TMC Driver Stepping Mode
     //
     TERN_(HAS_STEALTHCHOP, gcode.M569_report(forReplay));
 
@@ -4365,14 +4365,14 @@ void MarlinSettings::reset() {
     TERN_(HAS_LIN_ADVANCE_K, gcode.M900_report(forReplay));
 
     //
-    // M907 Stepper motor currents
+    // M907 Stepper Motor Currents
     //
     #if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
       gcode.M907_report(forReplay);
     #endif
 
     //
-    // M603 Filament load/unload
+    // M603 Filament Load/Unload
     //
     TERN_(CONFIGURE_FILAMENT_CHANGE, gcode.M603_report(forReplay));
 
@@ -4387,7 +4387,7 @@ void MarlinSettings::reset() {
     TERN_(BACKLASH_GCODE, gcode.M425_report(forReplay));
 
     //
-    // M412 Filament runout sensor
+    // M412 Filament Runout Sensor
     //
     TERN_(HAS_FILAMENT_SENSOR, gcode.M412_report(forReplay));
 
