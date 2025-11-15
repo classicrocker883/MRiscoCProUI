@@ -545,7 +545,7 @@ void Draw_Print_Labels() {
 
 #if ENABLED(SHOW_REMAINING_TIME)
   void Draw_Print_ProgressRemain() {
-    const duration_t remain_time = ui.remaining_time;
+    const duration_t remain_time = ui.get_remaining_time();
     char buf[16];
     const bool has_days = (remain_time.value > 60*60*24L);
     remain_time.toDigital(buf, has_days);
@@ -556,7 +556,7 @@ void Draw_Print_Labels() {
 /// TODO: Not ready
 #if ENABLED(SHOW_INTERACTION_TIME)
   void Draw_Print_ProgressInteract() {
-    const duration_t interact_time = ui.interaction_time;
+    const duration_t interact_time = ui.get_interaction_time();
     if (printingIsActive() && interact_time.value) {
       char buf[16];
       const bool has_days = (interact_time.value > 60*60*24L);
@@ -2323,14 +2323,16 @@ void DWIN_RebootScreen() {
   DWIN_UpdateLCD();
   safe_delay(500);
 }
-void DWIN_RedrawDash() {
-  hash_changed = true;
-  DWIN_DrawStatusMessage();
-  DWIN_Draw_Dashboard();
-}
+#if DASH_REDRAW
+  void DWIN_RedrawDash() {
+    hash_changed = true;
+    DWIN_DrawStatusMessage();
+    DWIN_Draw_Dashboard();
+  }
+#endif
 void DWIN_RedrawScreen() {
   Draw_Main_Area();
-  DWIN_RedrawDash();
+  TERN_(DASH_REDRAW, DWIN_RedrawDash();)
 }
 
 //=============================================================================
@@ -2360,10 +2362,10 @@ void MarlinUI::update() {
 #if HAS_LCD_BRIGHTNESS
   void MarlinUI::_set_brightness() {
     DWIN_LCD_Brightness(backlight ? brightness : 0);
-    if (!backlight)
-      wait_for_user = true;
-    else if (checkkey != PrintDone)
+    if (checkkey != PrintDone)
       wait_for_user = false;
+    else if (!backlight)
+      wait_for_user = true;
   }
 #endif
 
@@ -2880,10 +2882,8 @@ void Goto_ConfirmToPrint() {
         return;
       }
     }
-    else {
+    else
       LaserOn(false); // If it is not laser file turn off laser mode
-      return;
-    }
   #endif
   #if HAS_GCODE_PREVIEW
     if (HMI_data.EnablePreview) {
@@ -3287,25 +3287,31 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 // Menu Creation and Drawing functions
 //=============================================================================
 
+#define RETURN_MENU(MENU_PTR, DRAW_FUNC) \
+  if (PreviousMenu == MENU_PTR) { DRAW_FUNC(); return; }
+
 void ReturnToPreviousMenu() {
   #if ENABLED(CV_LASER_MODULE)
-    if (PreviousMenu == LaserPrintMenu) { Draw_LaserPrint_Menu();       return; }
+    RETURN_MENU(LaserPrintMenu, Draw_LaserPrint_Menu);
   #endif
   #if ANY(PID_AUTOTUNE_MENU, PID_EDIT_MENU) \
    || ANY(MPC_EDIT_MENU, MPC_AUTOTUNE_MENU)
-    if (PreviousMenu == PIDMenu)        { Draw_PID_Menu();              return; }
+    RETURN_MENU(PIDMenu,        Draw_PID_Menu);
   #endif
   #if HAS_MESH
-    if (PreviousMenu == AdvancedMenu)   { Draw_Advanced_Menu();         return; }
+    RETURN_MENU(AdvancedMenu,   Draw_Advanced_Menu);
   #endif
-  if (PreviousMenu == AdvancedSettings) { Draw_AdvancedSettings_Menu(); return; }
-  if (PreviousMenu == TemperatureMenu)  { Draw_Temperature_Menu();      return; }
-  if (PreviousMenu == FilamentMenu)     { Draw_FilamentMan_Menu();      return; }
-  if (PreviousMenu == TuneMenu)         { Draw_Tune_Menu();             return; }
-  if (PreviousMenu == FileMenu)         { Draw_Print_File_Menu();       return; }
-  if (PreviousMenu == PrepareMenu)      { Draw_Prepare_Menu();          return; }
+  RETURN_MENU(AdvancedSettings, Draw_AdvancedSettings_Menu);
+  RETURN_MENU(TemperatureMenu,  Draw_Temperature_Menu);
+  RETURN_MENU(FilamentMenu,     Draw_FilamentMan_Menu);
+  RETURN_MENU(TuneMenu,         Draw_Tune_Menu);
+  RETURN_MENU(FileMenu,         Draw_Print_File_Menu);
+  RETURN_MENU(PrepareMenu,      Draw_Prepare_Menu);
+  #if ENABLED(LED_CONTROL_MENU)
+    RETURN_MENU(ControlMenu,    Draw_Control_Menu);
+  #endif
   #if HAS_TOOLBAR
-    else if (CurrentMenu == ZOffsetWizMenu) {
+    if (CurrentMenu == ZOffsetWizMenu) {
       DWIN_ResetStatusLine();
       Goto_Main_Menu();
       Goto_ToolBar();
@@ -3313,6 +3319,8 @@ void ReturnToPreviousMenu() {
     }
   #endif
 }
+
+#undef RETURN_MENU
 
 void Draw_Prepare_Menu() {
   checkkey = Menu;
@@ -3571,7 +3579,7 @@ void Draw_FilSet_Menu() {
   void Draw_LedControl_Menu() {
     checkkey = Menu;
     if (SET_MENU(LedControlMenu, MSG_LED_CONTROL, 10)) {
-      BACK_ITEM((CurrentMenu == TuneMenu) ? Draw_Tune_Menu : Draw_Control_Menu);
+      BACK_ITEM(ReturnToPreviousMenu);
       #if !ALL(CASE_LIGHT_MENU, CASE_LIGHT_USE_NEOPIXEL)
         EDIT_ITEM(ICON_LedControl, MSG_LIGHTS, onDrawChkbMenu, SetLedStatus, &leds.lights_on);
       #endif

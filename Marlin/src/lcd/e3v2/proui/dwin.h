@@ -82,7 +82,7 @@ enum processID : uint8_t {
   #if ENABLED(MPCTEMP)
     MPC_STARTED,
     MPC_TEMP_ERROR,
-    MPC_INTERRUPTED,
+    MPC_INTERRUPTED
   #endif
   };
 #endif
