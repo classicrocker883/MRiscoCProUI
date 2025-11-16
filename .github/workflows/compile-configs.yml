@@ -372,6 +372,7 @@ jobs:
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if [ "$IS" = true ] && [ "$TP" = true ] && [ "$EX" = true ]; then
           sed -i "s/.*#define HAS_CGCODE 1/\/\/#define HAS_CGCODE 1/" Marlin/Configuration.h
+          sed -i "s/.*#define HAS_LOCKSCREEN 1/\/\/#define HAS_LOCKSCREEN 1/" Marlin/Configuration.h
           fi;
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
