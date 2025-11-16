@@ -8,24 +8,24 @@ on:
 jobs:
   build-ender3:
     if: contains(github.event.release.tag_name, 'ender3')
-    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_ender3.yml@2025-October
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_ender3.yml@2025-November
     with:
       target: ender3
 
   build-hc32:
     if: contains(github.event.release.tag_name, 'HC32')
-    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_HC32.yml@2025-October
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_HC32.yml@2025-November
     with:
       target: HC32
 
   build-c2:
     if: contains(github.event.release.tag_name, 'C2')
-    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_C2.yml@2025-October
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs_C2.yml@2025-November
     with:
       target: C2
 
   build-aquila:
     if: ${{ !contains(github.event.release.tag_name, 'ender3') && !contains(github.event.release.tag_name, 'HC32') && !contains(github.event.release.tag_name, 'C2')}}
-    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs.yml@2025-October
+    uses: classicrocker883/MRiscoCProUI/.github/workflows/compile-configs.yml@2025-November
     with:
       target: aquila
