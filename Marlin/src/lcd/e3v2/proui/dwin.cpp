@@ -1448,17 +1448,12 @@ void EachMomentUpdate() {
 
       // Elapsed print time
       #if ENABLED(SHOW_ELAPSED_TIME)
-        //const duration_t min = print_job_timer.duration();
-        //if ((min.value % 60) == 0) // 1 minute update, else every second
         Draw_Print_ProgressElapsed();
       #endif
 
       // Remaining time
       #if ENABLED(SHOW_REMAINING_TIME)
-        if (ui.remaining_time != ui.get_remaining_time()) {
-          ui.remaining_time = ui.get_remaining_time();
-          Draw_Print_ProgressRemain();
-        }
+        Draw_Print_ProgressRemain();
       #endif
 
       // Interaction time
