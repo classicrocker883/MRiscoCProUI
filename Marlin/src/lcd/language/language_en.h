@@ -417,7 +417,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_TEMP_BED                       = _UxGT("Bed Temperature");
   LSTR MSG_TEMP_CHAMBER                   = _UxGT("Chamber Temperature");
 
-  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Autotune failed! Bad extruder");
+  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Bad extruder");
   LSTR MSG_PID_TEMP_TOO_HIGH              = _UxGT("Autotune failed! Temperature too high");
   LSTR MSG_PID_TIMEOUT                    = _UxGT("Autotune failed! Timeout");
 
