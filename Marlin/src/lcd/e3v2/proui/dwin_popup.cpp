@@ -66,8 +66,8 @@ void Popup_ConfirmCancel(const uint8_t icon, FSTR_P const fmsg2) {
     FSTR_P errorstr;
     uint8_t icon;
     switch (state) {
-      case 0:  errorstr = GET_TEXT_F(MSG_TEMP_TOO_LOW);       icon = ICON_TempTooLow;  break;
-      case 1:  errorstr = GET_TEXT_F(MSG_TEMP_TOO_HIGH);      icon = ICON_TempTooHigh; break;
+      case 0:  errorstr = GET_TEXT_F(DGUS_MSG_TEMP_TOO_LOW);       icon = ICON_TempTooLow;  break;
+      case 1:  errorstr = GET_TEXT_F(DGUS_MSG_TEMP_TOO_HIGH);      icon = ICON_TempTooHigh; break;
       default: errorstr = GET_TEXT_F(MSG_ERR_HEATING_FAILED); icon = ICON_Info_1;      break; // May be thermal runaway, temp malfunction, etc.
     }
       Popup_Confirm(icon, heaterstr, errorstr);

@@ -43,14 +43,18 @@
  */
 void GcodeSuite::G27() {
   // Don't allow nozzle parking without homing first, unless just Z raise (G27 P3) or just XY parking (G27 P4)
-  const uint8_t pv = parser.byteval('P');
-  switch (pv) {
+  const uint8_t pval = parser.byteval('P');
+  switch (pval) {
     case 3: break;
     case 4: if (axis_is_trusted(X_AXIS) && axis_is_trusted(Y_AXIS)) break;
     default: if (homing_needed_error()) return;
   }
-  nozzle.park(pv);
-  TERN_(SOVOL_SV06_RTS, RTS_MoveAxisHoming());
+  if (WITHIN(pval, 0, 4)) {
+    nozzle.park(pval);
+    TERN_(SOVOL_SV06_RTS, RTS_MoveAxisHoming());
+  }
+  else
+    SERIAL_ECHOLN(F("?Invalid "), F("[P]arking style (0..4)."));
 }
 
 #endif // NOZZLE_PARK_FEATURE

@@ -1825,7 +1825,7 @@ void HMI_ReturnScreen() {
       #endif
       case PID_BAD_HEATER_ID:
         checkkey = last_checkkey;
-        Popup_Continue(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_BAD_HEATER_ID));
+        Popup_Continue(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_PID_BAD_HEATER_ID));
         break;
       case PID_TUNING_TIMEOUT:
         checkkey = last_checkkey;
@@ -1833,7 +1833,7 @@ void HMI_ReturnScreen() {
         break;
       case PID_TEMP_TOO_HIGH:
         checkkey = last_checkkey;
-        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_TEMP_TOO_HIGH));
+        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(DGUS_MSG_TEMP_TOO_HIGH));
         break;
       case AUTOTUNE_DONE:
         checkkey = last_checkkey;

@@ -755,7 +755,7 @@ typedef struct SettingsDataStruct {
   //
   // GCODE_MACROS
   //
-  #if ENABLED(GCODE_MACROS_EEPROM)
+  #if ENABLED(GCODE_MACROS_IN_EEPROM)
     char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1];
   #endif
 
@@ -1953,7 +1953,7 @@ void MarlinSettings::postprocess() {
     //
     // GCODE_MACROS
     //
-    #if ENABLED(GCODE_MACROS_EEPROM)
+    #if ENABLED(GCODE_MACROS_IN_EEPROM)
       _FIELD_TEST(gcode_macros);
       EEPROM_WRITE(gcode.macros);
     #endif
@@ -3184,7 +3184,7 @@ void MarlinSettings::postprocess() {
       //
       // GCODE_MACROS
       //
-      #if ENABLED(GCODE_MACROS_EEPROM)
+      #if ENABLED(GCODE_MACROS_IN_EEPROM)
         EEPROM_READ(gcode.macros);
       #endif
 
@@ -4042,7 +4042,7 @@ void MarlinSettings::reset() {
   //
   // G-code Macros
   //
-  TERN_(GCODE_MACROS_EEPROM, gcode.reset_macros());
+  TERN_(GCODE_MACROS_IN_EEPROM, gcode.reset_macros());
 
   //
   // Hotend Idle Timeout
@@ -4093,7 +4093,7 @@ void MarlinSettings::reset() {
     //
     // M104 Auto Temp Control
     //
-    TERN_(AUTOTEMP, gcode.M104_report());
+    TERN_(AUTOTEMP, gcode.M104_report(forReplay));
 
     //
     // M149 Temperature Units
