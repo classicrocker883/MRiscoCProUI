@@ -38,6 +38,7 @@
 #undef DEBUG_ECHOPGM_P
 #undef DEBUG_ECHOLNPGM_P
 #undef DEBUG_ECHO_MSG
+#undef DEBUG_ECHO_SP      
 #undef DEBUG_ERROR_MSG
 #undef DEBUG_WARN_MSG
 #undef DEBUG_ECHO_TERNARY
@@ -64,6 +65,7 @@
   #define DEBUG_ECHOLNPGM         SERIAL_ECHOLNPGM
   #define DEBUG_ECHOLNPGM_P       SERIAL_ECHOLNPGM_P
   #define DEBUG_ECHO_MSG          SERIAL_ECHO_MSG
+  #define DEBUG_ECHO_SP           SERIAL_ECHO_SP
   #define DEBUG_ERROR_MSG         SERIAL_ERROR_MSG
   #define DEBUG_WARN_MSG          SERIAL_WARN_MSG
   #define DEBUG_ECHO_TERNARY      SERIAL_ECHO_TERNARY
@@ -88,6 +90,7 @@
   #define DEBUG_ECHOPGM_P(...)      NOOP
   #define DEBUG_ECHOLNPGM_P(...)    NOOP
   #define DEBUG_ECHO_MSG(...)       NOOP
+  #define DEBUG_ECHO_SP(...)        NOOP
   #define DEBUG_ERROR_MSG(...)      NOOP
   #define DEBUG_WARN_MSG(...)       NOOP
   #define DEBUG_ECHO_TERNARY(...)   NOOP
