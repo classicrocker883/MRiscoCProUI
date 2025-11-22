@@ -251,6 +251,7 @@ jobs:
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define M115_GEOMETRY_REPORT/${PTEMP}#define M115_GEOMETRY_REPORT/" Marlin/Configuration_adv.h
           if [ "$IS" = true ] && [ "$TP" = true ]; then
           sed -i "s/.*#define MARLIN_SMALL_BUILD/#define MARLIN_SMALL_BUILD/" Marlin/Configuration_adv.h
           fi;
