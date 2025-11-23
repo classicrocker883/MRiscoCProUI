@@ -19,7 +19,7 @@ jobs:
         temp: [true,false]
         tjc:  [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -95,7 +95,7 @@ jobs:
         tjc:     [true,false]
         t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -189,7 +189,7 @@ jobs:
           - bmp: true
             ind: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -316,7 +316,7 @@ jobs:
           - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -433,7 +433,7 @@ jobs:
           - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -541,7 +541,7 @@ jobs:
         tjc:  [true,false]
         t5:   [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -631,7 +631,7 @@ jobs:
         temp: [true,false]
         tjc:  [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -708,7 +708,7 @@ jobs:
         tjc:     [true,false]
         t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -803,7 +803,7 @@ jobs:
           - bmp: true
             ind: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
@@ -921,7 +921,7 @@ jobs:
           - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.0
       - name: Set up node
         uses: actions/setup-node@v6.0.0
         with:
