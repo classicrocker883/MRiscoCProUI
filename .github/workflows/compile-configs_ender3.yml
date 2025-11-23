@@ -453,10 +453,7 @@ jobs:
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
-          sed -i "s/.*#define HAS_GCODE_PREVIEW.*/${PTEMP}#define HAS_GCODE_PREVIEW 1/" Marlin/Configuration.h
-          sed -i "s/.*#define HAS_ESDIAG.*/${PTEMP}#define HAS_ESDIAG 1/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CGCODE.*/${PTEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
-          sed -i "s/.*#define FWRETRACT/${MTEMP}#define FWRETRACT/" Marlin/Configuration_adv.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           if ($T5); then THMP="5"; DSMP="98"; else THMP="13"; DSMP="424.9"; fi;
@@ -471,9 +468,7 @@ jobs:
           sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CUSTOM_COLORS.*/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
           sed -i "s/.*#define SHOW_SPEED_IND/#define SHOW_SPEED_IND/" Marlin/Configuration.h
-          sed -i "s/.*#define FWRETRACT/#define FWRETRACT/" Marlin/Configuration_adv.h
           sed -i "s/.*#define M114_DETAIL/#define M114_DETAIL/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define CAPABILITIES_REPORT/#define CAPABILITIES_REPORT/" Marlin/Configuration_adv.h
           sed -i "s/.*#define M115_GEOMETRY_REPORT/\/\/#define M115_GEOMETRY_REPORT/" Marlin/Configuration_adv.h
           fi;
           pio run
