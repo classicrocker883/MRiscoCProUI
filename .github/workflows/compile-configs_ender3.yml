@@ -1155,14 +1155,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [V3_0,V2_0,V3_0_1]
-        tjc:  [true,false]
-        t5:   [true,false]
-        t13:  [true,false]
-        bmp:  [true,false]
+        chip:    [V3_0,V2_0,V3_0_1]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5:  true
-            t13: true
+          - t5:      true
+            t13:     true
+          - chip:    V2_0
+            inshape: true
+          - chip:    V2_0
+            temp:    true
+          - chip:    V2_0
+            inshape: true
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+          - chip:    V3_0_1
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+            temp:    true
     steps:
       - uses: actions/checkout@v6.0.0
       - name: Set up node
@@ -1195,11 +1211,13 @@ jobs:
           elif [ "$SKR" = V2_0 ];   then AVTMP="V2";     SKTMP="STM32F103RC"
           elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
           fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
           if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
           if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
           if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
           if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
-          echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -1225,6 +1243,13 @@ jobs:
           if [ "$SKR" = V3_0 ]; then
           sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
           fi;
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
@@ -1248,6 +1273,8 @@ jobs:
           mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
         env:
           SKR: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
           T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
@@ -1271,9 +1298,26 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [V3_0,V2_0,V3_0_1]
-        tjc:  [true,false]
-        t5:   [true,false]
+        chip:    [V3_0,V2_0,V3_0_1]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        exclude:
+          - chip:    V2_0
+            inshape: true
+          - chip:    V2_0
+            temp:    true
+          - chip:    V2_0
+            inshape: true
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+          - chip:    V3_0_1
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+            temp:    true
     steps:
       - uses: actions/checkout@v6.0.0
       - name: Set up node
@@ -1306,9 +1350,11 @@ jobs:
           elif [ "$SKR" = V2_0 ];   then AVTMP="V2";     SKTMP="STM32F103RC"
           elif [ "$SKR" = V3_0_1 ]; then AVTMP="V3-0-1"; SKTMP="STM32F401RC"
           fi;
-          if ($TJC); then DTMP=TJC-;   else DTMP=; fi;
-          if ($T5);  then STMP=_SPDY5; else STMP=; fi;
-          echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${STMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
+          echo "filename=${DTMP}Ender_SKR-Mini-E3-${AVTMP}${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -1333,6 +1379,13 @@ jobs:
           if [ "$SKR" = V3_0 ]; then
           sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
           fi;
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
@@ -1343,6 +1396,8 @@ jobs:
           mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
         env:
           SKR: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
           T5:  ${{ matrix.t5 }}
       - name: Get release
