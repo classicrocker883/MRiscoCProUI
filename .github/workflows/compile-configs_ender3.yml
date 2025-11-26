@@ -321,6 +321,7 @@ jobs:
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CGCODE.*/${PTEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
+          sed -i "s/.*#define CCLOUD_PRINT_SUPPORT.*/${PTEMP}#define CCLOUD_PRINT_SUPPORT/" Marlin/Configuration.h
           sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/${PTEMP}#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
@@ -337,7 +338,6 @@ jobs:
           sed -i "s/.*#define HAS_CUSTOM_COLORS.*/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
           sed -i "s/.*#define SHOW_SPEED_IND/#define SHOW_SPEED_IND/" Marlin/Configuration.h
           sed -i "s/.*#define M114_DETAIL/#define M114_DETAIL/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define M115_GEOMETRY_REPORT/\/\/#define M115_GEOMETRY_REPORT/" Marlin/Configuration_adv.h
           fi;
           pio run
           mkdir temp
