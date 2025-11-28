@@ -454,6 +454,8 @@ jobs:
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           sed -i "s/.*#define HAS_CGCODE.*/${PTEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
+          sed -i "s/.*#define CCLOUD_PRINT_SUPPORT.*/${PTEMP}#define CCLOUD_PRINT_SUPPORT/" Marlin/Configuration.h
+          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/${PTEMP}#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           if ($T5); then THMP="5"; DSMP="98"; else THMP="13"; DSMP="424.9"; fi;
@@ -469,7 +471,6 @@ jobs:
           sed -i "s/.*#define HAS_CUSTOM_COLORS.*/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
           sed -i "s/.*#define SHOW_SPEED_IND/#define SHOW_SPEED_IND/" Marlin/Configuration.h
           sed -i "s/.*#define M114_DETAIL/#define M114_DETAIL/" Marlin/Configuration_adv.h
-          sed -i "s/.*#define M115_GEOMETRY_REPORT/\/\/#define M115_GEOMETRY_REPORT/" Marlin/Configuration_adv.h
           fi;
           pio run
           mkdir temp
@@ -1240,9 +1241,6 @@ jobs:
           sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
           sed -i "s/.*#define E0_AUTO_FAN_PIN.*/#define E0_AUTO_FAN_PIN FAN1_PIN/" Marlin/Configuration_adv.h
           fi;
-          if [ "$SKR" = V3_0 ]; then
-          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
-          fi;
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
           for axis in X Y Z; do
           sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
@@ -1375,9 +1373,6 @@ jobs:
           if [ "$SKR" = V3_0_1 ]; then
           sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
           sed -i "s/.*#define E0_AUTO_FAN_PIN.*/#define E0_AUTO_FAN_PIN FAN1_PIN/" Marlin/Configuration_adv.h
-          fi;
-          if [ "$SKR" = V3_0 ]; then
-          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
           fi;
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
           for axis in X Y Z; do
