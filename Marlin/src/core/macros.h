@@ -271,7 +271,12 @@
 #define IF_DISABLED(O,A)    TERN(O,,A)
 
 // "Ternary" that emits or omits the given content
-#define TERN_(O,A)          _TERN(_ENA_1(O),OMIT,EMIT)(A) // OPTION ? 'A' : '<nul>'
+#define EMIT(V...) V
+#define OMIT(...)
+
+// Call G(...) or swallow with OMIT(...)
+#define TERF(O,G)           _TERN(_ENA_1(O),OMIT,G) // OPTION ? 'G' : 'OMIT'    ; Usage: TERF(OPTION, CALLTHIS)(ARGS...)
+#define TERN_(O,A)          TERF(O,EMIT)(A)         // OPTION ? 'A' : '<nul>'   ; Usage: TERN_(OPTION, EMITTHIS)
 
 // Macros to conditionally emit array items and function arguments
 #define _OPTARG( A...)      , A

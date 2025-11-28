@@ -138,6 +138,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_LEVEL_BED_WAITING              = _UxGT("Click to Begin");
   LSTR MSG_LEVEL_BED_NEXT_POINT           = _UxGT("Next Point");
   LSTR MSG_LEVEL_BED_DONE                 = _UxGT("Leveling Done!");
+  LSTR MSG_ZERO_MESH_POINT                = _UxGT("Zero Current Point");
   LSTR MSG_Z_FADE_HEIGHT                  = _UxGT("Fade Height");
   LSTR MSG_SET_HOME_OFFSETS               = _UxGT("Set Home Offsets");
   LSTR MSG_HOME_OFFSET_X                  = _UxGT("Home Offset X"); // DWIN
@@ -1217,7 +1218,6 @@ namespace LanguageWide_en {
     LSTR MSG_CORNERS_NOT_LEVELED          = _UxGT("Corners not leveled");
     LSTR MSG_KNOB_ADJUSTMENT_REQUIRED     = _UxGT("Knob adjustment required");
     LSTR MSG_PROBE_FOR_Z_VALUE            = _UxGT("Probe for Z Value");
-    LSTR MSG_ZERO_CURRENT_POINT           = _UxGT("Zero Current Point");
     LSTR MSG_CALCULATING_AVERAGE          = _UxGT("Calculating average");
     LSTR MSG_AND_RELATIVE_HEIGHTS         = _UxGT("and relative heights");
     LSTR MSG_TOLERANCE_ACHIEVED           = _UxGT("Tolerance achieved!");
@@ -1255,7 +1255,6 @@ namespace LanguageWide_en {
     LSTR MSG_250K_BAUD                    = _UxGT("250K baud");
     LSTR MSG_SCREW_INSET                  = _UxGT("Bed Screw Inset");
     LSTR MSG_SPEED_IND                    = _UxGT("Speed Indicator");
-    LSTR MSG_ZERO_MESH                    = _UxGT("Zero Current Point");
     LSTR MSG_TRAMWIZ_CALC                 = _UxGT("Calculate Average");
     LSTR MSG_HOME_Z_AND_DISABLE           = _UxGT("Home Z and Disable");
     LSTR MSG_TOOLBAR_SETUP                = _UxGT("Toolbar Setup");

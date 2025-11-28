@@ -10,6 +10,1147 @@ on:
         type: string
 
 jobs:
+  Build-Default-GD32-E:            # Default for Ender-3 GD32
+    name: Build Default GD32 Files E
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
+          if ($IS);  then ISTMP=-IS;  else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC; else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;  else DTMP=;  fi;
+          echo "filename=${DTMP}Ender_GD32${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/Default/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/Default/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/Default/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = GD32F303RE_creality_mfl/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_CREALITY_${DBORD}_GD32_MFL/" Marlin/Configuration.h
+          sed -i "s/.*#define PROUI_EX 1/\/\/#define PROUI_EX 1/" Marlin/Configuration.h
+          sed -i "s/.*#define SERIAL_PORT.*/#define SERIAL_PORT 0/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          pio run
+          mkdir temp
+          mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-MM-EX-GD32-E:            # MM EX for Ender-3 GD32
+    name: Build MM EX GD32 Files E
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
+          echo "filename=${DTMP}Ender_GD32${EVTMP}${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/MM/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/MM/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/MM/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = GD32F303RE_creality_mfl/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_CREALITY_${DBORD}_GD32_MFL/" Marlin/Configuration.h
+          sed -i "s/.*#define PROUI_EX 1/\/\/#define PROUI_EX 1/" Marlin/Configuration.h
+          sed -i "s/.*#define SERIAL_PORT.*/#define SERIAL_PORT 0/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; else THMP="1"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          pio run
+          mkdir temp
+          mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-UBL-EX-GD32-E:            # UBL EX for Ender-3 GD32
+    name: Build UBL EX GD32 Files E
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        exclude:
+          - t5:  true
+            t13: true
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          echo "filename=${DTMP}Ender_GD32${EVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/UBL/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = GD32F303RE_creality_mfl/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_CREALITY_${DBORD}_GD32_MFL/" Marlin/Configuration.h
+          sed -i "s/.*#define PROUI_EX 1/\/\/#define PROUI_EX 1/" Marlin/Configuration.h
+          sed -i "s/.*#define SERIAL_PORT.*/#define SERIAL_PORT 0/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          pio run
+          mkdir temp
+          mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+          T13: ${{ matrix.t13 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-BLT-EX-GD32-E:            # BLT EX for Ender-3 GD32
+    name: Build BLT EX GD32 Files E
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        exclude:
+          - t5:  true
+            t13: true
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP=_427; DBORD='V427'; else EVTMP=_422; DBORD='V422'; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          echo "filename=${DTMP}Ender_GD32${EVTMP}${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/BLT/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/BLT/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/BLT/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = GD32F303RE_creality_mfl/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_CREALITY_${DBORD}_GD32_MFL/" Marlin/Configuration.h
+          sed -i "s/.*#define PROUI_EX 1/\/\/#define PROUI_EX 1/" Marlin/Configuration.h
+          sed -i "s/.*#define SERIAL_PORT.*/#define SERIAL_PORT 0/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          pio run
+          mkdir temp
+          mv .pio/build/GD32F303RE_creality_mfl/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+          T13: ${{ matrix.t13 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-S1-F4-UBL-EX-E:            # UBL EX for Ender-3 S1-F4
+    name: Build S1 F4 UBL EX Files E
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        temp: [true,false]
+        tjc:  [true,false]
+        t5:   [true,false]
+        bmp:  [true,false]
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=;       fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;        fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=_SPRT13; fi;
+          if ($BMP); then MPTMP=_BMP;  else MPTMP=;       fi;
+          echo "filename=${DTMP}Ender-S1-F4${STMP}${MPTMP}_UBL-ProUI-EX${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/S1/F4/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/S1/F4/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/S1/F4/UBL/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F401RC_creality/" platformio.ini
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define HAS_CGCODE.*/${PTEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
+          sed -i "s/.*#define CCLOUD_PRINT_SUPPORT.*/${PTEMP}#define CCLOUD_PRINT_SUPPORT/" Marlin/Configuration.h
+          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/${PTEMP}#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; DSMP="98"; else THMP="13"; DSMP="424.9"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          sed -i "s/.*#define HAS_CUSTOM_COLORS.*/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
+          sed -i "s/.*#define SHOW_SPEED_IND/#define SHOW_SPEED_IND/" Marlin/Configuration.h
+          sed -i "s/.*#define M114_DETAIL/#define M114_DETAIL/" Marlin/Configuration_adv.h
+          fi;
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F401RC_creality/*.bin temp/build.bin
+        env:
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-S1-F1-UBL-EX-E:            # UBL EX for Ender-3 S1-F1
+    name: Build S1 F1 UBL EX Files E
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        temp: [true,false]
+        tjc:  [true,false]
+        t5:   [true,false]
+        bmp:  [true,false]
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=;       fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;        fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=_SPRT13; fi;
+          if ($BMP); then MPTMP=_BMP;  else MPTMP=;       fi;
+          echo "filename=${DTMP}Ender-S1-F1${STMP}${MPTMP}_UBL-ProUI-EX${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/S1/F1/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/S1/F1/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/S1/F1/UBL/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F103RC_creality/" platformio.ini
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define HAS_LOCKSCREEN 1/${PTEMP}#define HAS_LOCKSCREEN 1/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; DSMP="98"; else THMP="13"; DSMP="424.9"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F103RC_creality/*.bin temp/build.bin
+        env:
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-Default-E4:            # Default for Ender-3 4.2.7, 4.2.2
+    name: Build Default Files E4
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
+          if ($IS);  then ISTMP=-IS;  else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC; else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;  else DTMP=;  fi;
+          echo "filename=${DTMP}Ender${EVTMP}_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/Default/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/Default/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/Default/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-MM-EX-E4:            # MM EX for Ender-3 4.2.7, 4.2.2
+    name: Build MM EX Files E4
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
+          echo "filename=${DTMP}Ender${EVTMP}${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/MM/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/MM/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/MM/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; else THMP="1"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-UBL-EX-E4:            # UBL EX for Ender-3 4.2.7, 4.2.2
+    name: Build UBL EX Files E4
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        exclude:
+          - t5:  true
+            t13: true
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          echo "filename=${DTMP}Ender${EVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/UBL/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+          T13: ${{ matrix.t13 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-BLT-EX-E4:            # BLT EX for Ender-3 4.2.7, 4.2.2
+    name: Build BLT EX Files E4
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chip:    [427,422]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        exclude:
+          - t5:  true
+            t13: true
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if [ "$ENDER_VER" = 427 ]; then EVTMP="_427"; DBORD='CREALITY_V427'; else EVTMP="_422"; DBORD='CREALITY_V422'; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          echo "filename=${DTMP}Ender${EVTMP}${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/BLT/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/BLT/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/BLT/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
+          sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
+        env:
+          ENDER_VER: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+          T13: ${{ matrix.t13 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-UBL-EX-E3-FREE-RUNS:            # UBL EX for Ender-3 E3 Free-runs
+    name: Build UBL EX E3 Free-runs Files
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        exclude:
+          - t5:  true
+            t13: true
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          echo "filename=${DTMP}Ender_E3-Free-runs${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/E3-Free-runs/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/E3-Free-runs/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/E3-Free-runs/UBL/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F401RE_freeruns/" platformio.ini
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F401RE_freeruns/*.bin temp/build.bin
+        env:
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5:  ${{ matrix.t5 }}
+          T13: ${{ matrix.t13 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-MM-EX-E3-FREE-RUNS:            # MM EX for Ender-3 E3 Free-runs
+    name: Build MM EX E3 Free-runs Files
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+    steps:
+      - uses: actions/checkout@v6.0.0
+      - name: Set up node
+        uses: actions/setup-node@v6.0.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
+          echo "filename=${DTMP}Ender_E3-Free-runs${STMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/Creality\ Ender/E3-Free-runs/MM/Configuration.h Marlin/Configuration.h
+          cp configurations/Creality\ Ender/E3-Free-runs/MM/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/Creality\ Ender/E3-Free-runs/MM/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32F401RE_freeruns/" platformio.ini
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
+          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
+          if ($T5); then THMP="5"; else THMP="1"; fi;
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          pio run
+          mkdir temp
+          mv .pio/build/STM32F401RE_freeruns/*.bin temp/build.bin
+        env:
+          IS: ${{ matrix.inshape }}
+          TP: ${{ matrix.temp }}
+          TJC: ${{ matrix.tjc }}
+          T5: ${{ matrix.t5 }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
   Build-UBL-EX-SKR-E:            # UBL EX for Ender-3, SKR Mini
     name: Build UBL EX SKR Files E
     runs-on: ubuntu-latest
@@ -254,99 +1395,6 @@ jobs:
           TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
           T5:  ${{ matrix.t5 }}
-      - name: Get release
-        id: get_release
-        uses: bruceadams/get-release@v1.3.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload A Release Asset
-        uses: classicrocker883/upload-a-release-asset@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: temp/build.bin
-          asset_name: ${{ steps.build_configs.outputs.filename }}
-          asset_content_type: application/x-binary
-  Build-S1-F4-UBL-EX-E:            # UBL EX for Ender-3 S1-F4
-    name: Build S1 F4 UBL EX Files E
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        temp: [true,false]
-        tjc:  [true,false]
-        t5:   [true,false]
-        bmp:  [true,false]
-    steps:
-      - uses: actions/checkout@v6.0.0
-      - name: Set up node
-        uses: actions/setup-node@v6.0.0
-        with:
-          node-version: 20
-      - name: Cache pip
-        uses: actions/cache@v4.3.0
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Cache PlatformIO
-        uses: actions/cache@v4.3.0
-        with:
-          path: ~/.platformio
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-      - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
-        with:
-          python-version: "3.13"
-      - name: Install PlatformIO
-        run: |
-          python3 -m pip install --upgrade pip wheel platformio
-      - name: Run PlatformIO
-        id: build_configs
-        run: |
-          if ($TP);  then TPTMP=-MPC;  else TPTMP=;       fi;
-          if ($TJC); then DTMP=TJC-;   else DTMP=;        fi;
-          if ($T5);  then STMP=_SPDY5; else STMP=_SPRT13; fi;
-          if ($BMP); then MPTMP=_BMP;  else MPTMP=;       fi;
-          echo "filename=${DTMP}Ender-S1-F4${STMP}${MPTMP}_UBL-ProUI-EX${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
-          > Marlin/Configuration.h
-          > Marlin/Configuration_adv.h
-          > Marlin/Version.h
-          cp configurations/Creality\ Ender/S1/F4/UBL/Configuration.h Marlin/Configuration.h
-          cp configurations/Creality\ Ender/S1/F4/UBL/Configuration_adv.h Marlin/Configuration_adv.h
-          cp configurations/Creality\ Ender/S1/F4/UBL/Version.h Marlin/Version.h
-          sed -i "s/default_envs =.*/default_envs = STM32F401RC_creality/" platformio.ini
-          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
-          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
-          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
-          sed -i "s/.*#define HAS_CGCODE.*/${PTEMP}#define HAS_CGCODE 1/" Marlin/Configuration.h
-          sed -i "s/.*#define CCLOUD_PRINT_SUPPORT.*/${PTEMP}#define CCLOUD_PRINT_SUPPORT/" Marlin/Configuration.h
-          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/${PTEMP}#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
-          if ($TJC); then TJEMP=; else TJEMP='\/\/'; fi;
-          sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
-          if ($T5); then THMP="5"; DSMP="98"; else THMP="13"; DSMP="424.9"; fi;
-          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
-          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
-          if ($BMP); then
-          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
-          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
-          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
-          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
-          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
-          sed -i "s/.*#define HAS_CUSTOM_COLORS.*/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
-          sed -i "s/.*#define SHOW_SPEED_IND/#define SHOW_SPEED_IND/" Marlin/Configuration.h
-          sed -i "s/.*#define M114_DETAIL/#define M114_DETAIL/" Marlin/Configuration_adv.h
-          fi;
-          pio run
-          mkdir temp
-          mv .pio/build/STM32F401RC_creality/*.bin temp/build.bin
-        env:
-          TP:  ${{ matrix.temp }}
-          TJC: ${{ matrix.tjc }}
-          T5:  ${{ matrix.t5 }}
-          BMP: ${{ matrix.bmp }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2

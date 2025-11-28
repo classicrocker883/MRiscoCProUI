@@ -358,6 +358,7 @@
 // #define FTM_SHAPING_DEFAULT_FREQ_E   21.0f
 // #define FTM_SHAPING_ZETA_E            0.03f
 // #define FTM_SHAPING_V_TOL_E           0.05f
+// #define FTM_RESONANCE_TEST
 // #define FTM_SMOOTHING
 // #define FTM_MAX_SMOOTHING_TIME      0.10f
 // #define FTM_SMOOTHING_TIME_X        0.00f
@@ -366,16 +367,10 @@
 // #define FTM_SMOOTHING_TIME_E        0.02f
 // #define FTM_TRAJECTORY_TYPE   TRAPEZOIDAL
 // #define FTM_POLY6_ACCELERATION_OVERSHOOT 1.875f
-// #define FTM_UNIFIED_BWS
-// #define FTM_BW_SIZE               100
-// #define FTM_WINDOW_SIZE           200
-// #define FTM_BATCH_SIZE            100
+// #define FTM_BUFFER_SIZE             128
 // #define FTM_FS                     1000
-// #define FTM_STEPPER_FS          20000
-// #define FTM_STEPPERCMD_BUFF_SIZE 3000
-// #define FTM_STEPPER_FS          30000
-// #define FTM_STEPPERCMD_BUFF_SIZE 6000
-// #define FTM_MIN_SHAPE_FREQ           10
+// #define FTM_STEPPER_FS        2'000'000
+// #define FTM_MIN_SHAPE_FREQ           20
 // #define INPUT_SHAPING_X
 // #define INPUT_SHAPING_Y
 // #define INPUT_SHAPING_Z
@@ -587,6 +582,8 @@
 // #define PE_LEDS_COMPLETED_TIME  (30*60)
 // #define POWER_LOSS_RECOVERY
 // #define PLR_ENABLED_DEFAULT       false
+// #define PLR_HEAT_BED_ON_REBOOT
+// #define PLR_HEAT_BED_EXTRA          0
 // #define PLR_BED_THRESHOLD BED_MAXTEMP
 // #define POWER_LOSS_PIN             44
 // #define POWER_LOSS_STATE         HIGH
@@ -609,6 +606,7 @@
 // #define SDSORT_CACHE_NAMES true
 // #define SDSORT_DYNAMIC_RAM true
 // #define SDSORT_CACHE_VFATS 2
+// #define SDSORT_QUICK       true
 // #define UTF_FILENAME_SUPPORT
 // #define LONG_FILENAME_HOST_SUPPORT
 // #define LONG_FILENAME_WRITE_SUPPORT
@@ -1355,6 +1353,7 @@
 // #define GCODE_MACROS
 // #define GCODE_MACROS_SLOTS       5
 // #define GCODE_MACROS_SLOT_SIZE  50
+// #define GCODE_MACROS_IN_EEPROM
 // #define CUSTOM_MENU_MAIN
 // #define CUSTOM_MENU_MAIN_TITLE "Custom Commands"
 // #define CUSTOM_MENU_MAIN_SCRIPT_DONE "M117 User Script Done"
@@ -1364,18 +1363,23 @@
 // #define MAIN_MENU_ITEM_1_DESC "Home & UBL Info"
 // #define MAIN_MENU_ITEM_1_GCODE "G28\nG29 W"
 // #define MAIN_MENU_ITEM_1_CONFIRM
+// #define MAIN_MENU_ITEM_1_IMMEDIATE
 // #define MAIN_MENU_ITEM_2_DESC "Preheat for " PREHEAT_1_LABEL
 // #define MAIN_MENU_ITEM_2_GCODE "M140 S" STRINGIFY(PREHEAT_1_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_1_TEMP_HOTEND)
 // #define MAIN_MENU_ITEM_2_CONFIRM
+// #define MAIN_MENU_ITEM_2_IMMEDIATE
 // #define MAIN_MENU_ITEM_3_DESC "Preheat for " PREHEAT_2_LABEL
 // #define MAIN_MENU_ITEM_3_GCODE "M140 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_2_TEMP_HOTEND)
 // #define MAIN_MENU_ITEM_3_CONFIRM
+// #define MAIN_MENU_ITEM_3_IMMEDIATE
 // #define MAIN_MENU_ITEM_4_DESC "Heat Bed/Home/Level"
 // #define MAIN_MENU_ITEM_4_GCODE "M140 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nG28\nG29"
 // #define MAIN_MENU_ITEM_4_CONFIRM
+// #define MAIN_MENU_ITEM_4_IMMEDIATE
 // #define MAIN_MENU_ITEM_5_DESC "Home & Info"
 // #define MAIN_MENU_ITEM_5_GCODE "G28\nM503"
 // #define MAIN_MENU_ITEM_5_CONFIRM
+// #define MAIN_MENU_ITEM_5_IMMEDIATE
 // #define CUSTOM_MENU_CONFIG
 // #define CUSTOM_MENU_CONFIG_TITLE "Custom Commands"
 // #define CUSTOM_MENU_CONFIG_SCRIPT_DONE "M117 Wireless Script Done"
@@ -1385,34 +1389,42 @@
 // #define CONFIG_MENU_ITEM_1_DESC "Wifi ON"
 // #define CONFIG_MENU_ITEM_1_GCODE "M118 [ESP110] WIFI-STA pwd=12345678"
 // #define CONFIG_MENU_ITEM_1_CONFIRM
+// #define CONFIG_MENU_ITEM_1_IMMEDIATE
 // #define CONFIG_MENU_ITEM_2_DESC "Bluetooth ON"
 // #define CONFIG_MENU_ITEM_2_GCODE "M118 [ESP110] BT pwd=12345678"
 // #define CONFIG_MENU_ITEM_2_CONFIRM
+// #define CONFIG_MENU_ITEM_2_IMMEDIATE
 // #define CONFIG_MENU_ITEM_3_DESC "Radio OFF"
 // #define CONFIG_MENU_ITEM_3_GCODE "M118 [ESP110] OFF pwd=12345678"
 // #define CONFIG_MENU_ITEM_3_CONFIRM
+// #define CONFIG_MENU_ITEM_3_IMMEDIATE
 // #define CONFIG_MENU_ITEM_4_DESC "Wifi ????"
 // #define CONFIG_MENU_ITEM_4_GCODE "M118 ????"
 // #define CONFIG_MENU_ITEM_4_CONFIRM
+// #define CONFIG_MENU_ITEM_4_IMMEDIATE
 // #define CONFIG_MENU_ITEM_5_DESC "Wifi ????"
 // #define CONFIG_MENU_ITEM_5_GCODE "M118 ????"
 // #define CONFIG_MENU_ITEM_5_CONFIRM
+// #define CONFIG_MENU_ITEM_5_IMMEDIATE
 // #define CUSTOM_USER_BUTTONS
 // #define BUTTON1_PIN -1
 // #define BUTTON1_HIT_STATE     LOW
 // #define BUTTON1_WHEN_PRINTING false
 // #define BUTTON1_GCODE         "G28"
 // #define BUTTON1_DESC          "Homing"
+// #define BUTTON1_IMMEDIATE
 // #define BUTTON2_PIN -1
 // #define BUTTON2_HIT_STATE     LOW
 // #define BUTTON2_WHEN_PRINTING false
 // #define BUTTON2_GCODE         "M140 S" STRINGIFY(PREHEAT_1_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_1_TEMP_HOTEND)
 // #define BUTTON2_DESC          "Preheat for " PREHEAT_1_LABEL
+// #define BUTTON2_IMMEDIATE
 // #define BUTTON3_PIN -1
 // #define BUTTON3_HIT_STATE     LOW
 // #define BUTTON3_WHEN_PRINTING false
 // #define BUTTON3_GCODE         "M140 S" STRINGIFY(PREHEAT_2_TEMP_BED) "\nM104 S" STRINGIFY(PREHEAT_2_TEMP_HOTEND)
 // #define BUTTON3_DESC          "Preheat for " PREHEAT_2_LABEL
+// #define BUTTON3_IMMEDIATE
 // #define HOST_ACTION_COMMANDS
 // #define HOST_PAUSE_M76
 // #define HOST_PROMPT_SUPPORT
@@ -1556,6 +1568,7 @@
 // #define M100_FREE_MEMORY_WATCHER
 // #define DIRECT_PIN_CONTROL
 // #define PINS_DEBUGGING
+// #define I2C_SCANNER
 // #define MARLIN_TEST_BUILD
 // #define MARLIN_DEV_MODE
 // #define BUFFER_MONITORING
