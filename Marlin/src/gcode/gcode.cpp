@@ -269,7 +269,7 @@ void GcodeSuite::get_destination_from_command() {
  */
 void GcodeSuite::dwell(const millis_t time) {
   const millis_t start_ms = millis();
-  while (PENDING(millis(), start_ms, time)) idle();
+  while (PENDING(millis(), start_ms, time)) marlin.idle();
 }
 
 /**
@@ -303,7 +303,7 @@ void GcodeSuite::dwell(const millis_t time) {
       #ifdef ACTION_ON_CANCEL
         hostui.cancel();
       #endif
-      kill(GET_TEXT_F(MSG_LCD_PROBING_FAILED));
+      marlin.kill(GET_TEXT_F(MSG_LCD_PROBING_FAILED));
     #endif
   }
 
@@ -948,8 +948,8 @@ void GcodeSuite::process_parsed_command(bool no_ok/*=false*/) {
       #endif
 
       #if ENABLED(FT_MOTION)
-        case 493: M493(); break;                                  // M493: Fixed-Time Motion control
-        #if ENABLED(FTM_SMOOTHING)
+          case 493: M493(); break;                                // M493: Fixed-Time Motion control
+        #if ANY(FTM_SMOOTHING, FTM_POLYS)
           case 494: M494(); break;                                // M494: Fixed-Time Motion extras
         #endif
         #if ENABLED(FTM_RESONANCE_TEST)

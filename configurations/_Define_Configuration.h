@@ -214,12 +214,12 @@
 // #define MIN_POWER 0
 // #define PID_DEBUG
 // #define PID_PARAMS_PER_HOTEND
-// #define DEFAULT_Kp_LIST {  22.20,  22.20 }
-// #define DEFAULT_Ki_LIST {   1.08,   1.08 }
-// #define DEFAULT_Kd_LIST { 114.00, 114.00 }
-// #define DEFAULT_Kp  13.19
-// #define DEFAULT_Ki   0.77
-// #define DEFAULT_Kd  56.05
+// #define DEFAULT_KP_LIST {  22.20,  22.20 }
+// #define DEFAULT_KI_LIST {   1.08,   1.08 }
+// #define DEFAULT_KD_LIST { 114.00, 114.00 }
+// #define DEFAULT_KP  13.19
+// #define DEFAULT_KI   0.77
+// #define DEFAULT_KD  56.05
 // #define BANG_MAX 255
 // #define MPC_AUTOTUNE
 // #define MPC_AUTOTUNE_DEBUG
@@ -248,9 +248,9 @@
 // #define PIDTEMPBED
 // #define MIN_BED_POWER 0
 // #define PID_BED_DEBUG
-// #define DEFAULT_bedKp 128.06
-// #define DEFAULT_bedKi  24.95
-// #define DEFAULT_bedKd 438.07
+// #define DEFAULT_BED_KP 128.06
+// #define DEFAULT_BED_KI  24.95
+// #define DEFAULT_BED_KD 438.07
 // #define BED_LIMIT_SWITCHING
 // #define PELTIER_BED
 // #define PELTIER_DIR_PIN           -1
@@ -261,9 +261,9 @@
 // #define MAX_CHAMBER_POWER 255
 // #define MIN_CHAMBER_POWER 0
 // #define PID_CHAMBER_DEBUG
-// #define DEFAULT_chamberKp  37.04
-// #define DEFAULT_chamberKi   1.40
-// #define DEFAULT_chamberKd 655.17
+// #define DEFAULT_CHAMBER_KP  37.04
+// #define DEFAULT_CHAMBER_KI   1.40
+// #define DEFAULT_CHAMBER_KD 655.17
 // #define PID_OPENLOOP
 // #define SLOW_PWM_HEATERS
 // #define PID_FUNCTIONAL_RANGE 20

@@ -339,7 +339,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=POW
   void PrintJobRecovery::_outage(TERN_(DEBUG_POWER_LOSS_RECOVERY, const bool simulated/*=false*/)) {
     #if ENABLED(BACKUP_POWER_SUPPLY)
       static bool lock = false;
-      if (lock) return; // No re-entrance from idle() during retract_and_lift()
+      if (lock) return; // No re-entrance from marlin.idle() during retract_and_lift()
       lock = true;
     #endif
 
@@ -373,7 +373,7 @@ void PrintJobRecovery::save(const bool force/*=false*/, const float zraise/*=POW
       sync_plan_position();
     }
     else
-      kill(GET_TEXT_F(MSG_OUTAGE_RECOVERY));
+      marlin.kill(GET_TEXT_F(MSG_OUTAGE_RECOVERY));
   }
 
 #endif // POWER_LOSS_PIN || DEBUG_POWER_LOSS_RECOVERY
@@ -537,7 +537,7 @@ void PrintJobRecovery::resume() {
       gcode.process_subcommands_now(TS(F("G0F600Z"), zpos, F("\nG0F2000Y"), ypos, F("\nM400")));
     #endif
     Popup_Continue(ICON_Leveling_0, GET_TEXT_F(MSG_NOZZLE_PARKED), GET_TEXT_F(MSG_NOZZLE_CLEAN));
-    wait_for_user_response();
+    marlin.wait_for_user_response();
     info.current_position = save_pos;
   #endif
 

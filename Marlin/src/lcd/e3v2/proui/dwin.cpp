@@ -557,7 +557,7 @@ void Draw_Print_Labels() {
 #if ENABLED(SHOW_INTERACTION_TIME)
   void Draw_Print_ProgressInteract() {
     const duration_t interact_time = ui.get_interaction_time();
-    if (printingIsActive() && interact_time.value) {
+    if (marlin.printingIsActive() && interact_time.value) {
       char buf[16];
       const bool has_days = (interact_time.value > 60*60*24L);
       interact_time.toDigital(buf, has_days);
@@ -625,7 +625,7 @@ void Goto_PrintProcess() {
 void Draw_PrintDone() {
   #if ENABLED(PROUI_ITEM_CONF)
     if (HMI_data.auto_confirm) {
-      wait_for_user = false;
+      marlin.user_resume();
       select_page.reset();
       Goto_Main_Menu();
       return;
@@ -661,7 +661,7 @@ void Draw_PrintDone() {
 
 void Goto_PrintDone() {
   DEBUG_ECHOLNPGM("Goto_PrintDone");
-  wait_for_user = true;
+  marlin.wait_start();
   if (checkkey != PrintDone) {
     checkkey = PrintDone;
     Draw_PrintDone();
@@ -1245,7 +1245,7 @@ void HMI_Printing() {
       switch (select_print.now) {
         case PRINT_SETUP: Draw_Tune_Menu(); break;
         case PRINT_PAUSE_RESUME:
-          if (print_job_timer.isPaused()) { // If printer is already in pause
+          if (marlin.printingIsPaused()) { // If printer is already in pause
             ui.resume_print();
             break;
           }
@@ -1314,7 +1314,7 @@ void HMI_WaitForUser() {
     HMI_ReturnScreen();
     return;
   }
-  if (!wait_for_user) {
+  if (!marlin.wait_for_user) {
     switch (checkkey) {
       case PrintDone:
         select_page.reset();
@@ -1428,8 +1428,8 @@ void EachMomentUpdate() {
       else { DWIN_Print_Finished(); }
     }
 
-    if ((HMI_flag.pause_flag != printingIsPaused()) && (checkkey != Homing)) {
-      HMI_flag.pause_flag = printingIsPaused();
+    if ((HMI_flag.pause_flag != marlin.printingIsPaused()) && (checkkey != Homing)) {
+      HMI_flag.pause_flag = marlin.printingIsPaused();
       DEBUG_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag);
       if (HMI_flag.pause_flag) { DWIN_Print_Pause(); }
       else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
@@ -1648,14 +1648,14 @@ void HMI_SaveProcessID(const uint8_t id) {
     TERN_(PROUI_ITEM_PLOT,
     case PlotProcess:)
     case WaitResponse:
-      wait_for_user = true;
+      marlin.wait_start();
     default: break;
   }
 }
 
 void HMI_ReturnScreen() {
   checkkey = last_checkkey;
-  wait_for_user = false;
+  marlin.user_resume();
   Draw_Main_Area();
 }
 
@@ -2023,7 +2023,7 @@ void DWIN_Print_Finished() {
   TERN_(HAS_LEVELING, set_bed_leveling_enabled(false);)
   HMI_flag.abort_flag = false;
   HMI_flag.pause_flag = false;
-  wait_for_heatup = false;
+  marlin.heatup_done();
   #if ENABLED(CV_LASER_MODULE)
     if (!fileprop.isConfig)
   #endif
@@ -2358,9 +2358,9 @@ void MarlinUI::update() {
   void MarlinUI::_set_brightness() {
     DWIN_LCD_Brightness(backlight ? brightness : 0);
     if (checkkey != PrintDone)
-      wait_for_user = false;
+      marlin.user_resume();
     else if (!backlight)
-      wait_for_user = true;
+      marlin.wait_start();
   }
 #endif
 
@@ -2417,7 +2417,7 @@ void ResetEeprom() {
 
 // Reset Printer
 void RebootPrinter() {
-  wait_for_heatup = wait_for_user = false; // Stop waiting for heating/user
+  marlin.end_waiting(); // Stop waiting for heating/user
   thermalManager.disable_all_heaters();
   planner.finish_and_disable();
   DWIN_RebootScreen();
@@ -2979,7 +2979,7 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
     static bed_mesh_t zval = {};
     probe.stow();
     HMI_SaveProcessID(NothingToDo); // Before home disable user input
-    wait_for_user = false;
+    marlin.user_resume();
     zval[0][0] = tram(0, false); // First tram point can do Homing
     MeshViewer.DrawMeshGrid(2, 2);
     MeshViewer.DrawMeshPoint(0, 0, zval[0][0]);
@@ -4735,7 +4735,7 @@ void Draw_MaxAccel_Menu() {
   void DWIN_Debug(PGM_P msg1, PGM_P msg2, PGM_P msg3, PGM_P msg4) {
     DEBUG_ECHOLNPGM_P(msg1, msg2, msg3, msg4);
     DWIN_Debug_Popup(msg1, msg2, msg3, msg4);
-    wait_for_user_response();
+    marlin.wait_for_user_response();
     Draw_Main_Area();
   }
 #endif

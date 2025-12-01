@@ -50,8 +50,6 @@
   #include "../../feature/spindle_laser.h"
 #endif
 
-#include "../../MarlinCore.h" // for startOrResumeJob
-
 /**
  * M24: Start or Resume Media Print
  *
@@ -90,7 +88,7 @@ void GcodeSuite::M24() {
 
   if (card.isFileOpen()) {
     card.startOrResumeFilePrinting(); // SD card will now be read for commands
-    startOrResumeJob();               // Start (or resume) the print job timer
+    marlin.startOrResumeJob();        // Start (or resume) the print job timer
     TERN_(POWER_LOSS_RECOVERY, recovery.prepare());
   }
 
@@ -132,7 +130,7 @@ void GcodeSuite::M25() {
       }
       else
     #endif
-    if (printingIsActive()) M125();  // ProUI Do only if printing
+    if (marlin.printingIsActive()) M125();  // ProUI Do only if printing
 
   #else
 

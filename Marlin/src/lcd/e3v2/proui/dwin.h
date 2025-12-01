@@ -127,7 +127,7 @@ typedef struct {
 extern HMI_flag_t HMI_flag;
 extern uint8_t checkkey;
 
-inline bool Printing()      { return printingIsActive() || printingIsPaused(); }
+inline bool Printing()      { return marlin.printingIsActive() || marlin.printingIsPaused(); }
 inline bool SD_Printing()   { return Printing() && card.isStillPrinting(); }
 inline bool Host_Printing() { return Printing() && !card.isStillPrinting(); }
 

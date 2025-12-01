@@ -212,6 +212,8 @@
 #define STR_KILL_BUTTON                     "KILL button/pin"
 
 // temperature.cpp strings
+#define STR_WAIT_FOR_HOTEND                 "Wait for hotend heating..."
+#define STR_WAIT_FOR_BED                    "Wait for bed heating..."
 #define STR_PID_AUTOTUNE                    "PID Autotune"
 #define STR_PID_AUTOTUNE_START              " start"
 #define STR_PID_BAD_HEATER_ID               " failed! Bad heater id"
@@ -232,6 +234,8 @@
 #define STR_PID_DEBUG_INPUT                 ": Input "
 #define STR_PID_DEBUG_OUTPUT                " Output "
 #define STR_INVALID_EXTRUDER_NUM            " - Invalid extruder number !"
+
+// MPCTEMP strings
 #define STR_MPC_AUTOTUNE                    "MPC Autotune"
 #define STR_MPC_AUTOTUNE_START              "MPC Autotune start for " STR_E
 #define STR_MPC_AUTOTUNE_INTERRUPTED        "MPC Autotune interrupted!"
@@ -241,6 +245,7 @@
 #define STR_MPC_MEASURING_AMBIENT           "Measuring ambient heatloss at "
 #define STR_MPC_TEMPERATURE_ERROR           "Temperature error"
 
+// Temperature Sensors
 #define STR_HEATER_BED                      "bed"
 #define STR_HEATER_CHAMBER                  "chamber"
 #define STR_COOLER                          "cooler"
@@ -250,6 +255,7 @@
 #define STR_REDUNDANT                       "redundant "
 #define STR_LASER_TEMP                      "laser temperature"
 
+// Misc. Errors, Thermal Runaway
 #define STR_STOPPED_HEATER                  ", system stopped! Heater_ID: "
 #define STR_DETECTED_TEMP_B                 " (temp: "
 #define STR_DETECTED_TEMP_E                 ")"
@@ -272,6 +278,7 @@
 #define STR_DEBUG_COMMUNICATION             "COMMUNICATION"
 #define STR_DEBUG_DETAIL                    "DETAIL"
 
+// Password Security
 #define STR_PRINTER_LOCKED                  "Printer locked! (Unlock with M511 or LCD)"
 #define STR_WRONG_PASSWORD                  "Incorrect Password"
 #define STR_PASSWORD_TOO_LONG               "Password too long"

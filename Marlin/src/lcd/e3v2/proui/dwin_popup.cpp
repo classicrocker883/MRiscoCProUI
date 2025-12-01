@@ -22,7 +22,6 @@
 
 #if ENABLED(DWIN_LCD_PROUI)
 
-#include "../../../MarlinCore.h" // for wait_for_user
 #include "dwin_popup.h"
 
 popupDrawFunc_t Draw_Popup = nullptr;
@@ -83,7 +82,7 @@ void Goto_Popup(const popupDrawFunc_t fnDraw, const popupClickFunc_t fnClick/*=n
 }
 
 void HMI_Popup() {
-  if (!wait_for_user) {
+  if (!marlin.wait_for_user) {
     if (ClickPopup) ClickPopup();
     return;
   }

@@ -22,7 +22,6 @@
 
 #include "../inc/MarlinConfig.h"
 
-#include "../MarlinCore.h" // for printingIsPaused, machine_name
 #include "../gcode/parser.h" // for axis_is_rotational, using_inch_units
 
 #if HAS_LED_POWEROFF_TIMEOUT || ALL(HAS_WIRED_LCD, PRINTER_EVENT_LEDS) || (HAS_BACKLIGHT_TIMEOUT && defined(NEOPIXEL_BKGD_INDEX_FIRST))
@@ -1013,8 +1012,8 @@ void MarlinUI::init() {
       // Ignore the click when clearing wait_for_user or waking the screen.
       auto do_click = [&]{
         wait_for_unclick = true;
-        lcd_clicked = !wait_for_user && !display_is_asleep();
-        wait_for_user = false;
+        lcd_clicked = !marlin.wait_for_user && !display_is_asleep();
+        marlin.user_resume();
         quick_feedback();
       };
 
@@ -1582,7 +1581,7 @@ uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, 
    */
   void MarlinUI::reset_status(const bool no_welcome) {
     FSTR_P msg;
-    if (printingIsPaused())
+    if (marlin.printingIsPaused())
       msg = GET_TEXT_F(MSG_PRINT_PAUSED);
     #if HAS_MEDIA && DISABLED(DWIN_LCD_PROUI)
       else if (card.isStillPrinting())
@@ -1608,7 +1607,7 @@ uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, 
     else if (!no_welcome) {
       #if ENABLED(CONFIGURABLE_MACHINE_NAME)
         char new_status[MAX_MESSAGE_SIZE + 1];
-        expand_u8str_P(new_status, GET_TEXT(WELCOME_MSG), 0, &machine_name);
+        expand_u8str_P(new_status, GET_TEXT(WELCOME_MSG), 0, &marlin.machine_name);
         _set_status_and_level(new_status, -1);
         return;
       #else
@@ -1785,16 +1784,12 @@ uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, 
 
 #if HAS_DISPLAY
 
-  #if HAS_MEDIA
-    extern bool wait_for_user, wait_for_heatup;
-  #endif
-
   void MarlinUI::abort_print() {
     #if ENABLED(CV_LASER_MODULE)
       if (laser_device.is_laser_device()) laser_device.quick_stop();
     #endif
     #if HAS_MEDIA
-      wait_for_heatup = wait_for_user = false;
+      marlin.end_waiting();
       if (card.isStillPrinting())
         card.abortFilePrintSoon();
       else if (card.isMounted())
@@ -1867,7 +1862,7 @@ uint8_t expand_u8str_P(char * const outstr, PGM_P const ptpl, const int8_t ind, 
 
   void MarlinUI::resume_print() {
     reset_status();
-    TERN_(PARK_HEAD_ON_PAUSE, wait_for_heatup = wait_for_user = false);
+    TERN_(PARK_HEAD_ON_PAUSE, marlin.end_waiting());
     TERN_(HAS_MEDIA, if (card.isPaused()) queue.inject_P(M24_STR));
     #ifdef ACTION_ON_RESUME
       hostui.resume();

@@ -76,12 +76,12 @@ void CError() {
 // Cancel a Wait for User without an Emergecy Parser
 void C108() {
   #if DEBUG_OUT
-    DEBUG_ECHOLNPGM("wait_for_user was ", wait_for_user);
+    DEBUG_ECHOLNPGM("wait_for_user was ", marlin.wait_for_user);
     DEBUG_ECHOLNPGM("checkkey was ", checkkey);
   #endif
   TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout();)
   if (!ui.backlight) ui.refresh_brightness();
-  wait_for_user = false;
+  marlin.user_resume();
   DONE_BUZZ(true);
 }
 
