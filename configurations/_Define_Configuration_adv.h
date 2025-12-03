@@ -341,6 +341,7 @@
 // #define FTM_IS_DEFAULT_MOTION
 // #define FT_MOTION_MENU
 // #define FTM_HOME_AND_PROBE
+// #define FTM_DYNAMIC_FREQ
 // #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED
 // #define FTM_DEFAULT_SHAPER_X      ftMotionShaper_NONE
 // #define FTM_SHAPING_DEFAULT_FREQ_X   37.0f
@@ -372,7 +373,6 @@
 // #define FTM_POLY6_ACCELERATION_OVERSHOOT 1.875f
 // #define FTM_BUFFER_SIZE             128
 // #define FTM_FS                     1000
-// #define FTM_STEPPER_FS        2'000'000
 // #define FTM_MIN_SHAPE_FREQ           20
 // #define INPUT_SHAPING_X
 // #define INPUT_SHAPING_Y

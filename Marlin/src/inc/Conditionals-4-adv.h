@@ -1136,7 +1136,7 @@
   #undef SERIAL_XON_XOFF
 #endif
 
-#if ENABLED(HOST_PROMPT_SUPPORT) && DISABLED(EMERGENCY_PARSER)
+#if ENABLED(HOST_PROMPT_SUPPORT)
   #define HAS_GCODE_M876 1
 #endif
 
@@ -1539,9 +1539,6 @@
   #endif
   #if !HAS_EXTRUDERS
     #undef FTM_SHAPER_E
-  #endif
-  #if DISABLED(FTM_POLYS)
-    #define FTM_TRAJECTORY_TYPE TRAPEZOIDAL
   #endif
 #endif
 
