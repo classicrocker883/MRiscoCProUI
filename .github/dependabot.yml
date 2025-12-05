@@ -8,3 +8,8 @@ updates:
     target-branch: '2025-December'
     commit-message:
       prefix: 'Update - GH Actions'
+
+    groups:
+      github-actions-all:
+        patterns:
+          - '*'
