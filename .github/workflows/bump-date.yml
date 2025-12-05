@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out 2025-November
+      - name: Check out 2025-December
         uses: actions/checkout@v6.0.0
         with:
-          ref: 2025-November
+          ref: 2025-December
 
-      - name: Bump Date (2025-November)
+      - name: Bump Date (2025-December)
         run: |
           if [[ ! "$( git log -1 --pretty=%B )" =~ ^\[cron\] ]]; then
             shopt -s globstar && \
