@@ -247,7 +247,6 @@ jobs:
           sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
           elif ($TP); then
           sed -i "s/.*#define HAS_CUSTOM_COLORS 1/\/\/#define HAS_CUSTOM_COLORS 1/" Marlin/Configuration.h
-          sed -i "s/.*#define M115_GEOMETRY_REPORT/\/\/#define M115_GEOMETRY_REPORT/" Marlin/Configuration_adv.h
           fi;
           if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
           sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
