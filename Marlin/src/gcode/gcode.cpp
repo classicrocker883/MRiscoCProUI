@@ -622,7 +622,7 @@ void GcodeSuite::process_parsed_command(bool no_ok/*=false*/) {
       case 108: M108(); break;                                    // M108: Cancel Waiting
       case 112: M112(); break;                                    // M112: Full Shutdown
       case 410: M410(); break;                                    // M410: Quickstop - Abort all the planned moves.
-      #if ENABLED(HOST_PROMPT_SUPPORT)
+      #if HAS_GCODE_M876
         case 876: M876(); break;                                  // M876: Handle Host prompt responses
       #endif
 

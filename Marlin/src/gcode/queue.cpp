@@ -533,10 +533,21 @@ void GCodeQueue::get_serial_commands() {
         }
 
         // Process critical commands early
-        if (command[0] == 'M') switch (command[3]) {
-          case '8': if (command[2] == '0' && command[1] == '1') { marlin.end_waiting(); } break;
-          case '2': if (command[2] == '1' && command[1] == '1') marlin.kill(FPSTR(M112_KILL_STR), nullptr, true); break;
-          case '0': if (command[1] == '4' && command[2] == '1') quickstop_stepper(); break;
+        parser.parse(command);
+        switch (parser.command_letter) {
+          case 'M':
+            switch (parser.codenum) {
+              case 108:
+                marlin.end_waiting();
+                break;
+              case 112:
+                marlin.kill(FPSTR(M112_KILL_STR), nullptr, true);
+                break;
+              case 401:
+                quickstop_stepper();
+                break;
+            }
+            break;
         }
 
         #if NO_TIMEOUTS > 0
