@@ -258,7 +258,7 @@
 #define SD_DETECT_PIN                EXP2_07_PIN
 #define NO_SD_HOST_DRIVE
 
-// TODO: This is the only way to set SPI for SD on STM32 (for now)
+/// TODO: This is the only way to set SPI for SD on STM32 (for now)
 #define ENABLE_SPI2
 #define SD_SCK_PIN                   EXP2_02_PIN
 #define SD_MISO_PIN                  EXP2_01_PIN

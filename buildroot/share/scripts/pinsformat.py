@@ -77,7 +77,7 @@ def format_pins(argv):
         file_text = sys.stdin.read()
     else:
         # Open and read the file src_file
-        with open(src_file, "r", encoding="utf-8") as rf: file_text = rf.read()
+        with open(src_file, "r", encoding="utf-8", newline="") as rf: file_text = rf.read()
 
     if not file_text:
         print("No text to process")
@@ -86,14 +86,13 @@ def format_pins(argv):
     # Read from file or STDIN until it terminates
     filtered = process_text(file_text)
     if dst_file:
-        with open(dst_file, "w", encoding="utf-8") as wf: wf.write(filtered)
+        with open(dst_file, "w", encoding="utf-8", newline="") as wf: wf.write(filtered)
     else:
         print(filtered)
 
 # Find the pin pattern so non-pin defines can be skipped
 def get_pin_pattern(txt):
     r = ""
-    m = 0
     match_count = [0, 0, 0, 0]
 
     # Find the most common matching pattern

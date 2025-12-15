@@ -280,7 +280,7 @@
  *   W    What?       Display valuable UBL data.
  *
  *
- *   Release Notes:
+ *   NOTES:
  *   You MUST do M502, M500 to initialize the storage. Failure to do this will cause all
  *   kinds of problems. Enabling EEPROM Storage is required.
  *
@@ -319,7 +319,7 @@ void unified_bed_leveling::G29() {
   const bool may_move = p_val == 1 || p_val == 2 || p_val == 4 || parser.seen_test('J');
 
   // Potentially disable Fixed-Time Motion for probing
-  TERN_(FT_MOTION, FTMotionDisableInScope FT_Disabler);
+  TERN_(FT_MOTION, FTM_DISABLE_IN_SCOPE());
 
   // Check for commands that require the printer to be homed
   if (may_move) {
@@ -403,7 +403,7 @@ void unified_bed_leveling::G29() {
   if (parser.seen('Q')) {
     const int16_t test_pattern = parser.has_value() ? parser.value_int() : -99;
     if (!WITHIN(test_pattern, TERN0(UBL_DEVEL_DEBUGGING, -1), 2)) {
-      SERIAL_ECHOLNPGM("?Invalid (Q) test pattern. (" TERN(UBL_DEVEL_DEBUGGING, "-1", "0") " to 2)\n");
+      SERIAL_ECHOLN(F("?Invalid "), F("(Q) test pattern. (" TERN(UBL_DEVEL_DEBUGGING, "-1", "0") " to 2)\n"));
       return;
     }
     SERIAL_ECHOLNPGM("Applying test pattern.\n");
@@ -660,7 +660,7 @@ void unified_bed_leveling::G29() {
     }
 
     if (!WITHIN(param.KLS_storage_slot, 0, a - 1)) {
-      SERIAL_ECHOLNPGM("?Invalid storage slot.\n?Use 0 to ", a - 1);
+      SERIAL_ECHOLN(F("?Invalid "), F("storage slot.\n?Use 0 to "), a - 1);
       return;
     }
 
@@ -688,7 +688,7 @@ void unified_bed_leveling::G29() {
     }
 
     if (!WITHIN(param.KLS_storage_slot, 0, a - 1)) {
-      SERIAL_ECHOLNPGM("?Invalid storage slot.\n?Use 0 to ", a - 1);
+      SERIAL_ECHOLN(F("?Invalid "), F("storage slot.\n?Use 0 to "), a - 1);
       goto LEAVE;
     }
 
@@ -1129,11 +1129,11 @@ void set_message_with_feedback(FSTR_P const fstr) {
         set_message_with_feedback(GET_TEXT_F(MSG_EDITING_STOPPED));
       })) break;
 
-      // TODO: Disable leveling here so the Z value becomes the 'native' Z value.
+      /// TODO: Disable leveling here so the Z value becomes the 'native' Z value.
 
       z_values[lpos.x][lpos.y] = new_z;                   // Save the updated Z value
 
-      // TODO: Re-enable leveling here so Z is correctly based on the updated mesh.
+      /// TODO: Re-enable leveling here so Z is correctly based on the updated mesh.
 
       TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(location, new_z));
 
@@ -1206,7 +1206,7 @@ bool unified_bed_leveling::G29_parse_parameters() {
     #if HAS_BED_PROBE
       param.J_grid_size = parser.value_byte();
       if (param.J_grid_size && !WITHIN(param.J_grid_size, 2, 9)) {
-        SERIAL_ECHOLNPGM("?Invalid grid size (J) specified (2-9).\n");
+        SERIAL_ECHOLN(F("?Invalid "), F("grid size (J) specified (2-9).\n"));
         err_flag = true;
       }
     #else
@@ -1889,7 +1889,7 @@ void unified_bed_leveling::smart_mesh_fill() {
     }
 
     if (!parser.has_value() || !WITHIN(parser.value_int(), 0, a - 1)) {
-      SERIAL_ECHOLNPGM("?Invalid storage slot.\n?Use 0 to ", a - 1);
+      SERIAL_ECHOLN(F("?Invalid "), F("storage slot.\n?Use 0 to "), a - 1);
       return;
     }
 

@@ -1083,7 +1083,7 @@ void MarlinUI::init() {
           #if ALL(HAS_MARLINUI_MENU, ENCODER_RATE_MULTIPLIER)
 
             if (encoder_multiplier_enabled) {
-              // Note that the rate is always calculated between two passes through the
+              /// NOTE: That the rate is always calculated between two passes through the
               // loop and that the abs of the encoderDiff value is tracked.
               static millis_t encoder_mult_prev_ms = 0;
               const float encoderStepRate = ((float(abs_diff) / float(epps)) * 1000.0f) / float(ms - encoder_mult_prev_ms);

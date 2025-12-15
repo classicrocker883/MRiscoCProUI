@@ -36,7 +36,7 @@
 namespace MMU3 {
 
   FSTR_P const progressTexts[] PROGMEM = {
-    GET_TEXT_F(MSG_PROGRESS_OK),              // TODO: Generic messages for Marlin
+    GET_TEXT_F(MSG_PROGRESS_OK),              // @@TODO Generic messages for Marlin
     GET_TEXT_F(MSG_PROGRESS_ENGAGE_IDLER),    // reused below
     GET_TEXT_F(MSG_PROGRESS_DISENGAGE_IDLER), // reused below
     GET_TEXT_F(MSG_PROGRESS_UNLOAD_FINDA),

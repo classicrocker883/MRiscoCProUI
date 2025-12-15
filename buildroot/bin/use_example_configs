@@ -18,7 +18,7 @@ import os, subprocess, sys, urllib.request, urllib.error
 from pathlib import Path
 
 DEBUGGING = False
-CONFIG_FILES = ("Configuration.h", "Configuration_adv.h", "_Bootscreen.h", "_Statusscreen.h")
+CONFIG_FILES = ("Configuration.h", "Configuration_adv.h", "Version.h", "_Bootscreen.h", "_Statusscreen.h")
 
 def debug_print(s):
     if DEBUGGING: print(s)
@@ -46,7 +46,6 @@ def sparse_checkout(branch, config_path, repo_url="https://github.com/classicroc
 
     # Step 2: Enable sparse checkout and set the folder
     subprocess.run(["git", "sparse-checkout", "set", config_subdir], cwd=str(configs_dir), check=True)
-
     # Step 3: Pull the latest for that branch/folder
     subprocess.run(["git", "pull"], cwd=str(configs_dir), check=True)
 
@@ -119,7 +118,10 @@ def main():
     try:
         subprocess.run(["restore_configs"], check=True)
     except FileNotFoundError:
-        print("restore_configs not found, skipping.")
+        try:
+            subprocess.run(["./buildroot/bin/restore_configs"], check=True)
+        except FileNotFoundError:
+            print("restore_configs not found, skipping.")
 
     fetch_configs(branch, config_path)
 

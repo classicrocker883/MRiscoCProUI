@@ -242,6 +242,8 @@
 #define EXP2_07_PIN                         PE12
 #define EXP2_08_PIN                         -1
 
+#define EXP_REVERSE_KEYED
+
 //
 // SD Card
 //
@@ -268,7 +270,7 @@
 //
 
 /**
- * Note: MKS Robin TFT screens use various TFT controllers
+ * NOTE: MKS Robin TFT screens use various TFT controllers
  * Supported screens are based on the ILI9341, ST7789V and ILI9328 (320x240)
  * ILI9488 is not supported
  * Define init sequences for other screens in u8g_dev_tft_320x240_upscale_from_128x64.cpp
@@ -286,7 +288,7 @@
   #define BTN_ENC                    EXP1_02_PIN
   #define BTN_EN1                    EXP2_03_PIN
   #define BTN_EN2                    EXP2_05_PIN
-#elif ENABLED(HAS_GRAPHICAL_TFT)
+#elif HAS_GRAPHICAL_TFT
   #define TFT_BUFFER_WORDS                 14400
 #endif
 

@@ -179,7 +179,7 @@
 //
 
 /**
- * Note: ORCA 3D Modular Controller uses various TFT controllers.
+ * NOTE: ORCA 3D Modular Controller uses various TFT controllers.
  * - For TFT displays use UART0
  * - For 12864 displays use the expansion headers
  */

@@ -53,7 +53,7 @@ def run_preprocessor(env, fn=None):
 def search_compiler(env):
     global nocache
 
-    from pathlib import Path, PurePath
+    from pathlib import Path
 
     ENV_BUILD_PATH = Path(env["PROJECT_BUILD_DIR"], env["PIOENV"])
     GCC_PATH_CACHE = ENV_BUILD_PATH / ".gcc_path"

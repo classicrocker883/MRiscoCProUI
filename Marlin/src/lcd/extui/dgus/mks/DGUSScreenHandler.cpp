@@ -382,7 +382,7 @@ void DGUSScreenHandlerMKS::zOffsetSelect(DGUS_VP_Variable &var, void *val_ptr) {
 
 void DGUSScreenHandlerMKS::getOffsetValue(DGUS_VP_Variable &var, void *val_ptr) {
   #if HAS_BED_PROBE
-    const float offset = BE32_P(val_ptr) / 100.0f;
+    const float offset = BE32_P(val_ptr) * 0.01f;
     switch (var.VP) {
       default: break;
       case VP_OFFSET_X: probe.offset.x = offset; break;
@@ -773,12 +773,12 @@ void DGUSScreenHandler::handleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
   const bool old_relative_mode = relative_mode;
   if (!relative_mode) queue.enqueue_now(F("G91"));
 
-  // TODO: Use MString / TS() ...
+  /// TODO: Use MString / TS() ...
 
   char buf[32]; // G1 X9999.99 F12345
   char sign[] = "\0";
   int16_t value = movevalue / 100;
-  if (movevalue < 0) { value = -value; sign[0] = '-'; }
+  if (movevalue < 0) { value *= -1; sign[0] = '-'; }
   const int16_t fraction = ABS(movevalue) % 100;
   snprintf_P(buf, 32, PSTR("G0 %c%s%d.%02d F%d"), axiscode, sign, value, fraction, speed);
   queue.enqueue_one_now(buf);
@@ -999,7 +999,8 @@ void DGUSScreenHandlerMKS::filamentLoadUnload(DGUS_VP_Variable &var, void *val_p
   #endif
 
   if (swap_tool) {
-    char buf[30]; // TODO: Use MString / TS()
+    char buf[30];
+    /// TODO: Use MString / TS()
     snprintf_P(buf, 30,
       #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
         PSTR("M1002T%cE%dF%d"), char('0' + swap_tool - 1)
@@ -1019,7 +1020,8 @@ void DGUSScreenHandlerMKS::filamentLoadUnload(DGUS_VP_Variable &var, void *val_p
 void GcodeSuite::M1002() {
   #if ANY(HAS_MULTI_HOTEND, SINGLENOZZLE)
   {
-    char buf[3]; // TODO: Use MString / TS()
+    char buf[3];
+    /// TODO: Use MString / TS()
     sprintf_P(buf, PSTR("T%c"), char('0' + parser.intval('T')));
     process_subcommands_now(buf);
   }
@@ -1029,7 +1031,8 @@ void GcodeSuite::M1002() {
   set_e_relative(); // M83
 
   {
-    char buf[20]; // TODO: Use MString / TS()
+    char buf[20];
+    /// TODO: Use MString / TS()
     snprintf_P(buf, 20, PSTR("G1E%dF%d"), parser.intval('E'), parser.intval('F'));
     process_subcommands_now(buf);
   }

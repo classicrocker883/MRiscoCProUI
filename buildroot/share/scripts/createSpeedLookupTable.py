@@ -22,8 +22,8 @@ print("#if F_CPU == %d" % cpu_freq)
 print()
 
 print("  const struct { uint16_t base; uint8_t gain; } speed_lookuptable_fast[256] PROGMEM = {")
-a = [0 for i in range(8)] + [int(0.5 + float(timer_freq) / (i * 256)) for i in range(8, 256)]
-b = [0 for i in range(8)] + [a[i] - a[i + 1] for i in range(8, 255)]
+a = [0] * 8 + [int(0.5 + float(timer_freq) / (i * 256)) for i in range(8, 256)]
+b = [0] * 8 + [a[i] - a[i + 1] for i in range(8, 255)]
 b.append(b[-1])
 for i in range(32):
     print("    ", end="")

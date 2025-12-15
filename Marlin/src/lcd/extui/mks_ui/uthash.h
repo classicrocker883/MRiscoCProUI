@@ -884,7 +884,7 @@ do {                                                                            
 
 
 /* This is an adaptation of Simon Tatham's O(n log(n)) mergesort */
-/* Note that HASH_SORT assumes the hash handle name to be hh.
+/** NOTE: HASH_SORT assumes the hash handle name to be hh.
  * HASH_SRT was added to allow the hash handle name to be passed in. */
 #define HASH_SORT(head,cmpfcn) HASH_SRT(hh,head,cmpfcn)
 #define HASH_SRT(hh,head,cmpfcn)                                                 \
@@ -975,7 +975,7 @@ do {                                                                            
  * The end result is that the selected items have dual presence
  * in both hashes. There is no copy of the items made; rather
  * they are added into the new hash through a secondary hash
- * hash handle that must be present in the structure. */
+ * handle that must be present in the structure. */
 #define HASH_SELECT(hh_dst, dst, hh_src, src, cond)                              \
 do {                                                                             \
   unsigned _src_bkt, _dst_bkt;                                                   \

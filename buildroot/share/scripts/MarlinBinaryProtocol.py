@@ -56,7 +56,7 @@ class Protocol(object):
     simulate_errors = 0
     sync = 0
     connected = False
-    syncronised = False
+    syncronized = False
     worker_thread = None
 
     response_timeout = 1000
@@ -91,9 +91,9 @@ class Protocol(object):
                         return
 
         def reconnect():
-            print("Reconnecting..")
+            print("Reconnecting...")
             self.port.close()
-            for x in range(10):
+            for _ in range(10):
                 try:
                     if self.connected:
                         self.port = serial.Serial(self.device, baudrate = self.baud, write_timeout = 0, timeout = 1)
@@ -107,7 +107,7 @@ class Protocol(object):
 
         while self.connected:
             try:
-                data = self.port.readline().decode("utf8").rstrip()
+                data = self.port.readline().decode("utf-8").rstrip()
                 if len(data):
                     #print(data)
                     dispatch(data)
@@ -143,7 +143,7 @@ class Protocol(object):
                 self.await_response()
             except ReadTimeout:
                 self.errors += 1
-                #print("Packetloss detected..")
+                #print("Packetloss detected...")
         self.packet_transit = None
 
     def await_response(self):
@@ -164,7 +164,7 @@ class Protocol(object):
             switch[token](data)
 
     def send_ascii(self, data, send_and_forget=False):
-        self.packet_transit = bytearray(data, "utf8") + b"\n"
+        self.packet_transit = bytearray(data, "utf-8") + b"\n"
         self.packet_status = 0
         self.transmit_attempt = 0
 
@@ -180,7 +180,7 @@ class Protocol(object):
                     self.await_response_ascii()
             except ReadTimeout:
                 self.errors += 1
-                #print("Packetloss detected..")
+                #print("Packetloss detected...")
             except serial.SerialException:
                 return
         self.packet_transit = None
@@ -266,7 +266,7 @@ class Protocol(object):
 
     def disconnect(self):
         self.send(0, 2)
-        self.syncronised = False
+        self.syncronized = False
 
     def response_ok(self, data):
         try:
@@ -281,8 +281,8 @@ class Protocol(object):
     def response_resend(self, data):
         packet_id = int(data)
         self.errors += 1
-        if not self.syncronised:
-            print("Retrying syncronisation")
+        if not self.syncronized:
+            print("Retrying synchronization")
         elif packet_id != self.sync:
             raise SynchronizationError()
 
@@ -293,7 +293,7 @@ class Protocol(object):
         self.block_size = self.max_block_size if self.max_block_size < self.block_size else self.block_size
         self.protocol_version = protocol_version
         self.packet_status = 1
-        self.syncronised = True
+        self.syncronized = True
         print("Connection synced [{0}], binary protocol version {1}, {2} byte payload buffer".format(self.sync, self.protocol_version, self.max_block_size))
 
     def response_fatal_error(self, data):
@@ -361,9 +361,9 @@ class FileTransferProtocol(object):
         print("File Transfer version: {0}, compression: {1}".format(self.version, self.compression["algorithm"]))
 
     def open(self, filename, compression, dummy):
-        payload =  b"\1" if dummy else b"\0"              # Dummy transfer
-        payload += b"\1" if compression else b"\0"        # Payload compression
-        payload += (bytearray(filename, "utf8") + b"\0")  # Target filename + null terminator
+        payload =  b"\1" if dummy else b"\0"               # Dummy transfer
+        payload += b"\1" if compression else b"\0"         # Payload compression
+        payload += (bytearray(filename, "utf-8") + b"\0")  # Target filename + null terminator
 
         timeout = TimeOut(5000)
         token = None
@@ -438,18 +438,38 @@ class FileTransferProtocol(object):
             self.write(data[start:end])
             kibs = (((i + 1) * block_size) / 1024) / (millis() + 1 - start_time) * 1000
             if (i / blocks) >= dump_pctg:
-                print("\r{0:2.0f}% {1:4.2f}KiB/s {2} Errors: {3}".format((i / blocks) * 100, kibs, "[{0:4.2f}KiB/s]".format(kibs * cratio) if compression else "", self.protocol.errors), end="")
+                print(
+                    "\r{0:2.0f}% {1:4.2f}KiB/s {2} Errors: {3}".format(
+                        (i / blocks) * 100, kibs,
+                        "[{0:4.2f}KiB/s]".format(kibs * cratio) if compression else "",
+                        self.protocol.errors
+                    ),
+                    end=""
+                )
                 dump_pctg += 0.1
             if self.protocol.errors > 0:
                 # Dump last status (errors may not be visible)
-                print("\r{0:2.0f}% {1:4.2f}KiB/s {2} Errors: {3} - Aborting...".format((i / blocks) * 100, kibs, "[{0:4.2f}KiB/s]".format(kibs * cratio) if compression else "", self.protocol.errors), end="")
+                print(
+                    "\r{0:2.0f}% {1:4.2f}KiB/s {2} Errors: {3} - Aborting...".format(
+                        (i / blocks) * 100, kibs,
+                        "[{0:4.2f}KiB/s]".format(kibs * cratio) if compression else "",
+                        self.protocol.errors
+                    ),
+                    end=""
+                )
                 print("")  # New line to break the transfer speed line
                 self.close()
                 print("Transfer aborted due to protocol errors")
                 #raise Exception("Transfer aborted due to protocol errors")
                 return False
-        print("\r{0:2.0f}% {1:4.2f}KiB/s {2} Errors: {3}".format(100, kibs, "[{0:4.2f}KiB/s]".format(kibs * cratio) if compression else "", self.protocol.errors))  # No one likes transfers finishing at 99.8%
-
+        # No one likes transfers finishing at 99.8%
+        print(
+            "\r{0:2.0f}% {1:4.2f}KiB/s {2} Errors: {3}".format(
+                100, kibs,
+                "[{0:4.2f}KiB/s]".format(kibs * cratio) if compression else "",
+                self.protocol.errors
+            )
+        )
         if not self.close():
             print("Transfer failed")
             return False

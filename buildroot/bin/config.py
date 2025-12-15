@@ -20,9 +20,9 @@ def set(file_path, define_name, value):
         content = f.readlines()
 
     modified = False
-    for i in range(len(content)):
+    for i, line in enumerate(content):
         # Regex to match the desired pattern
-        match = re.match(r'^(\s*)(/*)(\s*)(#define\s+{})\s+(.*?)\s*(//.*)?$'.format(re.escape(define_name)), content[i])
+        match = re.match(r'^(\s*)(/*)(\s*)(#define\s+{})\s+(.*?)\s*(//.*)?$'.format(re.escape(define_name)), line)
         if match:
             modified = True
             comm = "" if match[6] is None else " " + match[6]
@@ -32,7 +32,7 @@ def set(file_path, define_name, value):
 
     # Write the modified content back to the file only if changes were made
     if modified:
-        with open(file_path, "w", encoding="utf-8") as f:
+        with open(file_path, "w", encoding="utf-8", newline="") as f:
             f.writelines(content)
             return True
 
@@ -50,8 +50,8 @@ def add(file_path, define_name, value=""):
         value = " " + value
 
     # Find the first blank line to insert the new define
-    for i in range(len(content)):
-        if content[i].strip() == "":
+    for i, line in enumerate(content):
+        if line.strip() == "":
             # Insert the define at the first blank line
             content.insert(i, f"#define {define_name}{value}\n")
             break
@@ -59,7 +59,7 @@ def add(file_path, define_name, value=""):
         # If no blank line is found, append to the end
         content.append(f"#define {define_name}{value}\n")
 
-    with open(file_path, "w", encoding="utf-8") as f:
+    with open(file_path, "w", encoding="utf-8", newline="") as f:
         f.writelines(content)
 
 def enable(file_path, define_name, enable=True):
@@ -96,7 +96,7 @@ def enable(file_path, define_name, enable=True):
 
     # Write the modified content back to the file only if changes were made
     if modified:
-        with open(file_path, "w", encoding="utf-8") as f:
+        with open(file_path, "w", encoding="utf-8", newline="") as f:
             f.writelines(content)
 
     return found

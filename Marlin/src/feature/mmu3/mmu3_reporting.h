@@ -115,7 +115,7 @@ namespace MMU3 {
     uint8_t lcd_cursor_col;
     // The total length is twice delta_mm. Divide that length by number of pixels
     // available to get length per pixel.
-    // Note: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
+    /// NOTE: Below is the reciprocal of (2 * delta_mm) / LCD_WIDTH [mm/pixel]
     float pixel_per_mm;
   };
 
@@ -135,7 +135,7 @@ namespace MMU3 {
   //void DisableMMUInSettings();
 
   // Increments EEPROM cell - number of failed loads into the nozzle
-  // Note: technically, this is not an MMU error but an error of the printer.
+  /// NOTE: Technically, this is not an MMU error but an error of the printer.
   void IncrementLoadFails();
 
   // Increments EEPROM cell - number of MMU errors

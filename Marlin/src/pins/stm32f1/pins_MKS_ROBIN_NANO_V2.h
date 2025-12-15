@@ -289,12 +289,14 @@
 #define EXP2_07_PIN                         PE12
 #define EXP2_08_PIN                         -1    // RESET
 
+#define EXP_REVERSE_KEYED
+
 //
 // LCD / Controller
 //
 
 /**
- * Note: MKS Robin TFT screens use various TFT controllers.
+ * NOTE: MKS Robin TFT screens use various TFT controllers.
  * If the screen stays white, disable 'LCD_RESET_PIN' to let the bootloader init the screen.
  */
 

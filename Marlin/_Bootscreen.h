@@ -19,7 +19,8 @@
 #define CUSTOM_BOOTSCREEN_BMPHEIGHT  64
 
 #if !defined(CUSTOM_BOOTSCREEN_ANIMATED)
-//*/ if machine is Voxelab Aquila add ( / ) to first in line and remove ( / ) from next block
+// Aquila block
+//*/ if machine is Voxelab Aquila add ( / ) to start of line and remove ( / ) from start of next block
 const unsigned char custom_start_bmp[] PROGMEM = {
   #if !CUSTOM_BOOTSCREEN_ALTERNATE
   B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,
@@ -119,8 +120,11 @@ const unsigned char custom_start_bmp[] PROGMEM = {
   #endif
 };
 //*/
+
 // ----------------------------------------------------------------
-/*/ if machine is Ender add ( / ) to first in line and remove ( / ) from previous block
+
+// Ender block
+/*/ if machine is Ender add ( / ) to start of line and remove ( / ) from start of previous block
 const unsigned char custom_start_bmp[] PROGMEM = {
   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,

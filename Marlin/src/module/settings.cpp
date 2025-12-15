@@ -271,8 +271,7 @@ typedef struct SettingsDataStruct {
   // AUTOTEMP
   //
   #if ENABLED(AUTOTEMP)
-    celsius_t planner_autotemp_max, planner_autotemp_min;
-    float planner_autotemp_factor;
+    autotemp_cfg_t planner_autotemp_cfg;                // M104 S B F
   #endif
 
   //
@@ -529,7 +528,7 @@ typedef struct SettingsDataStruct {
   //
   // Linear Advance
   //
-  #if ENABLED(LIN_ADVANCE)
+  #if HAS_LIN_ADVANCE_K
     float planner_extruder_advance_K[DISTINCT_E];       // M900 K  planner.extruder_advance_K
     #if ENABLED(SMOOTH_LIN_ADVANCE)
       float stepper_extruder_advance_tau[DISTINCT_E];   // M900 U  stepper.extruder_advance_tau
@@ -771,6 +770,13 @@ typedef struct SettingsDataStruct {
     // uint32_t material_changes
   #endif
 
+  //
+  // GCODE_MACROS
+  //
+  #if ENABLED(GCODE_MACROS_EEPROM)
+    char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1];
+  #endif
+
 } SettingsData;
 
 //static_assert(sizeof(SettingsData) <= MARLIN_EEPROM_SIZE, "EEPROM too small to contain SettingsData!");
@@ -799,7 +805,7 @@ void MarlinSettings::postprocess() {
 
   TERN_(PIDTEMP, thermalManager.updatePID());
 
-  #if DISABLED(NO_VOLUMETRICS)
+  #if HAS_VOLUMETRIC_EXTRUSION
     planner.calculate_volumetric_multipliers();
   #elif EXTRUDERS
     for (uint8_t i = COUNT(planner.e_factor); i--;)
@@ -1080,10 +1086,8 @@ void MarlinSettings::postprocess() {
     // AUTOTEMP
     //
     #if ENABLED(AUTOTEMP)
-      _FIELD_TEST(planner_autotemp_max);
-      EEPROM_WRITE(planner.autotemp.max);
-      EEPROM_WRITE(planner.autotemp.min);
-      EEPROM_WRITE(planner.autotemp.factor);
+      _FIELD_TEST(planner_autotemp_cfg);
+      EEPROM_WRITE(thermalManager.autotemp.cfg);
     #endif
 
     //
@@ -1537,7 +1541,7 @@ void MarlinSettings::postprocess() {
     {
       _FIELD_TEST(parser_volumetric_enabled);
 
-      #if DISABLED(NO_VOLUMETRICS)
+      #if HAS_VOLUMETRIC_EXTRUSION
 
         EEPROM_WRITE(parser.volumetric_enabled);
         EEPROM_WRITE(planner.filament_size);
@@ -1695,7 +1699,7 @@ void MarlinSettings::postprocess() {
     //
     // Linear Advance
     //
-    #if ENABLED(LIN_ADVANCE)
+    #if HAS_LIN_ADVANCE_K
     {
       _FIELD_TEST(planner_extruder_advance_K);
       EEPROM_WRITE(planner.extruder_advance_K);
@@ -1987,6 +1991,14 @@ void MarlinSettings::postprocess() {
     #endif
 
     //
+    // GCODE_MACROS
+    //
+    #if ENABLED(GCODE_MACROS_EEPROM)
+      _FIELD_TEST(gcode_macros);
+      EEPROM_WRITE(gcode.macros);
+    #endif
+
+    //
     // Report final CRC and Data Size
     //
     if (eeprom_error == ERR_EEPROM_NOERR) {
@@ -2225,9 +2237,8 @@ void MarlinSettings::postprocess() {
       // AUTOTEMP
       //
       #if ENABLED(AUTOTEMP)
-        EEPROM_READ(planner.autotemp.max);
-        EEPROM_READ(planner.autotemp.min);
-        EEPROM_READ(planner.autotemp.factor);
+        _FIELD_TEST(planner_autotemp_cfg);
+        EEPROM_READ(thermalManager.autotemp.cfg);
       #endif
 
       //
@@ -2706,7 +2717,7 @@ void MarlinSettings::postprocess() {
         _FIELD_TEST(parser_volumetric_enabled);
         EEPROM_READ(storage);
 
-        #if DISABLED(NO_VOLUMETRICS)
+        #if HAS_VOLUMETRIC_EXTRUSION
           if (!validating) {
             parser.volumetric_enabled = storage.volumetric_enabled;
             COPY(planner.filament_size, storage.filament_size);
@@ -2731,7 +2742,7 @@ void MarlinSettings::postprocess() {
         per_stepper_uint16_t currents;
         EEPROM_READ(currents);
 
-        #define SET_CURR(Q) stepper##Q.rms_current(currents.Q ? currents.Q : Q##_CURRENT)
+        #define SET_CURR(Q) stepper##Q.rms_current(currents.Q ?: Q##_CURRENT)
         if (!validating) {
           TERN_(X_IS_TRINAMIC,  SET_CURR(X));
           TERN_(Y_IS_TRINAMIC,  SET_CURR(Y));
@@ -2863,7 +2874,7 @@ void MarlinSettings::postprocess() {
       //
       // Linear Advance
       //
-      #if ENABLED(LIN_ADVANCE)
+      #if HAS_LIN_ADVANCE_K
       {
         float extruder_advance_K[DISTINCT_E];
         _FIELD_TEST(planner_extruder_advance_K);
@@ -2879,7 +2890,7 @@ void MarlinSettings::postprocess() {
             DISTINCT_E_LOOP() stepper.set_advance_tau(tau[e], e);
         #endif
       }
-      #endif
+      #endif // HAS_LIN_ADVANCE_K
 
       //
       // HAS_MOTOR_CURRENT_(SPI|PWM)
@@ -3235,6 +3246,13 @@ void MarlinSettings::postprocess() {
       #endif
 
       //
+      // GCODE_MACROS
+      //
+      #if ENABLED(GCODE_MACROS_EEPROM)
+        EEPROM_READ(gcode.macros);
+      #endif
+
+      //
       // Validate Final Size and CRC
       //
       const uint16_t eeprom_total = eeprom_index - (EEPROM_OFFSET);
@@ -3379,7 +3397,7 @@ void MarlinSettings::postprocess() {
   #if ENABLED(AUTO_BED_LEVELING_UBL)
 
     inline void ubl_invalid_slot(const int s) {
-      DEBUG_ECHOLNPGM("?Invalid slot.\n", s, " mesh slots available.");
+      DEBUG_ECHOLN(F("?Invalid "), F("slot.\n"), s, F(" mesh slots available."));
       UNUSED(s);
     }
 
@@ -3737,11 +3755,7 @@ void MarlinSettings::reset() {
   //
   // AUTOTEMP
   //
-  #if ENABLED(AUTOTEMP)
-    planner.autotemp.max = AUTOTEMP_MAX;
-    planner.autotemp.min = AUTOTEMP_MIN;
-    planner.autotemp.factor = AUTOTEMP_FACTOR;
-  #endif
+  TERN_(AUTOTEMP, thermalManager.autotemp.reset());
 
   //
   // X Axis Twist Compensation
@@ -3901,7 +3915,7 @@ void MarlinSettings::reset() {
   //
   // Volumetric Extrusion & Filament Diameter
   //
-  #if DISABLED(NO_VOLUMETRICS)
+  #if HAS_VOLUMETRIC_EXTRUSION
     parser.volumetric_enabled = ENABLED(VOLUMETRIC_DEFAULT_ON);
     for (uint8_t q = 0; q < COUNT(planner.filament_size); ++q)
       planner.filament_size[q] = DEFAULT_NOMINAL_FILAMENT_DIA;
@@ -4100,6 +4114,11 @@ void MarlinSettings::reset() {
   #endif
 
   //
+  // G-code Macros
+  //
+  TERN_(GCODE_MACROS_EEPROM, gcode.reset_macros());
+
+  //
   // Hotend Idle Timeout
   //
   TERN_(HOTEND_IDLE_TIMEOUT, hotend_idle.cfg.set_defaults());
@@ -4146,7 +4165,12 @@ void MarlinSettings::reset() {
     gcode.say_units(); // " (in/mm)"
 
     //
-    // M149 Temperature units
+    // M104 Auto Temp Control
+    //
+    TERN_(AUTOTEMP, gcode.M104_report());
+
+    //
+    // M149 Temperature Units
     //
     #if ENABLED(TEMPERATURE_UNITS_SUPPORT)
       gcode.M149_report(forReplay);
@@ -4158,7 +4182,7 @@ void MarlinSettings::reset() {
     //
     // M200 Volumetric Extrusion
     //
-    IF_DISABLED(NO_VOLUMETRICS, gcode.M200_report(forReplay));
+    TERN_(HAS_VOLUMETRIC_EXTRUSION, gcode.M200_report(forReplay));
 
     //
     // M92 Steps per Unit
@@ -4166,7 +4190,7 @@ void MarlinSettings::reset() {
     TERN_(EDITABLE_STEPS_PER_UNIT, gcode.M92_report(forReplay));
 
     //
-    // M203 Maximum feedrates (units/s)
+    // M203 Maximum Feedrates (units/s)
     //
     gcode.M203_report(forReplay);
 
@@ -4273,7 +4297,7 @@ void MarlinSettings::reset() {
     TERN_(IS_KINEMATIC, gcode.M665_report(forReplay));
 
     //
-    // M666 Endstop adjustment
+    // M666 Endstop Adjustment
     //
     #if ANY(DELTA, HAS_EXTRA_ENDSTOPS)
       gcode.M666_report(forReplay);
@@ -4285,7 +4309,7 @@ void MarlinSettings::reset() {
     TERN_(Z_STEPPER_AUTO_ALIGN, gcode.M422_report(forReplay));
 
     //
-    // M145 Material heatup parameters
+    // M145 Material Heatup Parameters
     //
     TERN_(HAS_PREHEAT, gcode.M145_report(forReplay));
 
@@ -4299,7 +4323,7 @@ void MarlinSettings::reset() {
     TERN_(PIDTEMPCHAMBER, gcode.M309_report(forReplay));
 
     //
-    // M305 User thermistors
+    // M305 User Thermistors
     //
     #if HAS_USER_THERMISTORS
       for (uint8_t i = 0; i < USER_THERMISTORS; ++i)
@@ -4353,9 +4377,14 @@ void MarlinSettings::reset() {
     #endif
 
     //
-    // Homing Feedrate
+    // M210 Homing Feedrate
     //
     TERN_(EDITABLE_HOMING_FEEDRATE, gcode.M210_report(forReplay));
+
+    //
+    // M820 G-Code Macros
+    //
+    TERN_(GCODE_MACROS, gcode.M810_819_report(forReplay));
 
     //
     // M851 Probe Offset
@@ -4390,7 +4419,7 @@ void MarlinSettings::reset() {
     TERN_(EDITABLE_HOMING_CURRENT, gcode.M920_report(forReplay));
 
     //
-    // M569 TMC Driver stepping mode
+    // M569 TMC Driver Stepping Mode
     //
     TERN_(HAS_STEALTHCHOP, gcode.M569_report(forReplay));
 
@@ -4417,17 +4446,17 @@ void MarlinSettings::reset() {
     //
     // M900 Linear Advance
     //
-    TERN_(LIN_ADVANCE, gcode.M900_report(forReplay));
+    TERN_(HAS_LIN_ADVANCE_K, gcode.M900_report(forReplay));
 
     //
-    // M907 Stepper motor currents
+    // M907 Stepper Motor Currents
     //
     #if HAS_MOTOR_CURRENT_SPI || HAS_MOTOR_CURRENT_PWM
       gcode.M907_report(forReplay);
     #endif
 
     //
-    // M603 Filament load/unload
+    // M603 Filament Load/Unload
     //
     TERN_(CONFIGURE_FILAMENT_CHANGE, gcode.M603_report(forReplay));
 
@@ -4442,7 +4471,7 @@ void MarlinSettings::reset() {
     TERN_(BACKLASH_GCODE, gcode.M425_report(forReplay));
 
     //
-    // M412 Filament runout sensor
+    // M412 Filament Runout Sensor
     //
     TERN_(HAS_FILAMENT_SENSOR, gcode.M412_report(forReplay));
 

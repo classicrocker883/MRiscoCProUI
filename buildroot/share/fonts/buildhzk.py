@@ -9,7 +9,7 @@ import bdflib.reader, math
 def glyph_bits(size_x, size_y, font, glyph_ord):
     asc  = font[b"FONT_ASCENT"]
     desc = font[b"FONT_DESCENT"]
-    bits = [0 for y in range(size_y)]
+    bits = [0] * size_y
 
     glyph_bytes = math.ceil(size_x / 8)
     try:

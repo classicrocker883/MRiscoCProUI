@@ -150,7 +150,7 @@
 #define BEEPER_PIN                          PC5
 
 /**
- * Note: MKS Robin TFT screens use various TFT controllers.
+ * NOTE: MKS Robin TFT screens use various TFT controllers.
  * If the screen stays white, disable 'LCD_RESET_PIN' to let the bootloader init the screen.
  */
 #if HAS_FSMC_TFT

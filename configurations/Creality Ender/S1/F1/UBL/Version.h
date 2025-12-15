@@ -41,7 +41,7 @@
  * here we define this default string as the date where the latest release
  * version was tagged.
  */
-//#define STRING_DISTRIBUTION_DATE "2025-10-07"
+//#define STRING_DISTRIBUTION_DATE "2025-11-15"
 
 #define STRING_DISTRIBUTION_DATE __DATE__
 #define STRING_DISTRIBUTION_TIME __TIME__
@@ -56,7 +56,7 @@
 /**
  * Defines a generic printer name to be output to the LCD after booting Marlin.
  */
-#define MACHINE_NAME "Ender-3S1-F4"
+#define MACHINE_NAME "Ender-3 S1-F1"
 
 /**
  * The SOURCE_CODE_URL is the location where users will find the Marlin Source

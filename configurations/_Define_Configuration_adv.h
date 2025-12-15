@@ -340,8 +340,6 @@
 // #define FT_MOTION_MENU
 // #define FTM_HOME_AND_PROBE
 // #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED
-// #define FTM_LINEAR_ADV_DEFAULT_ENA   false
-// #define FTM_LINEAR_ADV_DEFAULT_K      0.0f
 // #define FTM_DEFAULT_SHAPER_X      ftMotionShaper_NONE
 // #define FTM_SHAPING_DEFAULT_FREQ_X   37.0f
 // #define FTM_SHAPING_ZETA_X            0.1f
@@ -774,8 +772,8 @@
 // #define BABYSTEP_HOTEND_Z_OFFSET
 // #define BABYSTEP_GFX_OVERLAY
 // #define LIN_ADVANCE
-// #define ADVANCE_K { 0.00 }
-// #define ADVANCE_K 0.00
+// #define ADVANCE_K { 0.22 }
+// #define ADVANCE_K 0.22
 // #define ADVANCE_K_EXTRA
 // #define LA_DEBUG
 // #define EXPERIMENTAL_I2S_LA

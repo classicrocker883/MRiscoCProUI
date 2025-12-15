@@ -55,7 +55,8 @@ void power_reset() {
     safe_delay(100);
     WRITE(MMU_RST_PIN, HIGH);
   #else
-    mmu3.reset(MMU3::Software); // TODO: Needs redesign. This power implementation shouldn't know anything about the MMU itself
+    mmu3.reset(MMU3::Software);
+    /// TODO: Needs redesign. This power implementation shouldn't know anything about the MMU itself
   #endif
   // otherwise HW reset is not available
 }

@@ -156,8 +156,6 @@
   #define EN_D 0
 #endif
 
-#define BUTTON_PRESSED(BN) (_BUTTON_PRESSED_##BN)
-
 #if BUTTON_EXISTS(EN1)
   #define _BUTTON_PRESSED_EN1 _BUTTON_PRESSED(EN1)
 #else
@@ -203,6 +201,8 @@
 #else
   #define _BUTTON_PRESSED_BACK false
 #endif
+
+#define BUTTON_PRESSED(BN) (_BUTTON_PRESSED_##BN)
 
 #ifndef BUTTON_CLICK
   #if EN_C > 0

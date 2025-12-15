@@ -32,7 +32,7 @@
  *
  * The peripheral clocks are the result of integer division of F_SYSTEM_CLOCK.
  * Their target frequencies are defined here, and the required division factors are calculated automatically.
- * Note that the division factor must be a power of 2 between 1 and 64.
+ * NOTE: The division factor must be a power of 2 between 1 and 64.
  * If the target frequency is not achievable, a compile-time error will be generated.
  *
  * Additionally, there are interdependencies between the peripheral clocks, which are described in

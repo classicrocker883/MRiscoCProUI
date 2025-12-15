@@ -70,7 +70,7 @@ constexpr bool serial_handles_emergency(int port) {
 DEFINE_SERIAL_MARLIN(MSerial1, 1);
 DEFINE_SERIAL_MARLIN(MSerial2, 2);
 
-// TODO: remove this warning when SERIAL_DMA has been tested some more
+/// TODO: remove this warning when SERIAL_DMA has been tested some more
 #if ENABLED(SERIAL_DMA)
   #warning "SERIAL_DMA may be unstable on HC32F460."
 #endif

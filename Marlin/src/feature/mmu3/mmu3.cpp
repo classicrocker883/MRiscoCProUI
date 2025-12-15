@@ -84,7 +84,7 @@ namespace MMU3 {
   int MMU3::cutter_mode_addr;   // Initialized by settings.load
   uint8_t MMU3::stealth_mode;   // Initialized by settings.load
   int MMU3::stealth_mode_addr;  // Initialized by settings.load
-  // TODO: Currently, by logic, the value stored in the EEPROM for is ignored and
+  /// TODO: Currently, by logic, the value stored in the EEPROM for is ignored and
   //       mmu_hw_enabled is always overwritten by the MMU State. Thus restarting
   //       printer will always set the MMU as senabled.
   bool MMU3::mmu_hw_enabled;    // Initialized by settings.load
@@ -114,7 +114,7 @@ namespace MMU3 {
 
     #if ENABLED(EEPROM_SETTINGS)
       // Save mmu_hw_enabled to EEPROM
-      // TODO: Move to settings.cpp (for now)
+      /// TODO: Move to settings.cpp (for now)
       persistentStore.access_start();
       persistentStore.write_data(mmu_hw_enabled_addr, mmu_hw_enabled);
       persistentStore.access_finish();
@@ -255,7 +255,7 @@ namespace MMU3 {
       uint8_t block_index = planner.block_buffer_tail;
       while (block_index != planner.block_buffer_head) {
         block = &planner.block_buffer[block_index];
-        if (block->steps[E_AXIS] != 0) e_active++;
+        if (block->steps.e != 0) e_active++;
         block_index = (block_index + 1) & (BLOCK_BUFFER_SIZE - 1);
       }
     }
@@ -760,10 +760,10 @@ namespace MMU3 {
       LogEchoEvent(F("Resuming XYZ"));
 
       // Move XY to starting position, then Z
-      motion_do_blocking_move_to_xy(resume_position.x, resume_position.x, feedRate_t(NOZZLE_PARK_XY_FEEDRATE));
+      motion_blocking_move_xy(resume_position.x, resume_position.y, feedRate_t(NOZZLE_PARK_XY_FEEDRATE));
 
       // Move Z_AXIS to saved position
-      motion_do_blocking_move_to_z(resume_position.z, feedRate_t(NOZZLE_PARK_Z_FEEDRATE));
+      motion_blocking_move_z(resume_position.z, feedRate_t(NOZZLE_PARK_Z_FEEDRATE));
 
       // From this point forward, power panic should not use
       // the partial backup in RAM since the extruder is no
@@ -867,7 +867,7 @@ namespace MMU3 {
           nozzle_timer.start();
           LogEchoEvent(F("Cooling Timeout started"));
         }
-        else if (nozzle_timer.duration() > (PAUSE_PARK_NOZZLE_TIMEOUT * 1000ul)) { // mins->msec.
+        else if (nozzle_timer.duration() > (PAUSE_PARK_NOZZLE_TIMEOUT * 1000UL)) { // mins->msec.
           mmu_print_saved &= ~(SavedState::CooldownPending);
           mmu_print_saved |= SavedState::Cooldown;
           thermal_setTargetHotend(0);

@@ -8,3 +8,4 @@ buildroot/share/PlatformIO/variants
 .github
 .vscode
 launch.json
+.codacy
