@@ -796,7 +796,7 @@ private:
   static void M108();
   static void M112();
   static void M410();
-  #if ENABLED(HOST_PROMPT_SUPPORT)
+  #if HAS_GCODE_M876
     static void M876();
   #endif
 

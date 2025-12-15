@@ -1439,28 +1439,30 @@ void EachMomentUpdate() {
   if (ELAPSED(ms, next_rts_update_ms)) {
     next_rts_update_ms = ms + DWIN_UPDATE_INTERVAL;
 
-    if ((HMI_flag.printing_flag != Printing()) && (checkkey != Homing) TERN_(HAS_BED_PROBE, && (checkkey != Leveling))) {
-      HMI_flag.printing_flag = Printing();
-      DEBUG_ECHOLNPGM("printing_flag: ", HMI_flag.printing_flag);
-      if (HMI_flag.printing_flag) { DWIN_Print_Started(); }
-      else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
-      else { DWIN_Print_Finished(); }
-    }
-
-    if ((HMI_flag.pause_flag != marlin.printingIsPaused()) && (checkkey != Homing)) {
-      HMI_flag.pause_flag = marlin.printingIsPaused();
-      DEBUG_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag);
-      if (HMI_flag.pause_flag) { DWIN_Print_Pause(); }
-      else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
-      else { DWIN_Print_Resume(); }
+    if ((checkkey != Homing) TERN_(HAS_BED_PROBE, && (checkkey != Leveling))) {
+      if (HMI_flag.printing_flag != Printing()) {
+        HMI_flag.printing_flag = Printing();
+        DEBUG_ECHOLNPGM("printing_flag: ", HMI_flag.printing_flag);
+        if (HMI_flag.printing_flag) { DWIN_Print_Started(); }
+        else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
+        else { DWIN_Print_Finished(); }
+      }
+      if ((HMI_flag.pause_flag != marlin.printingIsPaused()) && (checkkey != Homing)) {
+        HMI_flag.pause_flag = marlin.printingIsPaused();
+        DEBUG_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag);
+        if (HMI_flag.pause_flag) { DWIN_Print_Pause(); }
+        else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
+        else { DWIN_Print_Resume(); }
+      }
     }
 
     if (checkkey == PrintProcess) { // Print process
 
       // Progress percent
       #if ENABLED(SHOW_PROGRESS_PERCENT)
-        if (_percent_done != ui.get_progress_percent()) {
-          _percent_done = ui.get_progress_percent();
+        const uint8_t pp = ui.get_progress_percent();
+        if (_percent_done != pp) {
+          _percent_done = pp;
           Draw_Print_ProgressBar();
         }
       #endif
@@ -1477,8 +1479,9 @@ void EachMomentUpdate() {
 
       // Interaction time
       #if ENABLED(SHOW_INTERACTION_TIME)
-        if (ui.interaction_time != ui.get_interaction_time()) {
-          ui.interaction_time = ui.get_interaction_time();
+        const uint32_t it = ui.get_interaction_time();
+        if (ui.interaction_time != it) {
+          ui.interaction_time = it;
           Draw_Print_ProgressInteract();
         }
       #endif

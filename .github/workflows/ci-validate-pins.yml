@@ -8,14 +8,14 @@ name: CI - Validate Pins Files
 on:
   pull_request:
     branches:
-      - 2025-November
+      - 2025-December
     # Cannot be enabled on 2.1.x until it contains the unit test framework
     #- 2.1.x
     paths:
       - "Marlin/src/pins/*/**"
   push:
     branches:
-      - 2025-November
+      - 2025-December
     # Cannot be enabled on 2.1.x until it contains the unit test framework
     #- 2.1.x
     paths:
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v6.0.0
+        uses: actions/checkout@v6.0.1
 
       - name: Cache pip
         uses: actions/cache@v4.3.0
@@ -41,7 +41,7 @@ jobs:
             ${{ runner.os }}-pip-validation-v1-
 
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
           architecture: "x64"
