@@ -772,7 +772,7 @@ G29_TYPE GcodeSuite::G29() {
             for (;;) {
               pos = planner.get_axis_position_mm(axis);
               if (inInc > 0 ? (pos >= cmp) : (pos <= cmp)) break;
-              idle_no_sleep();
+              marlin.idle_no_sleep();
             }
             //if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM_P(axis == Y_AXIS ? PSTR("Y=") : PSTR("X=", pos);
 
@@ -817,7 +817,7 @@ G29_TYPE GcodeSuite::G29() {
           #endif
 
           abl.reenable = false; // Don't re-enable after modifying the mesh
-          idle_no_sleep();
+          marlin.idle_no_sleep();
           TERN_(DWIN_LCD_PROUI, if (HMI_flag.cancel_lev) break;)
 
         } // inner

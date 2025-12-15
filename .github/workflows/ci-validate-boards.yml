@@ -9,12 +9,12 @@ name: CI - Validate boards.h
 on:
   pull_request:
     branches:
-      - 2025-October
+      - 2025-November
     paths:
       - "Marlin/src/core/boards.h"
   push:
     branches:
-      - 2025-October
+      - 2025-November
     paths:
       - "Marlin/src/core/boards.h"
 
@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.0
 
       - name: Cache pip
         uses: actions/cache@v4.3.0

@@ -43,7 +43,7 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 
 > [!NOTE]
 > I will be working on more updates, features, and tweaks along the way.  
-> Much has been included in MRiscoCProUI releases, the most recent of which is **2025-October**.  
+> Much has been included in MRiscoCProUI releases, the most recent of which is **2025-November**.  
 > There are all kinds of versions and combinations to suite a specific printer, and changes to the **UI** and menu layout which are not available in any other fork.  
 > For information about recent changes visit the [Wiki - What's New in this Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release).  
 > Support for _12864 Monochrome_ LCD types is under the model **C2**.  

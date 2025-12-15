@@ -54,7 +54,6 @@
 #include "../lcd/marlinui.h"
 #include "../libs/vector_3.h"   // for matrix_3x3
 #include "../gcode/gcode.h"
-#include "../MarlinCore.h"
 
 #if ANY(EEPROM_SETTINGS, SD_FIRMWARE_UPDATE)
   #include "../HAL/shared/eeprom_api.h"
@@ -773,7 +772,7 @@ typedef struct SettingsDataStruct {
   //
   // GCODE_MACROS
   //
-  #if ENABLED(GCODE_MACROS_EEPROM)
+  #if ENABLED(GCODE_MACROS_IN_EEPROM)
     char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1];
   #endif
 
@@ -1832,7 +1831,7 @@ void MarlinSettings::postprocess() {
     // CONFIGURABLE_MACHINE_NAME
     //
     #if ENABLED(CONFIGURABLE_MACHINE_NAME)
-      EEPROM_WRITE(machine_name);
+      EEPROM_WRITE(marlin.machine_name);
     #endif
 
     //
@@ -1993,7 +1992,7 @@ void MarlinSettings::postprocess() {
     //
     // GCODE_MACROS
     //
-    #if ENABLED(GCODE_MACROS_EEPROM)
+    #if ENABLED(GCODE_MACROS_IN_EEPROM)
       _FIELD_TEST(gcode_macros);
       EEPROM_WRITE(gcode.macros);
     #endif
@@ -3041,7 +3040,7 @@ void MarlinSettings::postprocess() {
       // CONFIGURABLE_MACHINE_NAME
       //
       #if ENABLED(CONFIGURABLE_MACHINE_NAME)
-        EEPROM_READ(machine_name);
+        EEPROM_READ(marlin.machine_name);
       #endif
 
       //
@@ -3248,7 +3247,7 @@ void MarlinSettings::postprocess() {
       //
       // GCODE_MACROS
       //
-      #if ENABLED(GCODE_MACROS_EEPROM)
+      #if ENABLED(GCODE_MACROS_IN_EEPROM)
         EEPROM_READ(gcode.macros);
       #endif
 
@@ -3324,7 +3323,7 @@ void MarlinSettings::postprocess() {
 
     #if ENABLED(EEPROM_CHITCHAT) && DISABLED(DISABLE_M503)
       // Report the EEPROM settings
-      if (!validating && TERN1(EEPROM_BOOT_SILENT, IsRunning())) report();
+      if (!validating && TERN1(EEPROM_BOOT_SILENT, marlin.isRunning())) report();
     #endif
 
     return eeprom_error;
@@ -3689,7 +3688,7 @@ void MarlinSettings::reset() {
   //
   // CONFIGURABLE_MACHINE_NAME
   //
-  TERN_(CONFIGURABLE_MACHINE_NAME, machine_name = PSTR(MACHINE_NAME));
+  TERN_(CONFIGURABLE_MACHINE_NAME, marlin.machine_name = PSTR(MACHINE_NAME));
 
   //
   // Password feature
@@ -4116,7 +4115,7 @@ void MarlinSettings::reset() {
   //
   // G-code Macros
   //
-  TERN_(GCODE_MACROS_EEPROM, gcode.reset_macros());
+  TERN_(GCODE_MACROS_IN_EEPROM, gcode.reset_macros());
 
   //
   // Hotend Idle Timeout
@@ -4167,7 +4166,7 @@ void MarlinSettings::reset() {
     //
     // M104 Auto Temp Control
     //
-    TERN_(AUTOTEMP, gcode.M104_report());
+    TERN_(AUTOTEMP, gcode.M104_report(forReplay));
 
     //
     // M149 Temperature Units

@@ -32,7 +32,6 @@
 
 #include "cardreader.h"
 
-#include "../MarlinCore.h"
 #include "../libs/hex_print.h"
 #include "../lcd/marlinui.h"
 
@@ -73,6 +72,9 @@
 PGMSTR(M21_STR, "M21");
 PGMSTR(M23_STR, "M23 %s");
 PGMSTR(M24_STR, "M24");
+
+// Functional instance. Stub instance maintained in MarlinCore.cpp.
+CardReader card;
 
 // public:
 
@@ -503,7 +505,7 @@ void CardReader::mount() {
     cdroot();
   else {
     #if ANY(HAS_SD_DETECT, HAS_USB_FLASH_DRIVE)
-      if (marlin_state != MarlinState::MF_INITIALIZING) {
+      if (!marlin.is(MarlinState::MF_INITIALIZING)) {
         if (isSDCardSelected())
           LCD_ALERTMESSAGE(MSG_MEDIA_INIT_FAIL_SD);
         else if (isFlashDriveSelected())
@@ -807,7 +809,7 @@ void CardReader::openFileRead(const char * const path, const uint8_t subcall_typ
         // Too deep? The firmware has to bail.
         if (file_subcall_ctr > SD_PROCEDURE_DEPTH - 1) {
           SERIAL_ERROR_MSG("Exceeded max SUBROUTINE depth:", SD_PROCEDURE_DEPTH);
-          kill(GET_TEXT_F(MSG_KILL_SUBCALL_OVERFLOW));
+          marlin.kill(GET_TEXT_F(MSG_KILL_SUBCALL_OVERFLOW));
           return;
         }
 
@@ -1102,10 +1104,12 @@ void CardReader::closefile(const bool store_location/*=false*/) {
   flag.saving = flag.logging = false;
   sdpos = 0;
 
-  TERN_(EMERGENCY_PARSER, emergency_parser.enable());
+  #if DISABLED(SDCARD_READONLY)
+    TERN_(EMERGENCY_PARSER, emergency_parser.enable());
+  #endif
 
   if (store_location) {
-    // TODO: Store printer state, filename, position
+    /// TODO: Store printer state, filename, position
     // for continuing a stopped print.
   }
 }
@@ -1647,8 +1651,8 @@ void CardReader::fileHasFinished() {
 
   endFilePrintNow(TERN_(SD_RESORT, true));
 
-  flag.sdprintdone = true;                    // Stop getting bytes from the SD card
-  marlin_state = MarlinState::MF_SD_COMPLETE; // Tell Marlin to enqueue M1001 soon
+  flag.sdprintdone = true;                      // Stop getting bytes from the SD card
+  marlin.setState(MarlinState::MF_SD_COMPLETE); // Tell Marlin to enqueue M1001 soon
 }
 
 #if ENABLED(AUTO_REPORT_SD_STATUS)

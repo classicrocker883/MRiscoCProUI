@@ -576,7 +576,7 @@ void Draw_Print_Labels() {
 #if ENABLED(SHOW_INTERACTION_TIME)
   void Draw_Print_ProgressInteract() {
     const duration_t interact_time = ui.get_interaction_time();
-    if (printingIsActive() && interact_time.value) {
+    if (marlin.printingIsActive() && interact_time.value) {
       char buf[16];
       const bool has_days = (interact_time.value > 60*60*24L);
       interact_time.toDigital(buf, has_days);
@@ -644,7 +644,7 @@ void Goto_PrintProcess() {
 void Draw_PrintDone() {
   #if ENABLED(PROUI_ITEM_CONF)
     if (HMI_data.auto_confirm) {
-      wait_for_user = false;
+      marlin.user_resume();
       select_page.reset();
       Goto_Main_Menu();
       return;
@@ -680,7 +680,7 @@ void Draw_PrintDone() {
 
 void Goto_PrintDone() {
   DEBUG_ECHOLNPGM("Goto_PrintDone");
-  wait_for_user = true;
+  marlin.wait_start();
   if (checkkey != PrintDone) {
     checkkey = PrintDone;
     Draw_PrintDone();
@@ -1264,7 +1264,7 @@ void HMI_Printing() {
       switch (select_print.now) {
         case PRINT_SETUP: Draw_Tune_Menu(); break;
         case PRINT_PAUSE_RESUME:
-          if (print_job_timer.isPaused()) { // If printer is already in pause
+          if (marlin.printingIsPaused()) { // If printer is already in pause
             ui.resume_print();
             break;
           }
@@ -1333,7 +1333,7 @@ void HMI_WaitForUser() {
     HMI_ReturnScreen();
     return;
   }
-  if (!wait_for_user) {
+  if (!marlin.wait_for_user) {
     switch (checkkey) {
       case PrintDone:
         select_page.reset();
@@ -1447,8 +1447,8 @@ void EachMomentUpdate() {
       else { DWIN_Print_Finished(); }
     }
 
-    if ((HMI_flag.pause_flag != printingIsPaused()) && (checkkey != Homing)) {
-      HMI_flag.pause_flag = printingIsPaused();
+    if ((HMI_flag.pause_flag != marlin.printingIsPaused()) && (checkkey != Homing)) {
+      HMI_flag.pause_flag = marlin.printingIsPaused();
       DEBUG_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag);
       if (HMI_flag.pause_flag) { DWIN_Print_Pause(); }
       else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
@@ -1467,17 +1467,12 @@ void EachMomentUpdate() {
 
       // Elapsed print time
       #if ENABLED(SHOW_ELAPSED_TIME)
-        //const duration_t min = print_job_timer.duration();
-        //if ((min.value % 60) == 0) // 1 minute update, else every second
         Draw_Print_ProgressElapsed();
       #endif
 
       // Remaining time
       #if ENABLED(SHOW_REMAINING_TIME)
-        if (ui.remaining_time != ui.get_remaining_time()) {
-          ui.remaining_time = ui.get_remaining_time();
-          Draw_Print_ProgressRemain();
-        }
+        Draw_Print_ProgressRemain();
       #endif
 
       // Interaction time
@@ -1672,14 +1667,14 @@ void HMI_SaveProcessID(const uint8_t id) {
     TERN_(PROUI_ITEM_PLOT,
     case PlotProcess:)
     case WaitResponse:
-      wait_for_user = true;
+      marlin.wait_start();
     default: break;
   }
 }
 
 void HMI_ReturnScreen() {
   checkkey = last_checkkey;
-  wait_for_user = false;
+  marlin.user_resume();
   Draw_Main_Area();
 }
 
@@ -1849,19 +1844,19 @@ void HMI_ReturnScreen() {
       #endif
       case PID_BAD_HEATER_ID:
         checkkey = last_checkkey;
-        Popup_Continue(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_BAD_HEATER_ID));
+        Popup_Continue(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_PID_BAD_HEATER_ID));
         break;
       case PID_TUNING_TIMEOUT:
         checkkey = last_checkkey;
-        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_ERROR), GET_TEXT_F(MSG_PID_TIMEOUT));
+        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_TIMEOUT));
         break;
       case PID_TEMP_TOO_HIGH:
         checkkey = last_checkkey;
-        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_TEMP_TOO_HIGH));
+        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(DGUS_MSG_TEMP_TOO_HIGH));
         break;
       case AUTOTUNE_DONE:
         checkkey = last_checkkey;
-        Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE), GET_TEXT_F(MSG_BUTTON_DONE));
+        Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(DGUS_MSG_PID_AUTOTUNING), GET_TEXT_F(MSG_BUTTON_DONE));
         break;
       default:
         checkkey = last_checkkey;
@@ -1882,7 +1877,7 @@ void HMI_ReturnScreen() {
         #if PROUI_TUNING_GRAPH
           DWIN_Draw_PID_MPC_Popup();
         #else
-          DWIN_Show_Popup(ICON_TempTooHigh, GET_TEXT_F(MSG_MPC_AUTOTUNE), GET_TEXT_F(MSG_NOZZLE_RUN));
+          DWIN_Show_Popup(ICON_TempTooHigh, GET_TEXT_F(MSG_MPC_AUTOTUNE), GET_TEXT_F(MSG_PID_FOR_NOZZLE));
         #endif
         break;
       case MPC_TEMP_ERROR:
@@ -2047,7 +2042,7 @@ void DWIN_Print_Finished() {
   TERN_(HAS_LEVELING, set_bed_leveling_enabled(false);)
   HMI_flag.abort_flag = false;
   HMI_flag.pause_flag = false;
-  wait_for_heatup = false;
+  marlin.heatup_done();
   #if ENABLED(CV_LASER_MODULE)
     if (!fileprop.isConfig)
   #endif
@@ -2382,9 +2377,9 @@ void MarlinUI::update() {
   void MarlinUI::_set_brightness() {
     DWIN_LCD_Brightness(backlight ? brightness : 0);
     if (checkkey != PrintDone)
-      wait_for_user = false;
+      marlin.user_resume();
     else if (!backlight)
-      wait_for_user = true;
+      marlin.wait_start();
   }
 #endif
 
@@ -2441,7 +2436,7 @@ void ResetEeprom() {
 
 // Reset Printer
 void RebootPrinter() {
-  wait_for_heatup = wait_for_user = false; // Stop waiting for heating/user
+  marlin.end_waiting(); // Stop waiting for heating/user
   thermalManager.disable_all_heaters();
   planner.finish_and_disable();
   DWIN_RebootScreen();
@@ -3022,7 +3017,7 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
     static bed_mesh_t zval = {};
     probe.stow();
     HMI_SaveProcessID(NothingToDo); // Before home disable user input
-    wait_for_user = false;
+    marlin.user_resume();
     zval[0][0] = tram(0, false); // First tram point can do Homing
     MeshViewer.DrawMeshGrid(2, 2);
     MeshViewer.DrawMeshPoint(0, 0, zval[0][0]);
@@ -4589,7 +4584,7 @@ void Draw_MaxAccel_Menu() {
     void SetEditMeshX() { HMI_value.Select = 0; SetIntOnClick(0, GRID_MAX_CELLS_X, bedLevelTools.mesh_x, ApplyEditMeshX, LiveEditMesh); }
     void SetEditMeshY() { HMI_value.Select = 1; SetIntOnClick(0, GRID_MAX_CELLS_Y, bedLevelTools.mesh_y, ApplyEditMeshY, LiveEditMesh); }
     void SetEditZValue() { SetPFloatOnClick(Z_OFFSET_MIN, Z_OFFSET_MAX, 3, nullptr, LiveEditMeshZ); if (AutoMovToMesh) { bedLevelTools.MoveToXYZ(); } }
-    void ZeroPoint() { bedLevelTools.manual_value_update(bedLevelTools.mesh_x, bedLevelTools.mesh_y, true); EditZValueItem->redraw(); LCD_MESSAGE(MSG_ZERO_MESH); }
+    void ZeroPoint() { bedLevelTools.manual_value_update(bedLevelTools.mesh_x, bedLevelTools.mesh_y, true); EditZValueItem->redraw(); LCD_MESSAGE(MSG_ZERO_MESH_POINT); }
     void ZeroMesh()  { bedLevelTools.mesh_reset(); LCD_MESSAGE(MSG_MESH_RESET); }
     void SetAutoMovToMesh() { Toggle_Chkb_Line(AutoMovToMesh); }
 
@@ -4674,7 +4669,7 @@ void Draw_MaxAccel_Menu() {
         EDIT_ITEM(ICON_MeshEditY, MSG_MESH_Y, onDrawPInt8Menu, SetEditMeshY, &bedLevelTools.mesh_y);
         EditZValueItem = EDIT_ITEM(ICON_MeshEditZ, MSG_MESH_EDIT_Z, onDrawPFloat3Menu, SetEditZValue, &bedlevel.z_values[bedLevelTools.mesh_x][bedLevelTools.mesh_y]);
         TERN_(HAS_BED_PROBE, MENU_ITEM(ICON_Probe, MSG_PROBE_WIZARD_PROBING, onDrawMenuItem, bedLevelTools.ProbeXY);)
-        MENU_ITEM(ICON_SetZOffset, MSG_ZERO_MESH, onDrawMenuItem, ZeroPoint);
+        MENU_ITEM(ICON_SetZOffset, MSG_ZERO_MESH_POINT, onDrawMenuItem, ZeroPoint);
       }
       UpdateMenu(EditMeshMenu);
     }
@@ -4842,7 +4837,7 @@ void Draw_MaxAccel_Menu() {
   void DWIN_Debug(PGM_P msg1, PGM_P msg2, PGM_P msg3, PGM_P msg4) {
     DEBUG_ECHOLNPGM_P(msg1, msg2, msg3, msg4);
     DWIN_Debug_Popup(msg1, msg2, msg3, msg4);
-    wait_for_user_response();
+    marlin.wait_for_user_response();
     Draw_Main_Area();
   }
 #endif

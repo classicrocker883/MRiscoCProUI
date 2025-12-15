@@ -8,10 +8,10 @@ name: CI - Validate Source Files
 on:
   pull_request:
     branches:
-      - 2025-October
+      - 2025-November
   push:
     branches:
-      - 2025-October
+      - 2025-November
 
 jobs:
   validate_source_files:
@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.0
 
       - name: Cache node_modules
         uses: actions/cache@v4.3.0

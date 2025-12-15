@@ -92,11 +92,9 @@ bool drawing_mesh = false;
 
 #endif
 
-void BedLevelToolsClass::manual_value_update(const uint8_t mesh_x, const uint8_t mesh_y, bool reset/*=false*/) {
-  float zval;
-  if (reset) { zval = 0; }
-  else { zval = current_position.z; }
-  gcode.process_subcommands_now(TS(F("M421I"), mesh_x, F("J"), mesh_y, F("Z"), p_float_t(zval, 3)));
+void BedLevelToolsClass::manual_value_update(const uint8_t mesh_x, const uint8_t mesh_y, const bool reset/*=false*/) {
+  const float zval = reset ? 0.0f : current_position.z;
+  queue.inject(TS(F("M421I"), mesh_x, F("J"), mesh_y, F("Z"), p_float_t(zval, 3)));
   planner.synchronize();
 }
 

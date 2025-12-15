@@ -22,7 +22,6 @@
 
 #if ENABLED(DWIN_LCD_PROUI)
 
-#include "../../../MarlinCore.h" // for wait_for_user
 #include "dwin_popup.h"
 
 popupDrawFunc_t Draw_Popup = nullptr;
@@ -66,8 +65,8 @@ void Popup_ConfirmCancel(const uint8_t icon, FSTR_P const fmsg2) {
     FSTR_P errorstr;
     uint8_t icon;
     switch (state) {
-      case 0:  errorstr = GET_TEXT_F(MSG_TEMP_TOO_LOW);       icon = ICON_TempTooLow;  break;
-      case 1:  errorstr = GET_TEXT_F(MSG_TEMP_TOO_HIGH);      icon = ICON_TempTooHigh; break;
+      case 0:  errorstr = GET_TEXT_F(DGUS_MSG_TEMP_TOO_LOW);  icon = ICON_TempTooLow;  break;
+      case 1:  errorstr = GET_TEXT_F(DGUS_MSG_TEMP_TOO_HIGH); icon = ICON_TempTooHigh; break;
       default: errorstr = GET_TEXT_F(MSG_ERR_HEATING_FAILED); icon = ICON_Info_1;      break; // May be thermal runaway, temp malfunction, etc.
     }
       Popup_Confirm(icon, heaterstr, errorstr);
@@ -83,7 +82,7 @@ void Goto_Popup(const popupDrawFunc_t fnDraw, const popupClickFunc_t fnClick/*=n
 }
 
 void HMI_Popup() {
-  if (!wait_for_user) {
+  if (!marlin.wait_for_user) {
     if (ClickPopup) ClickPopup();
     return;
   }

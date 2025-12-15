@@ -3,7 +3,7 @@
 # Unlock an issue whenever it is re-opened
 #
 
-name: "Unlock reopened issue"
+name: Unlock reopened issue
 
 on:
   issues:
@@ -19,4 +19,4 @@ jobs:
     steps:
       - uses: OSDKDev/unlock-issues@v1.2.1
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

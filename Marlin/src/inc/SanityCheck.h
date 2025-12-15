@@ -47,31 +47,6 @@
 #define _NUM_AXES_STR NUM_AXIS_GANG("X ", "Y ", "Z ", "I ", "J ", "K ", "U ", "V ", "W ")
 #define _LOGICAL_AXES_STR LOGICAL_AXIS_GANG("E ", "X ", "Y ", "Z ", "I ", "J ", "K ", "U ", "V ", "W ")
 
-// Make sure macros aren't borked
-#define TEST1
-#define TEST2 1
-#define TEST3 0
-#define TEST4 true
-#if ENABLED(TEST0) || !ENABLED(TEST2) || ENABLED(TEST3) || !ENABLED(TEST1, TEST2, TEST4)
-  #error "ENABLED is borked!"
-#endif
-#if ALL(TEST0, TEST1)
-  #error "ALL is borked!"
-#endif
-#if DISABLED(TEST1) || !DISABLED(TEST3) || DISABLED(TEST4) || DISABLED(TEST0, TEST1, TEST2, TEST4) || !DISABLED(TEST0, TEST3)
-  #error "DISABLED is borked!"
-#endif
-#if !ANY(TEST1, TEST2, TEST3, TEST4) || ANY(TEST0, TEST3)
-  #error "ANY is borked!"
-#endif
-#if NONE(TEST0, TEST1, TEST2, TEST4) || !NONE(TEST0, TEST3)
-  #error "NONE is borked!"
-#endif
-#undef TEST1
-#undef TEST2
-#undef TEST3
-#undef TEST4
-
 /**
  * This is to alert you about non-matching versions of config files.
  *
@@ -936,6 +911,19 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
     #elif !defined(PARKING_EXTRUDER_SOLENOIDS_DELAY) || !WITHIN(PARKING_EXTRUDER_SOLENOIDS_DELAY, 0, 2000)
       #error "PARKING_EXTRUDER_SOLENOIDS_DELAY must be between 0 and 2000 (ms)."
     #endif
+  #endif
+#endif
+
+/**
+ * Differential Extruder requirements
+ */
+#if ENABLED(DIFFERENTIAL_EXTRUDER)
+  #if EXTRUDERS != 1
+    #error "DIFFERENTIAL EXTRUDER currently requires a single extruder (EXTRUDERS = 1)."
+  #elif !IS_FULL_CARTESIAN
+    #error "DIFFERENTIAL EXTRUDER requires standard Cartesian kinematics."
+  #elif !defined(CPU_32_BIT)
+    #error "DIFFERENTIAL EXTRUDER requires a 32-bit CPU."
   #endif
 #endif
 
