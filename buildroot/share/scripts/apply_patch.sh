@@ -170,7 +170,7 @@ done
 
 # 3. --- CLEANUP PHASE ---
 echo -e "\n${YELLOW}==========================================================${NC}"
-echo -e "${YELLOW}PHASE 3: 🧹 Cleaning Up Temporary Files${NC}"
+echo -e "${YELLOW}PHASE 3: 🧹 Cleaning Up Temporary Files and Stage Commits${NC}"
 echo -e "${YELLOW}==========================================================${NC}"
 
 # Clean up generated temporary patch files
@@ -185,4 +185,13 @@ done
 find "$BASE_DIR" -type f -name "*.rej" -delete
 echo -e "🗑️ Removed all *.rej files from '$BASE_DIR'.${NC}"
 
+# Stage changes
+echo -e "\n${YELLOW}--- Staging Changes for Commit ---${NC}"
+if git add "$BASE_DIR"; then
+    echo -e "${GREEN}✅ Successfully staged all changes in '$BASE_DIR'.${NC}"
+else
+    echo -e "${RED}❌ Error staging changes in '$BASE_DIR'. Please check the git status manually.${NC}"
+fi
+
+# Finish
 echo -e "\n--- ${GREEN}Script Finished${NC} ---"

@@ -17,23 +17,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out 2025-October
-      uses: actions/checkout@v5.0.0
-      with:
-        ref: 2025-October
+      - name: Check out 2025-December
+        uses: actions/checkout@v6.0.1
+        with:
+          ref: 2025-December
 
-    - name: Bump Date (2025-October)
-      run: |
-        if [[ ! "$( git log -1 --pretty=%B )" =~ ^\[cron\] ]]; then
-          shopt -s globstar && \
-          DIST=$( date +"%Y-%m-%d" )
-          eval "sed -E -i 's/(\/\/#define +STRING_DISTRIBUTION_DATE) .*$/\1 \"$DIST\"/g' configurations/**/Version.h" && \
-          eval "sed -E -i 's/(#define +STRING_DISTRIBUTION_DATE) .*$/\1 \"$DIST\"/g' Marlin/src/inc/Version.h" && \
-          eval "sed -E -i 's/(\/\/#define +STRING_DISTRIBUTION_DATE) .*$/\1 \"$DIST\"/g' Marlin/Version.h" && \
-          git config user.name "Andrew" && \
-          git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com" && \
-          git add . && \
-          git commit -m "[cron] Bump distribution date ($DIST)" && \
-          git push
-        fi
-        exit 0
+      - name: Bump Date (2025-December)
+        run: |
+          if [[ ! "$( git log -1 --pretty=%B )" =~ ^\[cron\] ]]; then
+            shopt -s globstar && \
+            DIST=$( date +"%Y-%m-%d" )
+            eval "sed -E -i 's/(\/\/#define +STRING_DISTRIBUTION_DATE) .*$/\1 \"$DIST\"/g' configurations/**/Version.h" && \
+            eval "sed -E -i 's/(#define +STRING_DISTRIBUTION_DATE) .*$/\1 \"$DIST\"/g' Marlin/src/inc/Version.h" && \
+            eval "sed -E -i 's/(\/\/#define +STRING_DISTRIBUTION_DATE) .*$/\1 \"$DIST\"/g' Marlin/Version.h" && \
+            git config user.name "Andrew" && \
+            git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com" && \
+            git add . && \
+            git commit -m "[cron] Bump distribution date ($DIST)" && \
+            git push
+          fi
+          exit 0

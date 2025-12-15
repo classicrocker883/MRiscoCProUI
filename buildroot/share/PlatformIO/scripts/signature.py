@@ -38,7 +38,7 @@ def enabled_defines(filepath):
 
     if not Path(filepath).is_file(): return outdict
 
-    f = open(filepath, encoding="utf8").read().split("\n")
+    f = open(filepath, encoding="utf-8").read().split("\n")
 
     incomment = False
     for line in f:
@@ -208,7 +208,7 @@ def compute_build_signature(env):
 
     # Get the CONFIG_EXPORT value and do an extended dump if > 100
     # For example, CONFIG_EXPORT 102 will make a 'config.ini' with a [config:] group for each schema @section
-    config_dump = 101 if is_embed else tryint("CONFIG_EXPORT")
+    config_dump = 1 if is_embed else tryint("CONFIG_EXPORT")
     extended_dump = config_dump > 100
     config_dump %= 100
 
@@ -535,7 +535,7 @@ def compute_build_signature(env):
         for line in sec_lines[1:]: sec_list += "\n" + ext_fmt.format("", line)
 
         config_ini = build_path / "config.ini"
-        with config_ini.open("w", encoding="utf-8") as outfile:
+        with config_ini.open("w", encoding="utf-8", newline="") as outfile:
             filegrp = {
                 "Configuration.h"    :"config:basic",
                 "Configuration_adv.h":"config:advanced"
@@ -771,10 +771,10 @@ f"""/**
     # Generate a C source file containing the entire ZIP file as an array
     with open("Marlin/src/mczip.h", "wb") as result_file:
         result_file.write(
-              b"#ifndef NO_CONFIGURATION_EMBEDDING_WARNING\n"
-            + b"  #warning \"Generated file 'mc.zip' is embedded (Define NO_CONFIGURATION_EMBEDDING_WARNING to suppress this warning.)\"\n"
-            + b"#endif\n"
-            + b"const unsigned char mc_zip[] PROGMEM = {\n "
+            b"#ifndef NO_CONFIGURATION_EMBEDDING_WARNING\n"
+          + b"  #warning \"Generated file 'mc.zip' is embedded (Define NO_CONFIGURATION_EMBEDDING_WARNING to suppress this warning.)\"\n"
+          + b"#endif\n"
+          + b"const unsigned char mc_zip[] PROGMEM = {\n "
         )
         count = 0
         for b in (build_path / "mc.zip").open("rb").read():

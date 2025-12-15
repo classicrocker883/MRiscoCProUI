@@ -133,7 +133,7 @@
 #define HEATER_1_PIN                        PB0   // HEATER2
 #define HEATER_BED_PIN                      PA0   // HOT BED
 
-#define FAN_PIN                             PC14  // FAN
+#define FAN0_PIN                            PC14  // FAN
 #define FAN1_PIN                            PB1   // FAN1
 
 //
@@ -243,7 +243,7 @@
 //
 #if HAS_FSMC_TFT
   /**
-   * Note: MKS Robin TFT screens use various TFT controllers.
+   * NOTE: MKS Robin TFT screens use various TFT controllers.
    * If the screen stays white, disable 'TFT_RESET_PIN'
    * to let the bootloader init the screen.
    */

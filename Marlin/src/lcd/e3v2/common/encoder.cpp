@@ -73,8 +73,8 @@ EncoderState encoderReceiveAnalyze() {
         ui.refresh_brightness();
         return ENCODER_DIFF_NO;
       }
-      const bool was_waiting = wait_for_user;
-      wait_for_user = false;
+      const bool was_waiting = marlin.wait_for_user;
+      marlin.user_resume();
       return was_waiting ? ENCODER_DIFF_NO : ENCODER_DIFF_ENTER;
     }
     else return ENCODER_DIFF_NO;
@@ -110,7 +110,7 @@ EncoderState encoderReceiveAnalyze() {
 
       // Encoder rate multiplier
       if (encoderRate.enabled) {
-        // Note that the rate is always calculated between two passes through the
+        /// NOTE: The rate is always calculated between two passes through the
         // loop and that the abs of the temp_diff value is tracked.
         const float encoderStepRate = ((float(abs_diff) / float(ENCODER_PULSES_PER_STEP)) * 1000.0f) / float(ms - encoderRate.lastEncoderTime);
         encoderRate.lastEncoderTime = ms;

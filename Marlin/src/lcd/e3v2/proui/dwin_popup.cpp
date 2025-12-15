@@ -22,7 +22,6 @@
 
 #if ENABLED(DWIN_LCD_PROUI)
 
-#include "../../../MarlinCore.h" // for wait_for_user
 #include "dwin_popup.h"
 
 popupDrawFunc_t Draw_Popup = nullptr;
@@ -41,13 +40,38 @@ void Draw_Select_Highlight(const bool sel, const uint16_t ypos) {
   DWIN_Draw_Rectangle(0, c2, 144, ypos - 2, 247, ypos + 39);
 }
 
-void DWIN_Popup_ConfirmCancel(const uint8_t icon, FSTR_P const fmsg2) {
+void Popup_ConfirmCancel(const uint8_t icon, FSTR_P const fmsg2) {
   DWIN_Show_Popup(icon, F("Please confirm"), fmsg2);
   DWINUI::Draw_Button(BTN_Confirm, 26, 280);
   DWINUI::Draw_Button(BTN_Cancel, 146, 280);
   Draw_Select_Highlight(HMI_flag.select_flag);
   DWIN_UpdateLCD();
 }
+
+#if ENABLED(ADVANCED_PAUSE_FEATURE)
+  void Popup_Pause(FSTR_P const fmsg, uint8_t button/*=0*/) {
+    HMI_SaveProcessID(button ? WaitResponse : NothingToDo);
+    DWIN_Show_Popup(ICON_Pause_1, GET_TEXT_F(MSG_ADVANCED_PAUSE), fmsg, button);
+  }
+#endif
+
+#if HAS_HOTEND || HAS_HEATED_BED || HAS_HEATED_CHAMBER
+  void Popup_Temperature(const int_fast8_t heater_id, const uint8_t state) {
+    HMI_SaveProcessID(WaitResponse);
+    FSTR_P heaterstr = nullptr;
+    if      (TERN0(HAS_HEATED_CHAMBER, heater_id == H_CHAMBER)) heaterstr = F("Chamber");
+    else if (TERN0(HAS_HEATED_BED,     heater_id == H_BED))     heaterstr = F("Bed");
+    else if (TERN0(HAS_HOTEND,         heater_id >= 0))         heaterstr = F("Nozzle");
+    FSTR_P errorstr;
+    uint8_t icon;
+    switch (state) {
+      case 0:  errorstr = GET_TEXT_F(DGUS_MSG_TEMP_TOO_LOW);  icon = ICON_TempTooLow;  break;
+      case 1:  errorstr = GET_TEXT_F(DGUS_MSG_TEMP_TOO_HIGH); icon = ICON_TempTooHigh; break;
+      default: errorstr = GET_TEXT_F(MSG_ERR_HEATING_FAILED); icon = ICON_Info_1;      break; // May be thermal runaway, temp malfunction, etc.
+    }
+      Popup_Confirm(icon, heaterstr, errorstr);
+  }
+#endif
 
 void Goto_Popup(const popupDrawFunc_t fnDraw, const popupClickFunc_t fnClick/*=nullptr*/) {
   Draw_Popup = fnDraw;
@@ -58,7 +82,7 @@ void Goto_Popup(const popupDrawFunc_t fnDraw, const popupClickFunc_t fnClick/*=n
 }
 
 void HMI_Popup() {
-  if (!wait_for_user) {
+  if (!marlin.wait_for_user) {
     if (ClickPopup) ClickPopup();
     return;
   }
@@ -71,19 +95,5 @@ void HMI_Popup() {
     }
   }
 }
-
-#if ENABLED(ADVANCED_PAUSE_FEATURE)
-  void DWIN_Popup_Pause(FSTR_P const fmsg, uint8_t button/*=0*/) {
-    HMI_SaveProcessID(button ? WaitResponse : NothingToDo);
-    DWIN_Show_Popup(ICON_Pause_1, GET_TEXT_F(MSG_ADVANCED_PAUSE), fmsg, button);
-  }
-
-  void Draw_Popup_FilamentPurge() {
-    DWIN_Draw_Popup(ICON_AutoLeveling, GET_TEXT_F(MSG_ADVANCED_PAUSE), GET_TEXT_F(MSG_FILAMENT_CHANGE_PURGE_CONTINUE));
-    DWINUI::Draw_Button(BTN_Purge, 26, 280);
-    DWINUI::Draw_Button(BTN_Continue, 146, 280);
-    Draw_Select_Highlight(true);
-  }
-#endif
 
 #endif // DWIN_LCD_PROUI

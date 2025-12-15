@@ -74,12 +74,12 @@ if pioutil.is_pio_build():
         for f in config_files:
             conf_path = mpath / f
             if conf_path.is_file():
-                with open(conf_path, "r", encoding="utf8") as file:
+                with open(conf_path, "r", encoding="utf-8") as file:
                     text = file.read()
                     modified_text = text.replace("BOTH(", "ALL(").replace("EITHER(", "ANY(")
                     if text != modified_text:
                         conf_modified = True
-                        with open(conf_path, "w", encoding="utf-8") as file:
+                        with open(conf_path, "w", encoding="utf-8", newline="") as file:
                             file.write(modified_text)
 
         if conf_modified:
@@ -151,12 +151,16 @@ if pioutil.is_pio_build():
         # Check for old files indicating an entangled Marlin (mixing old and new code)
         #
         mixedin = []
-        p = project_dir / "Marlin/src/lcd/dogm"
+        p = mpath / "src/lcd/dogm"
         for f in ["ultralcd_DOGM.cpp", "ultralcd_DOGM.h", "u8g_dev_ssd1306_sh1106_128x64_I2C.cpp", "u8g_dev_ssd1309_12864.cpp", "u8g_dev_st7565_64128n_HAL.cpp", "u8g_dev_st7920_128x64_HAL.cpp", "u8g_dev_tft_upscale_from_128x64.cpp", "u8g_dev_uc1701_mini12864_HAL.cpp", "ultralcd_st7920_u8glib_rrd_AVR.cpp"]:
             if (p / f).is_file():
                 mixedin += [f]
-        p = project_dir / "Marlin/src/feature/bedlevel/abl"
+        p = mpath / "src/feature/bedlevel/abl"
         for f in ["abl.cpp", "abl.h"]:
+            if (p / f).is_file():
+                mixedin += [f]
+        f = mpath / "src/gcode/feature/pause"
+        for f in ["G60.cpp", "G61.cpp"]:
             if (p / f).is_file():
                 mixedin += [f]
         if mixedin:

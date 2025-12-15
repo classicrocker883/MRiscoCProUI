@@ -28,12 +28,14 @@ extern popupDrawFunc_t Draw_Popup;
 
 void Draw_Select_Highlight(const bool sel, const uint16_t ypos);
 inline void Draw_Select_Highlight(const bool sel) { Draw_Select_Highlight(sel, 280); }
-void DWIN_Popup_ConfirmCancel(const uint8_t icon, FSTR_P const fmsg2);
+void Popup_ConfirmCancel(const uint8_t icon, FSTR_P const fmsg2);
 void Goto_Popup(const popupDrawFunc_t fnDraw, const popupClickFunc_t fnClick=nullptr);
 void HMI_Popup();
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
-  void DWIN_Popup_Pause(FSTR_P const fmsg, uint8_t button=0);
-  void Draw_Popup_FilamentPurge();
+  void Popup_Pause(FSTR_P const fmsg, uint8_t button=0);
+#endif
+#if HAS_HOTEND || HAS_HEATED_BED || HAS_HEATED_CHAMBER
+  void Popup_Temperature(const int_fast8_t heater_id, const uint8_t state);
 #endif
 
 inline void Draw_Popup_Bkgd() {
@@ -64,13 +66,13 @@ void DWIN_Show_Popup(const uint8_t icon, T amsg1=nullptr, U amsg2=nullptr, uint8
 }
 
 template<typename T, typename U>
-void DWIN_Popup_Confirm(const uint8_t icon, T amsg1, U amsg2) {
+void Popup_Confirm(const uint8_t icon, T amsg1, U amsg2) {
   HMI_SaveProcessID(WaitResponse);
   DWIN_Show_Popup(icon, amsg1, amsg2, BTN_Confirm); // Button Confirm
 }
 
 template<typename T, typename U>
-void DWIN_Popup_Continue(const uint8_t icon, T amsg1, U amsg2) {
+void Popup_Continue(const uint8_t icon, T amsg1, U amsg2) {
   HMI_SaveProcessID(WaitResponse);
   DWIN_Show_Popup(icon, amsg1, amsg2, BTN_Continue); // Button Continue
 }

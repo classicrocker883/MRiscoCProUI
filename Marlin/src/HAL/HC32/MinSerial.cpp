@@ -64,7 +64,7 @@ static void minserial_begin() {
     // keeping the dynamic baudrate would require re-calculating the baudrate
     // using the register values, which is a pain...
 
-    // TODO: retain dynamic baudrate in MinSerial init
+    /// TODO: retain dynamic baudrate in MinSerial init
     // -> see USART_SetBaudrate(), needs to be inverted
     USART_SYNC_INIT(SERIAL_PORT, BAUDRATE, &usart_config);
 

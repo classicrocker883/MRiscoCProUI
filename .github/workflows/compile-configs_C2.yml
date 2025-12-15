@@ -15,30 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        abl: [MM,Default]
+        abl:     [MM,Default]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -47,9 +47,9 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS); then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP); then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($T5); then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=C2_N32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -64,6 +64,7 @@ jobs:
           cp configurations/Voxelab\ Aquila/MM/Version.h Marlin/Version.h
           fi;
           sed -i "s/default_envs =.*/default_envs = N32F103RC_voxelab_maple/" platformio.ini
+          sed -i "s/.*#define FILAMENT_RUNOUT_SENSOR/\/\/#define FILAMENT_RUNOUT_SENSOR/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
           sed -i "s/.*#define DWIN_LCD_PROUI/\/\/#define DWIN_LCD_PROUI/" Marlin/Configuration.h
           sed -i "s/.*#define CR10_STOCKDISPLAY/#define CR10_STOCKDISPLAY/" Marlin/Configuration.h
@@ -82,9 +83,9 @@ jobs:
           mv .pio/build/N32F103RC_voxelab_maple/*.bin temp/build.bin
         env:
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -104,30 +105,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        abl: [MM,Default]
+        abl:     [MM,Default]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -136,9 +137,9 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS); then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP); then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($T5); then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=C2_HC32${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -167,9 +168,9 @@ jobs:
           mv .pio/build/HC32F460C_aquila_C2/*.bin temp/build.bin
         env:
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -189,31 +190,31 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
-        abl: [MM,Default]
+        chip:    [427,422]
+        abl:     [MM,Default]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -223,9 +224,9 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS); then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP); then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($T5); then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=C2${AVTMP}${STMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -260,9 +261,9 @@ jobs:
         env:
           AQUILA_VER: ${{ matrix.chip }}
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -282,36 +283,36 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
-        abl: [UBL,BLT]
+        chip:    [427,422]
+        abl:     [UBL,BLT]
         inshape: [true,false]
-        temp: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -321,11 +322,11 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=C2${AVTMP}${STMP}${TTMP}${MPTMP}_${ABL}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -343,10 +344,6 @@ jobs:
           fi;
           sed -i "s/default_envs =.*/default_envs = STM32F103RE_creality/" platformio.ini
           sed -i "s/.*#define MOTHERBOARD BOARD_.*/#define MOTHERBOARD BOARD_${DBORD}/" Marlin/Configuration.h
-          sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
-          sed -i "s/.*#define DWIN_LCD_PROUI/\/\/#define DWIN_LCD_PROUI/" Marlin/Configuration.h
-          sed -i "s/.*#define CR10_STOCKDISPLAY/#define CR10_STOCKDISPLAY/" Marlin/Configuration.h
-          sed -i "s/.*#define LCD_BACKLIGHT_TIMEOUT_MINS.*/\/\/#define LCD_BACKLIGHT_TIMEOUT_MINS/" Marlin/Configuration_adv.h
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
           for axis in X Y Z; do
           sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
@@ -369,15 +366,141 @@ jobs:
           sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
           sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
           fi;
+          sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
+          sed -i "s/.*#define DWIN_LCD_PROUI/\/\/#define DWIN_LCD_PROUI/" Marlin/Configuration.h
+          sed -i "s/.*#define CR10_STOCKDISPLAY/#define CR10_STOCKDISPLAY/" Marlin/Configuration.h
+          sed -i "s/.*#define LCD_BACKLIGHT_TIMEOUT_MINS.*/\/\/#define LCD_BACKLIGHT_TIMEOUT_MINS/" Marlin/Configuration_adv.h
+          sed -i "s/.*#define LCD_BED_TRAMMING/#define LCD_BED_TRAMMING/" Marlin/Configuration.h
+          sed -i "s/.*#define ASSISTED_TRAMMING\b/#define ASSISTED_TRAMMING/" Marlin/Configuration_adv.h
+          sed -i "s/.*#define ASSISTED_TRAMMING_WIZARD.*/#define ASSISTED_TRAMMING_WIZARD/" Marlin/Configuration_adv.h
+          NUMBERS_ONLY=$(grep "^#define NOZZLE_TO_PROBE_OFFSET" Marlin/Configuration.h | sed -e 's/.*{//' -e 's/}.*//' | xargs)
+          OFFSET_X=$(echo "$NUMBERS_ONLY" | awk -F ',' '{print $1}' | xargs)
+          OFFSET_Y=$(echo "$NUMBERS_ONLY" | awk -F ',' '{print $2}' | xargs)
+          NEW_TRAMMING_PTS="#define TRAMMING_POINT_XY { { 29, 29 }, { X_BED_SIZE + (${OFFSET_X}), 29 }, { X_BED_SIZE + (${OFFSET_X}), Y_BED_SIZE + (${OFFSET_Y}) }, { 29, Y_BED_SIZE + (${OFFSET_Y}) } }"
+          sed -i "s/.*#define TRAMMING_POINT_XY.*/${NEW_TRAMMING_PTS}/" Marlin/Configuration_adv.h
           pio run
           mkdir temp
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
           ABL: ${{ matrix.abl }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
+          T13: ${{ matrix.t13 }}
+          BMP: ${{ matrix.bmp }}
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload A Release Asset
+        uses: classicrocker883/upload-a-release-asset@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: temp/build.bin
+          asset_name: ${{ steps.build_configs.outputs.filename }}
+          asset_content_type: application/x-binary
+  Build-C2-UBL-SKR-V3-A:            # CR10 LCD UBL for Aquila, SKR Mini V3
+    name: Build C2 UBL SKR V3 Files A
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        inshape: [true,false]
+        temp:    [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        exclude:
+          - t5:  true
+            t13: true
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - name: Set up node
+        uses: actions/setup-node@v6.1.0
+        with:
+          node-version: 20
+      - name: Cache pip
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Cache PlatformIO
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Select Python 3.13
+        uses: actions/setup-python@v6.1.0
+        with:
+          python-version: "3.13"
+      - name: Install PlatformIO
+        run: |
+          python3 -m pip install --upgrade pip wheel platformio
+      - name: Run PlatformIO
+        id: build_configs
+        run: |
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          echo "filename=C2_SKR-Mini-E3-V3${TTMP}${STMP}${MPTMP}_UBL${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          > Marlin/Configuration.h
+          > Marlin/Configuration_adv.h
+          > Marlin/Version.h
+          cp configurations/BTT_SKR-Mini-E3-V3/UBL/Configuration.h Marlin/Configuration.h
+          cp configurations/BTT_SKR-Mini-E3-V3/UBL/Configuration_adv.h Marlin/Configuration_adv.h
+          cp configurations/BTT_SKR-Mini-E3-V3/UBL/Version.h Marlin/Version.h
+          sed -i "s/default_envs =.*/default_envs = STM32G0B1RE_btt/" platformio.ini
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
+          case "${T5}-${T13}" in
+          true-false) THMP="5";  DSMP="98"    ;;
+          false-true) THMP="13"; DSMP="424.9" ;;
+          *)          THMP="1";  DSMP="98"    ;;
+          esac
+          sed -i "s/^#define TEMP_SENSOR_0.*/#define TEMP_SENSOR_0 ${THMP}/" Marlin/Configuration.h
+          sed -i "s/.*#define DEFAULT_AXIS_STEPS_PER_UNIT.*/#define DEFAULT_AXIS_STEPS_PER_UNIT { 80, 80, 400, ${DSMP} }/" Marlin/Configuration.h
+          if ($BMP); then
+          sed -i "s/.*#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_ENDSTOP_HIT_STATE.*/#define Z_MIN_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define Z_MIN_PROBE_ENDSTOP_HIT_STATE.*/#define Z_MIN_PROBE_ENDSTOP_HIT_STATE LOW/" Marlin/Configuration.h
+          sed -i "s/.*#define BLTOUCH/\/\/#define BLTOUCH/" Marlin/Configuration.h
+          sed -i "s/.*#define BIQU_MICROPROBE_V2/#define BIQU_MICROPROBE_V2/" Marlin/Configuration.h
+          sed -i "s/.*#define PROBE_ENABLE_DISABLE/#define PROBE_ENABLE_DISABLE/" Marlin/Configuration.h
+          fi;
+          sed -i "s/.*#define SERIAL_PORT\b.*/#define SERIAL_PORT 2/" Marlin/Configuration.h
+          sed -i "s/.*#define SERIAL_PORT_2.*/#define SERIAL_PORT_2 -1/" Marlin/Configuration.h
+          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
+          sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/\/\/#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
+          sed -i "s/.*#define DWIN_LCD_PROUI/\/\/#define DWIN_LCD_PROUI/" Marlin/Configuration.h
+          sed -i "s/.*#define CR10_STOCKDISPLAY/#define CR10_STOCKDISPLAY/" Marlin/Configuration.h
+          sed -i "s/.*#define LCD_BACKLIGHT_TIMEOUT_MINS.*/\/\/#define LCD_BACKLIGHT_TIMEOUT_MINS/" Marlin/Configuration_adv.h
+          sed -i "s/.*#define LCD_BED_TRAMMING/#define LCD_BED_TRAMMING/" Marlin/Configuration.h
+          sed -i "s/.*#define ASSISTED_TRAMMING\b/#define ASSISTED_TRAMMING/" Marlin/Configuration_adv.h
+          sed -i "s/.*#define ASSISTED_TRAMMING_WIZARD.*/#define ASSISTED_TRAMMING_WIZARD/" Marlin/Configuration_adv.h
+          NUMBERS_ONLY=$(grep "^#define NOZZLE_TO_PROBE_OFFSET" Marlin/Configuration.h | sed -e 's/.*{//' -e 's/}.*//' | xargs)
+          OFFSET_X=$(echo "$NUMBERS_ONLY" | awk -F ',' '{print $1}' | xargs)
+          OFFSET_Y=$(echo "$NUMBERS_ONLY" | awk -F ',' '{print $2}' | xargs)
+          NEW_TRAMMING_PTS="#define TRAMMING_POINT_XY { { 29, 29 }, { X_BED_SIZE + (${OFFSET_X}), 29 }, { X_BED_SIZE + (${OFFSET_X}), Y_BED_SIZE + (${OFFSET_Y}) }, { 29, Y_BED_SIZE + (${OFFSET_Y}) } }"
+          sed -i "s/.*#define TRAMMING_POINT_XY.*/${NEW_TRAMMING_PTS}/" Marlin/Configuration_adv.h
+          pio run
+          mkdir temp
+          mv .pio/build/STM32G0B1RE_btt/*.bin temp/build.bin
+        env:
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release

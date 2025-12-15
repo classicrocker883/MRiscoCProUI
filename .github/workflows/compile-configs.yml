@@ -17,27 +17,27 @@ jobs:
       matrix:
         chip: [GD32,N32]
         temp: [true,false]
-        tjc: [true,false]
+        tjc:  [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -47,8 +47,8 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = GD32 ]; then AVTMP=_GD32; else AVTMP=_N32; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+          if ($TP);  then TPTMP=-MPC; else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;  else DTMP=;  fi;
           echo "filename=${DTMP}Aquila${AVTMP}_Default${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -68,7 +68,7 @@ jobs:
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          TP: ${{ matrix.temp }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -89,31 +89,31 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [GD32,N32]
+        chip:    [GD32,N32]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -123,10 +123,10 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = GD32 ]; then AVTMP=_GD32; else AVTMP=_N32; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -152,10 +152,10 @@ jobs:
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -175,39 +175,39 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [GD32,N32]
+        chip:    [GD32,N32]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
-        ind: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        ind:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
           - bmp: true
             ind: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -217,13 +217,13 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = GD32 ]; then AVTMP=_GD32; else AVTMP=_N32; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-          if ($IND); then IDTMP=_IND; else IDTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          if ($IND); then IDTMP=_IND;   else IDTMP=; fi;
           echo "filename=${DTMP}Aquila${AVTMP}${IDTMP}${STMP}${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -277,10 +277,10 @@ jobs:
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
           IND: ${{ matrix.ind }}
@@ -303,37 +303,37 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [GD32,N32]
-        proex: [true,false]
+        chip:    [GD32,N32]
+        proex:   [true,false]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -343,13 +343,13 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = GD32 ]; then AVTMP=_GD32; else AVTMP=_N32; fi;
-          if ($EX); then EXTMP=-ProUI-EX; else EXTMP=; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($EX);  then EXTMP=-ProUI-EX; else EXTMP=; fi;
+          if ($IS);  then ISTMP=-IS;       else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;      else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;       else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;     else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13;    else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;      else MPTMP=; fi;
           echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}${MPTMP}_BLT${EXTMP}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -358,6 +358,9 @@ jobs:
           cp configurations/Voxelab\ Aquila/BLT/Configuration_adv.h Marlin/Configuration_adv.h
           cp configurations/Voxelab\ Aquila/BLT/Version.h Marlin/Version.h
           sed -i "s/default_envs =.*/default_envs = ${AQUILA_VER}F103RC_voxelab_maple/" platformio.ini
+          if [ "$AQUILA_VER" = N32 ]; then
+          sed -i "s/.*#define PROUI_ITEM_ENC/\/\/#define PROUI_ITEM_ENC/" Marlin/Configuration.h
+          fi;
           if ($EX); then XTEMP=; else XTEMP='\/\/'; fi;
           sed -i "s/.*#define PROUI_EX 1/${XTEMP}#define PROUI_EX 1/" Marlin/Configuration.h
           if ($IS); then STEMP=; else STEMP='\/\/'; fi;
@@ -369,6 +372,7 @@ jobs:
           sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if [ "$IS" = true ] && [ "$TP" = true ] && [ "$EX" = true ]; then
           sed -i "s/.*#define HAS_CGCODE 1/\/\/#define HAS_CGCODE 1/" Marlin/Configuration.h
+          sed -i "s/.*#define HAS_LOCKSCREEN 1/\/\/#define HAS_LOCKSCREEN 1/" Marlin/Configuration.h
           fi;
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
@@ -393,11 +397,11 @@ jobs:
           mv .pio/build/${AQUILA_VER}F103RC_voxelab_maple/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          EX: ${{ matrix.proex }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          EX:  ${{ matrix.proex }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -419,34 +423,50 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [V3_0,V2_0,V3_0_1]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        chip:    [V3_0,V2_0,V3_0_1]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
-            t13: true
+          - t5:      true
+            t13:     true
+          - chip:    V2_0
+            inshape: true
+          - chip:    V2_0
+            temp:    true
+          - chip:    V2_0
+            inshape: true
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+          - chip:    V3_0_1
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+            temp:    true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -455,15 +475,17 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if [ "$SKR" = V3_0 ]; then AVTMP=-V3; SKTMP="STM32G0B1RE"
-          elif [ "$SKR" = V2_0 ]; then AVTMP=-V2; SKTMP="STM32F103RC"
+          if   [ "$SKR" = V3_0 ];   then AVTMP=-V3;     SKTMP="STM32G0B1RE"
+          elif [ "$SKR" = V2_0 ];   then AVTMP=-V2;     SKTMP="STM32F103RC"
           elif [ "$SKR" = V3_0_1 ]; then AVTMP=-V3-0-1; SKTMP="STM32F401RC"
           fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-          echo "filename=${DTMP}Aquila_SKR-Mini-E3${AVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          echo "filename=${DTMP}Aquila_SKR-Mini-E3${AVTMP}${TTMP}${STMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -483,9 +505,13 @@ jobs:
           sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
           sed -i "s/.*#define E0_AUTO_FAN_PIN.*/#define E0_AUTO_FAN_PIN FAN1_PIN/" Marlin/Configuration_adv.h
           fi;
-          if [ "$SKR" = V3_0 ]; then
-          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
-          fi;
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
@@ -509,8 +535,10 @@ jobs:
           mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
         env:
           SKR: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -532,29 +560,46 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [V3_0,V2_0,V3_0_1]
-        tjc: [true,false]
-        t5: [true,false]
+        chip:    [V3_0,V2_0,V3_0_1]
+        inshape: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        exclude:
+          - chip:    V2_0
+            inshape: true
+          - chip:    V2_0
+            temp:    true
+          - chip:    V2_0
+            inshape: true
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+          - chip:    V3_0_1
+            temp:    true
+          - chip:    V3_0_1
+            inshape: true
+            temp:    true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -563,13 +608,15 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if [ "$SKR" = V3_0 ]; then AVTMP=-V3; SKTMP="STM32G0B1RE"
-          elif [ "$SKR" = V2_0 ]; then AVTMP=-V2; SKTMP="STM32F103RC"
+          if   [ "$SKR" = V3_0 ];   then AVTMP=-V3;     SKTMP="STM32G0B1RE"
+          elif [ "$SKR" = V2_0 ];   then AVTMP=-V2;     SKTMP="STM32F103RC"
           elif [ "$SKR" = V3_0_1 ]; then AVTMP=-V3-0-1; SKTMP="STM32F401RC"
           fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          echo "filename=${DTMP}Aquila_SKR-Mini-E3${AVTMP}${STMP}${TTMP}_MM-ProUI-EX$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
+          echo "filename=${DTMP}Aquila_SKR-Mini-E3${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
           > Marlin/Version.h
@@ -588,9 +635,13 @@ jobs:
           sed -i "s/.*#define CONTROLLER_FAN_PIN.*/#define CONTROLLER_FAN_PIN FAN2_PIN/" Marlin/Configuration_adv.h
           sed -i "s/.*#define E0_AUTO_FAN_PIN.*/#define E0_AUTO_FAN_PIN FAN1_PIN/" Marlin/Configuration_adv.h
           fi;
-          if [ "$SKR" = V3_0 ]; then
-          sed -i "s/.*#define EDITABLE_HOMING_FEEDRATE.*/#define EDITABLE_HOMING_FEEDRATE/" Marlin/Configuration.h
-          fi;
+          if ($IS); then STEMP=; else STEMP='\/\/'; fi;
+          for axis in X Y Z; do
+          sed -i "s/.*#define INPUT_SHAPING_${axis}/${STEMP}#define INPUT_SHAPING_${axis}/" Marlin/Configuration_adv.h
+          done
+          if ($TP); then PTEMP='\/\/'; MTEMP=; else PTEMP=; MTEMP='\/\/'; fi;
+          sed -i "0,/^#define PIDTEMP/ s/.*#define PIDTEMP/${PTEMP}#define PIDTEMP/" Marlin/Configuration.h
+          sed -i "s/.*#define MPCTEMP/${MTEMP}#define MPCTEMP/" Marlin/Configuration.h
           if ($TJC); then TJEMP=; REMP='\/\/'; else TJEMP='\/\/'; REMP=; fi;
           sed -i "s/.*#define TJC_DISPLAY/${TJEMP}#define TJC_DISPLAY/" Marlin/Configuration.h
           sed -i "s/.*#define REVERSE_ENCODER_DIRECTION/${REMP}#define REVERSE_ENCODER_DIRECTION/" Marlin/Configuration.h
@@ -601,8 +652,10 @@ jobs:
           mv .pio/build/${SKTMP}_btt/*.bin temp/build.bin
         env:
           SKR: ${{ matrix.chip }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -624,27 +677,27 @@ jobs:
       matrix:
         chip: [427,422]
         temp: [true,false]
-        tjc: [true,false]
+        tjc:  [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -654,8 +707,8 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+          if ($TP);  then TPTMP=-MPC; else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;  else DTMP=;  fi;
           echo "filename=${DTMP}Aquila${AVTMP}_Default${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -676,7 +729,7 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          TP: ${{ matrix.temp }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -697,31 +750,31 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -731,10 +784,10 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}_MM-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -761,10 +814,10 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
@@ -784,39 +837,39 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
-        ind: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
+        ind:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
           - bmp: true
             ind: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -826,13 +879,13 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
-          if ($IND); then IDTMP=_IND; else IDTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
+          if ($IND); then IDTMP=_IND;   else IDTMP=; fi;
           echo "filename=${DTMP}Aquila${AVTMP}${IDTMP}${STMP}${TTMP}${MPTMP}_UBL-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -879,10 +932,10 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
           IND: ${{ matrix.ind }}
@@ -905,36 +958,36 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        chip: [427,422]
+        chip:    [427,422]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -944,12 +997,12 @@ jobs:
         id: build_configs
         run: |
           if [ "$AQUILA_VER" = 427 ]; then AVTMP=_427; DBORD='CREALITY_V427'; else AVTMP=_422; DBORD='CREALITY_V422'; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;     else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;    else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;     else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;   else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13;  else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;    else MPTMP=; fi;
           echo "filename=${DTMP}Aquila${AVTMP}${STMP}${TTMP}${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -989,10 +1042,10 @@ jobs:
           mv .pio/build/STM32F103RE_creality/*.bin temp/build.bin
         env:
           AQUILA_VER: ${{ matrix.chip }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release

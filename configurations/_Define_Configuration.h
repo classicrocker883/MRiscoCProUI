@@ -86,6 +86,8 @@
 // #define MPE_SLOW_SPEED      4500
 // #define MPE_TRAVEL_DISTANCE   10
 // #define MPE_COMPENSATION       0
+// #define DIFFERENTIAL_EXTRUDER
+// #define BALANCED_DIFFERENTIAL_EXTRUDER
 // #define SWITCHING_TOOLHEAD
 // #define MAGNETIC_SWITCHING_TOOLHEAD
 // #define ELECTROMAGNETIC_SWITCHING_TOOLHEAD
@@ -212,12 +214,12 @@
 // #define MIN_POWER 0
 // #define PID_DEBUG
 // #define PID_PARAMS_PER_HOTEND
-// #define DEFAULT_Kp_LIST {  22.20,  22.20 }
-// #define DEFAULT_Ki_LIST {   1.08,   1.08 }
-// #define DEFAULT_Kd_LIST { 114.00, 114.00 }
-// #define DEFAULT_Kp  13.19
-// #define DEFAULT_Ki   0.77
-// #define DEFAULT_Kd  56.05
+// #define DEFAULT_KP_LIST {  22.20,  22.20 }
+// #define DEFAULT_KI_LIST {   1.08,   1.08 }
+// #define DEFAULT_KD_LIST { 114.00, 114.00 }
+// #define DEFAULT_KP  13.19
+// #define DEFAULT_KI   0.77
+// #define DEFAULT_KD  56.05
 // #define BANG_MAX 255
 // #define MPC_AUTOTUNE
 // #define MPC_AUTOTUNE_DEBUG
@@ -246,9 +248,9 @@
 // #define PIDTEMPBED
 // #define MIN_BED_POWER 0
 // #define PID_BED_DEBUG
-// #define DEFAULT_bedKp 128.06
-// #define DEFAULT_bedKi  24.95
-// #define DEFAULT_bedKd 438.07
+// #define DEFAULT_BED_KP 128.06
+// #define DEFAULT_BED_KI  24.95
+// #define DEFAULT_BED_KD 438.07
 // #define BED_LIMIT_SWITCHING
 // #define PELTIER_BED
 // #define PELTIER_DIR_PIN           -1
@@ -259,9 +261,9 @@
 // #define MAX_CHAMBER_POWER 255
 // #define MIN_CHAMBER_POWER 0
 // #define PID_CHAMBER_DEBUG
-// #define DEFAULT_chamberKp  37.04
-// #define DEFAULT_chamberKi   1.40
-// #define DEFAULT_chamberKd 655.17
+// #define DEFAULT_CHAMBER_KP  37.04
+// #define DEFAULT_CHAMBER_KI   1.40
+// #define DEFAULT_CHAMBER_KD 655.17
 // #define PID_OPENLOOP
 // #define SLOW_PWM_HEATERS
 // #define PID_FUNCTIONAL_RANGE 20
@@ -323,11 +325,19 @@
 // #define DEFAULT_SEGMENTS_PER_SECOND 200
 // #define TPARA_LINKAGE_1 120
 // #define TPARA_LINKAGE_2 120
-// #define TPARA_OFFSET_X    0
-// #define TPARA_OFFSET_Y    0
-// #define TPARA_OFFSET_Z    0
+// #define TPARA_SHOULDER_AXIS_HEIGHT 135.0
+// #define TPARA_ARM_X_HOME_POS  28.75
+// #define TPARA_ARM_Y_HOME_POS   0
+// #define TPARA_ARM_Z_HOME_POS 250.00
+// #define TPARA_OFFSET_X    127.0
+// #define TPARA_OFFSET_Y      0.0
+// #define TPARA_OFFSET_Z      0.0
+// #define TPARA_TCP_OFFSET_X    27.0
+// #define TPARA_TCP_OFFSET_Y     0.0
+// #define TPARA_TCP_OFFSET_Z   -65.0
 // #define FEEDRATE_SCALING
-// #define MIDDLE_DEAD_ZONE_R   0
+// #define MIDDLE_DEAD_ZONE_R   100
+// #define TPARA_MAX_L1L2_ANGLE 140.0f
 // #define POLAR
 // #define DEFAULT_SEGMENTS_PER_SECOND 180
 // #define PRINTABLE_RADIUS 82.0f
@@ -429,6 +439,7 @@
 // #define JUNCTION_DEVIATION_MM 0.013
 // #define JD_HANDLE_SMALL_SEGMENTS
 // #define S_CURVE_ACCELERATION
+// #define S_CURVE_FACTOR 0.25
 // #define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 // #define USE_PROBE_FOR_Z_HOMING
 // #define Z_MIN_PROBE_PIN PB1
@@ -500,6 +511,7 @@
 // #define NOZZLE_TO_PROBE_OFFSET { -45.0, -7.0, 0 }
 // #define PROBING_TOOL 0
 // #define PROBE_TOOLCHANGE_NO_MOVE
+// #define PROBE_WAKEUP_TIME_MS  30
 // #define PROBING_MARGIN 0
 // #define XY_PROBE_FEEDRATE    (180*60)
 // #define Z_PROBE_FEEDRATE_FAST  (9*60)
@@ -1038,6 +1050,7 @@
 // #define ENC_MENU_ITEM
 // #define SHOW_SPEED_IND
 // #define PROUI_ITEM_ABRT
+// #define PROUI_ITEM_CONF
 // #define NO_BLINK_IND
 // #define CR10_STOCKDISPLAY
 // #define RET6_12864_LCD

@@ -199,7 +199,7 @@ void SetValueOnClick(uint8_t process, const int32_t lo, const int32_t hi, const 
 //  Apply: update function when the encoder is pressed
 //  LiveUpdate: live update function when the encoder changes
 void SetValueOnClick(uint8_t process, const float lo, const float hi, uint8_t dp, const float val, void (*Apply)()/*=nullptr*/, void (*LiveUpdate)()/*=nullptr*/) {
-  const int32_t value =  round(val * POW(10, dp));
+  const int32_t value =  LROUND(val * POW(10, dp));
   SetOnClick(process, lo * POW(10, dp), hi * POW(10, dp), dp, value, Apply, LiveUpdate);
   DrawItemEdit(true);
 }
@@ -282,45 +282,25 @@ int8_t HMI_Get(bool draw) {
   return int8_t(change);
 }
 
-// Set and draw a value using the encoder
-void HMI_SetDraw() {
-  const int8_t val = HMI_Get(true);
+void HMI_SetGeneric(const bool draw, bool isInt/*=false*/, bool isFloat/*=false*/) {
+  const int8_t val = HMI_Get(draw);
   switch (val) {
     case 0: return;
-    case 1: if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
-    case 2: if (MenuData.Apply) MenuData.Apply(); break;
+    case 1:
+      if (MenuData.LiveUpdate) MenuData.LiveUpdate();
+      break;
+    case 2:
+      if (isInt)   *MenuData.P_Int   = MenuData.Value;
+      if (isFloat) *MenuData.P_Float = MenuData.Value / POW(10, MenuData.dp);
+      if (MenuData.Apply) MenuData.Apply();
+      break;
   }
 }
 
-// Set an value without drawing
-void HMI_SetNoDraw() {
-  const int8_t val = HMI_Get(false);
-  switch (val) {
-    case 0: return;
-    case 1: if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
-    case 2: if (MenuData.Apply) MenuData.Apply(); break;
-  }
-}
-
-// Set an integer pointer variable using the encoder
-void HMI_SetPInt() {
-  const int8_t val = HMI_Get(true);
-  switch (val) {
-    case 0: return;
-    case 1: if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
-    case 2: *MenuData.P_Int = MenuData.Value; if (MenuData.Apply) MenuData.Apply(); break;
-  }
-}
-
-// Set a scaled float pointer variable using the encoder
-void HMI_SetPFloat() {
-  const int8_t val = HMI_Get(true);
-  switch (val) {
-    case 0: return;
-    case 1: if (MenuData.LiveUpdate) MenuData.LiveUpdate(); break;
-    case 2: *MenuData.P_Float = MenuData.Value / POW(10, MenuData.dp); if (MenuData.Apply) MenuData.Apply(); break;
-  }
-}
+void HMI_SetDraw()    { HMI_SetGeneric(true); }              // Set and draw a value using the encoder
+void HMI_SetNoDraw()  { HMI_SetGeneric(false); }             // Set an value without drawing
+void HMI_SetPInt()    { HMI_SetGeneric(true, true); }        // Set an integer pointer variable using the encoder
+void HMI_SetPFloat()  { HMI_SetGeneric(true, false, true); } // Set a scaled float pointer variable using the encoder
 
 // Menu Class ===============================================================
 

@@ -50,7 +50,7 @@ void GcodeSuite::M79()
         break;
       case 1:
         // 1:cloud print start
-        if (!printingIsActive())
+        if (!marlin.printingIsActive())
         {
           ui.reset_remaining_time(); //rock_20210831  解决剩余时间不清零的问题。我爱专业固件
           ui.progress_reset();

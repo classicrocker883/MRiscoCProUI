@@ -5,7 +5,7 @@
 
 # exit on first failure
 set -e
-restore_configs
+
 #
 # Build with included configs
 #

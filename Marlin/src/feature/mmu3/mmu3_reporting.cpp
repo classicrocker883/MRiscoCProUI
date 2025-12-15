@@ -213,7 +213,7 @@ namespace MMU3 {
 
   void EndReport(CommandInProgress /*cip*/, ProgressCode /*ec*/) {
     // clear the status msg line - let the printed filename get visible again
-    if (!printJobOngoing()) ui.reset_status();
+    if (!marlin.printJobOngoing()) ui.reset_status();
     //custom_message_type = CustomMsg::Status;
   }
 
@@ -311,7 +311,7 @@ namespace MMU3 {
 
       START_MENU();
       #ifndef __AVR__
-        // TODO: I couldn't make this work on AVR
+        /// TODO: I couldn't make this work on AVR
         STATIC_ITEM_F(PrusaErrorTitle(ei), SS_DEFAULT | SS_INVERT);
 
         // Write the help page and error code

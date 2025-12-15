@@ -29,7 +29,6 @@
 #include "../gcode.h"
 
 #include "../../module/planner.h" // for synchronize()
-#include "../../MarlinCore.h"     // for wait_for_user_response()
 
 #if HAS_MARLINUI_MENU
   #include "../../lcd/marlinui.h"
@@ -75,9 +74,9 @@ void GcodeSuite::M0_M1() {
   #elif ENABLED(DWIN_LCD_PROUI)
 
     if (parser.string_arg)
-      DWIN_Popup_Continue(ICON_Continue_1, parser.string_arg, GET_TEXT_F(MSG_USERWAIT));
+      Popup_Continue(ICON_Continue_1, parser.string_arg, GET_TEXT_F(MSG_USERWAIT));
     else
-      DWIN_Popup_Continue(ICON_Stop_1, GET_TEXT_F(MSG_STOPPED), GET_TEXT_F(MSG_USERWAIT));
+      Popup_Continue(ICON_Stop_1, GET_TEXT_F(MSG_STOPPED), GET_TEXT_F(MSG_USERWAIT));
 
   #else
 
@@ -95,7 +94,7 @@ void GcodeSuite::M0_M1() {
       hostui.continue_prompt(parser.codenum ? F("M1 Stop") : F("M0 Stop"));
   #endif
 
-  TERN_(HAS_RESUME_CONTINUE, wait_for_user_response(ms));
+  TERN_(HAS_RESUME_CONTINUE, marlin.wait_for_user_response(ms));
 
   TERN_(HAS_MARLINUI_MENU, ui.reset_status());
 }

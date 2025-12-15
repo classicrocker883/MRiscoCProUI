@@ -133,7 +133,7 @@
 // Junction deviation limits
 #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
   #define MIN_JD_MM 0.01f
-  #define MAX_JD_MM TERN(LIN_ADVANCE, 0.3f, 0.5f)
+  #define MAX_JD_MM TERN(HAS_LIN_ADVANCE_K, 0.3f, 0.5f)
 #endif
 
 #if HAS_TRINAMIC_CONFIG
@@ -417,35 +417,26 @@ void ICON_Stop() {
 // Popups & Status Messages
 //=============================================================================
 
+// Pause or Stop popup
 void Popup_window_PauseOrStop() {
   switch (select_print.now) {
     case PRINT_PAUSE_RESUME:
-      DWIN_Popup_ConfirmCancel(ICON_Pause_1, GET_TEXT_F(MSG_PAUSE_PRINT));
+      Popup_ConfirmCancel(ICON_Pause_1, GET_TEXT_F(MSG_PAUSE_PRINT));
       break;
     case PRINT_STOP:
-      DWIN_Popup_ConfirmCancel(ICON_Stop_1, GET_TEXT_F(MSG_STOP_PRINT));
+      Popup_ConfirmCancel(ICON_Stop_1, GET_TEXT_F(MSG_STOP_PRINT));
       break;
     default: break;
   }
 }
-
-#if HAS_HOTEND || HAS_HEATED_BED || HAS_HEATED_CHAMBER
-  void DWIN_Popup_Temperature(const int_fast8_t heater_id, const uint8_t state) {
-    HMI_SaveProcessID(WaitResponse);
-    FSTR_P heaterstr = nullptr;
-    if      (TERN0(HAS_HEATED_CHAMBER, heater_id == H_CHAMBER)) heaterstr = F("Chamber");
-    else if (TERN0(HAS_HEATED_BED,     heater_id == H_BED))     heaterstr = F("Bed");
-    else if (TERN0(HAS_HOTEND,         heater_id >= 0))         heaterstr = F("Nozzle");
-    FSTR_P errorstr;
-    uint8_t icon;
-    switch (state) {
-      case 0:  errorstr = GET_TEXT_F(MSG_TEMP_TOO_LOW);       icon = ICON_TempTooLow;  break;
-      case 1:  errorstr = GET_TEXT_F(MSG_TEMP_TOO_HIGH);      icon = ICON_TempTooHigh; break;
-      default: errorstr = GET_TEXT_F(MSG_ERR_HEATING_FAILED); icon = ICON_Info_1;      break; // May be thermal runaway, temp malfunction, etc.
-    }
-      DWIN_Popup_Confirm(icon, heaterstr, errorstr);
+void OnClick_PauseOrStop() {
+  switch (select_print.now) {
+    case PRINT_PAUSE_RESUME: if (HMI_flag.select_flag) { ui.pause_print(); } break; // confirm pause
+    case PRINT_STOP: if (HMI_flag.select_flag) { ui.abort_print(); } break; // stop confirmed then abort print
+    default: break;
   }
-#endif
+  Goto_PrintProcess();
+}
 
 // Draw status line
 void DWIN_DrawStatusLine(PGM_P text) {
@@ -554,7 +545,7 @@ void Draw_Print_Labels() {
 
 #if ENABLED(SHOW_REMAINING_TIME)
   void Draw_Print_ProgressRemain() {
-    const duration_t remain_time = ui.remaining_time;
+    const duration_t remain_time = ui.get_remaining_time();
     char buf[16];
     const bool has_days = (remain_time.value > 60*60*24L);
     remain_time.toDigital(buf, has_days);
@@ -565,8 +556,8 @@ void Draw_Print_Labels() {
 /// TODO: Not ready
 #if ENABLED(SHOW_INTERACTION_TIME)
   void Draw_Print_ProgressInteract() {
-    const duration_t interact_time = ui.interaction_time;
-    if (printingIsActive() && interact_time.value) {
+    const duration_t interact_time = ui.get_interaction_time();
+    if (marlin.printingIsActive() && interact_time.value) {
       char buf[16];
       const bool has_days = (interact_time.value > 60*60*24L);
       interact_time.toDigital(buf, has_days);
@@ -632,6 +623,14 @@ void Goto_PrintProcess() {
 }
 
 void Draw_PrintDone() {
+  #if ENABLED(PROUI_ITEM_CONF)
+    if (HMI_data.auto_confirm) {
+      marlin.user_resume();
+      select_page.reset();
+      Goto_Main_Menu();
+      return;
+    }
+  #endif
   TERN_(SET_PROGRESS_PERCENT, ui.set_progress_done();)
   TERN_(SET_REMAINING_TIME, ui.reset_remaining_time();)
   TERN_(SET_INTERACTION_TIME, ui.reset_interaction_time();)
@@ -662,7 +661,7 @@ void Draw_PrintDone() {
 
 void Goto_PrintDone() {
   DEBUG_ECHOLNPGM("Goto_PrintDone");
-  wait_for_user = true;
+  marlin.wait_start();
   if (checkkey != PrintDone) {
     checkkey = PrintDone;
     Draw_PrintDone();
@@ -983,7 +982,7 @@ void onClickSDItem() {
     }
 
     if (card.fileIsBinary()) {
-      DWIN_Popup_Confirm(ICON_Error, GET_TEXT_F(MSG_CHECK_FILENAME), GET_TEXT_F(MSG_ONLY_GCODE));
+      Popup_Confirm(ICON_Error, GET_TEXT_F(MSG_CHECK_FILENAME), GET_TEXT_F(MSG_ONLY_GCODE));
       return;
     }
     else {
@@ -1175,95 +1174,99 @@ void Draw_Info_Menu() {
 // Main Process
 void HMI_MainMenu() {
   EncoderState encoder_diffState = get_encoder_state();
-  if (encoder_diffState == ENCODER_DIFF_NO) return;
-
-  if (encoder_diffState == ENCODER_DIFF_CW) {
-    if (select_page.inc(PAGE_COUNT)) {
-      switch (select_page.now) {
-        case PAGE_PRINT:   ICON_Print(); break;
-        case PAGE_PREPARE: ICON_Print();   ICON_Prepare(); break;
-        case PAGE_CONTROL: ICON_Prepare(); ICON_Control(); break;
-        case PAGE_ADVANCE: ICON_Control(); ICON_AdvSettings(); break;
-        OPTCODE(HAS_TOOLBAR,
-        case PAGE_TOOLBAR: ICON_AdvSettings(); Goto_ToolBar(); break)
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_CCW) {
-    if (select_page.dec()) {
-      switch (select_page.now) {
-        case PAGE_PRINT:   ICON_Print();   ICON_Prepare(); break;
-        case PAGE_PREPARE: ICON_Prepare(); ICON_Control(); break;
-        case PAGE_CONTROL: ICON_Control(); ICON_AdvSettings(); break;
-        case PAGE_ADVANCE: ICON_AdvSettings(); break;
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_ENTER) {
-    switch (select_page.now) {
-      case PAGE_PRINT:
-        if (HMI_data.MediaAutoMount) {
-          card.mount();
-          safe_delay(800);
+  switch (encoder_diffState) {
+    case ENCODER_DIFF_NO: return;
+    case ENCODER_DIFF_CW:
+      if (select_page.inc(PAGE_COUNT)) {
+        switch (select_page.now) {
+          case PAGE_PRINT:   ICON_Print(); break;
+          case PAGE_PREPARE: ICON_Print();   ICON_Prepare(); break;
+          case PAGE_CONTROL: ICON_Prepare(); ICON_Control(); break;
+          case PAGE_ADVANCE: ICON_Control(); ICON_AdvSettings(); break;
+          OPTCODE(HAS_TOOLBAR,
+          case PAGE_TOOLBAR: ICON_AdvSettings(); Goto_ToolBar(); break)
         }
-        Draw_Print_File_Menu();
-        break;
-      case PAGE_PREPARE: Draw_Prepare_Menu(); break;
-      case PAGE_CONTROL: Draw_Control_Menu(); break;
-      case PAGE_ADVANCE: Draw_AdvancedSettings_Menu(); break;
-    }
+      }
+      break;
+    case ENCODER_DIFF_CCW:
+      if (select_page.dec()) {
+        switch (select_page.now) {
+          case PAGE_PRINT:   ICON_Print();   ICON_Prepare(); break;
+          case PAGE_PREPARE: ICON_Prepare(); ICON_Control(); break;
+          case PAGE_CONTROL: ICON_Control(); ICON_AdvSettings(); break;
+          case PAGE_ADVANCE: ICON_AdvSettings(); break;
+        }
+      }
+      break;
+    case ENCODER_DIFF_ENTER:
+      switch (select_page.now) {
+        case PAGE_PRINT:
+          if (HMI_data.MediaAutoMount) {
+            card.mount();
+            safe_delay(800);
+          }
+          Draw_Print_File_Menu();
+          break;
+        case PAGE_PREPARE: Draw_Prepare_Menu(); break;
+        case PAGE_CONTROL: Draw_Control_Menu(); break;
+        case PAGE_ADVANCE: Draw_AdvancedSettings_Menu(); break;
+      }
+      break;
   }
   DWIN_UpdateLCD();
-}
-
-// Pause or Stop popup
-void OnClick_PauseOrStop() {
-  switch (select_print.now) {
-    case PRINT_PAUSE_RESUME: if (HMI_flag.select_flag) { ui.pause_print(); } break; // confirm pause
-    case PRINT_STOP: if (HMI_flag.select_flag) { ui.abort_print(); } break; // stop confirmed then abort print
-    default: break;
-  }
-  Goto_PrintProcess();
 }
 
 // Printing
 void HMI_Printing() {
   EncoderState encoder_diffState = get_encoder_state();
-  if (encoder_diffState == ENCODER_DIFF_NO) return;
-  // Avoid flicker by updating only the previous menu
-  if (encoder_diffState == ENCODER_DIFF_CW) {
-    if (select_print.inc(PRINT_COUNT)) {
-      switch (select_print.now) {
-        case PRINT_SETUP: ICON_Tune(); break;
-        case PRINT_PAUSE_RESUME: ICON_Tune(); ICON_ResumeOrPause(); break;
-        case PRINT_STOP: ICON_ResumeOrPause(); ICON_Stop(); break;
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_CCW) {
-    if (select_print.dec()) {
-      switch (select_print.now) {
-        case PRINT_SETUP: ICON_Tune(); ICON_ResumeOrPause(); break;
-        case PRINT_PAUSE_RESUME: ICON_ResumeOrPause(); ICON_Stop(); break;
-        case PRINT_STOP: ICON_Stop(); break;
-      }
-    }
-  }
-  else if (encoder_diffState == ENCODER_DIFF_ENTER) {
-    switch (select_print.now) {
-      case PRINT_SETUP: Draw_Tune_Menu(); break;
-      case PRINT_PAUSE_RESUME:
-        if (print_job_timer.isPaused()) { // If printer is already in pause
-          ui.resume_print();
-          break;
+  switch (encoder_diffState) {
+    case ENCODER_DIFF_NO: return;
+    // Avoid flicker by updating only the previous menu
+    case ENCODER_DIFF_CW:
+      if (select_print.inc(PRINT_COUNT)) {
+        switch (select_print.now) {
+          case PRINT_SETUP: ICON_Tune(); break;
+          case PRINT_PAUSE_RESUME: ICON_Tune(); ICON_ResumeOrPause(); break;
+          case PRINT_STOP: ICON_ResumeOrPause(); ICON_Stop(); break;
         }
-        Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
-        return;
-      case PRINT_STOP:
-        Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
-        return;
-      default: break;
-    }
+      }
+      break;
+    case ENCODER_DIFF_CCW:
+      if (select_print.dec()) {
+        switch (select_print.now) {
+          case PRINT_SETUP: ICON_Tune(); ICON_ResumeOrPause(); break;
+          case PRINT_PAUSE_RESUME: ICON_ResumeOrPause(); ICON_Stop(); break;
+          case PRINT_STOP: ICON_Stop(); break;
+        }
+      }
+      break;
+    case ENCODER_DIFF_ENTER:
+      const bool auto_confirm = TERN0(PROUI_ITEM_CONF, HMI_data.auto_confirm);
+      switch (select_print.now) {
+        case PRINT_SETUP: Draw_Tune_Menu(); break;
+        case PRINT_PAUSE_RESUME:
+          if (marlin.printingIsPaused()) { // If printer is already in pause
+            ui.resume_print();
+            break;
+          }
+          if (auto_confirm) {
+            ui.pause_print();
+            Goto_PrintProcess();
+            break;
+          }
+          else
+            Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+          return;
+        case PRINT_STOP:
+          if (auto_confirm) {
+            ui.abort_print();
+            Goto_PrintProcess();
+            break;
+          }
+          else
+            Goto_Popup(Popup_window_PauseOrStop, OnClick_PauseOrStop);
+          return;
+      }
   }
   DWIN_UpdateLCD();
 }
@@ -1311,7 +1314,7 @@ void HMI_WaitForUser() {
     HMI_ReturnScreen();
     return;
   }
-  if (!wait_for_user) {
+  if (!marlin.wait_for_user) {
     switch (checkkey) {
       case PrintDone:
         select_page.reset();
@@ -1417,49 +1420,51 @@ void EachMomentUpdate() {
   if (ELAPSED(ms, next_rts_update_ms)) {
     next_rts_update_ms = ms + DWIN_UPDATE_INTERVAL;
 
-    if ((HMI_flag.printing_flag != Printing()) && (checkkey != Homing) TERN_(HAS_BED_PROBE, && (checkkey != Leveling))) {
-      HMI_flag.printing_flag = Printing();
-      DEBUG_ECHOLNPGM("printing_flag: ", HMI_flag.printing_flag);
-      if (HMI_flag.printing_flag) { DWIN_Print_Started(); }
-      else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
-      else { DWIN_Print_Finished(); }
-    }
-
-    if ((HMI_flag.pause_flag != printingIsPaused()) && (checkkey != Homing)) {
-      HMI_flag.pause_flag = printingIsPaused();
-      DEBUG_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag);
-      if (HMI_flag.pause_flag) { DWIN_Print_Pause(); }
-      else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
-      else { DWIN_Print_Resume(); }
+    if ((checkkey != Homing) TERN_(HAS_BED_PROBE, && (checkkey != Leveling))) {
+      if (HMI_flag.printing_flag != Printing()) {
+        HMI_flag.printing_flag = Printing();
+        DEBUG_ECHOLNPGM("printing_flag: ", HMI_flag.printing_flag);
+        if (HMI_flag.printing_flag) { DWIN_Print_Started(); }
+        else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
+        else { DWIN_Print_Finished(); }
+      }
+      if ((HMI_flag.pause_flag != marlin.printingIsPaused()) && (checkkey != Homing)) {
+        HMI_flag.pause_flag = marlin.printingIsPaused();
+        DEBUG_ECHOLNPGM("pause_flag: ", HMI_flag.pause_flag);
+        if (HMI_flag.pause_flag) { DWIN_Print_Pause(); }
+        else if (HMI_flag.abort_flag) { DWIN_Print_Aborted(); }
+        else { DWIN_Print_Resume(); }
+      }
     }
 
     if (checkkey == PrintProcess) { // Print process
 
       // Progress percent
       #if ENABLED(SHOW_PROGRESS_PERCENT)
-        if (_percent_done != ui.get_progress_percent()) {
-          _percent_done = ui.get_progress_percent();
+        const uint8_t pp = ui.get_progress_percent();
+        if (_percent_done != pp) {
+          _percent_done = pp;
           Draw_Print_ProgressBar();
         }
       #endif
 
       // Elapsed print time
       #if ENABLED(SHOW_ELAPSED_TIME)
-        //const duration_t min = print_job_timer.duration();
-        //if ((min.value % 60) == 0) // 1 minute update, else every second
         Draw_Print_ProgressElapsed();
       #endif
 
       // Remaining time
       #if ENABLED(SHOW_REMAINING_TIME)
-        ui.remaining_time = ui.get_remaining_time();
         Draw_Print_ProgressRemain();
       #endif
 
       // Interaction time
       #if ENABLED(SHOW_INTERACTION_TIME)
-        ui.interaction_time = ui.get_interaction_time();
-        Draw_Print_ProgressInteract();
+        const uint32_t it = ui.get_interaction_time();
+        if (ui.interaction_time != it) {
+          ui.interaction_time = it;
+          Draw_Print_ProgressInteract();
+        }
       #endif
     }
 
@@ -1646,14 +1651,14 @@ void HMI_SaveProcessID(const uint8_t id) {
     TERN_(PROUI_ITEM_PLOT,
     case PlotProcess:)
     case WaitResponse:
-      wait_for_user = true;
+      marlin.wait_start();
     default: break;
   }
 }
 
 void HMI_ReturnScreen() {
   checkkey = last_checkkey;
-  wait_for_user = false;
+  marlin.user_resume();
   Draw_Main_Area();
 }
 
@@ -1823,23 +1828,23 @@ void HMI_ReturnScreen() {
       #endif
       case PID_BAD_HEATER_ID:
         checkkey = last_checkkey;
-        DWIN_Popup_Continue(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_BAD_HEATER_ID));
+        Popup_Continue(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_PID_BAD_HEATER_ID));
         break;
       case PID_TUNING_TIMEOUT:
         checkkey = last_checkkey;
-        DWIN_Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_ERROR), GET_TEXT_F(MSG_PID_TIMEOUT));
+        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_TIMEOUT));
         break;
       case PID_TEMP_TOO_HIGH:
         checkkey = last_checkkey;
-        DWIN_Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(MSG_TEMP_TOO_HIGH));
+        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), GET_TEXT_F(DGUS_MSG_TEMP_TOO_HIGH));
         break;
       case AUTOTUNE_DONE:
         checkkey = last_checkkey;
-        DWIN_Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_PID_AUTOTUNE), GET_TEXT_F(MSG_BUTTON_DONE));
+        Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(DGUS_MSG_PID_AUTOTUNING), GET_TEXT_F(MSG_BUTTON_DONE));
         break;
       default:
         checkkey = last_checkkey;
-        DWIN_Popup_Confirm(ICON_Info_0, GET_TEXT_F(MSG_ERROR), GET_TEXT_F(MSG_STOPPING));
+        Popup_Confirm(ICON_Info_0, GET_TEXT_F(MSG_ERROR), GET_TEXT_F(MSG_STOPPING));
         break;
     }
   }
@@ -1856,27 +1861,27 @@ void HMI_ReturnScreen() {
         #if PROUI_TUNING_GRAPH
           DWIN_Draw_PID_MPC_Popup();
         #else
-          DWIN_Show_Popup(ICON_TempTooHigh, GET_TEXT_F(MSG_MPC_AUTOTUNE), GET_TEXT_F(MSG_NOZZLE_RUN));
+          DWIN_Show_Popup(ICON_TempTooHigh, GET_TEXT_F(MSG_MPC_AUTOTUNE), GET_TEXT_F(MSG_PID_FOR_NOZZLE));
         #endif
         break;
       case MPC_TEMP_ERROR:
         checkkey = last_checkkey;
-        DWIN_Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), F(STR_MPC_TEMPERATURE_ERROR));
+        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_PID_AUTOTUNE_FAILED), F(STR_MPC_TEMPERATURE_ERROR));
         ui.reset_alert_level();
         break;
       case MPC_INTERRUPTED:
         checkkey = last_checkkey;
-        DWIN_Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_ERROR), F(STR_MPC_AUTOTUNE_INTERRUPTED));
+        Popup_Continue(ICON_TempTooHigh, GET_TEXT_F(MSG_ERROR), F(STR_MPC_AUTOTUNE_INTERRUPTED));
         ui.reset_alert_level();
         break;
       case AUTOTUNE_DONE:
         checkkey = last_checkkey;
-        DWIN_Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_MPC_AUTOTUNE), GET_TEXT_F(MSG_BUTTON_DONE));
+        Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_MPC_AUTOTUNE), GET_TEXT_F(MSG_BUTTON_DONE));
         ui.reset_alert_level();
         break;
       default:
         checkkey = last_checkkey;
-        DWIN_Popup_Confirm(ICON_Info_0, GET_TEXT_F(MSG_ERROR), GET_TEXT_F(MSG_STOPPING));
+        Popup_Confirm(ICON_Info_0, GET_TEXT_F(MSG_ERROR), GET_TEXT_F(MSG_STOPPING));
         ui.reset_alert_level();
         break;
     }
@@ -2021,7 +2026,7 @@ void DWIN_Print_Finished() {
   TERN_(HAS_LEVELING, set_bed_leveling_enabled(false);)
   HMI_flag.abort_flag = false;
   HMI_flag.pause_flag = false;
-  wait_for_heatup = false;
+  marlin.heatup_done();
   #if ENABLED(CV_LASER_MODULE)
     if (!fileprop.isConfig)
   #endif
@@ -2041,7 +2046,7 @@ void DWIN_Print_Aborted() {
   safe_delay(200);
   ui.reset_status(true);
   if (auto_abort) {
-    LCD_MESSAGE_F("..Disable Motors on Abort..");
+    LCD_MESSAGE_F("Disable Motors on Abort");
     safe_delay(100);
     queue.clear();
     quickstop_stepper();
@@ -2163,6 +2168,7 @@ void DWIN_SetDataDefaults() {
   #endif
   TERN_(HAS_GCODE_PREVIEW, HMI_data.EnablePreview = true;)
   TERN_(PROUI_ITEM_ABRT, HMI_data.auto_abort = false;)
+  TERN_(PROUI_ITEM_CONF, HMI_data.auto_confirm = true;)
   #if ENABLED(PROUI_MESH_EDIT)
     meshSet.mesh_min_x = DEF_MESH_MIN_X;
     meshSet.mesh_max_x = DEF_MESH_MAX_X;
@@ -2315,14 +2321,16 @@ void DWIN_RebootScreen() {
   DWIN_UpdateLCD();
   safe_delay(500);
 }
-void DWIN_RedrawDash() {
-  hash_changed = true;
-  DWIN_DrawStatusMessage();
-  DWIN_Draw_Dashboard();
-}
+#if DASH_REDRAW
+  void DWIN_RedrawDash() {
+    hash_changed = true;
+    DWIN_DrawStatusMessage();
+    DWIN_Draw_Dashboard();
+  }
+#endif
 void DWIN_RedrawScreen() {
   Draw_Main_Area();
-  DWIN_RedrawDash();
+  TERN_(DASH_REDRAW, DWIN_RedrawDash();)
 }
 
 //=============================================================================
@@ -2352,10 +2360,10 @@ void MarlinUI::update() {
 #if HAS_LCD_BRIGHTNESS
   void MarlinUI::_set_brightness() {
     DWIN_LCD_Brightness(backlight ? brightness : 0);
-    if (!backlight)
-      wait_for_user = true;
-    else if (checkkey != PrintDone)
-      wait_for_user = false;
+    if (checkkey != PrintDone)
+      marlin.user_resume();
+    else if (!backlight)
+      marlin.wait_start();
   }
 #endif
 
@@ -2369,18 +2377,18 @@ void MarlinUI::kill_screen(FSTR_P const lcd_error, FSTR_P const) {
   void MarlinUI::pause_show_message(const PauseMessage message, const PauseMode mode/*=PAUSE_MODE_SAME*/, const uint8_t extruder/*=EXT*/) {
     if (mode != PAUSE_MODE_SAME) pause_mode = mode;
     switch (message) {
-      case PAUSE_MESSAGE_PARKING:  DWIN_Popup_Pause(GET_TEXT_F(MSG_PAUSE_PRINT_PARKING));    break; // M125
-      case PAUSE_MESSAGE_CHANGING: DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_INIT));   break; // pause_print (M125, M600)
-      case PAUSE_MESSAGE_WAITING:  DWIN_Popup_Pause(GET_TEXT_F(MSG_ADVANCED_PAUSE_WAITING), BTN_Continue); break;
-      case PAUSE_MESSAGE_UNLOAD:   DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_UNLOAD)); break; // Unload of pause and Unload of M702
-      case PAUSE_MESSAGE_INSERT:   DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_INSERT), BTN_Continue); break;
-      case PAUSE_MESSAGE_LOAD:     DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_LOAD));   break;
-      case PAUSE_MESSAGE_PURGE:    DWIN_Popup_Pause(GET_TEXT_F(TERN(ADVANCED_PAUSE_CONTINUOUS_PURGE, MSG_FILAMENT_CHANGE_CONT_PURGE, MSG_FILAMENT_CHANGE_PURGE))); break;
+      case PAUSE_MESSAGE_PARKING:  Popup_Pause(GET_TEXT_F(MSG_PAUSE_PRINT_PARKING));    break; // M125
+      case PAUSE_MESSAGE_CHANGING: Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_INIT));   break; // pause_print (M125, M600)
+      case PAUSE_MESSAGE_WAITING:  Popup_Pause(GET_TEXT_F(MSG_ADVANCED_PAUSE_WAITING), BTN_Continue); break;
+      case PAUSE_MESSAGE_UNLOAD:   Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_UNLOAD)); break; // Unload of pause and Unload of M702
+      case PAUSE_MESSAGE_INSERT:   Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_INSERT), BTN_Continue); break;
+      case PAUSE_MESSAGE_LOAD:     Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_LOAD));   break;
+      case PAUSE_MESSAGE_PURGE:    Popup_Pause(GET_TEXT_F(TERN(ADVANCED_PAUSE_CONTINUOUS_PURGE, MSG_FILAMENT_CHANGE_CONT_PURGE, MSG_FILAMENT_CHANGE_PURGE))); break;
       case PAUSE_MESSAGE_OPTION:   Goto_FilamentPurge(); break;
-      case PAUSE_MESSAGE_RESUME:   DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_RESUME)); break;
-      case PAUSE_MESSAGE_STATUS:   HMI_ReturnScreen(); break;                                       // Exit from Pause, Load and Unload
-      case PAUSE_MESSAGE_HEAT:     DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_HEAT), BTN_Continue); break;
-      case PAUSE_MESSAGE_HEATING:  DWIN_Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_HEATING)); break;
+      case PAUSE_MESSAGE_RESUME:   Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_RESUME)); break;
+      case PAUSE_MESSAGE_STATUS:   HMI_ReturnScreen(); break;                                  // Exit from Pause, Load and Unload
+      case PAUSE_MESSAGE_HEAT:     Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_HEAT), BTN_Continue); break;
+      case PAUSE_MESSAGE_HEATING:  Popup_Pause(GET_TEXT_F(MSG_FILAMENT_CHANGE_HEATING)); break;
       default: break;
     }
   }
@@ -2412,7 +2420,7 @@ void ResetEeprom() {
 
 // Reset Printer
 void RebootPrinter() {
-  wait_for_heatup = wait_for_user = false; // Stop waiting for heating/user
+  marlin.end_waiting(); // Stop waiting for heating/user
   thermalManager.disable_all_heaters();
   planner.finish_and_disable();
   DWIN_RebootScreen();
@@ -2452,13 +2460,13 @@ void AutoHome() { queue.inject_P(G28_STR); }
   void ApplyZOffset() { (void)settings.save(); }
   void LiveZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
-      const float step_zoffset = round((MenuData.Value / 100.0f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
+      const float step_zoffset = roundf((MenuData.Value * 0.01f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
       if (BABYSTEP_ALLOWED()) { babystep.add_steps(Z_AXIS, step_zoffset); }
     #endif
   }
   void SetZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
-      babystep.accum = round(planner.settings.axis_steps_per_mm[Z_AXIS] * BABY_Z_VAR);
+      babystep.accum = LROUND(planner.settings.axis_steps_per_mm[Z_AXIS] * BABY_Z_VAR);
     #endif
     SetPFloatOnClick(PROBE_OFFSET_ZMIN, PROBE_OFFSET_ZMAX, 2, ApplyZOffset, LiveZOffset);
   }
@@ -2490,7 +2498,7 @@ void AxisMove(AxisEnum axis) {
   #if HAS_HOTEND
     if (axis == E_AXIS && thermalManager.tooColdToExtrude(EXT)) {
       gcode.process_subcommands_now(F("G92E0")); // Reset extruder position
-      DWIN_Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_HOTEND_TOO_COLD), GET_TEXT_F(MSG_PLEASE_PREHEAT));
+      Popup_Confirm(ICON_TempTooLow, GET_TEXT_F(MSG_HOTEND_TOO_COLD), GET_TEXT_F(MSG_PLEASE_PREHEAT));
       return;
     }
   #endif
@@ -2651,7 +2659,7 @@ void ApplyMove() {
     queue.inject(F(TERN(AUTO_BED_LEVELING_UBL, "G29P1", "G29")));
   }
   // Mesh Popup
-  void PopUp_StartAutoLev() { DWIN_Popup_ConfirmCancel(ICON_Leveling_1, GET_TEXT_F(MSG_START_ABL)); }
+  void PopUp_StartAutoLev() { Popup_ConfirmCancel(ICON_Leveling_1, GET_TEXT_F(MSG_START_ABL)); }
   void OnClick_StartAutoLev() {
     if (HMI_flag.select_flag) { AutoLev(); }
     else { HMI_ReturnScreen(); }
@@ -2731,13 +2739,23 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #endif
 
 #if ENABLED(SHOW_SPEED_IND)
-  void SetSpdInd() { Toggle_Chkb_Line(HMI_data.SpdInd); }
+  void SetSpdInd() {
+    Toggle_Chkb_Line(HMI_data.SpdInd);
+    LCD_MESSAGE_F("Enable Print Speed Indicator");
+  }
 #endif
 
 #if ENABLED(PROUI_ITEM_ABRT)
   void SetAutoAbort() {
     Toggle_Chkb_Line(HMI_data.auto_abort);
-    LCD_MESSAGE_F("..Disable Motors on Abort..");
+    LCD_MESSAGE_F("Disable Motors on Abort");
+  }
+#endif
+
+#if ENABLED(PROUI_ITEM_CONF)
+  void SetAutoConfirm() {
+    Toggle_Chkb_Line(HMI_data.auto_confirm);
+    LCD_MESSAGE_F("Auto Confirm Stop/Pause");
   }
 #endif
 
@@ -2769,10 +2787,15 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
       pause_menu_response = PAUSE_RESPONSE_RESUME_PRINT; // "Continue" button
     }
   }
-
+  void Popup_FilamentPurge() {
+    DWIN_Draw_Popup(ICON_AutoLeveling, GET_TEXT_F(MSG_ADVANCED_PAUSE), GET_TEXT_F(MSG_FILAMENT_CHANGE_PURGE_CONTINUE));
+    DWINUI::Draw_Button(BTN_Purge, 26, 280);
+    DWINUI::Draw_Button(BTN_Continue, 146, 280);
+    Draw_Select_Highlight(true);
+  }
   void Goto_FilamentPurge() {
     pause_menu_response = PAUSE_RESPONSE_WAIT_FOR;
-    Goto_Popup(Draw_Popup_FilamentPurge, OnClick_FilamentPurge);
+    Goto_Popup(Popup_FilamentPurge, OnClick_FilamentPurge);
   }
 
   void ChangeFilament() {
@@ -2796,7 +2819,7 @@ void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refres
 #if HAS_MESH
   void DWIN_MeshViewer() {
     if (!leveling_is_valid()) {
-      DWIN_Popup_Confirm(ICON_Leveling_1, GET_TEXT_F(MSG_MESH_VIEWER), GET_TEXT_F(MSG_NO_VALID_MESH));
+      Popup_Confirm(ICON_Leveling_1, GET_TEXT_F(MSG_MESH_VIEWER), GET_TEXT_F(MSG_NO_VALID_MESH));
       LCD_MESSAGE(MSG_UBL_LOAD_MESH);
     }
     else {
@@ -2857,10 +2880,8 @@ void Goto_ConfirmToPrint() {
         return;
       }
     }
-    else {
+    else
       LaserOn(false); // If it is not laser file turn off laser mode
-      return;
-    }
   #endif
   #if HAS_GCODE_PREVIEW
     if (HMI_data.EnablePreview) {
@@ -2961,7 +2982,7 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
     static bed_mesh_t zval = {};
     probe.stow();
     HMI_SaveProcessID(NothingToDo); // Before home disable user input
-    wait_for_user = false;
+    marlin.user_resume();
     zval[0][0] = tram(0, false); // First tram point can do Homing
     MeshViewer.DrawMeshGrid(2, 2);
     MeshViewer.DrawMeshPoint(0, 0, zval[0][0]);
@@ -3034,7 +3055,7 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
   }
 
   // Trammingwizard Popup
-  void PopUp_StartTramwiz() { DWIN_Popup_ConfirmCancel(TERN(TJC_DISPLAY, ICON_BLTouch, ICON_Printer_0), GET_TEXT_F(MSG_TRAMMING_WIZARD_POPUP)); }
+  void PopUp_StartTramwiz() { Popup_ConfirmCancel(TERN(TJC_DISPLAY, ICON_BLTouch, ICON_Printer_0), GET_TEXT_F(MSG_TRAMMING_WIZARD_POPUP)); }
   void OnClick_StartTramwiz() {
     if (HMI_flag.select_flag) {
       if (HMI_data.FullManualTramming) {
@@ -3142,16 +3163,16 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
     void SetMaxJerkE() { HMI_value.axis = E_AXIS; SetFloatOnClick(min_jerk_edit_values.e, max_jerk_edit_values.e, UNITFDIGITS, planner.max_jerk.e, ApplyMaxJerk); }
   #endif
 #elif ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
-  void ApplyJDmm() { TERN_(LIN_ADVANCE, planner.recalculate_max_e_jerk();) }
+  void ApplyJDmm() { TERN_(HAS_LIN_ADVANCE_K, planner.recalculate_max_e_jerk();) }
   void SetJDmm() { SetPFloatOnClick(MIN_JD_MM, MAX_JD_MM, 3, ApplyJDmm); }
 #endif
 
-#if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
+#if ALL(PROUI_ITEM_ADVK, HAS_LIN_ADVANCE_K)
   void ApplyLA_K() { planner.set_advance_k(MenuData.Value / POW(10, 3)); }
   void SetLA_K() { SetFloatOnClick(0, 10, 3, planner.extruder_advance_K[EXT], ApplyLA_K); }
   void onDrawLA_K(MenuItemClass* menuitem, int8_t line) { onDrawFloatMenu(menuitem, line, 3, planner.get_advance_k()); }
   #if ENABLED(SMOOTH_LIN_ADVANCE)
-    void ApplySmoothLA() { Stepper::set_advance_tau(MenuData.Value / POW(10, 2)); }
+    void ApplySmoothLA() { stepper.set_advance_tau(MenuData.Value / POW(10, 2)); }
     void SetSmoothLA() { SetPFloatOnClick(0, 0.5, 2, ApplySmoothLA); }
   #endif
 #endif
@@ -3264,25 +3285,31 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
 // Menu Creation and Drawing functions
 //=============================================================================
 
+#define RETURN_MENU(MENU_PTR, DRAW_FUNC) \
+  if (PreviousMenu == MENU_PTR) { DRAW_FUNC(); return; }
+
 void ReturnToPreviousMenu() {
   #if ENABLED(CV_LASER_MODULE)
-    if (PreviousMenu == LaserPrintMenu) { Draw_LaserPrint_Menu();       return; }
+    RETURN_MENU(LaserPrintMenu, Draw_LaserPrint_Menu);
   #endif
   #if ANY(PID_AUTOTUNE_MENU, PID_EDIT_MENU) \
    || ANY(MPC_EDIT_MENU, MPC_AUTOTUNE_MENU)
-    if (PreviousMenu == PIDMenu)        { Draw_PID_Menu();              return; }
+    RETURN_MENU(PIDMenu,        Draw_PID_Menu);
   #endif
   #if HAS_MESH
-    if (PreviousMenu == AdvancedMenu)   { Draw_Advanced_Menu();         return; }
+    RETURN_MENU(AdvancedMenu,   Draw_Advanced_Menu);
   #endif
-  if (PreviousMenu == AdvancedSettings) { Draw_AdvancedSettings_Menu(); return; }
-  if (PreviousMenu == TemperatureMenu)  { Draw_Temperature_Menu();      return; }
-  if (PreviousMenu == FilamentMenu)     { Draw_FilamentMan_Menu();      return; }
-  if (PreviousMenu == TuneMenu)         { Draw_Tune_Menu();             return; }
-  if (PreviousMenu == FileMenu)         { Draw_Print_File_Menu();       return; }
-  if (PreviousMenu == PrepareMenu)      { Draw_Prepare_Menu();          return; }
+  RETURN_MENU(AdvancedSettings, Draw_AdvancedSettings_Menu);
+  RETURN_MENU(TemperatureMenu,  Draw_Temperature_Menu);
+  RETURN_MENU(FilamentMenu,     Draw_FilamentMan_Menu);
+  RETURN_MENU(TuneMenu,         Draw_Tune_Menu);
+  RETURN_MENU(FileMenu,         Draw_Print_File_Menu);
+  RETURN_MENU(PrepareMenu,      Draw_Prepare_Menu);
+  #if ENABLED(LED_CONTROL_MENU)
+    RETURN_MENU(ControlMenu,    Draw_Control_Menu);
+  #endif
   #if HAS_TOOLBAR
-    else if (CurrentMenu == ZOffsetWizMenu) {
+    if (CurrentMenu == ZOffsetWizMenu) {
       DWIN_ResetStatusLine();
       Goto_Main_Menu();
       Goto_ToolBar();
@@ -3290,6 +3317,8 @@ void ReturnToPreviousMenu() {
     }
   #endif
 }
+
+#undef RETURN_MENU
 
 void Draw_Prepare_Menu() {
   checkkey = Menu;
@@ -3548,7 +3577,7 @@ void Draw_FilSet_Menu() {
   void Draw_LedControl_Menu() {
     checkkey = Menu;
     if (SET_MENU(LedControlMenu, MSG_LED_CONTROL, 10)) {
-      BACK_ITEM((CurrentMenu == TuneMenu) ? Draw_Tune_Menu : Draw_Control_Menu);
+      BACK_ITEM(ReturnToPreviousMenu);
       #if !ALL(CASE_LIGHT_MENU, CASE_LIGHT_USE_NEOPIXEL)
         EDIT_ITEM(ICON_LedControl, MSG_LIGHTS, onDrawChkbMenu, SetLedStatus, &leds.lights_on);
       #endif
@@ -3584,7 +3613,7 @@ void Draw_Tune_Menu() {
     }
   #endif
   checkkey = Menu;
-  if (SET_MENU(TuneMenu, MSG_TUNE, 24)) {
+  if (SET_MENU(TuneMenu, MSG_TUNE, 25)) {
     BACK_ITEM(Goto_PrintProcess);
     #if HAS_LCD_BRIGHTNESS
       MENU_ITEM(ICON_Box, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
@@ -3618,11 +3647,14 @@ void Draw_Tune_Menu() {
     #if ALL(PROUI_ITEM_PLR, POWER_LOSS_RECOVERY)
       EDIT_ITEM(ICON_Pwrlossr, MSG_OUTAGE_RECOVERY, onDrawChkbMenu, SetPwrLossr, &recovery.enabled);
     #endif
-    #if ENABLED(SHOW_SPEED_IND)
-      EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
-    #endif
     #if ENABLED(PROUI_ITEM_ABRT)
       EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+    #endif
+    #if ENABLED(PROUI_ITEM_CONF)
+      EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
+    #endif
+    #if ENABLED(SHOW_SPEED_IND)
+      EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
     #endif
     #if ENABLED(FWRETRACT)
       MENU_ITEM(ICON_FWRetLength, MSG_FWRETRACT, onDrawSubMenu, Draw_FWRetract_Menu);
@@ -3630,11 +3662,13 @@ void Draw_Tune_Menu() {
     #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
-    #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      static float editable_k = planner.get_advance_k();
+    #if ALL(PROUI_ITEM_ADVK, HAS_LIN_ADVANCE_K)
+      static float editable_k;
+      editable_k = planner.get_advance_k();
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawLA_K, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        static float editable_u = Stepper::get_advance_tau();
+        static float editable_u;
+        editable_u = stepper.get_advance_tau();
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_u);
       #endif
     #endif
@@ -3793,11 +3827,13 @@ void Draw_Motion_Menu() {
     #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
       EDIT_ITEM(ICON_JDmm, MSG_JUNCTION_DEVIATION, onDrawPFloat3Menu, SetJDmm, &planner.junction_deviation_mm);
     #endif
-    #if ALL(PROUI_ITEM_ADVK, LIN_ADVANCE)
-      static float editable_k = planner.get_advance_k();
+    #if ALL(PROUI_ITEM_ADVK, HAS_LIN_ADVANCE_K)
+      static float editable_k;
+      editable_k = planner.get_advance_k();
       EDIT_ITEM(ICON_MaxAccelerated, MSG_ADVANCE_K, onDrawLA_K, SetLA_K, &editable_k);
       #if ENABLED(SMOOTH_LIN_ADVANCE)
-        static float editable_u = Stepper::get_advance_tau();
+        static float editable_u;
+        editable_u = stepper.get_advance_tau();
         EDIT_ITEM(ICON_MaxSpeed, MSG_ADVANCE_TAU, onDrawPFloat2Menu, SetSmoothLA, &editable_u);
       #endif
     #endif
@@ -4449,12 +4485,12 @@ void Draw_MaxAccel_Menu() {
     void SetEditMeshX() { HMI_value.Select = 0; SetIntOnClick(0, GRID_MAX_CELLS_X, bedLevelTools.mesh_x, ApplyEditMeshX, LiveEditMesh); }
     void SetEditMeshY() { HMI_value.Select = 1; SetIntOnClick(0, GRID_MAX_CELLS_Y, bedLevelTools.mesh_y, ApplyEditMeshY, LiveEditMesh); }
     void SetEditZValue() { SetPFloatOnClick(Z_OFFSET_MIN, Z_OFFSET_MAX, 3, nullptr, LiveEditMeshZ); if (AutoMovToMesh) { bedLevelTools.MoveToXYZ(); } }
-    void ZeroPoint() { bedLevelTools.manual_value_update(bedLevelTools.mesh_x, bedLevelTools.mesh_y, true); EditZValueItem->redraw(); LCD_MESSAGE(MSG_ZERO_MESH); }
+    void ZeroPoint() { bedLevelTools.manual_value_update(bedLevelTools.mesh_x, bedLevelTools.mesh_y, true); EditZValueItem->redraw(); LCD_MESSAGE(MSG_ZERO_MESH_POINT); }
     void ZeroMesh()  { bedLevelTools.mesh_reset(); LCD_MESSAGE(MSG_MESH_RESET); }
     void SetAutoMovToMesh() { Toggle_Chkb_Line(AutoMovToMesh); }
 
     // Zero or Reset Bed Mesh Values
-    void Popup_ResetMesh() { DWIN_Popup_ConfirmCancel(ICON_Info_0, GET_TEXT_F(MSG_RESET_MESH)); }
+    void Popup_ResetMesh() { Popup_ConfirmCancel(ICON_Info_0, GET_TEXT_F(MSG_RESET_MESH)); }
     void OnClick_ResetMesh() {
       if (HMI_flag.select_flag) {
         HMI_ReturnScreen();
@@ -4478,23 +4514,27 @@ void Draw_MaxAccel_Menu() {
     void ApplyMeshInset() { ResetMeshInset(); ReDrawItem(); }
     void SetXMeshInset() { SetPFloatOnClick(0, X_BED_SIZE, UNITFDIGITS, OPTITEM(PROUI_EX, SetMeshArea) ApplyMeshInset); }
     void SetYMeshInset() { SetPFloatOnClick(0, Y_BED_SIZE, UNITFDIGITS, OPTITEM(PROUI_EX, SetMeshArea) ApplyMeshInset); }
+
     void MaxMeshArea() {
       TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = 0;
       TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_BED_SIZE;
       TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = 0;
       TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_BED_SIZE;
+
       ResetMeshInset();
       ReDrawMenu();
     }
+
     void CenterMeshArea() {
-      float max = (MESH_MIN_X + MESH_MIN_Y) * 0.5;
-      if (max < X_BED_SIZE - MESH_MAX_X) { max = X_BED_SIZE - MESH_MAX_X; }
-      if (max < MESH_MIN_Y) { max = MESH_MIN_Y; }
-      if (max < Y_BED_SIZE - MESH_MAX_Y) { max = Y_BED_SIZE - MESH_MAX_Y; }
-      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = max;
-      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_BED_SIZE - max;
-      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = max;
-      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_BED_SIZE - max;
+      const float half_width  = 0.5 * (MESH_MAX_X - MESH_MIN_X);
+      const float half_height = 0.5 * (MESH_MAX_Y - MESH_MIN_Y);
+      const float half_extent = min(min(half_width, half_height), min((float)X_CENTER, (float)Y_CENTER));
+
+      TERN_(PROUI_EX, PRO_data.mesh_min_x =) meshSet.mesh_min_x = X_CENTER - half_extent;
+      TERN_(PROUI_EX, PRO_data.mesh_max_x =) meshSet.mesh_max_x = X_CENTER + half_extent;
+      TERN_(PROUI_EX, PRO_data.mesh_min_y =) meshSet.mesh_min_y = Y_CENTER - half_extent;
+      TERN_(PROUI_EX, PRO_data.mesh_max_y =) meshSet.mesh_max_y = Y_CENTER + half_extent;
+
       ResetMeshInset();
       ReDrawMenu();
     }
@@ -4517,7 +4557,7 @@ void Draw_MaxAccel_Menu() {
     void Draw_EditMesh_Menu() {
       if (!leveling_is_valid()) {
         LCD_MESSAGE(MSG_UBL_MESH_INVALID);
-        DWIN_Popup_Confirm(ICON_Leveling_1, GET_TEXT_F(MSG_NO_VALID_MESH), GET_TEXT_F(MSG_UBL_LOAD_MESH));
+        Popup_Confirm(ICON_Leveling_1, GET_TEXT_F(MSG_NO_VALID_MESH), GET_TEXT_F(MSG_UBL_LOAD_MESH));
         return;
       }
       set_bed_leveling_enabled(false);
@@ -4530,7 +4570,7 @@ void Draw_MaxAccel_Menu() {
         EDIT_ITEM(ICON_MeshEditY, MSG_MESH_Y, onDrawPInt8Menu, SetEditMeshY, &bedLevelTools.mesh_y);
         EditZValueItem = EDIT_ITEM(ICON_MeshEditZ, MSG_MESH_EDIT_Z, onDrawPFloat3Menu, SetEditZValue, &bedlevel.z_values[bedLevelTools.mesh_x][bedLevelTools.mesh_y]);
         TERN_(HAS_BED_PROBE, MENU_ITEM(ICON_Probe, MSG_PROBE_WIZARD_PROBING, onDrawMenuItem, bedLevelTools.ProbeXY);)
-        MENU_ITEM(ICON_SetZOffset, MSG_ZERO_MESH, onDrawMenuItem, ZeroPoint);
+        MENU_ITEM(ICON_SetZOffset, MSG_ZERO_MESH_POINT, onDrawMenuItem, ZeroPoint);
       }
       UpdateMenu(EditMeshMenu);
     }
@@ -4686,7 +4726,7 @@ void Draw_MaxAccel_Menu() {
 //=============================================================================
 
 #if ENABLED(HOST_SHUTDOWN_MENU_ITEM) && defined(SHUTDOWN_ACTION)
-  void PopUp_HostShutDown() { DWIN_Popup_ConfirmCancel(ICON_Info_1, GET_TEXT_F(MSG_HOST_SHUTDOWN)); }
+  void PopUp_HostShutDown() { Popup_ConfirmCancel(ICON_Info_1, GET_TEXT_F(MSG_HOST_SHUTDOWN)); }
   void OnClick_HostShutDown() {
     if (HMI_flag.select_flag) { hostui.shutdown(); }
     HMI_ReturnScreen();
@@ -4698,7 +4738,7 @@ void Draw_MaxAccel_Menu() {
   void DWIN_Debug(PGM_P msg1, PGM_P msg2, PGM_P msg3, PGM_P msg4) {
     DEBUG_ECHOLNPGM_P(msg1, msg2, msg3, msg4);
     DWIN_Debug_Popup(msg1, msg2, msg3, msg4);
-    wait_for_user_response();
+    marlin.wait_for_user_response();
     Draw_Main_Area();
   }
 #endif
@@ -4758,7 +4798,7 @@ void Draw_AdvancedSettings_Menu() {
   }
   ui.reset_status(true);
   UpdateMenu(AdvancedSettings);
-  TERN_(AUTO_BED_LEVELING_BILINEAR, if (!leveling_is_valid()) { LCD_MESSAGE_F("..Mesh is Invalid. Save after making changes to reload"); })
+  TERN_(AUTO_BED_LEVELING_BILINEAR, if (!leveling_is_valid()) { LCD_MESSAGE_F("..Mesh is Invalid. Save after making changes to reload."); })
 }
 
 #elif ENABLED(MESH_BED_LEVELING)
@@ -4787,7 +4827,7 @@ void Draw_AdvancedSettings_Menu() {
 #else // Default-No Probe
 void Draw_AdvancedSettings_Menu() {
   checkkey = Menu;
-  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 20)) {
+  if (SET_MENU(AdvancedSettings, MSG_ADVANCED_SETTINGS, 21)) {
     BACK_ITEM(Goto_Main_Menu);
     #if ENABLED(EEPROM_SETTINGS)
       MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
@@ -4807,6 +4847,9 @@ void Draw_AdvancedSettings_Menu() {
     #endif
     #if ENABLED(PROUI_ITEM_ABRT)
       EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+    #endif
+    #if ENABLED(PROUI_ITEM_CONF)
+      EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
     #endif
     #if ENABLED(SHOW_SPEED_IND)
       EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);
@@ -4847,7 +4890,7 @@ void Draw_AdvancedSettings_Menu() {
 #if HAS_MESH
   void Draw_Advanced_Menu() { // From Control_Menu (Control) || Default-NP AdvancedSettings_Menu (Level)
     checkkey = Menu;
-    if (SET_MENU(AdvancedMenu, MSG_ADVANCED_SETTINGS, 20)) {
+    if (SET_MENU(AdvancedMenu, MSG_ADVANCED_SETTINGS, 21)) {
       BACK_ITEM(Draw_Control_Menu);
       #if ENABLED(EEPROM_SETTINGS)
         MENU_ITEM(ICON_ReadEEPROM, MSG_LOAD_EEPROM, onDrawMenuItem, ReadEeprom);
@@ -4867,6 +4910,9 @@ void Draw_AdvancedSettings_Menu() {
       #endif
       #if ENABLED(PROUI_ITEM_ABRT)
         EDIT_ITEM_F(ICON_File, "Stop Motors on Abort", onDrawChkbMenu, SetAutoAbort, &HMI_data.auto_abort);
+      #endif
+      #if ENABLED(PROUI_ITEM_CONF)
+        EDIT_ITEM_F(ICON_File, "Emergency Stop/Pause", onDrawChkbMenu, SetAutoConfirm, &HMI_data.auto_confirm);
       #endif
       #if ENABLED(SHOW_SPEED_IND)
         EDIT_ITEM(ICON_MaxSpeed, MSG_SPEED_IND, onDrawChkbMenu, SetSpdInd, &HMI_data.SpdInd);

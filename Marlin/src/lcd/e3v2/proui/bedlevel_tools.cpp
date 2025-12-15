@@ -92,11 +92,9 @@ bool drawing_mesh = false;
 
 #endif
 
-void BedLevelToolsClass::manual_value_update(const uint8_t mesh_x, const uint8_t mesh_y, bool reset/*=false*/) {
-  float zval;
-  if (reset) { zval = 0; }
-  else { zval = current_position.z; }
-  gcode.process_subcommands_now(TS(F("M421I"), mesh_x, F("J"), mesh_y, F("Z"), p_float_t(zval, 3)));
+void BedLevelToolsClass::manual_value_update(const uint8_t mesh_x, const uint8_t mesh_y, const bool reset/*=false*/) {
+  const float zval = reset ? 0.0f : current_position.z;
+  queue.inject(TS(F("M421I"), mesh_x, F("J"), mesh_y, F("Z"), p_float_t(zval, 3)));
   planner.synchronize();
 }
 
@@ -201,20 +199,15 @@ bool BedLevelToolsClass::meshValidate() {
       const auto start_y_px = padding_y_top + ((GRID_MAX_POINTS_Y) - y - 1) * cell_height_px;
       const auto end_y_px   = start_y_px + cell_height_px - 1 - gridline_width;
       const float z = bedlevel.z_values[x][y];
-      const uint16_t color = isnan(z) ? Color_Grey : (   // Gray if undefined
-        (z > 0 ? uint16_t(round(0x1F *  z / rmax)) << 11 // Red for positive mesh point
-               : uint16_t(round(0x3F * -z / rmax)) << 5) // Green for negative mesh point
-               | _MIN(0x1F, (uint8_t(abs(z) * 0.4)))     // + Blue stepping for every mm
-      );                                                 // RGB565 colors: https://rgbcolorpicker.com/565
+      const uint16_t color = isnan(z) ? Color_Grey : (    // Gray if undefined
+        (z > 0 ? uint16_t(LROUND(0x1F *  z / rmax)) << 11 // Red for positive mesh point
+               : uint16_t(LROUND(0x3F * -z / rmax)) << 5) // Green for negative mesh point
+               | _MIN(0x1F, (uint8_t(abs(z) * 0.4)))      // + Blue stepping for every mm
+      );                                                  // RGB565 colors: https://rgbcolorpicker.com/565
 
       /*
-      const int16_t v = round(z * 100);
+      const int16_t v = LROUND(z * 100);
       const uint16_t color = isnan(z) ? Color_Grey : DWINUI::RainbowInt(v, -rmax, rmax);
-      const uint16_t color = isnan(z) ? Color_Grey : (   // Gray if undefined
-        (z > 0 ? uint16_t(round(0x1F *  z / rmax)) << 11 // Red for positive mesh point
-               : uint16_t(round(0x3F * -z / rmax)) << 5) // Green for negative mesh point
-               | _MIN(0x1F, (uint8_t(abs(z) * 0.4)))     // + Blue stepping for every mm
-      );                                                 // RGB565 colors: https://rgbcolorpicker.com/565
       */
 
       DWIN_Draw_Rectangle(1, color, start_x_px, start_y_px, end_x_px, end_y_px);

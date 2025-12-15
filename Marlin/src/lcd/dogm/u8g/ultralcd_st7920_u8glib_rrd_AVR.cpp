@@ -91,11 +91,19 @@
   #define ST7920_DAT(V) ((V) & 0x80)
 #endif
 
-#define ST7920_SND_BIT(...) do{ \
-  WRITE(ST7920_CLK_PIN, LOW);             ST7920_DELAY_1; \
-  WRITE(ST7920_DAT_PIN, ST7920_DAT(val)); ST7920_DELAY_2; \
-  WRITE(ST7920_CLK_PIN, HIGH);            ST7920_DELAY_3; \
-  val <<= 1; }while(0);
+#if HAS_N32_CR10
+  #define ST7920_SND_BIT(...) do{ \
+    U8G_WRITE(ST7920_CLK_PIN, LOW);             ST7920_DELAY_1; \
+    U8G_WRITE(ST7920_DAT_PIN, ST7920_DAT(val)); ST7920_DELAY_2; \
+    U8G_WRITE(ST7920_CLK_PIN, HIGH);            ST7920_DELAY_3; \
+    val <<= 1; }while(0);
+#else
+  #define ST7920_SND_BIT(...) do{ \
+    WRITE(ST7920_CLK_PIN, LOW);             ST7920_DELAY_1; \
+    WRITE(ST7920_DAT_PIN, ST7920_DAT(val)); ST7920_DELAY_2; \
+    WRITE(ST7920_CLK_PIN, HIGH);            ST7920_DELAY_3; \
+    val <<= 1; }while(0);
+#endif
 
 // Optimize this code with -O3
 #pragma GCC optimize (3)
@@ -108,9 +116,15 @@ uint8_t u8g_dev_rrd_st7920_128x64_fn(u8g_t *u8g, u8g_dev_t *dev, uint8_t msg, vo
   uint8_t i, y;
   switch (msg) {
     case U8G_DEV_MSG_INIT: {
-      OUT_WRITE(ST7920_CS_PIN, LOW);
-      OUT_WRITE(ST7920_DAT_PIN, LOW);
-      OUT_WRITE(ST7920_CLK_PIN, HIGH);
+      #if HAS_N32_CR10
+        U8G_OUT_WRITE(ST7920_CS_PIN, LOW);
+        U8G_OUT_WRITE(ST7920_DAT_PIN, LOW);
+        U8G_OUT_WRITE(ST7920_CLK_PIN, HIGH);
+      #else
+        OUT_WRITE(ST7920_CS_PIN, LOW);
+        OUT_WRITE(ST7920_DAT_PIN, LOW);
+        OUT_WRITE(ST7920_CLK_PIN, HIGH);
+      #endif
 
       ST7920_CS();
       u8g_Delay(120);                 // Initial delay for boot up

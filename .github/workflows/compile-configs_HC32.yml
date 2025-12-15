@@ -16,28 +16,28 @@ jobs:
     strategy:
       matrix:
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -46,9 +46,9 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
+          if ($IS);  then ISTMP=-IS;  else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC; else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;  else DTMP=;  fi;
           echo "filename=${DTMP}HC32_Default${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -71,8 +71,8 @@ jobs:
           mkdir temp
           mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
         env:
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -94,29 +94,29 @@ jobs:
     strategy:
       matrix:
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -125,10 +125,10 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
+          if ($IS);  then ISTMP=-IS;   else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;  else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;   else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5; else STMP=;  fi;
           echo "filename=${DTMP}HC32_MM-ProUI-EX${STMP}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -161,9 +161,9 @@ jobs:
           mkdir temp
           mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
         env:
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
-          T5: ${{ matrix.t5 }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
+          T5:  ${{ matrix.t5 }}
           TJC: ${{ matrix.tjc }}
       - name: Get release
         id: get_release
@@ -184,38 +184,38 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pro: [true,false]
+        pro:     [true,false]
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
-            t13: true
+          - t5:      true
+            t13:     true
           - inshape: true
-            temp: true
+            temp:    true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -225,12 +225,12 @@ jobs:
         id: build_configs
         run: |
           if ($PRO); then PRTMP=-ProUI-EX; else PRTMP=; fi;
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;       else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;      else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;       else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;     else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13;    else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;      else MPTMP=; fi;
           echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_UBL${PRTMP}${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -280,10 +280,10 @@ jobs:
           mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
         env:
           PRO: ${{ matrix.pro }}
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release
@@ -306,34 +306,34 @@ jobs:
     strategy:
       matrix:
         inshape: [true,false]
-        temp: [true,false]
-        tjc: [true,false]
-        t5: [true,false]
-        t13: [true,false]
-        bmp: [true,false]
+        temp:    [true,false]
+        tjc:     [true,false]
+        t5:      [true,false]
+        t13:     [true,false]
+        bmp:     [true,false]
         exclude:
-          - t5: true
+          - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.1
       - name: Set up node
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.1.0
         with:
           node-version: 20
       - name: Cache pip
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Cache PlatformIO
-        uses: actions/cache@v4.2.4
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.13"
       - name: Install PlatformIO
@@ -342,12 +342,12 @@ jobs:
       - name: Run PlatformIO
         id: build_configs
         run: |
-          if ($IS); then ISTMP=-IS; else ISTMP=; fi;
-          if ($TP); then TPTMP=-MPC; else TPTMP=; fi;
-          if ($TJC); then DTMP=TJC-; else DTMP=; fi;
-          if ($T5); then STMP=_SPDY5; else STMP=; fi;
-          if ($T13); then TTMP=_SPRT13; else TTMP=; fi;
-          if ($BMP); then MPTMP=_BMP; else MPTMP=; fi;
+          if ($IS);  then ISTMP=-IS;    else ISTMP=; fi;
+          if ($TP);  then TPTMP=-MPC;   else TPTMP=; fi;
+          if ($TJC); then DTMP=TJC-;    else DTMP=;  fi;
+          if ($T5);  then STMP=_SPDY5;  else STMP=;  fi;
+          if ($T13); then TTMP=_SPRT13; else TTMP=;  fi;
+          if ($BMP); then MPTMP=_BMP;   else MPTMP=; fi;
           echo "filename=${DTMP}HC32${TTMP}${STMP}${MPTMP}_BLT-ProUI-EX${ISTMP}${TPTMP}$(date +"-%m-%d").bin" >> $GITHUB_OUTPUT
           > Marlin/Configuration.h
           > Marlin/Configuration_adv.h
@@ -386,10 +386,10 @@ jobs:
           mkdir temp
           mv .pio/build/HC32F460C_aquila_101/*.bin temp/build.bin
         env:
-          IS: ${{ matrix.inshape }}
-          TP: ${{ matrix.temp }}
+          IS:  ${{ matrix.inshape }}
+          TP:  ${{ matrix.temp }}
           TJC: ${{ matrix.tjc }}
-          T5: ${{ matrix.t5 }}
+          T5:  ${{ matrix.t5 }}
           T13: ${{ matrix.t13 }}
           BMP: ${{ matrix.bmp }}
       - name: Get release

@@ -154,6 +154,7 @@ void SetPFloatOnClick(const float lo, const float hi, uint8_t dp, void (*Apply)(
 // HMI user control functions =================================================
 
 void HMI_Menu();
+void HMI_SetGeneric(const bool draw, bool isInt=false, bool isFloat=false);
 void HMI_SetDraw();
 void HMI_SetNoDraw();
 void HMI_SetPInt();

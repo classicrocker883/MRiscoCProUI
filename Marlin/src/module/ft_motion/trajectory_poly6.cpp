@@ -22,34 +22,35 @@
 
 #include "../../inc/MarlinConfig.h"
 
-#if ENABLED(FT_MOTION)
+#if ENABLED(FTM_POLYS)
 
-#include "poly6_trajectory_generator.h"
-#include <math.h>
+#include "trajectory_poly6.h"
 #include "../ft_motion.h"
+#include <math.h>
 
 Poly6TrajectoryGenerator::Poly6TrajectoryGenerator() {}
 
 void Poly6TrajectoryGenerator::plan(const float initial_speed, const float final_speed, const float acceleration, float nominal_speed, const float distance) {
   this->initial_speed = initial_speed;
-  this->nominal_speed = nominal_speed;
 
   // --- Trapezoid timings (unchanged) ---
   const float invA = 1.0f / acceleration;
-  const float ldiff = distance + 0.5f * invA * (sq(this->initial_speed) + sq(final_speed));
+  const float ldiff = distance + 0.5f * invA * (sq(initial_speed) + sq(final_speed));
 
-  T2 = ldiff / this->nominal_speed - invA * this->nominal_speed;
+  T2 = ldiff / nominal_speed - invA * nominal_speed;
   if (T2 < 0.0f) {
     T2 = 0.0f;
-    this->nominal_speed = sqrtf(ldiff * acceleration);
+    nominal_speed = SQRT(ldiff * acceleration);
   }
 
-  T1 = (this->nominal_speed - this->initial_speed) * invA;
-  T3 = (this->nominal_speed - final_speed) * invA;
+  this->nominal_speed = nominal_speed;
+
+  T1 = (nominal_speed - initial_speed) * invA;
+  T3 = (nominal_speed - final_speed) * invA;
 
   // Distances at phase boundaries (trapezoid areas)
-  pos_before_coast = 0.5f * (this->initial_speed + this->nominal_speed) * T1;
-  pos_after_coast  = pos_before_coast + this->nominal_speed * T2;
+  pos_before_coast = 0.5f * (initial_speed + nominal_speed) * T1;
+  pos_after_coast  = pos_before_coast + nominal_speed * T2;
 
   // --- Build sextic (in position) for each phase ---
   // We start from a quintic-in-position s5(u) that meets endpoints with a(0)=a(1)=0,
@@ -63,9 +64,9 @@ void Poly6TrajectoryGenerator::plan(const float initial_speed, const float final
   {
     const float Ts = T1;
     const float s0 = 0.0f;
-    const float v0 = this->initial_speed;
+    const float v0 = initial_speed;
     const float s1 = pos_before_coast;
-    const float v1 = this->nominal_speed;
+    const float v1 = nominal_speed;
 
     const float delta_p = s1 - s0 - v0 * Ts;
     const float delta_v = (v1 - v0) * Ts;
@@ -86,8 +87,8 @@ void Poly6TrajectoryGenerator::plan(const float initial_speed, const float final
   {
     const float Ts = T3;
     const float s0 = pos_after_coast;
-    const float v0 = this->nominal_speed;
-    const float s1 = pos_after_coast + 0.5f * (this->nominal_speed + final_speed) * T3;
+    const float v0 = nominal_speed;
+    const float s1 = pos_after_coast + 0.5f * (nominal_speed + final_speed) * T3;
     const float v1 = final_speed;
 
     const float delta_p = s1 - s0 - v0 * Ts;
@@ -97,9 +98,9 @@ void Poly6TrajectoryGenerator::plan(const float initial_speed, const float final
     dec_c4  = -15.0f * delta_p + 7.0f * delta_v;
     dec_c5 =  6.0f * delta_p - 3.0f * delta_v;
 
-    const float a5_mid = s5pp_u(dec_c3, dec_c4, dec_c5, 0.5f) / (Ts * Ts);
+    const float a5_mid = s5pp_u(dec_c3, dec_c4, dec_c5, 0.5f) / sq(Ts);
     const float a_mid_target = -ftMotion.cfg.poly6_acceleration_overshoot * acceleration;
-    dec_c6 = (Ts * Ts) * (a_mid_target - a5_mid) / Kpp_mid;
+    dec_c6 = sq(Ts) * (a_mid_target - a5_mid) / Kpp_mid;
   }
 
 }
@@ -121,8 +122,8 @@ float Poly6TrajectoryGenerator::getDistanceAtTime(const float t) const {
     return pos_before_coast + this->nominal_speed * (t - T1);
   }
   // Decel phase
-  const float tau = t - (T1 + T2);
-  const float u   = tau / T3;
+  const float tau = t - (T1 + T2),
+              u = tau / T3;
   return s5_u(pos_after_coast, this->nominal_speed, T3, dec_c3, dec_c4, dec_c5, u)
        + dec_c6 * K_u(pos_after_coast, this->nominal_speed, T3, u);
 }
@@ -139,4 +140,4 @@ void Poly6TrajectoryGenerator::reset() {
   acc_c6 = dec_c6 = 0.0f;
 }
 
-#endif // FT_MOTION
+#endif // FTM_POLYS

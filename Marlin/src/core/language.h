@@ -212,6 +212,8 @@
 #define STR_KILL_BUTTON                     "KILL button/pin"
 
 // temperature.cpp strings
+#define STR_WAIT_FOR_HOTEND                 "Wait for hotend heating..."
+#define STR_WAIT_FOR_BED                    "Wait for bed heating..."
 #define STR_PID_AUTOTUNE                    "PID Autotune"
 #define STR_PID_AUTOTUNE_START              " start"
 #define STR_PID_BAD_HEATER_ID               " failed! Bad heater id"
@@ -232,6 +234,8 @@
 #define STR_PID_DEBUG_INPUT                 ": Input "
 #define STR_PID_DEBUG_OUTPUT                " Output "
 #define STR_INVALID_EXTRUDER_NUM            " - Invalid extruder number !"
+
+// MPCTEMP strings
 #define STR_MPC_AUTOTUNE                    "MPC Autotune"
 #define STR_MPC_AUTOTUNE_START              "MPC Autotune start for " STR_E
 #define STR_MPC_AUTOTUNE_INTERRUPTED        "MPC Autotune interrupted!"
@@ -241,6 +245,7 @@
 #define STR_MPC_MEASURING_AMBIENT           "Measuring ambient heatloss at "
 #define STR_MPC_TEMPERATURE_ERROR           "Temperature error"
 
+// Temperature Sensors
 #define STR_HEATER_BED                      "bed"
 #define STR_HEATER_CHAMBER                  "chamber"
 #define STR_COOLER                          "cooler"
@@ -250,6 +255,7 @@
 #define STR_REDUNDANT                       "redundant "
 #define STR_LASER_TEMP                      "laser temperature"
 
+// Misc. Errors, Thermal Runaway
 #define STR_STOPPED_HEATER                  ", system stopped! Heater_ID: "
 #define STR_DETECTED_TEMP_B                 " (temp: "
 #define STR_DETECTED_TEMP_E                 ")"
@@ -272,6 +278,7 @@
 #define STR_DEBUG_COMMUNICATION             "COMMUNICATION"
 #define STR_DEBUG_DETAIL                    "DETAIL"
 
+// Password Security
 #define STR_PRINTER_LOCKED                  "Printer locked! (Unlock with M511 or LCD)"
 #define STR_WRONG_PASSWORD                  "Incorrect Password"
 #define STR_PASSWORD_TOO_LONG               "Password too long"
@@ -281,7 +288,7 @@
 
 // Settings Report Strings
 #define STR_Z_AUTO_ALIGN                    "Z Auto-Align"
-#define STR_BACKLASH_COMPENSATION           "Backlash compensation"
+#define STR_BACKLASH_COMPENSATION           "Backlash Compensation"
 #define STR_FT_MOTION                       "Fixed-Time Motion"
 #define STR_S_SEG_PER_SEC                   "S<seg-per-sec>"
 #define STR_DELTA_SETTINGS                  "Delta (L<diagonal-rod> R<radius> H<height> S<seg-per-sec> XYZ<tower-angle-trim> ABC<rod-trim>)"
@@ -289,11 +296,11 @@
 #define STR_POLAR_SETTINGS                  "Polar"
 #define STR_POLARGRAPH_SETTINGS             "Polargraph"
 #define STR_SCARA_P_T_Z                     "P<theta-psi-offset> T<theta-offset> Z<home-offset>"
-#define STR_ENDSTOP_ADJUSTMENT              "Endstop adjustment"
+#define STR_ENDSTOP_ADJUSTMENT              "Endstop Adjustment"
 #define STR_SKEW_FACTOR                     "Skew Factor"
 #define STR_VOLUMETRIC_EXTRUSION            "Volumetric Extrusion"
 #define STR_MAX_ACCELERATION                "Max Acceleration (units/s2)"
-#define STR_MAX_FEEDRATES                   "Max feedrates (units/s)"
+#define STR_MAX_FEEDRATES                   "Max Feedrates (units/s)"
 #define STR_ACCELERATION_P_R_T              "Acceleration (units/s2) (P<print-accel> R<retract-accel> T<travel-accel>)"
 #define STR_HOMING_FEEDRATE                 "Homing Feedrate"
 #define STR_TOOL_CHANGING                   "Tool-changing"
@@ -303,42 +310,43 @@
 #define STR_ABL                             "Auto Bed Leveling"
 #define STR_X_TWIST_CORRECTION              "X-Twist Correction"
 #define STR_SERVO_ANGLES                    "Servo Angles"
+#define STR_AUTOTEMP                        "Auto Temp Control"
 #define STR_HOTEND_PID                      "Hotend PID"
 #define STR_BED_PID                         "Bed PID"
 #define STR_CHAMBER_PID                     "Chamber PID"
-#define STR_STEPS_PER_UNIT                  "Steps per unit"
+#define STR_STEPS_PER_UNIT                  "Steps per Unit"
 #define STR_LINEAR_ADVANCE                  "Linear Advance"
 #define STR_NONLINEAR_EXTRUSION             "Nonlinear Extrusion"
 #define STR_INPUT_SHAPING                   "Input Shaping"
 #define STR_HOTEND_TIMEOUT                  "Hotend Idle Timeout"
 #define STR_CONTROLLER_FAN                  "Controller Fan"
-#define STR_STEPPER_MOTOR_CURRENTS          "Stepper motor currents"
+#define STR_STEPPER_MOTOR_CURRENTS          "Stepper Motor Currents"
 #define STR_RETRACT_S_F_Z                   "Retract (S<length> F<feedrate> Z<lift>)"
 #define STR_RECOVER_S_F                     "Recover (S<length> F<feedrate>)"
 #define STR_AUTO_RETRACT_S                  "Auto-Retract (S<enable>)"
-#define STR_FILAMENT_LOAD_UNLOAD            "Filament load/unload"
+#define STR_FILAMENT_LOAD_UNLOAD            "Filament Load/Unload"
 #define STR_POWER_LOSS_RECOVERY             "Power-Loss Recovery"
-#define STR_FILAMENT_RUNOUT_SENSOR          "Filament runout sensor"
-#define STR_DRIVER_STEPPING_MODE            "Driver stepping mode"
-#define STR_STEPPER_DRIVER_CURRENT          "Stepper driver current"
+#define STR_FILAMENT_RUNOUT_SENSOR          "Filament Runout Sensor"
+#define STR_DRIVER_STEPPING_MODE            "Driver Stepping Mode"
+#define STR_STEPPER_DRIVER_CURRENT          "Stepper Driver Current"
 #define STR_HOMING_CURRENT                  "Homing Current (mA)"
 #define STR_TMC_STEALTH                     "StealthChop"
 #define STR_HYBRID_THRESHOLD                "Hybrid Threshold"
 #define STR_STALLGUARD_THRESHOLD            "StallGuard Threshold"
 #define STR_HOME_OFFSET                     "Home Offset"
-#define STR_SOFT_ENDSTOPS                   "Soft endstops"
-#define STR_MATERIAL_HEATUP                 "Material heatup parameters"
+#define STR_SOFT_ENDSTOPS                   "Soft Endstops"
+#define STR_MATERIAL_HEATUP                 "Material Heatup Parameters"
 #define STR_LCD_CONTRAST                    "LCD Contrast"
 #define STR_LCD_BRIGHTNESS                  "LCD Brightness"
 #define STR_DISPLAY_SLEEP                   "Display Sleep"
 #define STR_UI_LANGUAGE                     "UI Language"
 #define STR_PROBE_OFFSET                    "Probe Offset"
 #define STR_TEMPERATURE_UNITS               "Temperature Units"
-#define STR_USER_THERMISTORS                "User thermistors"
-#define STR_DELAYED_POWEROFF                "Delayed poweroff"
+#define STR_USER_THERMISTORS                "User Thermistors"
+#define STR_DELAYED_POWEROFF                "Delayed Poweroff"
 #define STR_MPC                             "Model Predictive Control"
 #define STR_MM3_STATS                       "MMU3 Operational Stats"
-#define STR_STORED_MACROS                   "Stored macros"
+#define STR_STORED_MACROS                   "Stored Macros"
 
 //
 // General axis names

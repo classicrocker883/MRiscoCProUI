@@ -138,6 +138,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_LEVEL_BED_WAITING              = _UxGT("Click to Begin");
   LSTR MSG_LEVEL_BED_NEXT_POINT           = _UxGT("Next Point");
   LSTR MSG_LEVEL_BED_DONE                 = _UxGT("Leveling Done!");
+  LSTR MSG_ZERO_MESH_POINT                = _UxGT("Zero Current Point");
   LSTR MSG_Z_FADE_HEIGHT                  = _UxGT("Fade Height");
   LSTR MSG_SET_HOME_OFFSETS               = _UxGT("Set Home Offsets");
   LSTR MSG_HOME_OFFSET_X                  = _UxGT("Home Offset X"); // DWIN
@@ -417,11 +418,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_TEMP_BED                       = _UxGT("Bed Temperature");
   LSTR MSG_TEMP_CHAMBER                   = _UxGT("Chamber Temperature");
 
-  LSTR MSG_BAD_HEATER_ID                  = _UxGT("Bad extruder");
-  LSTR MSG_TEMP_TOO_HIGH                  = _UxGT("Temperature too high");
-  LSTR MSG_TEMP_TOO_LOW                   = _UxGT("Temperature too low");
-
-  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Autotune failed! Bad extruder");
+  LSTR MSG_PID_BAD_HEATER_ID              = _UxGT("Bad extruder");
   LSTR MSG_PID_TEMP_TOO_HIGH              = _UxGT("Autotune failed! Temperature too high");
   LSTR MSG_PID_TIMEOUT                    = _UxGT("Autotune failed! Timeout");
 
@@ -1011,6 +1008,14 @@ namespace LanguageNarrow_en {
   LSTR MSG_FTM_SMOOTH_TIME_N              = _UxGT("@ Smoothing Time");
   LSTR MSG_FTM_POLY6_OVERSHOOT            = _UxGT("@ Poly6 Overshoot");
 
+  LSTR MSG_FTM_RESONANCE_TEST             = _UxGT("Resonance Test");
+  LSTR MSG_FTM_RT_RUNNING                 = _UxGT("Res. Test Running...");
+  LSTR MSG_FTM_RT_START_N                 = _UxGT("Start @ Axis Test");
+  LSTR MSG_FTM_RT_STOP                    = _UxGT("Abort Test");
+  LSTR MSG_FTM_RETRIEVE_FREQ              = _UxGT("Calc. Res. Freq.");
+  LSTR MSG_FTM_RESONANCE_FREQ             = _UxGT("Resonance Freq.");
+  LSTR MSG_FTM_TIMELINE_FREQ              = _UxGT("Timeline (s)");
+
   LSTR MSG_LEVEL_X_AXIS                   = _UxGT("Level X-Axis");
   LSTR MSG_AUTO_CALIBRATE                 = _UxGT("Auto Calibrate");
   LSTR MSG_FTDI_HEATER_TIMEOUT            = _UxGT("Idle timeout, temperature decreased. Press Okay to reheat and again to resume.");
@@ -1068,6 +1073,8 @@ namespace LanguageNarrow_en {
   LSTR DGUS_MSG_NOT_WHILE_PRINTING        = _UxGT("Not allowed during print");
   LSTR DGUS_MSG_NOT_WHILE_IDLE            = _UxGT("Not allowed while idle");
   LSTR DGUS_MSG_NO_FILE_SELECTED          = _UxGT("No file selected");
+  LSTR DGUS_MSG_TEMP_TOO_LOW              = _UxGT("Temperature too low");
+  LSTR DGUS_MSG_TEMP_TOO_HIGH             = _UxGT("Temperature too high");
   LSTR DGUS_MSG_EXECUTING_COMMAND         = _UxGT("Executing command...");
   LSTR DGUS_MSG_BED_PID_DISABLED          = _UxGT("Bed PID disabled");
   LSTR DGUS_MSG_PID_DISABLED              = _UxGT("PID disabled");
@@ -1211,7 +1218,6 @@ namespace LanguageWide_en {
     LSTR MSG_CORNERS_NOT_LEVELED          = _UxGT("Corners not leveled");
     LSTR MSG_KNOB_ADJUSTMENT_REQUIRED     = _UxGT("Knob adjustment required");
     LSTR MSG_PROBE_FOR_Z_VALUE            = _UxGT("Probe for Z Value");
-    LSTR MSG_ZERO_CURRENT_POINT           = _UxGT("Zero Current Point");
     LSTR MSG_CALCULATING_AVERAGE          = _UxGT("Calculating average");
     LSTR MSG_AND_RELATIVE_HEIGHTS         = _UxGT("and relative heights");
     LSTR MSG_TOLERANCE_ACHIEVED           = _UxGT("Tolerance achieved!");
@@ -1249,7 +1255,6 @@ namespace LanguageWide_en {
     LSTR MSG_250K_BAUD                    = _UxGT("250K baud");
     LSTR MSG_SCREW_INSET                  = _UxGT("Bed Screw Inset");
     LSTR MSG_SPEED_IND                    = _UxGT("Speed Indicator");
-    LSTR MSG_ZERO_MESH                    = _UxGT("Zero Current Point");
     LSTR MSG_TRAMWIZ_CALC                 = _UxGT("Calculate Average");
     LSTR MSG_HOME_Z_AND_DISABLE           = _UxGT("Home Z and Disable");
     LSTR MSG_TOOLBAR_SETUP                = _UxGT("Toolbar Setup");
@@ -1259,6 +1264,8 @@ namespace LanguageWide_en {
     LSTR MSG_HOMING_FEEDRATE_Y            = _UxGT(STR_B " " STR_HOMING_FEEDRATE);
     LSTR MSG_HOMING_FEEDRATE_Z            = _UxGT(STR_C " " STR_HOMING_FEEDRATE);
     LSTR MSG_EEPROM_INITIALIZED           = _UxGT("Default Settings Restored");
+    LSTR MSG_FTM_RT_RUNNING               = _UxGT("Resonance Test Running...");
+    LSTR MSG_FTM_RESONANCE_FREQ           = _UxGT("Resonance frequency");
   #endif // LCD_WIDTH >= 20 || HAS_DWIN_E3V2
 }
 

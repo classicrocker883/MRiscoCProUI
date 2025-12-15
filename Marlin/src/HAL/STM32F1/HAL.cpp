@@ -167,7 +167,8 @@ void MarlinHAL::adc_init() {
   adc.setContinuous();
   adc.startConversion();
 }
-
+#elif HAS_N32_CR10
+  #include "HAL_N32.h"
 #endif // !VOXELAB_N32
 
 void MarlinHAL::adc_start(const pin_t pin) {
@@ -199,7 +200,26 @@ void MarlinHAL::adc_start(const pin_t pin) {
     _TCASE(POWER_MONITOR_CURRENT, POWER_MONITOR_CURRENT_PIN, POWERMON_CURRENT)
     _TCASE(POWER_MONITOR_VOLTAGE, POWER_MONITOR_VOLTAGE_PIN, POWERMON_VOLTAGE)
   }
-  adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
+
+  #if DISABLED(HAS_N32_CR10)
+    adc_result = (adc_results[(int)pin_index] & 0xFFF) >> (12 - HAL_ADC_RESOLUTION); // shift out unused bits
+  #else
+    ADC_Initial(USE_ADC);
+
+    switch (pin_index) {
+      case TEMP_0:
+      adc_result =  ADC_GetData(USE_ADC, ADC2_Channel_02_PA5);
+      adc_result =  ADC_GetData(USE_ADC, ADC2_Channel_02_PA5);
+        break;
+      case TEMP_BED:
+      adc_result =  ADC_GetData(USE_ADC, ADC2_Channel_01_PA4);
+      adc_result =  ADC_GetData(USE_ADC, ADC2_Channel_01_PA4);
+        break;
+      default:
+        break;
+    }
+    adc_result = (adc_result >> 2) & 0x3FF;
+   #endif
 }
 
 // ------------------------
@@ -273,7 +293,8 @@ void MarlinHAL::idletask() {
      * command so drives can be released as needed.
      */
     /* Copied from LPC1768 framework. Should be fixed later to process HAS_SD_HOST_DRIVE */
-    //if (!drive_locked()) // TODO
+    //if (!drive_locked())
+    /// TODO:
     MarlinMSC.loop(); // Process USB mass storage device class loop
   #endif
 }
