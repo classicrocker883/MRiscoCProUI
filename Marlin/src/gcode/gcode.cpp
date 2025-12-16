@@ -76,11 +76,11 @@ GcodeSuite gcode;
 #include "../MarlinCore.h" // for idle, kill
 
 #if ALL(DWIN_LCD_PROUI, HAS_CGCODE)
-  #include "../lcd/e3v2/proui/custom_gcodes.h"
+  #include "../lcd/dwin/proui/custom_gcodes.h"
 #endif
 
 #if ENABLED(CV_LASER_MODULE)
-  #include "../lcd/e3v2/proui/cv_laser_module.h"
+  #include "../lcd/dwin/proui/cv_laser_module.h"
 #endif
 
 // Inactivity shutdown

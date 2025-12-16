@@ -28,7 +28,7 @@
 #include "../../feature/bedlevel/bedlevel.h"
 #include "../../module/probe.h"
 #if PROUI_EX
-  #include "../../lcd/e3v2/proui/dwin.h"
+  #include "../../lcd/dwin/proui/dwin.h"
 #endif
 
 /**

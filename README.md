@@ -165,7 +165,7 @@ Before building, open a terminal and run `./buildroot/share/scripts/simulator_er
 
 - For `default_envs =` add `simulator_windows` (for Windows) | `simulator_linux_release` (for Linux).
 
-3. In **lcd/e3v2/proui/dwin_defines.h**:
+3. In **lcd/dwin/proui/dwin_defines.h**:
 
 - Replace `#define INVERT_E0_DIR HMI_data.Invert_E0` with `#define INVERT_E0_DIR false` (or comment it and `#undef INVERT_E0_DIR` out).
 
