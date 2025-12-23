@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v6.0.1
 
       - name: Cache node_modules
-        uses: actions/cache@v4.3.0
+        uses: actions/cache@v5.0.1
         with:
           path: node_modules
           key: ${{ runner.os }}-npm-lines-v1-${{ hashFiles('**/package-lock.json') }}
