@@ -39,7 +39,7 @@
 #endif
 
 #if ALL(DWIN_LCD_PROUI, CV_LASER_MODULE)
-  #include "../lcd/e3v2/proui/dwin.h"
+  #include "../lcd/dwin/proui/dwin.h"
 #endif
 
 SpindleLaser cutter;

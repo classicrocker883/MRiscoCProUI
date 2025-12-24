@@ -18,7 +18,6 @@ if __name__ == "__main__":
         "-fsigned-char",
         "-fno-move-loop-invariants",
         "-fno-strict-aliasing",
-        "-fsingle-precision-constant",
         "--specs=nano.specs",
         "--specs=nosys.specs",
         "-MMD",
