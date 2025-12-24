@@ -44,7 +44,7 @@
 #endif
 
 #if ENABLED(DWIN_LCD_PROUI)
-  #include "../../../lcd/e3v2/proui/meshviewer.h"
+  #include "../../../lcd/dwin/proui/meshviewer.h"
 #endif
 
 #if ENABLED(UBL_HILBERT_CURVE)

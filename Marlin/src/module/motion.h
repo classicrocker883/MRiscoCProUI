@@ -426,7 +426,7 @@ void restore_feedrate_and_scaling();
 
 #if HAS_Z_AXIS
   #if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
-    #include "../lcd/e3v2/proui/dwin.h"
+    #include "../lcd/dwin/proui/dwin.h"
     #define Z_POST_CLEARANCE HMI_data.z_after_homing
   #elif defined(Z_AFTER_HOMING)
     #define Z_POST_CLEARANCE Z_AFTER_HOMING

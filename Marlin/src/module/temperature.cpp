@@ -51,7 +51,7 @@
 #endif
 
 #if ENABLED(DWIN_LCD_PROUI)
-  #include "../lcd/e3v2/proui/dwin.h"
+  #include "../lcd/dwin/proui/dwin.h"
 #elif ENABLED(SOVOL_SV06_RTS)
   #include "../lcd/sovol_rts/sovol_rts.h"
 #endif

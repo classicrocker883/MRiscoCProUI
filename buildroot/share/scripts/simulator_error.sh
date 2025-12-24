@@ -7,7 +7,7 @@
 #
 
 # Define file paths
-FILE1="Marlin/src/lcd/e3v2/proui/dwin_defines.h"
+FILE1="Marlin/src/lcd/dwin/proui/dwin_defines.h"
 FILE2="Marlin/src/inc/Conditionals-5-post.h"
 FILE3="ini/native.ini"
 FILE4="Marlin/Configuration.h"
@@ -31,7 +31,7 @@ fi
 
 echo "Starting script..."
 
-# --- Change 1: Marlin/src/lcd/e3v2/proui/dwin_defines.h ---
+# --- Change 1: Marlin/src/lcd/dwin/proui/dwin_defines.h ---
 if [ -f "$FILE1" ]; then
     if grep -qF "$PATTERN1" "$FILE1"; then
         sed -i "s|$PATTERN1|#define INVERT_E0_DIR false|" "$FILE1"

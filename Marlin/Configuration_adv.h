@@ -1183,12 +1183,26 @@
 #if ENABLED(FT_MOTION)
   //#define FTM_IS_DEFAULT_MOTION               // Use FT Motion as the factory default?
   //#define FT_MOTION_MENU                      // Provide a MarlinUI menu to set M493 and M494 parameters
-  //#define FTM_HOME_AND_PROBE                  // Use FT Motion for homing / probing. Disable if FT Motion breaks these functions.
+
+  //#define NO_STANDARD_MOTION                  // Disable the standard motion system entirely to save Flash and RAM
+  #if DISABLED(NO_STANDARD_MOTION)
+    //#define FTM_HOME_AND_PROBE                // Use FT Motion for homing / probing. Disable if FT Motion breaks these functions.
+  #endif
 
   //#define FTM_DYNAMIC_FREQ                    // Enable for linear adjustment of XY shaping frequency according to Z or E
   #if ENABLED(FTM_DYNAMIC_FREQ)
     #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED // Default mode of dynamic frequency calculation. (DISABLED, Z_BASED, MASS_BASED)
   #endif
+
+  // Disable unused shapers if you need more free space
+  #define FTM_SHAPER_ZV
+  #define FTM_SHAPER_ZVD
+  #define FTM_SHAPER_ZVDD
+  #define FTM_SHAPER_ZVDDD
+  #define FTM_SHAPER_EI
+  #define FTM_SHAPER_2HEI
+  #define FTM_SHAPER_3HEI
+  #define FTM_SHAPER_MZV
 
   #define FTM_DEFAULT_SHAPER_X      ftMotionShaper_NONE // Default shaper mode on X axis (NONE, ZV, ZVD, ZVDD, ZVDDD, EI, 2HEI, 3HEI, MZV)
   #define FTM_SHAPING_DEFAULT_FREQ_X   37.0f    // (Hz) Default peak frequency used by input shapers
@@ -1898,17 +1912,21 @@
 
   // SD Card Sorting options
   #if ENABLED(SDCARD_SORT_ALPHA)
-    #define SDSORT_REVERSE     false  // Default to sorting file names in reverse order.
-    #define SDSORT_LIMIT       80     // Maximum number of sorted items (10-256). Costs 27 bytes each.
-    #define SDSORT_FOLDERS     -1     // -1=above  0=none  1=below
-    #define SDSORT_GCODE       true   // Enable G-code M34 to set sorting behaviors: M34 S<-1|0|1> F<-1|0|1>
-    #define SDSORT_USES_RAM    true   // Pre-allocate a static array for faster pre-sorting.
-    #define SDSORT_USES_STACK  false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
-    #define SDSORT_CACHE_NAMES true   // Keep sorted items in RAM longer for speedy performance. Most expensive option.
-    #define SDSORT_DYNAMIC_RAM true   // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
-    #define SDSORT_CACHE_VFATS 2      // Maximum number of 13-byte VFAT entries to use for sorting.
-                                      /// NOTE: Only affects SCROLL_LONG_FILENAMES with SDSORT_CACHE_NAMES but not SDSORT_DYNAMIC_RAM.
-    #define SDSORT_QUICK       true   // Use Quick Sort as a sorting algorithm. Otherwise use Bubble Sort.
+    #define SDSORT_QUICK           true   // Use Quick Sort as a sorting algorithm. Otherwise use Bubble Sort.
+    #define SDSORT_REVERSE         false  // Default to sorting file names in reverse order.
+    #define SDSORT_LIMIT           80     // Maximum number of sorted items (10-256). Costs 27 bytes each.
+    #define SDSORT_FOLDERS        -1      // -1=above  0=none  1=below
+    #define SDSORT_GCODE           true   // Enable G-code M34 to set sorting behaviors: M34 S<-1|0|1> F<-1|0|1>
+    #define SDSORT_USES_STACK      false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
+    #define SDSORT_USES_RAM        true   // Pre-allocate a static array for faster pre-sorting.
+    #if ENABLED(SDSORT_USES_RAM)
+      #define SDSORT_CACHE_NAMES   true   // Keep sorted items in RAM longer for speedy performance. Most expensive option.
+      #if ENABLED(SDSORT_CACHE_NAMES)
+        #define SDSORT_DYNAMIC_RAM true   // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
+        #define SDSORT_CACHE_VFATS 2      // Maximum number of 13-byte VFAT entries to use for sorting.
+                                          /// NOTE: Only affects SCROLL_LONG_FILENAMES with SDSORT_CACHE_NAMES but not SDSORT_DYNAMIC_RAM.
+      #endif
+    #endif
   #endif
 
   // Allow international symbols in long filenames. To display correctly, the

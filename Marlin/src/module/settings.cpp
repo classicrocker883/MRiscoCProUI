@@ -79,8 +79,8 @@
 #endif
 
 #if ENABLED(DWIN_LCD_PROUI)
-  #include "../lcd/e3v2/proui/dwin.h"
-  #include "../lcd/e3v2/proui/bedlevel_tools.h"
+  #include "../lcd/dwin/proui/dwin.h"
+  #include "../lcd/dwin/proui/bedlevel_tools.h"
 #endif
 
 #if ENABLED(EXTENSIBLE_UI)

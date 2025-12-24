@@ -48,7 +48,7 @@
 #endif
 
 #if ENABLED(DWIN_LCD_PROUI)
-  #include "e3v2/proui/dwin_popup.h"
+  #include "dwin/proui/dwin_popup.h"
 #endif
 
 typedef bool (*statusResetFunc_t)();
