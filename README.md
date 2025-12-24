@@ -77,7 +77,9 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 
 > [!NOTE]
 > H32->HC32 support has been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here. You can find the original HC32 repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
+
 #
+
 #### Other Information:
 
 General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release). <br>
@@ -89,6 +91,7 @@ Other changes and updates are [addressed here](https://github.com/classicrocker8
 - [Firmware Retract](https://marlinfw.org/docs/features/fwretract.html)
 
 #
+
 <html>
 <body>
 <details>
@@ -223,11 +226,13 @@ mdir -i ~/new_fs.img ::/
 ```
 dd if=~/new_fs.img of=~/Marlin/.pio/build/simulator_linux_release/fs.img bs=512>
 ```
+
 </details>
 </body>
 </html>
 
 #
+
 ### Printer Information
 
 The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6/RCT6 - STMicroelectronics) and it's clones:
