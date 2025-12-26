@@ -34,13 +34,14 @@
  *  E[0|1]    : Turn Kickstart feature on or off
  *
  * Examples:
- *   M711                   ; Report current Settings
- *   M711 R                 ; Reset SDE to defaults
- *   M711 S255              ; Set Kickstart fan speed to 100%
- *   M711 E0                ; Set Kickstart to OFF
- *   M711 E1 S180 D100      ; Set Kickstart to ON, Kickstart fan speed 70%, duration to 100 milliseconds
+ *   M711               : Report current Settings
+ *   M711 R             : Reset SDE to defaults
+ *   M711 S255          : Set Kickstart fan speed to 100%
+ *   M711 E1 S180 D100  : Set Kickstart to ON, Kickstart fan speed 70%, duration to 100 milliseconds
+ *   M711 E0            : Set Kickstart to OFF
  */
 void GcodeSuite::M711() {
+  if (!parser.seen("DERS")) return M711_report();
 
   const bool seenR = parser.seen('R');
   const bool seenS = parser.seenval('S');
@@ -48,12 +49,9 @@ void GcodeSuite::M711() {
   const bool seenE = parser.seenval('E');
 
   if (seenR) kickstart.reset();
-  else if (seenS) kickstart.settings.speed = parser.value_byte();
-  else if (seenD) kickstart.settings.duration = parser.value_ushort();
-  else if (seenE) kickstart.settings.enabled = parser.value_bool();
-
-  if (!(seenR || seenS || seenD || seenE))
-    M711_report();
+  if (seenS) kickstart.settings.speed = parser.value_byte();
+  if (seenD) kickstart.settings.duration = parser.value_ushort();
+  if (seenE) kickstart.settings.enabled = parser.value_bool();
 }
 
 void GcodeSuite::M711_report(const bool forReplay/*=true*/) {

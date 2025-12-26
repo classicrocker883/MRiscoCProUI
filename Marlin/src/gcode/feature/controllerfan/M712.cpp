@@ -28,18 +28,19 @@
 /**
  * M712: Set Extruder Auto Fans settings
  *
- *  R         : Reset to defaults
- *  E         : Set Extruder fans temperature threshold
- *  H         : Set Chamber fan temperature threshold
- *  C         : Set Cooler fan temperature threshold
+ *  R  : Reset to defaults
+ *  E  : Set Extruder fans temperature threshold
+ *  H  : Set Chamber fan temperature threshold
+ *  C  : Set Cooler fan temperature threshold
  *
  * Examples:
- *   M712                   ; Report current Settings
- *   M712 R                 ; Reset EHC to defaults
- *   M712 E60               ; Set Extruder temp to 60
- *   M712 E50 H30 C18       ; Set Extruder temp to 50, Chamber temp to 30, Cooler temp to 18
+ *   M712              : Report current Settings
+ *   M712 R            : Reset EHC to defaults
+ *   M712 E60          : Set Extruder temp to 60
+ *   M712 E50 H30 C18  : Set Extruder temp to 50, Chamber temp to 30, Cooler temp to 18
  */
 void GcodeSuite::M712() {
+  if (!parser.seen("CEHR")) return M712_report();
 
   const bool seenR = parser.seen('R');
   const bool seenE = parser.seenval('E');
@@ -47,12 +48,9 @@ void GcodeSuite::M712() {
   const bool seenC = parser.seenval('C');
 
   if (seenR) autofans.reset();
-  else if (seenE) autofans.settings.extruder_temp = parser.value_byte();
-  else if (seenH) autofans.settings.chamber_temp = parser.value_byte();
-  else if (seenC) autofans.settings.cooler_temp = parser.value_byte();
-
-  if (!(seenR || seenE || seenH || seenC))
-    M712_report();
+  if (seenE) autofans.settings.extruder_temp = parser.value_byte();
+  if (seenH) autofans.settings.chamber_temp = parser.value_byte();
+  if (seenC) autofans.settings.cooler_temp = parser.value_byte();
 }
 
 void GcodeSuite::M712_report(const bool forReplay/*=true*/) {
