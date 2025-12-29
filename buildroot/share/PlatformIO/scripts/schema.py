@@ -383,7 +383,7 @@ def extract_files(filekey):
                         value_type = (
                                  "switch"  if val == ""
                             else "int"     if re.match(r'^[-+]?\s*\d+$', val)
-                            else "ints"    if re.match(r'^[-+]?\s*\d+(?:\s*,\s*[-+]?\s*\d+)+$', val)
+                            else "ints"    if re.fullmatch(r'\(\s*[+-]?\d+(?:,\s*[+-]?\d+)+\s*\)', val)
                             else "floats"  if re.match(rf"^{flt}(?:\s*,\s*{flt})+$", val)
                             else "float"   if re.match(rf"^{flt}$", val)
                             else "string"  if val.startswith('"')
