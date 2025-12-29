@@ -557,15 +557,15 @@ struct XYval {
   #endif
 
   // Length reduced to one dimension
-  FI constexpr T magnitude()    const { return (T)sqrtf(x*x + y*y); }
+  FI constexpr T magnitude()   const { return (T)SQRT(x*x + y*y); }
   // Pointer to the data as a simple array
-  explicit FI operator T* ()          { return pos; }
+  explicit FI operator T* ()         { return pos; }
   // If any element is true then it's true
-  FI constexpr operator bool()  const { return x || y; }
+  FI constexpr operator bool() const { return x || y; }
   // Smallest element
-  FI constexpr T small()        const { return _MIN(x, y); }
+  FI constexpr T small()       const { return _MIN(x, y); }
   // Largest element
-  FI constexpr T large()        const { return _MAX(x, y); }
+  FI constexpr T large()       const { return _MAX(x, y); }
 
   // Explicit copy and copies with conversion
   FI constexpr XYval<T>           copy() const { return *this; }
@@ -734,15 +734,15 @@ struct XYZval {
   #endif
 
   // Length reduced to one dimension
-  FI constexpr T magnitude()    const { return (T)TERN(HAS_X_AXIS, sqrtf(NUM_AXIS_GANG(x*x, + y*y, + z*z, + i*i, + j*j, + k*k, + u*u, + v*v, + w*w)), 0); }
+  FI constexpr T magnitude()   const { return (T)TERN(HAS_X_AXIS, SQRT(NUM_AXIS_GANG(x*x, + y*y, + z*z, + i*i, + j*j, + k*k, + u*u, + v*v, + w*w)), 0); }
   // Pointer to the data as a simple array
-  explicit FI operator T* ()          { return pos; }
+  explicit FI operator T* ()         { return pos; }
   // If any element is true then it's true
-  FI constexpr operator bool()  const { return 0 NUM_AXIS_GANG(|| x, || y, || z, || i, || j, || k, || u, || v, || w); }
+  FI constexpr operator bool() const { return 0 NUM_AXIS_GANG(|| x, || y, || z, || i, || j, || k, || u, || v, || w); }
   // Smallest element
-  FI constexpr T small()        const { return TERN0(HAS_X_AXIS, _MIN(NUM_AXIS_LIST(x, y, z, i, j, k, u, v, w))); }
+  FI constexpr T small()       const { return TERN0(HAS_X_AXIS, _MIN(NUM_AXIS_LIST(x, y, z, i, j, k, u, v, w))); }
   // Largest element
-  FI constexpr T large()        const { return TERN0(HAS_X_AXIS, _MAX(NUM_AXIS_LIST(x, y, z, i, j, k, u, v, w))); }
+  FI constexpr T large()       const { return TERN0(HAS_X_AXIS, _MAX(NUM_AXIS_LIST(x, y, z, i, j, k, u, v, w))); }
 
   // Explicit copy and copies with conversion
   FI constexpr XYZval<T>           copy() const { XYZval<T> o = *this; return o; }
@@ -905,7 +905,7 @@ struct XYZEval {
   #endif
 
   // Length reduced to one dimension
-  FI constexpr T magnitude()   const { return (T)sqrtf(LOGICAL_AXIS_GANG(+ e*e, + x*x, + y*y, + z*z, + i*i, + j*j, + k*k, + u*u, + v*v, + w*w)); }
+  FI constexpr T magnitude()   const { return (T)SQRT(LOGICAL_AXIS_GANG(+ e*e, + x*x, + y*y, + z*z, + i*i, + j*j, + k*k, + u*u, + v*v, + w*w)); }
   // Pointer to the data as a simple array
   explicit FI operator T* ()         { return pos; }
   // If any element is true then it's true
