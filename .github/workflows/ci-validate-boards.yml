@@ -9,12 +9,12 @@ name: CI - Validate boards.h
 on:
   pull_request:
     branches:
-      - 2025-December
+      - 2026-January
     paths:
       - "Marlin/src/core/boards.h"
   push:
     branches:
-      - 2025-December
+      - 2026-January
     paths:
       - "Marlin/src/core/boards.h"
 
