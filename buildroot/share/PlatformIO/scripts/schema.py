@@ -398,10 +398,10 @@ def extract_files(filekey):
                         )
 
                         val = (
-                                 (val == "true")            if value_type == "bool"
-                            else int(val)                   if value_type == "int"
-                            else val.replace("f","")        if value_type == "floats"
-                            else float(val.replace("f","")) if value_type == "float"
+                                 (val == "true")             if value_type == "bool"
+                            else int(val)                    if value_type == "int"
+                            else val.replace("f", "")        if value_type == "floats"
+                            else float(val.replace("f", "")) if value_type == "float"
                             else val
                         )
 

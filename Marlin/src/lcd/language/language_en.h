@@ -155,14 +155,15 @@ namespace LanguageNarrow_en {
   LSTR MSG_PREHEAT_1_END_E                = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" End ~");
   LSTR MSG_PREHEAT_1_ALL                  = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" All");
   LSTR MSG_PREHEAT_1_BEDONLY              = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Bed");
-  LSTR MSG_PREHEAT_1_SETTINGS             = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Settings");
+  LSTR MSG_PREHEAT_1_CHAMBER              = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Chmb");
+  LSTR MSG_PREHEAT_1_SETTINGS             = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Sett.");
 
   LSTR MSG_PREHEAT_2                      = _UxGT("Preheat ") PREHEAT_2_LABEL;
-  LSTR MSG_PREHEAT_2_SETTINGS             = _UxGT("Preheat ") PREHEAT_2_LABEL _UxGT(" Settings");
+  LSTR MSG_PREHEAT_2_SETTINGS             = _UxGT("Preheat ") PREHEAT_2_LABEL _UxGT(" Sett.");
   LSTR MSG_PREHEAT_3                      = PREHEAT_3_LABEL;
   LSTR MSG_PREHEAT_3_SETTINGS             = PREHEAT_3_LABEL _UxGT(" Settings");
   LSTR MSG_PREHEAT_4                      = _UxGT("Preheat ") PREHEAT_4_LABEL;
-  LSTR MSG_PREHEAT_4_SETTINGS             = _UxGT("Preheat ") PREHEAT_4_LABEL _UxGT(" Settings");
+  LSTR MSG_PREHEAT_4_SETTINGS             = _UxGT("Preheat ") PREHEAT_4_LABEL _UxGT(" Sett.");
 
   LSTR MSG_PREHEAT_M                      = _UxGT("Preheat $");
   LSTR MSG_PREHEAT_M_H                    = _UxGT("Preheat $ ~");
@@ -1234,6 +1235,14 @@ namespace LanguageWide_en {
     LSTR MSG_OUTAGE_RECOVERY3             = _UxGT("file was interrupted.");
 
     LSTR MSG_MEDIA_NOT_INSERTED           = MEDIA_TYPE_EN _UxGT(" Not Inserted");
+    LSTR MSG_PREHEAT_1_END                = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Hotend");
+    LSTR MSG_PREHEAT_1_END_E              = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Hotend ~");
+    LSTR MSG_PREHEAT_1_CHAMBER            = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Chamber");
+    LSTR MSG_PREHEAT_1_SETTINGS           = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Settings");
+    LSTR MSG_PREHEAT_M_END                = _UxGT("Preheat $ Hotend");
+    LSTR MSG_PREHEAT_M_END_E              = _UxGT("Preheat $ Hotend ~");
+    LSTR MSG_PREHEAT_M_CHAMBER            = _UxGT("Preheat $ Chamber");
+    LSTR MSG_PREHEAT_M_SETTINGS           = _UxGT("Preheat $ Settings");
     LSTR MSG_MEDIA_MENU_USB               = _UxGT("Select from USB Drive");
     LSTR MSG_CHECK_FILENAME               = _UxGT("Please check filenames");
     LSTR MSG_ONLY_GCODE                   = _UxGT("Only G-code can be printed");
