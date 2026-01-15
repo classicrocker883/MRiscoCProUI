@@ -19,29 +19,27 @@ I designed and made it to be used for upgrading the hotend.**
 
 **And don't forget about the [thingiverse](https://www.thingiverse.com/classicrocker883/designs) models I've designed:**
 
-[Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender-3 V2
-<img src="https://cdn.thingiverse.com/assets/1a/21/e9/e9/f5/card_preview_c60b15d6-69cf-469a-8641-40f6bef37992.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender-3 V2 <img src="https://cdn.thingiverse.com/assets/1a/21/e9/e9/f5/card_preview_c60b15d6-69cf-469a-8641-40f6bef37992.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Tool Box for Middle Extrusion](https://www.thingiverse.com/thing:5181522) "**VOXELAB**" engraved
-<img src="https://cdn.thingiverse.com/assets/39/e7/eb/bd/9f/card_preview_Voxelab_WideMiddle_Shell.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Tool Box for Middle Extrusion](https://www.thingiverse.com/thing:5181522) "**VOXELAB**" engraved <img src="https://cdn.thingiverse.com/assets/39/e7/eb/bd/9f/card_preview_Voxelab_WideMiddle_Shell.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Fantastic Filament Guide](https://www.thingiverse.com/thing:4974802) for Aquila
-<img src="https://cdn.thingiverse.com/assets/46/79/c1/80/14/card_preview_FantasticFilamentGuideAquilaL.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Fantastic Filament Guide](https://www.thingiverse.com/thing:4974802) for Aquila <img src="https://cdn.thingiverse.com/assets/46/79/c1/80/14/card_preview_FantasticFilamentGuideAquilaL.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780)
-<img src="https://cdn.thingiverse.com/assets/73/1e/84/38/f1/card_preview_Pi_Zero_Case_holder.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780) <img src="https://cdn.thingiverse.com/assets/73/1e/84/38/f1/card_preview_Pi_Zero_Case_holder.png" style="float:left;width:40px;height:40px;" align="left"/>
 
 ---
 
 ## Universal Firmware for RET6/RCT6 chips:
 
-G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
+G32, N32, H32, Creality 4.2.7 and 4.2.2 boards\
 **_<sup><sub>(Also available for E3 Free-runs, BTT SKR Mini E3, STM32F401, GD32F303, and others)</sub></sup>_**
 
 > [!IMPORTANT]
+>
 > **Please read the following:**
 
 > [!NOTE]
+>
 > I will be working on more updates, features, and tweaks along the way.\
 > Much has been included in MRiscoCProUI releases, the most recent of which is **2026-January**.\
 > There are all kinds of versions and combinations to suite a specific printer, and changes to the **UI** and menu layout which are not available in any other fork.\
@@ -56,6 +54,7 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 > Enjoy using this fork of Marlin as I intend it to be the best; intuitive, easy to use, and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware.
 
 > [!TIP]
+>
 > If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change the state in which it triggers "no filament" to **HIGH** or **LOW** (depending on what is already selected).\
 > This is found in:\
 > _Prepare_ -> _Filament Management_ -> _Filament Settings_ -> _Runout Active_
@@ -65,24 +64,28 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 ## Firmware for HC32 chips:
 
 > [!IMPORTANT]
+>
 > **Information regarding HC32:**
 
 > [!WARNING]
+>
 > <ins>**FOREWARNING**</ins>: So far everything has been working great - as normal - except there may an issue with the initialization of the SD card media. If you get a message saying this has failed, just reinsert the card or reboot. Keep trying if this doesn't work the first time.
 
 > [!CAUTION]
+>
 > _G-code Thumbnail Preview_ has been disabled for HC32 boards for the time being.\
 > When enabled, _and_ an **SD card is inserted**, the screen may **freeze and restart**. So _this_ means printing may not be possible without the **SD card** _unless_ you use the USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).\
 > That is why this feature has been disabled, otherwise everything works as normal.
 
 > [!NOTE]
+>
 > H32->HC32 support has been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here. You can find the original HC32 repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
 
 #
 
 #### Other Information:
 
-General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release). <br>
+General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release).\
 Other changes and updates are [addressed here](https://github.com/classicrocker883/MRiscoCProUI/releases/latest).
 
 - [LA - Linear Advance](https://marlinfw.org/docs/features/lin_advance.html)
@@ -111,7 +114,7 @@ For MacOS you're on your own...sorry.
 If you haven't already, you must install the SDL2 library.\
 **SDL2-devel-2.32.10-mingw.zip** is provided for in /**docs**.\
 Or get the latest release at [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for **SDL2** version (**NOT** _SDL3_)\
-You can _either_ copy/paste the files directly, or install them.
+You can _either_ copy/paste the files directly, or install them.\
 It's recommended to install them, but if you have any issues, then try the alternative copy/paste method.
 
 Navigate to the extracted SDL2 directory in an _MSYS2_ or _bash_ terminal (Run as Administrator):
@@ -138,7 +141,7 @@ make install-package arch=x86_64-w64-mingw32 prefix=/usr
 
 #### Alternative SDL2 Install
 
-**Copy/Paste Files**
+**Copy/Paste Files**\
 You may have to first Build so the directory can be created, but you can:
 
 - **Copy** the contents of ~\SDL2-2.32.10\x86_64-w64-mingw32\include\\**SDL2**\\\*, paste into the directory .pio\libdeps\simulator_windows\\**imgui**
@@ -246,10 +249,7 @@ They can be downloaded here:\
 
 <br>
 
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" /><p>
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" /><p>
-<img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" /><p>
-<img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle" />
+<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" /><p> <img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" /><p> <img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" /><p> <img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle" />
 
 <br>
 

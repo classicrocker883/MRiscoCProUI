@@ -4,23 +4,24 @@ More configuration files at: https://github.com/mriscoc/Special_Configurations
 
 ### Redefine the configuration settings
 
-**\_Define_Configuration.h**  
-**\_Define_Configuration_adv.h**  
-**\_Undef_Configuration.h**  
+**\_Define_Configuration.h**\
+**\_Define_Configuration_adv.h**\
+**\_Undef_Configuration.h**\
 **\_Undef_Configuration_adv.h**
 
 #### To use:
 
 Within **Marlin/src/inc/MarlinConfigPre.h**, look for the `#include` of these files above and uncomment them.
 
-In the _Undef_ file, look for the setting you wish to change and uncomment it.
+In the _Undef_ file, look for the setting you wish to change and uncomment it.\
 (i.e. `// #undef MOTHERBOARD` => `#undef MOTHERBOARD`)
 
-Then, go to _Defines_ file, uncomment the setting which you just `#undef` and change to whatever.
+Then, go to _Defines_ file, uncomment the setting which you just `#undef` and change to whatever.\
 (i.e. `// #define MOTHERBOARD` => `#define MOTHERBOARD BOARD_CREALITY_V4`)
 
 > [!NOTE]
-> This is the process to which I used creating these files.
+>
+> This is the process to which I used creating these files.\
 > I went into a **bash** terminal and entered these commands:
 >
 > Step 1. Create the _Define_ file
