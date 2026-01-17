@@ -34,8 +34,7 @@ def get_current_branch():
             [git_path, "rev-parse", "--abbrev-ref", "HEAD"],
             capture_output=True,
             text=True,
-            check=True,
-            shell=False
+            check=True
         )
         return result.stdout.strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
@@ -72,35 +71,30 @@ def sparse_checkout(branch, config_path, repo_url, config_folder):
         debug_print(f"Cloning {repo_url} branch {branch}...")
         subprocess.run(
             [git_path, "clone", "--depth", "1", "--filter=blob:none", "--sparse", "--branch", branch, "--", repo_url, str(configs_dir)],
-            check=True,
-            shell=False
+            check=True
         )
     else:
         subprocess.run(
             [git_path, "fetch", "--depth", "1", "origin", "--", branch],
             cwd=str(configs_dir),
-            check=True,
-            shell=False
+            check=True
         )
         subprocess.run(
             [git_path, "checkout", "--", branch],
             cwd=str(configs_dir),
-            check=True,
-            shell=False
+            check=True
         )
 
     debug_print(f"Setting sparse checkout for: {config_subdir}")
     subprocess.run(
         [git_path, "sparse-checkout", "set", "--", config_subdir],
         cwd=str(configs_dir),
-        check=True,
-        shell=False
+        check=True
     )
     subprocess.run(
         [git_path, "pull", "origin", "--", branch],
         cwd=str(configs_dir),
-        check=True,
-        shell=False
+        check=True
     )
 
 def copy_config_files(branch, config_path, dest_dir, repo_url, config_folder):
@@ -191,7 +185,7 @@ def main():
             if cmd_name.startswith("./") and not Path(exe_path).exists():
                 continue
             try:
-                subprocess.run([exe_path], check=True, shell=False)
+                subprocess.run([exe_path], check=True)
                 break
             except (subprocess.CalledProcessError, FileNotFoundError):
                 continue

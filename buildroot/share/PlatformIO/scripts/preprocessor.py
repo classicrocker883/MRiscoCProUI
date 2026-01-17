@@ -37,13 +37,11 @@ def run_preprocessor(env, fn=None):
         else:
             cmd += [f"-D{s}"]
 
-    cmd += ["-D__MARLIN_DEPS__ -w -dM -E -x c++", filename]
-
-    cmd = " ".join(cmd)
+    cmd += ["-D__MARLIN_DEPS__", "-w", "-dM", "-E", "-x", "c++", filename]
     blab(cmd)
 
     try:
-        define_list_text = subprocess.check_output(cmd, shell=True)
+        define_list_text = subprocess.check_output(cmd)
     except:
         raise RuntimeError(f"Command `{cmd}` failed during build pre-processing.")
 
