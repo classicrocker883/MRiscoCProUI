@@ -94,6 +94,11 @@ def fetch_configs(branch, config_path):
         fetch_config_files(branch, config_path, marlin_dir)
 
 def main():
+    # Delegate to use_example_configs.py for testing purposes
+    import use_example_configs
+    use_example_configs.main()
+    return
+
     branch = get_current_branch()
     if not branch:
         print("Not a git repository or no branch found.")
