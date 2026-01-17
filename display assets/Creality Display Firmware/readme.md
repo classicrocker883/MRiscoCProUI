@@ -20,11 +20,9 @@
 1. Turn off the printer and remove the SD card from the screen unit
 1. Reassemble the screen unit
 
-> For the Ender-3 V2, if you want to change only the icons, then you can left only the **9.ICO** file
-> inside of the DWIN_SET folder.
+> For the Ender-3 V2, if you want to change only the icons, then you can left only the **9.ICO** file inside of the DWIN_SET folder.
 
-If you wasn't able to update the display, verify the format of the µSD Card
-(MBR, FAT32 and allocation unit of 4096 bytes) and the CRC of the files.
+If you wasn't able to update the display, verify the format of the µSD Card (MBR, FAT32 and allocation unit of 4096 bytes) and the CRC of the files.
 
 <img src="../DWIN_SET-folder.jpg" height="350" />
 
@@ -37,9 +35,9 @@ Be sure to leave **only** the `DWIN_SET` or `private` folder at the root of the 
 
 ## DWIN_SET CRC
 
-| File                       | SHA-256                                                          |
-| -------------------------- | ---------------------------------------------------------------- |
-| 9.ICO                      | 2F00B9355034C9DF2819DB56CA5F46C5015071DB5D380AABA3BB10FE3F1A63D2 |
-| T5UIC1.CFG                 | E1C573639BFA2B3A06C2FA7AD3CAB483653DD3DC383217FF653FAB3145458095 |
+| File | SHA-256 |
+| --- | --- |
+| 9.ICO | 2F00B9355034C9DF2819DB56CA5F46C5015071DB5D380AABA3BB10FE3F1A63D2 |
+| T5UIC1.CFG | E1C573639BFA2B3A06C2FA7AD3CAB483653DD3DC383217FF653FAB3145458095 |
 | T5UIC1_V20_4??\_191022.BIN | F8F9A3075AE5516328044ACB79CA522753133B66F1ECBD108E7B5DB2F3FF2FE5 |
-| 0T5UIC1.HZK                | 27F3AE70117DC031E6EA542654CA03B89BB9A0592B23AA9B7E452C35583C0108 |
+| 0T5UIC1.HZK | 27F3AE70117DC031E6EA542654CA03B89BB9A0592B23AA9B7E452C35583C0108 |
