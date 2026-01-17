@@ -95,7 +95,7 @@
 #elif THERMISTOR_ID == 12
   #define THERMISTOR_NAME "E3104FXT (alt)"
 #elif THERMISTOR_ID == 13
-  #define THERMISTOR_NAME "Hisens 4100"
+  #define THERMISTOR_NAME "Hisense 3950"
 #elif THERMISTOR_ID == 14
   #define THERMISTOR_NAME "100k Ender-5 S1 (EPCOS 4092)"
 #elif THERMISTOR_ID == 15

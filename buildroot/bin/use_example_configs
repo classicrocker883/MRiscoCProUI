@@ -94,15 +94,34 @@ def fetch_configs(branch, config_path):
         fetch_config_files(branch, config_path, marlin_dir)
 
 def main():
+    # Delegate to use_example_configs.py for testing purposes
+    script_path = Path(__name__).parent / "buildroot/bin/use_example_configs2"
+
+    if not script_path.exists():
+        print(f"Error: Finalized script not found at {script_path}")
+        sys.exit(1)
+
+    cmd = [sys.executable, str(script_path)] + sys.argv[1:]
+
+    try:
+        subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Script execution failed with return code {e.returncode}")
+        sys.exit(e.returncode)
+    except Exception as e:
+        print(f"An error occurred while calling the script: {e}")
+        sys.exit(1)
+    return
+
     branch = get_current_branch()
     if not branch:
         print("Not a git repository or no branch found.")
         sys.exit(1)
 
-    if branch.startswith("2025-"):
+    if branch.startswith("2026-"):
         branch = branch
     else:
-        branch = "2025-December"
+        branch = "2026-January"
 
     if len(sys.argv) > 1:
         arg = sys.argv[1]

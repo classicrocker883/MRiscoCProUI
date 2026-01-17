@@ -1599,8 +1599,10 @@ void Stepper::isr() {
   // FT Motion can be toggled if Standard Motion is also active
   const bool using_ftMotion = ENABLED(NO_STANDARD_MOTION) || TERN0(FT_MOTION, ftMotion.cfg.active);
 
-  // We need this variable here to be able to use it in the following loop
+  // Storage for the soonest timer value of the next possible ISR, used in this do loop
   hal_timer_t min_ticks;
+
+  // Loop until all events for this ISR have been issued
   do {
 
     hal_timer_t interval = 0;
@@ -1750,7 +1752,7 @@ void Stepper::isr() {
      * Get the current tick value + margin
      * Assuming at least 6µs between calls to this ISR...
      * On AVR the ISR epilogue+prologue is estimated at 100 instructions - Give 8µs as margin
-     * On ARM the ISR epilogue+prologue is estimated at 20 instructions - Give 1µs as margin
+     * On ARM the ISR epilogue+prologue is estimated at  20 instructions - Give 1µs as margin
      */
     min_ticks = HAL_timer_get_count(MF_TIMER_STEP) + hal_timer_t(TERN(__AVR__, 8, 1) * (STEPPER_TIMER_TICKS_PER_US));
 
@@ -2909,7 +2911,7 @@ void Stepper::isr() {
           ne.edividend = advance_dividend.e;
           const float scale = (float(ne.edividend) / advance_divisor) * planner.mm_per_step[E_AXIS_N(current_block->extruder)];
           ne.scale_q24 = _BV32(24) * scale;
-          if (ne.settings.enabled && current_block->direction_bits.e && ANY_AXIS_MOVES(current_block)) {
+          if (ne.settings.enabled && current_block->direction_bits.e && XYZ_HAS_STEPS(current_block)) {
             ne.q24.A = _BV32(24) * ne.settings.coeff.A;
             ne.q24.B = _BV32(24) * ne.settings.coeff.B;
             ne.q24.C = _BV32(24) * ne.settings.coeff.C;
@@ -2963,7 +2965,7 @@ void Stepper::isr() {
         const bool forward_e = step_rate > 0;
 
         #if ENABLED(NONLINEAR_EXTRUSION)
-          if (ne.settings.enabled && forward_e && ANY_AXIS_MOVES(current_block)) {
+          if (ne.settings.enabled && forward_e && XYZ_HAS_STEPS(current_block)) {
             // Maximum polynomial value is just above 1, like 1.05..1.2, less than 2 anyway, so we can use 30 bits for fractional part
             int32_t vd_q30 = ne.q30.A * sq(step_rate) + ne.q30.B * step_rate;
             NOLESS(vd_q30, 0);
@@ -3381,6 +3383,10 @@ void Stepper::init() {
 #endif // HAS_ZV_SHAPING
 
 /**
+ * Position
+ */
+
+/**
  * Set the stepper positions directly in steps
  *
  * The input is based on the typical per-axis XYZE steps.
@@ -3506,20 +3512,11 @@ void Stepper::set_axis_position(const AxisEnum a, const int32_t &v) {
     AVR_ATOMIC_SECTION_END();
   }
 
-#endif // HAS_EXTRUDERS
+#endif
 
-#if ENABLED(FT_MOTION)
-
-  void Stepper::ftMotion_syncPosition() {
-    planner.synchronize();
-
-    // Update stepper positions from the planner
-    AVR_ATOMIC_SECTION_START();
-    count_position = planner.position;
-    AVR_ATOMIC_SECTION_END();
-  }
-
-#endif // FT_MOTION
+/**
+ * Endstops
+ */
 
 /**
  * Record stepper positions and discard the rest of the current block
@@ -3565,6 +3562,10 @@ int32_t Stepper::triggered_position(const AxisEnum axis) {
   return v;
 }
 
+/**
+ * Reporting
+ */
+
 #if ANY(CORE_IS_XY, CORE_IS_XZ, MARKFORGED_XY, MARKFORGED_YX, IS_SCARA, DELTA)
   #define SAYS_A 1
 #endif
@@ -3595,6 +3596,15 @@ void Stepper::report_positions() {
 }
 
 #if ENABLED(FT_MOTION)
+
+  void Stepper::ftMotion_syncPosition() {
+    planner.synchronize();
+
+    // Update stepper positions from the planner
+    AVR_ATOMIC_SECTION_START();
+    count_position = planner.position;
+    AVR_ATOMIC_SECTION_END();
+  }
 
   /**
    * Run stepping for FT Motion from the Stepper ISR at regular short intervals.
@@ -3629,7 +3639,24 @@ void Stepper::report_positions() {
       DIR_WAIT_AFTER();
     }
 
-    // Start step pulses. Edge stepping will toggle the STEP pin.
+    /**
+     * - For every axis drive STEP pins
+     * - If any axes lack DEDGE stepping:
+     *   - Wait for the longest required Pulse Delay
+     *   - Reset state of all non-DEDGE STEP pins
+     *
+     * The stepper_extruder must be pre-filled at this point.
+     *
+     * Emits macros of the form: [XYZEIJKUVW]_APPLY_STEP(state, ?always?)
+     * For the standard E axis this expands to: E_STEP_WRITE(stepper_extruder, state)
+     *
+     * TODO: For MIXING_EXTRUDER stepping distribute the steps proportionally to the
+     * E stepper drivers' STEP pins according to pre-calculated Bresenham factors.
+     * So the events are timed just like normal E stepping; only the STEP pin varies.
+     */
+
+    // Start step pulses on all axes including the active Extruder.
+    // Edge stepping will simply toggle the STEP pin.
     #define _FTM_STEP_START(A) A##_APPLY_STEP(step_bits.A, false);
     LOGICAL_AXIS_MAP(_FTM_STEP_START);
 
@@ -3655,11 +3682,11 @@ void Stepper::report_positions() {
     #endif
 
     // Only wait for axes without edge stepping
-    const bool any_wait = false LOGICAL_AXIS_GANG(
-      || (!e_axis_has_dedge  && step_bits.E),
-      || (!AXIS_HAS_DEDGE(X) && step_bits.X), || (!AXIS_HAS_DEDGE(Y) && step_bits.Y), || (!AXIS_HAS_DEDGE(Z) && step_bits.Z),
-      || (!AXIS_HAS_DEDGE(I) && step_bits.I), || (!AXIS_HAS_DEDGE(J) && step_bits.J), || (!AXIS_HAS_DEDGE(K) && step_bits.K),
-      || (!AXIS_HAS_DEDGE(U) && step_bits.U), || (!AXIS_HAS_DEDGE(V) && step_bits.V), || (!AXIS_HAS_DEDGE(W) && step_bits.W)
+    const bool any_wait = LOGICAL_AXIS_ANY(
+      !e_axis_has_dedge  && step_bits.E,
+      !AXIS_HAS_DEDGE(X) && step_bits.X, !AXIS_HAS_DEDGE(Y) && step_bits.Y, !AXIS_HAS_DEDGE(Z) && step_bits.Z,
+      !AXIS_HAS_DEDGE(I) && step_bits.I, !AXIS_HAS_DEDGE(J) && step_bits.J, !AXIS_HAS_DEDGE(K) && step_bits.K,
+      !AXIS_HAS_DEDGE(U) && step_bits.U, !AXIS_HAS_DEDGE(V) && step_bits.V, !AXIS_HAS_DEDGE(W) && step_bits.W
     );
 
     // Allow pulses to be registered by stepper drivers
@@ -3672,6 +3699,10 @@ void Stepper::report_positions() {
   } // Stepper::ftMotion_stepper
 
 #endif // FT_MOTION
+
+/**
+ * Babystepping
+ */
 
 #if ENABLED(BABYSTEPPING)
 

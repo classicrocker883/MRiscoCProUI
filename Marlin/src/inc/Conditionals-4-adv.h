@@ -359,6 +359,10 @@
   #if ANY(FTM_SHAPER_EI, FTM_SHAPER_2HEI, FTM_SHAPER_3HEI)
     #define HAS_FTM_EI_SHAPING 1
   #endif
+
+  #if ANY(FTM_DIR_CHANGE_HOLD_X, FTM_DIR_CHANGE_HOLD_Y, FTM_DIR_CHANGE_HOLD_Z, FTM_DIR_CHANGE_HOLD_E)
+    #define HAS_FTM_DIR_CHANGE_HOLD 1
+  #endif
 #endif
 
 // Standard Motion
@@ -373,8 +377,6 @@
   #undef INPUT_SHAPING_Y
   #undef INPUT_SHAPING_Z
   #undef INPUT_SHAPING_E_SYNC
-  #undef MULTISTEPPING_LIMIT
-  #define MULTISTEPPING_LIMIT 1
 #endif
 
 // Linear advance uses Jerk since E is an isolated axis

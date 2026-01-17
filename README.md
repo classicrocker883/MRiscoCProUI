@@ -1,9 +1,9 @@
 # Professional Firmware for the Voxelab Aquila and Creality Ender-3 3D Printers <br> **_<sup><sup><sub>(Or any other compatible 3D Printer)</sub></sup></sup>_**
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1fd96d33d2304368b9b6f610f76beac9)](https://app.codacy.com/gh/classicrocker883/MRiscoCProUI/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)  
-![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)  
-![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)  
-![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)  
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/1fd96d33d2304368b9b6f610f76beac9)](https://app.codacy.com/gh/classicrocker883/MRiscoCProUI/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)\
+![GitHub Release Date](https://img.shields.io/github/release-date/classicrocker883/MRiscoCProUI.svg)\
+![CI Unit Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-unit-tests.yml/badge.svg)\
+![CI Build Status](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/ci-build-tests.yml/badge.svg)\
 [![Latest Firmware Build](https://github.com/classicrocker883/MRiscoCProUI/actions/workflows/compile-release.yml/badge.svg?event=release)](https://github.com/classicrocker883/MRiscoCProUI/releases) <sup>- Link to latest releases</sup>
 
 ### Visit the [Wiki](https://github.com/classicrocker883/MRiscoCProUI/wiki) for more information about _this_ firmware and the features it provides
@@ -12,41 +12,39 @@
 
 <img src="https://i.ebayimg.com/images/g/kzsAAOSwjF5lrGWD/s-l1600.webp" style="float:right;width:185.6px;height:130.8px;" align="top"/>
 
-**Checkout this [Universal 3D Printer Adapter Breakout Board](https://www.ebay.com/itm/296177134648)  
+**Checkout this [Universal 3D Printer Adapter Breakout Board](https://www.ebay.com/itm/296177134648)\
 I designed and made it to be used for upgrading the hotend.**
 
 #
 
 **And don't forget about the [thingiverse](https://www.thingiverse.com/classicrocker883/designs) models I've designed:**
 
-[Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender-3 V2
-<img src="https://cdn.thingiverse.com/assets/1a/21/e9/e9/f5/card_preview_c60b15d6-69cf-469a-8641-40f6bef37992.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Minimalist Dual Cooling Fan Shroud](https://www.thingiverse.com/thing:5263939) for Aquila / Ender-3 V2 <img src="https://cdn.thingiverse.com/assets/1a/21/e9/e9/f5/card_preview_c60b15d6-69cf-469a-8641-40f6bef37992.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Tool Box for Middle Extrusion](https://www.thingiverse.com/thing:5181522) "**VOXELAB**" engraved
-<img src="https://cdn.thingiverse.com/assets/39/e7/eb/bd/9f/card_preview_Voxelab_WideMiddle_Shell.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Tool Box for Middle Extrusion](https://www.thingiverse.com/thing:5181522) "**VOXELAB**" engraved <img src="https://cdn.thingiverse.com/assets/39/e7/eb/bd/9f/card_preview_Voxelab_WideMiddle_Shell.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Fantastic Filament Guide](https://www.thingiverse.com/thing:4974802) for Aquila
-<img src="https://cdn.thingiverse.com/assets/46/79/c1/80/14/card_preview_FantasticFilamentGuideAquilaL.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Fantastic Filament Guide](https://www.thingiverse.com/thing:4974802) for Aquila <img src="https://cdn.thingiverse.com/assets/46/79/c1/80/14/card_preview_FantasticFilamentGuideAquilaL.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780)
-<img src="https://cdn.thingiverse.com/assets/73/1e/84/38/f1/card_preview_Pi_Zero_Case_holder.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780) <img src="https://cdn.thingiverse.com/assets/73/1e/84/38/f1/card_preview_Pi_Zero_Case_holder.png" style="float:left;width:40px;height:40px;" align="left"/>
 
 ---
 
 ## Universal Firmware for RET6/RCT6 chips:
 
-G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
+G32, N32, H32, Creality 4.2.7 and 4.2.2 boards\
 **_<sup><sub>(Also available for E3 Free-runs, BTT SKR Mini E3, STM32F401, GD32F303, and others)</sub></sup>_**
 
 > [!IMPORTANT]
+>
 > **Please read the following:**
 
 > [!NOTE]
-> I will be working on more updates, features, and tweaks along the way.  
-> Much has been included in MRiscoCProUI releases, the most recent of which is **2025-December**.  
-> There are all kinds of versions and combinations to suite a specific printer, and changes to the **UI** and menu layout which are not available in any other fork.  
-> For information about recent changes visit the [Wiki - What's New in this Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release).  
-> Support for _12864 Monochrome_ LCD types is under the model **C2**.  
+>
+> I will be working on more updates, features, and tweaks along the way.\
+> Much has been included in MRiscoCProUI releases, the most recent of which is **2026-January**.\
+> There are all kinds of versions and combinations to suite a specific printer, and changes to the **UI** and menu layout which are not available in any other fork.\
+> For information about recent changes visit the [Wiki - What's New in this Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release).\
+> Support for _12864 Monochrome_ LCD types is under the model **C2**.\
 > For _DWIN_ displays, new ICON's have been added and old ones enhanced. Whoever edited them before saved directly as ._JPG_ which in many editors lowers the quality of the image. I painstakingly remastered almost every single one; preserving the original quality.
 >
 > > You must [REFLASH](https://github.com/classicrocker883/MRiscoCProUI/wiki/HOW-TO-UPDATE-THE-DISPLAY) the _DWIN_ LCD display with the new **DWIN_SET**; which is located in the `display assets` folder.
@@ -56,8 +54,9 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 > Enjoy using this fork of Marlin as I intend it to be the best; intuitive, easy to use, and convenient. So far I really enjoy the new settings and toolbar for the main menu. There is a variety of parameters and options that can be changed without having to reflash the firmware.
 
 > [!TIP]
-> If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change the state in which it triggers "no filament" to **HIGH** or **LOW** (depending on what is already selected).  
-> This is found in:  
+>
+> If you start printing and it says `Advance Pause` while **Runout** is enabled, you may have to change the state in which it triggers "no filament" to **HIGH** or **LOW** (depending on what is already selected).\
+> This is found in:\
 > _Prepare_ -> _Filament Management_ -> _Filament Settings_ -> _Runout Active_
 
 ---
@@ -65,24 +64,28 @@ G32, N32, H32, Creality 4.2.7 and 4.2.2 boards<br>
 ## Firmware for HC32 chips:
 
 > [!IMPORTANT]
+>
 > **Information regarding HC32:**
 
 > [!WARNING]
+>
 > <ins>**FOREWARNING**</ins>: So far everything has been working great - as normal - except there may an issue with the initialization of the SD card media. If you get a message saying this has failed, just reinsert the card or reboot. Keep trying if this doesn't work the first time.
 
 > [!CAUTION]
-> _G-code Thumbnail Preview_ has been disabled for HC32 boards for the time being.  
-> When enabled, _and_ an **SD card is inserted**, the screen may **freeze and restart**. So _this_ means printing may not be possible without the **SD card** _unless_ you use the USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).  
+>
+> _G-code Thumbnail Preview_ has been disabled for HC32 boards for the time being.\
+> When enabled, _and_ an **SD card is inserted**, the screen may **freeze and restart**. So _this_ means printing may not be possible without the **SD card** _unless_ you use the USB serial interface to upload the file (through a slicer or something like OctoPrint, or Pronterface).\
 > That is why this feature has been disabled, otherwise everything works as normal.
 
 > [!NOTE]
+>
 > H32->HC32 support has been added to the [Marlin Firmware](https://github.com/MarlinFirmware/Marlin) repository. Please post any [Issues](https://github.com/MarlinFirmware/Marlin/issues) there first, otherwise if there are any ProUI specific issues or anything else to report please do so under [Issues tab](https://github.com/classicrocker883/MRiscoCProUI/issues) here. You can find the original HC32 repo here [@shadow578/Marlin-H32](https://github.com/shadow578/Marlin-H32)
 
 #
 
 #### Other Information:
 
-General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release). <br>
+General information about the firmware and updates is located in the _Wiki_ page [What's New In This Release](https://github.com/classicrocker883/MRiscoCProUI/wiki/What's-New-in-this-Release).\
 Other changes and updates are [addressed here](https://github.com/classicrocker883/MRiscoCProUI/releases/latest).
 
 - [LA - Linear Advance](https://marlinfw.org/docs/features/lin_advance.html)
@@ -108,10 +111,10 @@ For MacOS you're on your own...sorry.
 
 #### Install Files (Windows)
 
-If you haven't already, you must install the SDL2 library.  
-**SDL2-devel-2.32.10-mingw.zip** is provided for in /**docs**.  
-Or get the latest release at [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for **SDL2** version (**NOT** _SDL3_)  
-You can _either_ copy/paste the files directly, or install them.
+If you haven't already, you must install the SDL2 library.\
+**SDL2-devel-2.32.10-mingw.zip** is provided for in /**docs**.\
+Or get the latest release at [libsdl-org/SDL/releases](https://github.com/libsdl-org/SDL/releases) and look for **SDL2** version (**NOT** _SDL3_)\
+You can _either_ copy/paste the files directly, or install them.\
 It's recommended to install them, but if you have any issues, then try the alternative copy/paste method.
 
 Navigate to the extracted SDL2 directory in an _MSYS2_ or _bash_ terminal (Run as Administrator):
@@ -138,7 +141,7 @@ make install-package arch=x86_64-w64-mingw32 prefix=/usr
 
 #### Alternative SDL2 Install
 
-**Copy/Paste Files**
+**Copy/Paste Files**\
 You may have to first Build so the directory can be created, but you can:
 
 - **Copy** the contents of ~\SDL2-2.32.10\x86_64-w64-mingw32\include\\**SDL2**\\\*, paste into the directory .pio\libdeps\simulator_windows\\**imgui**
@@ -181,14 +184,14 @@ Before building, open a terminal and run `./buildroot/share/scripts/simulator_er
 
 5. In **native.ini**:
 
-- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]`.
-  <sup>Only if you get an error message about it.</sup>
+- Replace `-flto` with `-fno-lto` at `release_flags =` under `[simulator_common]`.\
+  <sup>If you get an error message about it.</sup>
 
 How to use:
 
 - Open the executable program found in **.pio\build\simulator\_<windows|linux_release>**.
 - - For Windows: `MarlinSimulator.exe`
-- - For Linux: `./MarlinSimulator`  
+- - For Linux: `./MarlinSimulator`\
     <sup>Enter in a terminal.</sup>
 - Under `SD Card`, under `Components` on the right side, select or load an image.
 - - To simulate an actual print, you may need to use a [_.img_ file containing the _.gcode_](#copy-gcode-into-img-file).
@@ -241,15 +244,12 @@ The Precompiled binary files of this firmware can work with STM32 (STM32F103RET6
 - N32 (N32F103Rx / N32G455x - Nation)
 - H32 (HC32F460x - Huada Semiconductor/HDSC)
 
-They can be downloaded here:  
+They can be downloaded here:\
 [Releases](https://github.com/classicrocker883/MRiscoCProUI/releases)
 
 <br>
 
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" /><p>
-<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" /><p>
-<img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" /><p>
-<img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle" />
+<img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/b849845bd0ffa889f00a782aae76ccf3.jpg" align="left" /><p> <img height=260 src="https://enfss.voxelab3dp.com/10001/picture/2021/09/677b721574efca3daa5c0d39e438fee6.jpg" align="middle" /><p> <img height=260 src="buildroot/share/pixmaps/Ender-3V2.jpg" align="left" /><p> <img width=260.5 src="buildroot/share/pixmaps/Ender-3S1.jpg" align="middle" />
 
 <br>
 
@@ -265,10 +265,10 @@ It wasn't easy getting it to this point without all the help and input. I am jus
 
 Thank goodness for VS Code's compiler and also AI like ChatGPT which shows me what changes need to be made as I make them.
 
-Thank you to all those who have given me their support.  
-Please consider making a donation, as large or as small and as often as you'd like.  
-[Ko-fi](https://ko-fi.com/classicrocker883)  
-[Venmo](https://venmo.com/u/andrewleduc88)  
+Thank you to all those who have given me their support.\
+Please consider making a donation, as large or as small and as often as you'd like.\
+[Ko-fi](https://ko-fi.com/classicrocker883)\
+[Venmo](https://venmo.com/u/andrewleduc88)\
 [Paypal](https://www.paypal.com/paypalme/andrewleduc) - **Single payment**
 
 [<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif">](https://www.paypal.com/donate/?business=PFNSKQX9WQQ8W&no_recurring=0&currency_code=USD) - **PayPal: Monthly Payment**
@@ -298,16 +298,25 @@ Please consider making a donation, as large or as small and as often as you'd li
 
 <br>
 
-## Marlin Support
+## Marlin Discord
+
+The [Marlin Firmware Discord](//discord.gg/marlin-firmware-461605380783472640) is a great place to discuss issues with Marlin users and developers, get interactive help with troubleshooting, and build on your best ideas to improve to Marlin in tandem with the most active members of the development team.
+
+<p align="center">
+  <a target="_blank" href="https://discord.gg/marlin-firmware-461605380783472640">
+    <img src="https://dcbadge.limes.pink/api/server/https://discord.gg/marlin-firmware-461605380783472640">
+  </a>
+</p>
+
+## Other Marlin Support
 
 The Issue Queue is reserved for Bug Reports and Feature Requests. Please use the following resources for help with configuration and troubleshooting:
 
 - [Marlin Documentation](//marlinfw.org) - Official Marlin documentation
-- [Marlin Discord](//discord.com/servers/marlin-firmware-461605380783472640) - Discuss issues with Marlin users and developers
-- Facebook Group ["Marlin Firmware"](//www.facebook.com/groups/1049718498464482/)
-- RepRap.org [Marlin Forum](//forums.reprap.org/list.php?415)
-- Facebook Group ["Marlin Firmware for 3D Printers"](//www.facebook.com/groups/3Dtechtalk/)
-- [Marlin Configuration](//www.youtube.com/results?search_query=marlin+configuration) on YouTube
+- ["Marlin Firmware"](//www.facebook.com/groups/1049718498464482/) - Facebook Group
+- [Marlin Forum](//forums.reprap.org/list.php?415) - RepRap.org
+- ["Marlin Firmware for 3D Printers"](//www.facebook.com/groups/3Dtechtalk/) - Facebook Group
+- [Marlin Configuration](//www.youtube.com/results?search_query=marlin+configuration) - playlist on YouTube
 
 <br>
 
@@ -360,4 +369,4 @@ THIS FIRMWARE AND ALL OTHER FILES IN THE DOWNLOAD ARE PROVIDED FREE OF CHARGE WI
 
 ## LICENSE
 
-For the license, check the header of each file, if the license is not specified there, the project license will be used. Marlin is licensed under the GPL.
+For the license, check the header of each file, if the license is not specified there, the project license will be used. Marlin is published under the [GPL license](/LICENSE) because we believe in open development. The GPL comes with both rights and obligations. Whether you use Marlin firmware as the driver for your open or closed-source product, you must keep Marlin open, and you must provide your compatible Marlin source code to end users upon request. The most straightforward way to comply with the Marlin license is to make a fork of Marlin on GitHub, perform your modifications, and direct users to your modified fork.
