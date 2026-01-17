@@ -70,29 +70,29 @@ def sparse_checkout(branch, config_path, repo_url, config_folder):
     if not configs_dir.exists():
         debug_print(f"Cloning {repo_url} branch {branch}...")
         subprocess.run(
-            [git_path, "clone", "--depth", "1", "--filter=blob:none", "--sparse", "--branch", branch, "--", repo_url, str(configs_dir)],
+            [git_path, "clone", "--depth", "1", "--filter=blob:none", "--sparse", "--branch", branch, repo_url, str(configs_dir)],
             check=True
         )
     else:
         subprocess.run(
-            [git_path, "fetch", "--depth", "1", "origin", "--", branch],
+            [git_path, "fetch", "--depth", "1", "origin", branch],
             cwd=str(configs_dir),
             check=True
         )
         subprocess.run(
-            [git_path, "checkout", "--", branch],
+            [git_path, "checkout", branch],
             cwd=str(configs_dir),
             check=True
         )
 
     debug_print(f"Setting sparse checkout for: {config_subdir}")
     subprocess.run(
-        [git_path, "sparse-checkout", "set", "--", config_subdir],
+        [git_path, "sparse-checkout", "set", config_subdir],
         cwd=str(configs_dir),
         check=True
     )
     subprocess.run(
-        [git_path, "pull", "origin", "--", branch],
+        [git_path, "pull"],
         cwd=str(configs_dir),
         check=True
     )
