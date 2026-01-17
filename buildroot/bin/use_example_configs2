@@ -14,7 +14,6 @@ from pathlib import Path
 
 DEBUGGING = False
 
-# Unified list of configuration files.
 CONFIG_FILES = (
     "Configuration.h",
     "Configuration_adv.h",
@@ -22,8 +21,6 @@ CONFIG_FILES = (
     "_Bootscreen.h",
     "_Statusscreen.h"
 )
-
-# --- Utility Functions ---
 
 def debug_print(s):
     if DEBUGGING: print(s)
@@ -44,8 +41,6 @@ def get_current_branch():
     except (subprocess.CalledProcessError, FileNotFoundError):
         return None
 
-# --- Configuration Source Parameterization ---
-
 def get_source_parameters(source_type, mbranch, requested_branch, config_path_arg):
     if source_type == "mrisco":
         repo_url = "https://github.com/classicrocker883/MRiscoCProUI.git"
@@ -60,13 +55,10 @@ def get_source_parameters(source_type, mbranch, requested_branch, config_path_ar
     else:
         raise ValueError(f"Unknown source type: {source_type}")
 
-    # Finalize branch and config path
     final_branch = requested_branch if requested_branch else cbranch
     final_config_path = f"{config_path_prefix}{config_path_arg}"
 
     return repo_url, config_folder, final_branch, final_config_path
-
-# --- Core Logic: Sparse Checkout & Copy ---
 
 def sparse_checkout(branch, config_path, repo_url, config_folder):
     git_path = shutil.which("git")
@@ -79,19 +71,19 @@ def sparse_checkout(branch, config_path, repo_url, config_folder):
     if not configs_dir.exists():
         debug_print(f"Cloning {repo_url} branch {branch}...")
         subprocess.run(
-            [git_path, "clone", "--depth", "1", "--filter=blob:none", "--sparse", "--branch", branch, repo_url, str(configs_dir)],
+            [git_path, "clone", "--depth", "1", "--filter=blob:none", "--sparse", "--branch", branch, "--", repo_url, str(configs_dir)],
             check=True,
             shell=False
         )
     else:
         subprocess.run(
-            [git_path, "fetch", "--depth", "1", "origin", branch],
+            [git_path, "fetch", "--depth", "1", "origin", "--", branch],
             cwd=str(configs_dir),
             check=True,
             shell=False
         )
         subprocess.run(
-            [git_path, "checkout", branch],
+            [git_path, "checkout", "--", branch],
             cwd=str(configs_dir),
             check=True,
             shell=False
@@ -99,13 +91,13 @@ def sparse_checkout(branch, config_path, repo_url, config_folder):
 
     debug_print(f"Setting sparse checkout for: {config_subdir}")
     subprocess.run(
-        [git_path, "sparse-checkout", "set", config_subdir],
+        [git_path, "sparse-checkout", "set", "--", config_subdir],
         cwd=str(configs_dir),
         check=True,
         shell=False
     )
     subprocess.run(
-        [git_path, "pull"],
+        [git_path, "pull", "origin", "--", branch],
         cwd=str(configs_dir),
         check=True,
         shell=False
@@ -115,6 +107,9 @@ def copy_config_files(branch, config_path, dest_dir, repo_url, config_folder):
     sparse_checkout(branch, config_path, repo_url, config_folder)
     src_dir = Path("ConfigurationsRepo") / config_folder / config_path
     copied_count = 0
+    if not src_dir.exists():
+        return False
+
     for fname in CONFIG_FILES:
         src_file = src_dir / fname
         if src_file.exists():
@@ -122,11 +117,7 @@ def copy_config_files(branch, config_path, dest_dir, repo_url, config_folder):
             debug_print(f"Copying {src_file} to {dest_file}")
             dest_file.write_bytes(src_file.read_bytes())
             copied_count += 1
-        else:
-            debug_print(f"{fname} not found in {src_dir}")
     return copied_count > 0
-
-# --- Core Logic: URL Fetch ---
 
 def fetch_config_files(branch, config_path, dest_dir, repo_url, config_folder):
     org_repo = "/".join(repo_url.split("/")[-2:])[:-4]
@@ -137,7 +128,7 @@ def fetch_config_files(branch, config_path, dest_dir, repo_url, config_folder):
     for file in CONFIG_FILES:
         url = f"{base_url}/{file}"
         if not url.startswith("https://"):
-            raise ValueError(f"Insecure or invalid URL scheme: {url}")
+            raise ValueError(f"Insecure URL scheme: {url}")
 
         dest_file = dest_dir / file
         debug_print(f"Fetching {file} from {url} to {dest_file}")
@@ -147,19 +138,17 @@ def fetch_config_files(branch, config_path, dest_dir, repo_url, config_folder):
             copied_count += 1
         except urllib.error.HTTPError as e:
             if e.code == 404:
-                debug_print(f"File {file} not found (404), skipping.")
+                debug_print(f"File {file} not found (404).")
             else:
                 raise
     return copied_count > 0
 
-# --- Consolidated Fetch Function ---
-
 def fetch_configs(branch, config_path, repo_url, config_folder, marlin_dir):
     if os.environ.get("GITHUB_ACTIONS"):
-        print("Using git sparse-checkout (GitHub Actions mode)")
+        debug_print("Using git sparse-checkout (GitHub Actions mode)")
         return copy_config_files(branch, config_path, marlin_dir, repo_url, config_folder)
     else:
-        print("Using direct URL download method.")
+        debug_print("Using direct URL download method.")
         try:
             return fetch_config_files(branch, config_path, marlin_dir, repo_url, config_folder)
         except urllib.error.HTTPError as e:
@@ -167,17 +156,15 @@ def fetch_configs(branch, config_path, repo_url, config_folder, marlin_dir):
                 return False
             raise
 
-# --- Main Execution ---
-
 def main():
     mbranch = get_current_branch()
     if not mbranch:
-        print("Not a git repository or no branch found.")
+        print("Not a git repository.")
         sys.exit(1)
 
     marlin_dir = Path("Marlin")
     if not marlin_dir.exists():
-        print("Directory 'Marlin' not found at the current location.")
+        print("Directory 'Marlin' not found.")
         sys.exit(1)
 
     config_path_arg = "configurations"
@@ -198,44 +185,40 @@ def main():
             if requested_branch.lower() in ("marlin", "mrisco"):
                 requested_branch = None
 
-    # Run restore_configs securely
-    for cmd in ["restore_configs", "./buildroot/bin/restore_configs"]:
-        exe = shutil.which(cmd) if "/" not in cmd else cmd
-        if exe and (Path(exe).exists() or shutil.which(cmd)):
+    for cmd_name in ["restore_configs", "./buildroot/bin/restore_configs"]:
+        exe_path = shutil.which(cmd_name)
+        if exe_path:
+            if cmd_name.startswith("./") and not Path(exe_path).exists():
+                continue
             try:
-                subprocess.run([cmd], check=True, shell=False)
+                subprocess.run([exe_path], check=True, shell=False)
                 break
             except (subprocess.CalledProcessError, FileNotFoundError):
                 continue
 
     # Pass 1: MRISCO
-    mrisco_path = config_path_arg if full_arg else "configurations"
     try:
-        repo_url, config_folder, final_branch, final_config_path = get_source_parameters("mrisco", mbranch, requested_branch, mrisco_path)
-        print(f"--- Pass 1: Attempting MRISCO ({final_branch}:{final_config_path}) ---")
+        repo_url, config_folder, final_branch, final_config_path = get_source_parameters("mrisco", mbranch, requested_branch, config_path_arg)
+        print(f"--- Pass 1: Attempting MRiscoProUI ({final_branch}) ---")
         if fetch_configs(final_branch, final_config_path, repo_url, config_folder, marlin_dir):
-            print("✅ Configuration files successfully fetched from MRISCO.")
+            print("✅ Success: MRiscoProUI")
             sys.exit(0)
-        else:
-            print("⚠️ MRISCO configuration not found or fetch failed (404). Initiating fallback.")
-
     except Exception as e:
-        print(f"⚠️ MRISCO attempt failed: {e}")
+        print(f"⚠️ MRiscoProUI failed: {e}")
 
     # Pass 2: MARLIN Fallback
     try:
         repo_url, config_folder, final_branch, final_config_path = get_source_parameters("marlin", mbranch, requested_branch, config_path_arg)
-        print(f"--- Pass 2: Falling back to MARLIN ({final_branch}:{final_config_path}) ---")
+        print(f"--- Pass 2: Falling back to Marlin ({final_branch}) ---")
         if fetch_configs(final_branch, final_config_path, repo_url, config_folder, marlin_dir):
-            print("✅ Configuration files successfully fetched from MARLIN.")
+            print("✅ Success: Marlin")
             sys.exit(0)
         else:
-            print("❌ MARLIN configuration not found.")
+            print("❌ Configuration not found.")
             sys.exit(1)
     except Exception as e:
-        print(f"❌ MARLIN fallback failed: {e}")
+        print(f"❌ Fallback failed: {e}")
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
