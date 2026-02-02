@@ -574,7 +574,6 @@
 // #undef DISABLE_U
 // #undef DISABLE_V
 // #undef DISABLE_W
-// #undef DISABLE_REDUCED_ACCURACY_WARNING
 // #undef DISABLE_E
 // #undef DISABLE_OTHER_EXTRUDERS
 // #undef INVERT_X_DIR

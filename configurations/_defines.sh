@@ -2,8 +2,8 @@
 
 INPUT_FILE="Marlin/Configuration.h"
 # INPUT_FILE="Marlin/Configuration_adv.h"
-OUTPUT_FILE="_Define_Configuration.h"
-# OUTPUT_FILE="_Define_Configuration_adv.h"
+OUTPUT_FILE="configurations/_Define_Configuration.h"
+# OUTPUT_FILE="configurations/_Define_Configuration_adv.h"
 
 # Write header
 # * Configuration_adv.h Defines
