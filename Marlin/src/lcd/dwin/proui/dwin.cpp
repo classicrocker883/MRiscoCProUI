@@ -133,7 +133,7 @@
 // Junction deviation limits
 #if ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
   #define MIN_JD_MM 0.01f
-  #define MAX_JD_MM TERN(HAS_LIN_ADVANCE_K, 0.3f, 0.5f)
+  #define MAX_JD_MM TERN(HAS_LINEAR_E_JERK, 0.3f, 0.5f)
 #endif
 
 #if HAS_TRINAMIC_CONFIG
@@ -2572,29 +2572,24 @@ void ApplyMove() {
 #endif
 
 #if ENABLED(CASE_LIGHT_MENU)
-
   void SetCaseLight() {
     Toggle_Chkb_Line(caselight.on);
     caselight.update_enabled();
   }
-
   #if CASELIGHT_USES_BRIGHTNESS
     void ApplyCaseLightBrightness() { caselight.brightness = MenuData.Value; }
     void LiveCaseLightBrightness() { caselight.update_brightness(); }
     void SetCaseLightBrightness() { SetIntOnClick(0, 255, caselight.brightness, ApplyCaseLightBrightness, LiveCaseLightBrightness)); }
   #endif
-
 #endif
 
 #if ENABLED(LED_CONTROL_MENU)
-
   #if !ALL(CASE_LIGHT_MENU, CASE_LIGHT_USE_NEOPIXEL)
     void SetLedStatus() {
       leds.toggle();
       Show_Chkb_Line(leds.lights_on);
     }
   #endif
-
   #if HAS_COLOR_LEDS
     void ApplyLEDColor() { HMI_value.Led_Color = LED1Color_t({ leds.color.r, leds.color.g, leds.color.b OPTARG(HAS_WHITE_LED, leds.color.w) }); }
     void LiveLEDColor(uint8_t *color) { *color = MenuData.Value; leds.update(); }
@@ -2609,8 +2604,7 @@ void ApplyMove() {
       void SetLEDColorW() { SetIntOnClick(0, 255, leds.color.w, ApplyLEDColor, LiveLEDColorW); }
     #endif
   #endif
-
-#endif
+#endif // LED_CONTROL_MENU
 
 #if ENABLED(SOUND_MENU_ITEM)
   void SetEnableSound() { Toggle_Chkb_Line(ui.sound_on); }
@@ -3163,7 +3157,7 @@ void ApplyMaxAccel() { planner.set_max_acceleration(HMI_value.axis, MenuData.Val
     void SetMaxJerkE() { HMI_value.axis = E_AXIS; SetFloatOnClick(min_jerk_edit_values.e, max_jerk_edit_values.e, UNITFDIGITS, planner.max_jerk.e, ApplyMaxJerk); }
   #endif
 #elif ALL(PROUI_ITEM_JD, HAS_JUNCTION_DEVIATION)
-  void ApplyJDmm() { TERN_(HAS_LIN_ADVANCE_K, planner.recalculate_max_e_jerk();) }
+  void ApplyJDmm() { TERN_(HAS_LINEAR_E_JERK, planner.recalculate_max_e_jerk();) }
   void SetJDmm() { SetPFloatOnClick(MIN_JD_MM, MAX_JD_MM, 3, ApplyJDmm); }
 #endif
 
