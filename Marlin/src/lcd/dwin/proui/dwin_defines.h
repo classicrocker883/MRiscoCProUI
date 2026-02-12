@@ -102,7 +102,7 @@
 #define DEF_BEDPIDT PREHEAT_1_TEMP_BED
 #define DEF_CHAMBERPIDT PREHEAT_1_TEMP_CHAMBER
 #define DEF_PIDCYCLES 5
-#define EXT active_extruder
+#define EXT motion.extruder
 
 //=============================================================================
 // Only for Professional Firmware UI extensions

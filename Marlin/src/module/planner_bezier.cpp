@@ -196,7 +196,7 @@ void cubic_b_spline(
       interp(position.w, target.w, t)
       /// FIXME: Wrong, since t is not linear in the distance.
     );
-    apply_motion_limits(new_bez);
+    motion.apply_limits(new_bez);
     bez_target = new_bez;
 
     #if HAS_LEVELING && !PLANNER_LEVELING
@@ -206,7 +206,7 @@ void cubic_b_spline(
       const xyze_pos_t &pos = bez_target;
     #endif
 
-    if (!planner.buffer_line(pos, scaled_fr_mm_s, active_extruder, hints))
+    if (!planner.buffer_line(pos, scaled_fr_mm_s, motion.extruder, hints))
       break;
   }
 }
