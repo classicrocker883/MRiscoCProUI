@@ -523,7 +523,7 @@ private:
 #elif defined(XY_PROBE_FEEDRATE)
   #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS(XY_PROBE_FEEDRATE)
 #else
-  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS((homing_feedrate_mm_m.x + homing_feedrate_mm_m.y) * 1.5)
+  #define XY_PROBE_FEEDRATE_MM_S MMM_TO_MMS((motion.homing_feedrate_mm_m.x + motion.homing_feedrate_mm_m.y) * 1.5)
 #endif
 
 #ifdef Z_PROBE_FEEDRATE_SLOW

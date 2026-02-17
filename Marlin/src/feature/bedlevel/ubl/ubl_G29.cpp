@@ -831,7 +831,7 @@ void unified_bed_leveling::shift_mesh_height(const float zoffs) {
         #endif
         TERN_(DWIN_LCD_PROUI, MeshViewer.DrawMeshPoint(best.pos.x, best.pos.y, measured_z);)
       }
-      SERIAL_FLUSH(); // Prevent host M105 buffer overrun.
+      DEBUG_FLUSH(); // Prevent host M105 buffer overrun.
 
     } while (best.pos.x >= 0 && --count);
 
@@ -890,7 +890,7 @@ void set_message_with_feedback(FSTR_P const fstr) {
         }
       }
     }
-    serial_delay(15);
+    DEBUG_DELAY(15);
     return false;
   }
 
@@ -1032,7 +1032,7 @@ void set_message_with_feedback(FSTR_P const fstr) {
 
       if (param.V_verbosity > 2)
         DEBUG_ECHOLNPGM("Mesh Point Measured at: ", p_float_t(z_values[lpos.x][lpos.y], 6));
-      SERIAL_FLUSH(); // Prevent host M105 buffer overrun.
+      DEBUG_FLUSH(); // Prevent host M105 buffer overrun.
     } while (location.valid());
 
     if (do_ubl_mesh_map) display_map(param.T_map_type);  // show user where we're probing
@@ -1116,7 +1116,7 @@ void set_message_with_feedback(FSTR_P const fstr) {
         marlin.idle_no_sleep();
         new_z = ui.ubl_mesh_value();
         TERN_(UBL_MESH_EDIT_MOVES_Z, motion.blocking_move_z(h_offset + new_z)); // Move the nozzle as the point is edited
-        SERIAL_FLUSH();                                   // Prevent host M105 buffer overrun.
+        DEBUG_FLUSH();                                   // Prevent host M105 buffer overrun.
       } while (!ui.button_pressed());
 
       motion.set_soft_endstop_loose(false);
@@ -1138,7 +1138,7 @@ void set_message_with_feedback(FSTR_P const fstr) {
 
       TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(location, new_z));
 
-      serial_delay(20);                                   // No switch noise
+      DEBUG_DELAY(20);                                    // No switch noise
       ui.refresh();
 
     } while (lpos.x >= 0 && --param.R_repetition > 0);
@@ -1790,7 +1790,7 @@ void unified_bed_leveling::smart_mesh_fill() {
       DEBUG_ECHOLNPGM("No Mesh Loaded.");
     else
       DEBUG_ECHOLNPGM("Mesh ", storage_slot, " Loaded.");
-    serial_delay(50);
+    DEBUG_DELAY(50);
 
     #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
       DEBUG_ECHOLN(F("Fade Height M420 Z"), p_float_t(planner.z_fade_height, 4));
@@ -1802,51 +1802,51 @@ void unified_bed_leveling::smart_mesh_fill() {
       DEBUG_ECHOLNPGM("Probe Offset M851 Z", p_float_t(probe.offset.z, 7));
     #endif
 
-    DEBUG_ECHOLNPGM("MESH_MIN_X  " STRINGIFY(MESH_MIN_X) "=", MESH_MIN_X); serial_delay(50);
-    DEBUG_ECHOLNPGM("MESH_MIN_Y  " STRINGIFY(MESH_MIN_Y) "=", MESH_MIN_Y); serial_delay(50);
-    DEBUG_ECHOLNPGM("MESH_MAX_X  " STRINGIFY(MESH_MAX_X) "=", MESH_MAX_X); serial_delay(50);
-    DEBUG_ECHOLNPGM("MESH_MAX_Y  " STRINGIFY(MESH_MAX_Y) "=", MESH_MAX_Y); serial_delay(50);
-    DEBUG_ECHOLNPGM("GRID_MAX_POINTS_X  ", GRID_MAX_POINTS_X);             serial_delay(50);
-    DEBUG_ECHOLNPGM("GRID_MAX_POINTS_Y  ", GRID_MAX_POINTS_Y);             serial_delay(50);
+    DEBUG_ECHOLNPGM("MESH_MIN_X  " STRINGIFY(MESH_MIN_X) "=", MESH_MIN_X); DEBUG_DELAY(50);
+    DEBUG_ECHOLNPGM("MESH_MIN_Y  " STRINGIFY(MESH_MIN_Y) "=", MESH_MIN_Y); DEBUG_DELAY(50);
+    DEBUG_ECHOLNPGM("MESH_MAX_X  " STRINGIFY(MESH_MAX_X) "=", MESH_MAX_X); DEBUG_DELAY(50);
+    DEBUG_ECHOLNPGM("MESH_MAX_Y  " STRINGIFY(MESH_MAX_Y) "=", MESH_MAX_Y); DEBUG_DELAY(50);
+    DEBUG_ECHOLNPGM("GRID_MAX_POINTS_X  ", GRID_MAX_POINTS_X);             DEBUG_DELAY(50);
+    DEBUG_ECHOLNPGM("GRID_MAX_POINTS_Y  ", GRID_MAX_POINTS_Y);             DEBUG_DELAY(50);
     DEBUG_ECHOLNPGM("MESH_X_DIST  ", MESH_X_DIST);
-    DEBUG_ECHOLNPGM("MESH_Y_DIST  ", MESH_Y_DIST);                         serial_delay(50);
+    DEBUG_ECHOLNPGM("MESH_Y_DIST  ", MESH_Y_DIST);                         DEBUG_DELAY(50);
 
     DEBUG_ECHOPGM("X-Axis Mesh Points at: ");
     for (uint8_t i = 0; i < GRID_MAX_POINTS_X; ++i) {
       DEBUG_ECHO(p_float_t(motion.logical_x(get_mesh_x(i)), 3), F("  "));
-      serial_delay(25);
+      DEBUG_DELAY(25);
     }
-    SERIAL_EOL();
+    DEBUG_EOL();
 
     DEBUG_ECHOPGM("Y-Axis Mesh Points at: ");
     for (uint8_t j = 0; j < GRID_MAX_POINTS_Y; ++j) {
       DEBUG_ECHO(p_float_t(motion.logical_y(get_mesh_y(j)), 3), F("  "));
-      serial_delay(25);
+      DEBUG_DELAY(25);
     }
-    SERIAL_EOL();
+    DEBUG_EOL();
 
     #if HAS_KILL
       DEBUG_ECHOLNPGM("Kill pin on :", KILL_PIN, "  state:", marlin.kill_state());
     #endif
 
-    SERIAL_EOL();
-    serial_delay(50);
+    DEBUG_EOL();
+    DEBUG_DELAY(50);
 
     DEBUG_ECHOLNPGM("ubl_state_at_invocation :", ubl_state_at_invocation, "\nubl_state_recursion_chk :", ubl_state_recursion_chk);
-    serial_delay(50);
+    DEBUG_DELAY(50);
 
     DEBUG_ECHOLNPGM("Meshes go from ", _hex_word(settings.meshes_start_index()), " to ", _hex_word(settings.meshes_end_index()));
-    serial_delay(50);
+    DEBUG_DELAY(50);
 
     DEBUG_ECHOLNPGM("sizeof(unified_bed_leveling) :  ", sizeof(unified_bed_leveling));
     DEBUG_ECHOLNPGM("z_value[][] size: ", sizeof(z_values));
-    serial_delay(25);
+    DEBUG_DELAY(25);
 
     DEBUG_ECHOLNPGM("EEPROM free for UBL: ", _hex_word(settings.meshes_end_index() - settings.meshes_start_index()));
-    serial_delay(50);
+    DEBUG_DELAY(50);
 
     DEBUG_ECHOLNPGM("EEPROM can hold ", settings.calc_num_meshes(), " meshes.\n");
-    serial_delay(25);
+    DEBUG_DELAY(25);
 
     if (!sanity_check()) {
       echo_name();
@@ -1873,9 +1873,9 @@ void unified_bed_leveling::smart_mesh_fill() {
         print_hex_byte(cccc);
         DEBUG_CHAR(' ');
       }
-      SERIAL_EOL();
+      DEBUG_EOL();
     }
-    SERIAL_EOL();
+    DEBUG_EOL();
     persistentStore.access_finish();
   }
 

@@ -2200,7 +2200,6 @@ void DWIN_SetDataDefaults() {
     TERN_(NOZZLE_PARK_FEATURE, PRO_data.Park_point = DEF_NOZZLE_PARK_POINT;)
     #if HAS_FILAMENT_SENSOR
       PRO_data.Runout_active_state = FIL_RUNOUT_STATE;
-      PRO_data.FilamentMotionSensor = DEF_FIL_MOTION_SENSOR;
     #endif
     PRO_data.hotend_maxtemp = HEATER_0_MAXTEMP;
     #if HAS_TOOLBAR
@@ -2686,16 +2685,13 @@ void ApplyMove() {
     void LiveRunoutActive() { ProEx.DrawRunoutActive(true); }
     void SetRunoutActive() {
       uint8_t val;
-      val = PRO_data.FilamentMotionSensor ? 2 : PRO_data.Runout_active_state ? 1 : 0;
-      SetOnClick(SetIntNoDraw, 0, 2, 0, val, ProEx.ApplyRunoutActive, LiveRunoutActive);
+      val = PRO_data.Runout_active_state ? 1 : 0;
+      SetOnClick(SetIntNoDraw, 0, 1, 0, val, ProEx.ApplyRunoutActive, LiveRunoutActive);
       ProEx.DrawRunoutActive(true);
     }
     void onDrawRunoutActive(MenuItemClass* menuitem, int8_t line) {
       onDrawMenuItem(menuitem, line);
-      if (PRO_data.FilamentMotionSensor)
-        { DWINUI::Draw_String(VALX - MENU_CHR_W, MBASE(line), GET_TEXT_F(MSG_MOTION)); }
-      else
-        { DWINUI::Draw_String(VALX + MENU_CHR_W, MBASE(line), PRO_data.Runout_active_state ? GET_TEXT_F(MSG_HIGH) : GET_TEXT_F(MSG_LOW)); }
+      DWINUI::Draw_String(VALX + MENU_CHR_W, MBASE(line), PRO_data.Runout_active_state ? GET_TEXT_F(MSG_HIGH) : GET_TEXT_F(MSG_LOW));
     }
   #endif
 
