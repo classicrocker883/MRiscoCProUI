@@ -4711,9 +4711,8 @@ void Temperature::isr() {
           update_time_value = RTS_UPDATE_VALUE;
           if (card.isStillPrinting()) rts.refreshTime();
           rts.start_print_flag = false;
-        #else
-          ui.reset_status();
         #endif
+        ui.reset_status();
         TERN_(PRINTER_EVENT_LEDS, printerEventLEDs.onHeatingDone());
         return true;
       }

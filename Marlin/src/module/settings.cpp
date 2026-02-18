@@ -1008,7 +1008,7 @@ void MarlinSettings::postprocess() {
     {
       // Skip hotend 0 which must be 0
       for (uint8_t e = 1; e < HOTENDS; ++e)
-        EEPROM_WRITE(hotend_offset[e]);
+        EEPROM_WRITE(motion.hotend_offset[e]);
     }
     #endif
 
@@ -2148,7 +2148,7 @@ void MarlinSettings::postprocess() {
       {
         // Skip hotend 0 which must be 0
         for (uint8_t e = 1; e < HOTENDS; ++e)
-          EEPROM_READ(hotend_offset[e]);
+          EEPROM_READ(motion.hotend_offset[e]);
       }
       #endif
 
@@ -3559,7 +3559,7 @@ void MarlinSettings::reset() {
   //
   // Hotend Offsets
   //
-  TERN_(HAS_HOTEND_OFFSET, reset_hotend_offsets());
+  TERN_(HAS_HOTEND_OFFSET, motion.reset_hotend_offsets());
 
   //
   // Spindle Acceleration
