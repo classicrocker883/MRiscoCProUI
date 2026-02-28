@@ -93,6 +93,11 @@ constexpr AxisFlags Motion::rotational;
   bool Motion::z_min_trusted; // = false
 #endif
 
+#if ENABLED(PROUI_MESH_EDIT)
+  xy_pos_t mesh_min{ MESH_MIN_X, MESH_MIN_Y },
+           mesh_max{ MESH_MAX_X, MESH_MAX_Y };
+#endif
+
 // Warn for unexpected TPARA home position
 #if ENABLED(AXEL_TPARA)
   static_assert(

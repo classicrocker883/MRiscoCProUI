@@ -86,6 +86,15 @@ constexpr float fslop = 0.0001;
 typedef bits_t(NUM_AXES) main_axes_bits_t;
 constexpr main_axes_bits_t main_axes_mask = _BV(NUM_AXES) - 1;
 
+#if HAS_MESH
+  #if ENABLED(PROUI_MESH_EDIT)
+    extern xy_pos_t mesh_min, mesh_max;
+  #else
+    TERN(PROUI_EX, const, constexpr) xy_pos_t mesh_min{ MESH_MIN_X, MESH_MIN_Y },
+                                              mesh_max{ MESH_MAX_X, MESH_MAX_Y };
+  #endif
+#endif
+
 class Motion {
 public:
   static bool relative_mode;            // Relative Mode - G90/G91

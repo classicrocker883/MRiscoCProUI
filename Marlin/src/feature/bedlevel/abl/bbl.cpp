@@ -38,10 +38,10 @@
 LevelingBilinear bedlevel;
 
 xy_float_t LevelingBilinear::grid_factor;
-xy_pos_t LevelingBilinear::grid_spacing,
-         LevelingBilinear::grid_start,
-         LevelingBilinear::cached_rel;
-xy_int8_t LevelingBilinear::cached_g;
+xy_pos_t   LevelingBilinear::grid_spacing,
+           LevelingBilinear::grid_start,
+           LevelingBilinear::cached_rel;
+xy_int8_t  LevelingBilinear::cached_g;
 bed_mesh_t LevelingBilinear::z_values;
 
 /**
@@ -110,17 +110,14 @@ void LevelingBilinear::reset() {
  * Set grid spacing and start position
  */
 void LevelingBilinear::set_grid(const xy_pos_t& _grid_spacing, const xy_pos_t& _grid_start) {
-#if ENABLED(PROUI_MESH_EDIT)
-  UNUSED(_grid_spacing);
-  UNUSED(_grid_start);
-  grid_spacing.x = MESH_X_DIST;
-  grid_spacing.y = MESH_Y_DIST;
-  grid_start.x = MESH_MIN_X;
-  grid_start.y = MESH_MIN_Y;
-#else
-  grid_spacing = _grid_spacing;
-  grid_start = _grid_start;
-#endif
+  #if ENABLED(PROUI_MESH_EDIT)
+    UNUSED(_grid_spacing); UNUSED(_grid_start);
+    grid_start = mesh_min;
+    grid_spacing.set(MESH_X_DIST, MESH_Y_DIST);
+  #else
+    grid_spacing = _grid_spacing;
+    grid_start = _grid_start;
+  #endif
   grid_factor = grid_spacing.reciprocal();
 }
 

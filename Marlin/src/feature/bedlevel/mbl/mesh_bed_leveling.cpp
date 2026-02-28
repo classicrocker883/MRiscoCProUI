@@ -26,8 +26,6 @@
 
   #include "../bedlevel.h"
 
-  #include "../../../module/motion.h"
-
   #if ENABLED(EXTENSIBLE_UI)
     #include "../../../lcd/extui/ui_api.h"
   #endif
@@ -46,25 +44,25 @@
 
   mesh_bed_leveling::mesh_bed_leveling() { initialize(); }
 
-  void mesh_bed_leveling::reset() {
-    z_offset = 0;
-    ZERO(z_values);
-    #if ENABLED(EXTENSIBLE_UI)
-      GRID_LOOP(x, y) ExtUI::onMeshUpdate(x, y, 0);
-    #endif
-  }
-
   void mesh_bed_leveling::initialize() {
     for (uint8_t i = 0; i < GRID_MAX_POINTS_X; ++i)
-      index_to_xpos[i] = MESH_MIN_X + i * (MESH_X_DIST);
+      index_to_xpos[i] = mesh_min.x + i * (MESH_X_DIST);
     for (uint8_t j = 0; j < GRID_MAX_POINTS_Y; ++j)
-      index_to_ypos[j] = MESH_MIN_Y + j * (MESH_Y_DIST);
+      index_to_ypos[j] = mesh_min.y + j * (MESH_Y_DIST);
     reset();
   }
 
   void mesh_bed_leveling::report_mesh() {
     SERIAL_ECHOLN(F(STRINGIFY(GRID_MAX_POINTS_X) "x" STRINGIFY(GRID_MAX_POINTS_Y) " mesh. Z offset: "), p_float_t(z_offset, 5), F("\nMeasured points:"));
     print_2d_array(GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y, 5, z_values[0]);
+  }
+
+  void mesh_bed_leveling::reset() {
+    z_offset = 0;
+    ZERO(z_values);
+    #if ENABLED(EXTENSIBLE_UI)
+      GRID_LOOP(x, y) ExtUI::onMeshUpdate(x, y, 0);
+    #endif
   }
 
   #if IS_CARTESIAN && DISABLED(SEGMENT_LEVELED_MOVES)

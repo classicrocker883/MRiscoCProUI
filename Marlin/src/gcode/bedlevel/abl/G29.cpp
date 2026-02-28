@@ -57,6 +57,10 @@
   #include "../../../lcd/sovol_rts/sovol_rts.h"
 #endif
 
+#if ENABLED(DWIN_LCD_PROUI)
+  #include "../../../lcd/dwin/proui/meshviewer.h"
+#endif
+
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../../../core/debug_out.h"
 
@@ -253,11 +257,8 @@ G29_TYPE GcodeSuite::G29() {
   // Send 'N' to force homing before G29 (internal only)
   if (parser.seen_test('N'))
     process_subcommands_now(TERN(CAN_SET_LEVELING_AFTER_G28, F("G28L0"), FPSTR(G28_STR)));
-  #if ENABLED(DWIN_LCD_PROUI)
-    else {
-      process_subcommands_now(F("G28Z"));
-    }
-  #endif
+  else if (ENABLED(DWIN_LCD_PROUI))
+    process_subcommands_now(F("G28Z"));
 
   // Don't allow auto-leveling without homing first
   if (motion.homing_needed_error()) G29_RETURN(false, false);
@@ -599,7 +600,7 @@ G29_TYPE GcodeSuite::G29() {
         const float newz = abl.measured_z + abl.Z_offset;
         abl.z_values[abl.meshCount.x][abl.meshCount.y] = newz;
         TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(abl.meshCount, newz));
-        TERN_(DWIN_LCD_PROUI, MeshViewer.DrawMeshPoint(abl.meshCount.x, abl.meshCount.y, newz));
+        TERN_(DWIN_LCD_PROUI, MeshViewer.DrawMeshPoint(abl.meshCount, newz));
 
         if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM_P(PSTR("Save X"), abl.meshCount.x, SP_Y_STR, abl.meshCount.y, SP_Z_STR, abl.measured_z + abl.Z_offset);
 
@@ -692,9 +693,9 @@ G29_TYPE GcodeSuite::G29() {
       // Outer loop is Y with PROBE_Y_FIRST disabled
       for (PR_OUTER_VAR = 0; PR_OUTER_VAR < PR_OUTER_SIZE && !isnan(abl.measured_z); PR_OUTER_VAR++) {
 
-        int8_t inStart, inStop, inInc;
+        if (TERN0(DWIN_LCD_PROUI, HMI_flag.cancel_lev)) break;
 
-        TERN_(DWIN_LCD_PROUI, if (HMI_flag.cancel_lev) break;)
+        int8_t inStart, inStop, inInc;
 
         if (zig) {                      // Zig away from origin
           inStart = 0;                  // Left or front
@@ -808,7 +809,7 @@ G29_TYPE GcodeSuite::G29() {
             const float z = abl.measured_z + abl.Z_offset;
             abl.z_values[abl.meshCount.x][abl.meshCount.y] = z;
             TERN_(EXTENSIBLE_UI, ExtUI::onMeshUpdate(abl.meshCount, z));
-            TERN_(DWIN_LCD_PROUI, MeshViewer.DrawMeshPoint(abl.meshCount.x, abl.meshCount.y, z));
+            TERN_(DWIN_LCD_PROUI, MeshViewer.DrawMeshPoint(abl.meshCount, z));
 
             #if ENABLED(SOVOL_SV06_RTS)
               if (pt_index <= GRID_MAX_POINTS) rts.sendData(pt_index, AUTO_BED_LEVEL_ICON_VP);
@@ -820,7 +821,7 @@ G29_TYPE GcodeSuite::G29() {
 
           abl.reenable = false; // Don't re-enable after modifying the mesh
           marlin.idle_no_sleep();
-          TERN_(DWIN_LCD_PROUI, if (HMI_flag.cancel_lev) break;)
+          if (TERN0(DWIN_LCD_PROUI, HMI_flag.cancel_lev)) break;
 
         } // inner
       } // outer

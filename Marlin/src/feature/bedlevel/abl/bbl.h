@@ -24,8 +24,8 @@
 #include "../../../inc/MarlinConfigPre.h"
 
 #if ENABLED(PROUI_MESH_EDIT)
-  #define MESH_X_DIST (float((MESH_MAX_X) - (MESH_MIN_X)) / (GRID_MAX_CELLS_X))
-  #define MESH_Y_DIST (float((MESH_MAX_Y) - (MESH_MIN_Y)) / (GRID_MAX_CELLS_Y))
+  #define MESH_X_DIST ((mesh_max.x - mesh_min.x) / (GRID_MAX_CELLS_X))
+  #define MESH_Y_DIST ((mesh_max.y - mesh_min.y) / (GRID_MAX_CELLS_Y))
 #endif
 
 class LevelingBilinear {

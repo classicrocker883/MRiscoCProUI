@@ -587,9 +587,6 @@ typedef struct SettingsDataStruct {
   // DWIN ProUI User Data
   //
   #if ENABLED(DWIN_LCD_PROUI)
-    #if ENABLED(PROUI_MESH_EDIT)
-      MeshSet_t meshSet;
-    #endif
     uint8_t dwin_data[eeprom_data_size];
   #endif
 
@@ -1768,9 +1765,6 @@ void MarlinSettings::postprocess() {
     // DWIN ProUI User Data
     //
     #if ENABLED(DWIN_LCD_PROUI)
-      #if ENABLED(PROUI_MESH_EDIT)
-        EEPROM_WRITE(meshSet);
-      #endif
     {
       _FIELD_TEST(dwin_data);
       char dwin_data[eeprom_data_size] = { 0 };
@@ -2956,9 +2950,6 @@ void MarlinSettings::postprocess() {
       // DWIN ProUI User Data
       //
       #if ENABLED(DWIN_LCD_PROUI)
-        #if ENABLED(PROUI_MESH_EDIT)
-          EEPROM_READ(meshSet);
-        #endif
       {
         _FIELD_TEST(dwin_data);
         const char dwin_data[eeprom_data_size] = { 0 };

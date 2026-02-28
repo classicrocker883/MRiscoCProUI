@@ -177,8 +177,8 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
   SERIAL_ECHOPGM("\nBed Topography Report");
   if (human) {
     SERIAL_ECHOLNPGM(":\n");
-    serial_echo_xy(4, MESH_MIN_X, MESH_MAX_Y);
-    serial_echo_xy(twixt, MESH_MAX_X, MESH_MAX_Y);
+    serial_echo_xy(4, mesh_min.x, mesh_max.y);
+    serial_echo_xy(twixt, mesh_max.x, mesh_max.y);
     SERIAL_EOL();
     serial_echo_column_labels(eachsp - 2);
   }
@@ -236,8 +236,8 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
   if (human) {
     serial_echo_column_labels(eachsp - 2);
     SERIAL_EOL();
-    serial_echo_xy(4, MESH_MIN_X, MESH_MIN_Y);
-    serial_echo_xy(twixt, MESH_MAX_X, MESH_MIN_Y);
+    serial_echo_xy(4, mesh_min.x, mesh_min.y);
+    serial_echo_xy(twixt, mesh_max.x, mesh_min.y);
     SERIAL_EOL();
     SERIAL_EOL();
   }
