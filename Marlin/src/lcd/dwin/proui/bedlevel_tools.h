@@ -20,8 +20,6 @@
  */
 #pragma once
 
-#include "../../../inc/MarlinConfigPre.h"
-
 class BedLevelToolsClass {
 public:
   static bool goto_mesh_value;

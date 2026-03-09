@@ -47,6 +47,10 @@
 
 #include "dwin_popup.h"
 
+#if HAS_MESH
+  #include "meshviewer.h"
+#endif
+
 #include "../../extui/ui_api.h"
 #include "../../../module/stepper.h"
 
@@ -171,6 +175,7 @@ namespace ExtUI {
       const int16_t idx = ypos * (GRID_MAX_POINTS_X) + xpos;
       dwinMeshUpdate(_MIN(idx, GRID_MAX_POINTS), int(GRID_MAX_POINTS), zval);
       dwinRedrawScreen();
+      meshViewer.drawMeshPoint(xpos, ypos, zval);
     }
     // void onMeshUpdate(const int8_t cpos, const int8_t tpos, const float zval) {
     //   ui.set_status(

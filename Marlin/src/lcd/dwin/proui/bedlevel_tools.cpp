@@ -23,13 +23,13 @@
 
 #if ALL(DWIN_LCD_PROUI, HAS_LEVELING)
 
+#include "bedlevel_tools.h"
+
 #include "../../marlinui.h"
 #include "../../../feature/bedlevel/bedlevel.h"
 #include "../../../module/probe.h"
 #include "../../../gcode/gcode.h"
 #include "../../../module/planner.h"
-
-#include "bedlevel_tools.h"
 
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../../../core/debug_out.h"
@@ -163,11 +163,12 @@ float BedLevelToolsClass::get_min_value() {
 
 // Return 'true' if mesh is good and within LCD limits
 bool BedLevelToolsClass::meshValidate() {
-  if (TERN0(PROUI_MESH_EDIT, mesh_max.x <= mesh_min.x || mesh_max.y <= mesh_min.y))
+  if (mesh_max.x <= mesh_min.x || mesh_max.y <= mesh_min.y)
     return false;
   GRID_LOOP(x, y) {
     const float z = bedlevel.z_values[x][y];
-    if (isnan(z) || !WITHIN(z, Z_OFFSET_MIN, Z_OFFSET_MAX)) return false;
+    if (isnan(z) || TERN0(HAS_PROUI_MESH_EDIT, !WITHIN(z, Z_OFFSET_MIN, Z_OFFSET_MAX)))
+      return false;
   }
   return true;
 }

@@ -821,6 +821,7 @@ G29_TYPE GcodeSuite::G29() {
 
           abl.reenable = false; // Don't re-enable after modifying the mesh
           marlin.idle_no_sleep();
+
           if (TERN0(DWIN_LCD_PROUI, HMI_flag.cancel_lev)) break;
 
         } // inner

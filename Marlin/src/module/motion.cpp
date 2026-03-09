@@ -93,11 +93,6 @@ constexpr AxisFlags Motion::rotational;
   bool Motion::z_min_trusted; // = false
 #endif
 
-#if ENABLED(PROUI_MESH_EDIT)
-  xy_pos_t mesh_min{ MESH_MIN_X, MESH_MIN_Y },
-           mesh_max{ MESH_MAX_X, MESH_MAX_Y };
-#endif
-
 // Warn for unexpected TPARA home position
 #if ENABLED(AXEL_TPARA)
   static_assert(
@@ -223,15 +218,18 @@ int16_t Motion::feedrate_percentage = 100;
   feedRate_t Motion::xy_probe_feedrate_mm_s = MMM_TO_MMS(XY_PROBE_FEEDRATE);
 #endif
 
-#ifdef Z_PROBE_FEEDRATE_SLOW
-  #if ENABLED(DWIN_LCD_PROUI)
-    const feedRate_t Motion::z_probe_slow_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
-  #else
-    constexpr feedRate_t Motion::z_probe_slow_mm_s;
-  #endif
+#if ENABLED(DWIN_LCD_PROUI)
+  uint16_t Motion::z_probe_slow_mm_s = MMM_TO_MMS(Z_PROBE_FEEDRATE_SLOW);
+#elif Z_PROBE_FEEDRATE_SLOW
+  constexpr feedRate_t Motion::z_probe_slow_mm_s;
 #endif
 #ifdef Z_PROBE_FEEDRATE_FAST
   constexpr feedRate_t Motion::z_probe_fast_mm_s;
+#endif
+
+#if HAS_PROUI_MESH_EDIT
+  xy_pos_t mesh_min{ MESH_MIN_X, MESH_MIN_Y },
+           mesh_max{ MESH_MAX_X, MESH_MAX_Y };
 #endif
 
 /**
@@ -1080,6 +1078,7 @@ void Motion::blocking_move(const xy_pos_t &raw, const feedRate_t fr_mm_s/*=0.0f*
       fr_mm_s
     );
   }
+
   /**
    * Move Z to a particular height so the nozzle or deployed probe clears the bed.
    * (Use do_z_clearance_by for clearance over the current position.)
@@ -1099,6 +1098,7 @@ void Motion::blocking_move(const xy_pos_t &raw, const feedRate_t fr_mm_s/*=0.0f*
     if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("do_z_clearance_by(", zclear, ")");
     do_z_clearance(position.z + zclear);
   }
+
   /**
    * Move Z to Z_POST_CLEARANCE,
    * The axis is allowed to move down.
