@@ -193,7 +193,6 @@ namespace LanguageNarrow_en {
   LSTR MSG_ATTACH_USB                     = _UxGT("Attach USB Drive");
   LSTR MSG_CHANGE_MEDIA                   = _UxGT("Refresh ") MEDIA_TYPE_EN;
   LSTR MSG_RUN_AUTOFILES                  = _UxGT("Run Autofiles");
-  LSTR MSG_ZPROBE_MULTIPLE                = _UxGT("Multiple Probing");
   LSTR MSG_ZPROBE_OUT                     = _UxGT("Z-Probe Past Bed");
   LSTR MSG_BLTOUCH_RESET                  = _UxGT("Reset");
   LSTR MSG_ZPROBE_XOFFSET                 = _UxGT("Probe X Offset");
@@ -485,6 +484,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_BILINEAR_LEVELING              = _UxGT("Bilinear Leveling");
   LSTR MSG_UBL_LEVELING                   = _UxGT("Unified Bed Leveling");
   LSTR MSG_MESH_LEVELING                  = _UxGT("Mesh Leveling");
+  LSTR MSG_MESH_SETTINGS                  = _UxGT("Mesh Settings");
   LSTR MSG_INFO_RUNAWAY_OFF               = _UxGT("Runaway Watch: OFF");
   LSTR MSG_INFO_RUNAWAY_ON                = _UxGT("Runaway Watch: ON");
   LSTR MSG_CASE_LIGHT_BRIGHTNESS          = _UxGT("Light Brightness");
@@ -723,6 +723,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_ZPROBE_SETTINGS                = _UxGT("Probe Settings");
   LSTR MSG_ZPROBE_OFFSETS                 = _UxGT("Probe Offsets");
   LSTR MSG_ZPROBE_MARGIN                  = _UxGT("Probe Margin");
+  LSTR MSG_ZPROBE_MULTIPLE                = _UxGT("Multiple Probing");
   LSTR MSG_Z_FEED_RATE                    = _UxGT("Z Slow Feed Rate");
   LSTR MSG_ENABLE_HS_MODE                 = _UxGT("Enable HS Mode");
   LSTR MSG_MOVE_NOZZLE_TO_BED             = _UxGT("Center Nozzle on Bed");
@@ -809,7 +810,6 @@ namespace LanguageNarrow_en {
   LSTR MSG_HOMING_FEEDRATE_N              = _UxGT("@ Homing FR");
   LSTR MSG_HOME_ALL                       = _UxGT("Home All");
   LSTR MSG_Z_AFTER_HOME                   = _UxGT("Z After Homing");
-  LSTR MSG_ZERO_MESH_POINT                = _UxGT("Zero Current Point");
   LSTR MSG_ERR_M428_TOO_FAR               = _UxGT("MIN/MAX Too Far");
   LSTR MSG_PREHEAT_1_CHAMBER              = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Chmb");
   LSTR MSG_PREHEAT_2                      = _UxGT("Preheat ") PREHEAT_2_LABEL;
@@ -1115,7 +1115,6 @@ namespace LanguageWide_en {
     LSTR MSG_LOWER                        = _UxGT("Lower");
     LSTR MSG_RAISE                        = _UxGT("Raise");
     LSTR MSG_CHANGE_MESH                  = _UxGT("Normal Mesh Viewer");
-    LSTR MSG_MESH_SETTINGS                = _UxGT("Mesh Settings");
     LSTR MSG_MESH_POINTS                  = _UxGT("Mesh Points");
 
     LSTR MSG_POSITION_UNKNOWN             = _UxGT("..WARNING: Current position is unknown, Home axes.");
@@ -1211,6 +1210,7 @@ namespace LanguageWide_en {
     LSTR MSG_PLEASE_PREHEAT               = _UxGT("Please preheat the hotend");
     LSTR MSG_MEDIA_NOT_INSERTED           = MEDIA_TYPE_EN _UxGT(" Not Inserted");
     LSTR MSG_INFO_PRINT_COUNT_RESET       = _UxGT("Reset Print Count");
+    LSTR MSG_ZERO_MESH                    = _UxGT("Zero Current Point");
     LSTR MSG_HOMING_FEEDRATE_N            = _UxGT("@ Homing Feedrate");
     LSTR MSG_PREHEAT_1_CHAMBER            = _UxGT("Preheat ") PREHEAT_1_LABEL _UxGT(" Chamber");
     LSTR MSG_PREHEAT_M_CHAMBER            = _UxGT("Preheat $ Chamber");

@@ -799,7 +799,10 @@ void unified_bed_leveling::shift_mesh_height(const float zoffs) {
       DEBUG_ECHOLNPGM("Probing mesh point ", point_num, "/", GRID_MAX_POINTS, ".");
       TERN_(HAS_STATUS_MESSAGE, ui.status_printf(0, F(S_FMT " %i/%i"), GET_TEXT(MSG_PROBING_POINT), point_num, int(GRID_MAX_POINTS)));
       TERN_(HAS_BACKLIGHT_TIMEOUT, ui.refresh_backlight_timeout());
-      TERN_(DWIN_LCD_PROUI, if (!HMI_flag.cancel_lev) { DWIN_RedrawScreen(); } else { break; })
+
+      #if ENABLED(DWIN_LCD_PROUI)
+        if (!HMI_flag.cancel_lev) DWIN_RedrawScreen(); else break;
+      #endif
 
       #if HAS_MARLINUI_MENU
         if (ui.button_pressed()) {

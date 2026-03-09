@@ -31,10 +31,13 @@
 #define TITLE_CENTERED        // Center Menu Title Text
 
 #if HAS_MESH
-  #define PROUI_MESH_EDIT     // Add a menu to edit mesh inset + points
+  #define HAS_PROUI_MESH_EDIT 1 // Add a menu to edit mesh inset + points
   #define Z_OFFSET_MIN -3.0 // (mm)
   #define Z_OFFSET_MAX  3.0 // (mm)
 #endif
+
+#define HAS_FEEDRATE_EDIT 1 // Feedrate percentage
+#define HAS_FLOW_EDIT 1     // Flow percentage
 
 #if ENABLED(HYBRID_THRESHOLD)
   #define HYBRID_THRESHOLD_MENU // Enable Hybrid Threshold menu

@@ -305,7 +305,7 @@ MenuClass *MaxAccelMenu = nullptr;
 #endif
 #if HAS_MESH
   MenuClass *MeshMenu = nullptr;
-  #if ENABLED(PROUI_MESH_EDIT)
+  #if HAS_PROUI_MESH_EDIT
     MenuClass *EditMeshMenu = nullptr;
     MenuClass *MeshInsetMenu = nullptr;
   #endif
@@ -322,11 +322,11 @@ MenuClass *MaxAccelMenu = nullptr;
 #endif
 
 // Updatable menuitems pointers
-TERN_(HAS_HOTEND,        MenuItemClass *HotendTargetItem = nullptr;)
-TERN_(HAS_HEATED_BED,    MenuItemClass *BedTargetItem    = nullptr;)
-TERN_(HAS_FAN,           MenuItemClass *FanSpeedItem     = nullptr;)
-TERN_(MESH_BED_LEVELING, MenuItemClass *MMeshMoveZItem   = nullptr;)
-TERN_(PROUI_MESH_EDIT,   MenuItemClass *EditZValueItem   = nullptr;)
+TERN_(HAS_HOTEND,          MenuItemClass *HotendTargetItem = nullptr;)
+TERN_(HAS_HEATED_BED,      MenuItemClass *BedTargetItem    = nullptr;)
+TERN_(HAS_FAN,             MenuItemClass *FanSpeedItem     = nullptr;)
+TERN_(MESH_BED_LEVELING,   MenuItemClass *MMeshMoveZItem   = nullptr;)
+TERN_(HAS_PROUI_MESH_EDIT, MenuItemClass *EditZValueItem   = nullptr;)
 
 //
 // Main Buttons
@@ -2701,8 +2701,13 @@ void ApplyMove() {
   void SetExtMinT() { SetPIntOnClick(MIN_ETEMP, MAX_ETEMP, ApplyExtMinT); }
 #endif
 
-void SetSpeed() { SetPIntOnClick(SPEED_EDIT_MIN, SPEED_EDIT_MAX); }
-void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refresh_e_factor(EXT); }); }
+#if HAS_FEEDRATE_EDIT
+  void SetSpeed() { SetPIntOnClick(SPEED_EDIT_MIN, SPEED_EDIT_MAX); }
+#endif
+
+#if HAS_FLOW_EDIT
+  void SetFlow() { SetPIntOnClick(FLOW_EDIT_MIN, FLOW_EDIT_MAX, []{ planner.refresh_e_factor(EXT); }); }
+#endif
 
 #if HAS_HOTEND
   void ApplyHotendTemp() { thermalManager.setTargetHotend(MenuData.Value, H_E0); }
@@ -3599,8 +3604,12 @@ void Draw_Tune_Menu() {
     #if HAS_LCD_BRIGHTNESS
       MENU_ITEM(ICON_Box, MSG_BRIGHTNESS_OFF, onDrawMenuItem, TurnOffBacklight);
     #endif
-    EDIT_ITEM(ICON_Speed, MSG_SPEED, onDrawPIntMenu, SetSpeed, &motion.feedrate_percentage);
-    EDIT_ITEM(ICON_Flow, MSG_FLOW, onDrawPIntMenu, SetFlow, &planner.flow_percentage[EXT]);
+    #if HAS_FEEDRATE_EDIT
+      EDIT_ITEM(ICON_Speed, MSG_SPEED, onDrawPIntMenu, SetSpeed, &motion.feedrate_percentage);
+    #endif
+    #if HAS_FLOW_EDIT
+      EDIT_ITEM(ICON_Flow, MSG_FLOW, onDrawPIntMenu, SetFlow, &planner.flow_percentage[EXT]);
+    #endif
     #if HAS_HOTEND
       HotendTargetItem = EDIT_ITEM(ICON_HotendTemp, MSG_UBL_SET_TEMP_HOTEND, onDrawPIntMenu, SetHotendTemp, &thermalManager.temp_hotend[EXT].target);
     #endif
@@ -3833,8 +3842,12 @@ void Draw_FilamentMan_Menu() {
     #if ENABLED(FWRETRACT)
       MENU_ITEM(ICON_FWRetLength, MSG_FWRETRACT, onDrawSubMenu, Draw_FWRetract_Menu);
     #endif
-    EDIT_ITEM(ICON_Speed, MSG_SPEED, onDrawPIntMenu, SetSpeed, &motion.feedrate_percentage);
-    EDIT_ITEM(ICON_Flow, MSG_FLOW, onDrawPIntMenu, SetFlow, &planner.flow_percentage[EXT]);
+    #if HAS_FEEDRATE_EDIT
+      EDIT_ITEM(ICON_Speed, MSG_SPEED, onDrawPIntMenu, SetSpeed, &motion.feedrate_percentage);
+    #endif
+    #if HAS_FLOW_EDIT
+      EDIT_ITEM(ICON_Flow, MSG_FLOW, onDrawPIntMenu, SetFlow, &planner.flow_percentage[EXT]);
+    #endif
     #if ENABLED(ADVANCED_PAUSE_FEATURE)
       MENU_ITEM(ICON_FilMan, MSG_FILAMENTCHANGE, onDrawMenuItem, ChangeFilament);
     #endif
@@ -4413,14 +4426,14 @@ void Draw_MaxAccel_Menu() {
 #if HAS_MESH
   //void CreatePlaneFromMesh() { bedLevelTools.create_plane_from_mesh(); }
   #if PROUI_EX
-    void ApplyMeshPoints() { PRO_data.grid_max_points = MenuData.Value; TERN_(PROUI_MESH_EDIT, ResetMeshInset();) ReDrawMenu(); }
+    void ApplyMeshPoints() { PRO_data.grid_max_points = MenuData.Value; TERN_(HAS_PROUI_MESH_EDIT, ResetMeshInset();) ReDrawMenu(); }
     void LiveMeshPoints() { DrawMeshPoints(true, CurrentMenu->line(), MenuData.Value); }
     void SetMeshPoints() {
       SetOnClick(SetIntNoDraw, GRID_MIN, GRID_LIMIT, 0, PRO_data.grid_max_points, ApplyMeshPoints, LiveMeshPoints);
       DrawMeshPoints(true, CurrentMenu->line(), PRO_data.grid_max_points);
     }
   #elif PROUI_GRID_PNTS
-    void ApplyMeshPoints() { HMI_data.grid_max_points = MenuData.Value; TERN_(PROUI_MESH_EDIT, ResetMeshInset();) ReDrawMenu(); }
+    void ApplyMeshPoints() { HMI_data.grid_max_points = MenuData.Value; TERN_(HAS_PROUI_MESH_EDIT, ResetMeshInset();) ReDrawMenu(); }
     void LiveMeshPoints() { DrawMeshPoints(true, CurrentMenu->line(), MenuData.Value); }
     void SetMeshPoints() {
       SetOnClick(SetIntNoDraw, GRID_MIN, GRID_LIMIT, 0, HMI_data.grid_max_points, ApplyMeshPoints, LiveMeshPoints);
@@ -4456,7 +4469,7 @@ void Draw_MaxAccel_Menu() {
     void SetBedLevT() { SetPIntOnClick(MIN_BEDTEMP, MAX_BEDTEMP); }
   #endif
 
-  #if ENABLED(PROUI_MESH_EDIT)
+  #if HAS_PROUI_MESH_EDIT
     bool AutoMovToMesh = false;
 
     void ApplyEditMeshX() { bedLevelTools.mesh_x = MenuData.Value; if (AutoMovToMesh) { bedLevelTools.MoveToXY(); } }
@@ -4466,7 +4479,7 @@ void Draw_MaxAccel_Menu() {
     void SetEditMeshX() { HMI_value.Select = 0; SetIntOnClick(0, GRID_MAX_CELLS_X, bedLevelTools.mesh_x, ApplyEditMeshX, LiveEditMesh); }
     void SetEditMeshY() { HMI_value.Select = 1; SetIntOnClick(0, GRID_MAX_CELLS_Y, bedLevelTools.mesh_y, ApplyEditMeshY, LiveEditMesh); }
     void SetEditZValue() { SetPFloatOnClick(Z_OFFSET_MIN, Z_OFFSET_MAX, 3, nullptr, LiveEditMeshZ); if (AutoMovToMesh) { bedLevelTools.MoveToXYZ(); } }
-    void ZeroPoint() { bedLevelTools.manual_value_update(bedLevelTools.mesh_x, bedLevelTools.mesh_y, true); EditZValueItem->redraw(); LCD_MESSAGE(MSG_ZERO_MESH_POINT); }
+    void ZeroPoint() { bedLevelTools.manual_value_update(bedLevelTools.mesh_x, bedLevelTools.mesh_y, true); EditZValueItem->redraw(); LCD_MESSAGE(MSG_ZERO_MESH); }
     void ZeroMesh()  { bedLevelTools.mesh_reset(); LCD_MESSAGE(MSG_MESH_RESET); }
     void SetAutoMovToMesh() { Toggle_Chkb_Line(AutoMovToMesh); }
 
@@ -4551,12 +4564,12 @@ void Draw_MaxAccel_Menu() {
         EDIT_ITEM(ICON_MeshEditY, MSG_MESH_Y, onDrawPInt8Menu, SetEditMeshY, &bedLevelTools.mesh_y);
         EditZValueItem = EDIT_ITEM(ICON_MeshEditZ, MSG_MESH_EDIT_Z, onDrawPFloat3Menu, SetEditZValue, &bedlevel.z_values[bedLevelTools.mesh_x][bedLevelTools.mesh_y]);
         TERN_(HAS_BED_PROBE, MENU_ITEM(ICON_Probe, MSG_PROBE_WIZARD_PROBING, onDrawMenuItem, bedLevelTools.ProbeXY);)
-        MENU_ITEM(ICON_SetZOffset, MSG_ZERO_MESH_POINT, onDrawMenuItem, ZeroPoint);
+        MENU_ITEM(ICON_SetZOffset, MSG_ZERO_MESH, onDrawMenuItem, ZeroPoint);
       }
       UpdateMenu(EditMeshMenu);
     }
 
-  #endif // PROUI_MESH_EDIT
+  #endif // HAS_PROUI_MESH_EDIT
 
   void Draw_MeshSet_Menu() {
     checkkey = Menu;
@@ -4570,7 +4583,7 @@ void Draw_MaxAccel_Menu() {
       #elif PROUI_GRID_PNTS
         EDIT_ITEM(ICON_MeshPoints, MSG_MESH_POINTS, onDrawMeshPoints, SetMeshPoints, &HMI_data.grid_max_points);
       #endif
-      #if ENABLED(PROUI_MESH_EDIT)
+      #if HAS_PROUI_MESH_EDIT
         MENU_ITEM(ICON_ProbeMargin, MSG_MESH_INSET, onDrawSubMenu, Draw_MeshInset_Menu);
       #endif
       #if ALL(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
@@ -4744,7 +4757,7 @@ void Draw_AdvancedSettings_Menu() {
     #if USE_GRID_MESHVIEWER
       EDIT_ITEM(ICON_PrintSize, MSG_CHANGE_MESH, onDrawChkbMenu, SetViewMesh, &bedLevelTools.view_mesh);
     #endif
-    #if ENABLED(PROUI_MESH_EDIT)
+    #if HAS_PROUI_MESH_EDIT
       MENU_ITEM(ICON_MeshEdit, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       MENU_ITEM(ICON_MeshReset, MSG_MESH_RESET, onDrawMenuItem, ResetMesh);
     #endif
@@ -4772,7 +4785,7 @@ void Draw_AdvancedSettings_Menu() {
     #if USE_GRID_MESHVIEWER
       EDIT_ITEM(ICON_PrintSize, MSG_CHANGE_MESH, onDrawChkbMenu, SetViewMesh, &bedLevelTools.view_mesh);
     #endif
-    #if ENABLED(PROUI_MESH_EDIT)
+    #if HAS_PROUI_MESH_EDIT
       MENU_ITEM(ICON_MeshEdit, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       MENU_ITEM(ICON_MeshReset, MSG_MESH_RESET, onDrawMenuItem, ResetMesh);
     #endif
@@ -4796,7 +4809,7 @@ void Draw_AdvancedSettings_Menu() {
       EDIT_ITEM(ICON_PrintSize, MSG_CHANGE_MESH, onDrawChkbMenu, SetViewMesh, &bedLevelTools.view_mesh);
     #endif
     MENU_ITEM(ICON_MeshSave, MSG_UBL_SAVE_MESH, onDrawMenuItem, ManualMeshSave);
-    #if ENABLED(PROUI_MESH_EDIT)
+    #if HAS_PROUI_MESH_EDIT
       MENU_ITEM(ICON_MeshEdit, MSG_EDIT_MESH, onDrawSubMenu, Draw_EditMesh_Menu);
       MENU_ITEM(ICON_MeshReset, MSG_MESH_RESET, onDrawMenuItem, ResetMesh);
     #endif

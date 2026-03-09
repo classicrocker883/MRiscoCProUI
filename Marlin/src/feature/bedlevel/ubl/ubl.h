@@ -38,9 +38,6 @@ enum MeshPointType : char { INVALID, REAL, SET_IN_BITMAP, CLOSEST };
 
 struct mesh_index_pair;
 
-#define MESH_X_DIST ((mesh_max.x - mesh_min.x) / (GRID_MAX_CELLS_X))
-#define MESH_Y_DIST ((mesh_max.y - mesh_min.y) / (GRID_MAX_CELLS_Y))
-
 #if ENABLED(OPTIMIZED_MESH_STORAGE)
   #if ANY(PROUI_EX, PROUI_GRID_PNTS)
     typedef int16_t mesh_store_t[GRID_LIMIT][GRID_LIMIT];
@@ -121,7 +118,7 @@ public:
     static void set_mesh_from_store(const mesh_store_t &stored_values, bed_mesh_t &out_values);
   #endif
 
-  #if DISABLED(DWIN_LCD_PROUI)
+  #if NONE(PROUI_EX, HAS_PROUI_MESH_EDIT, PROUI_GRID_PNTS)
     static const float _mesh_index_to_xpos[GRID_MAX_POINTS_X],
                        _mesh_index_to_ypos[GRID_MAX_POINTS_Y];
   #endif
@@ -294,12 +291,12 @@ public:
 
   static constexpr float get_z_offset() { return 0.0f; }
 
-  #if !ALL(PROUI_EX, PROUI_MESH_EDIT) || DISABLED(DWIN_LCD_PROUI)
+  #if !ALL(PROUI_EX, HAS_PROUI_MESH_EDIT) || DISABLED(DWIN_LCD_PROUI)
     static float _get_mesh_x(const uint8_t i) { return mesh_min.x + i * (MESH_X_DIST); }
     static float _get_mesh_y(const uint8_t j) { return mesh_min.y + j * (MESH_Y_DIST); }
   #endif
 
-  #if ALL(PROUI_EX, PROUI_MESH_EDIT)
+  #if ALL(PROUI_EX, HAS_PROUI_MESH_EDIT)
     static float get_mesh_x(const uint8_t i);
     static float get_mesh_y(const uint8_t j);
   #elif ENABLED(DWIN_LCD_PROUI)
