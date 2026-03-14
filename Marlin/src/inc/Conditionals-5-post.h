@@ -3425,10 +3425,10 @@
     #define _MESH_MAX_X (X_MAX_BED - _MESH_INSET)
     #define _MESH_MAX_Y (Y_MAX_BED - _MESH_INSET)
   #elif ENABLED(DWIN_LCD_PROUI)
-    #define _MESH_MIN_X (MESH_INSET)
-    #define _MESH_MIN_Y (MESH_INSET)
-    #define _MESH_MAX_X ((X_BED_SIZE) - (MESH_INSET))
-    #define _MESH_MAX_Y ((Y_BED_SIZE) - (MESH_INSET))
+    #define _MESH_MIN_X (_MESH_INSET)
+    #define _MESH_MIN_Y (_MESH_INSET)
+    #define _MESH_MAX_X ((X_BED_SIZE) - (_MESH_INSET))
+    #define _MESH_MAX_Y ((Y_BED_SIZE) - (_MESH_INSET))
   #else
     // Boundaries for Cartesian probing based on set limits
     #define _MESH_MIN_X (_MAX(X_MIN_BED + _MESH_INSET, X_MIN_POS)) // UBL is careful not to probe off the bed. It doesn't

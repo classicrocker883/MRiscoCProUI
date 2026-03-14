@@ -4510,11 +4510,9 @@ void Draw_MaxAccel_Menu() {
     void SetYMeshInset() { SetPFloatOnClick(0, Y_BED_SIZE, UNITFDIGITS, OPTITEM(PROUI_EX, SetMeshArea) ApplyMeshInset); }
 
     void MaxMeshArea() {
-      TERN_(PROUI_EX, PRO_data.mesh_min_x =) mesh_min.x = 0;
-      TERN_(PROUI_EX, PRO_data.mesh_max_x =) mesh_max.x = X_BED_SIZE;
-      TERN_(PROUI_EX, PRO_data.mesh_min_y =) mesh_min.y = 0;
-      TERN_(PROUI_EX, PRO_data.mesh_max_y =) mesh_max.y = Y_BED_SIZE;
-
+      mesh_min.set(0, 0);
+      mesh_max.set(X_BED_SIZE, Y_BED_SIZE);
+      TERN_(PROUI_EX, SetMeshArea();)
       ResetMeshInset();
       ReDrawMenu();
     }
@@ -4524,11 +4522,9 @@ void Draw_MaxAccel_Menu() {
       const float half_height = 0.5 * (mesh_max.y - mesh_min.y);
       const float half_extent = min(min(half_width, half_height), min((float)X_CENTER, (float)Y_CENTER));
 
-      TERN_(PROUI_EX, PRO_data.mesh_min_x =) mesh_min.x = X_CENTER - half_extent;
-      TERN_(PROUI_EX, PRO_data.mesh_max_x =) mesh_max.x = X_CENTER + half_extent;
-      TERN_(PROUI_EX, PRO_data.mesh_min_y =) mesh_min.y = Y_CENTER - half_extent;
-      TERN_(PROUI_EX, PRO_data.mesh_max_y =) mesh_max.y = Y_CENTER + half_extent;
-
+      mesh_min.set(X_CENTER - half_extent, Y_CENTER - half_extent);
+      mesh_max.set(X_CENTER + half_extent, Y_CENTER + half_extent);
+      TERN_(PROUI_EX, SetMeshArea();)
       ResetMeshInset();
       ReDrawMenu();
     }
