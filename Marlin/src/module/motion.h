@@ -282,13 +282,13 @@ public:
   #if 0 // ENABLED(DWIN_LCD_PROUI)
     #define XYZ_DEFS(T, NAME, OPT) \
       static T NAME(const AxisEnum axis) { \
-        static const XYZval<T> NAME##_P = NUM_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT, U_##OPT, V_##OPT, W_##OPT); \
+        const XYZval<T> NAME##_P = NUM_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT, U_##OPT, V_##OPT, W_##OPT); \
         return NAME##_P[axis]; \
       }
   #else
     #define XYZ_DEFS(T, NAME, OPT) \
       static T NAME(const AxisEnum axis) { \
-        static TERN(DWIN_LCD_PROUI, const, constexpr) XYZval<T> NAME##_P DEFS_PROGMEM = NUM_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT, U_##OPT, V_##OPT, W_##OPT); \
+        TERN(DWIN_LCD_PROUI, const, constexpr) XYZval<T> NAME##_P DEFS_PROGMEM = NUM_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT, U_##OPT, V_##OPT, W_##OPT); \
         return pgm_read_any(&NAME##_P[axis]); \
       }
   #endif
