@@ -67,7 +67,7 @@ int8_t unified_bed_leveling::storage_slot;
 
 bed_mesh_t unified_bed_leveling::z_values;
 
-#if DISABLED(DWIN_LCD_PROUI)
+#if NONE(PROUI_EX, HAS_PROUI_MESH_EDIT, PROUI_GRID_PNTS)
   #define _GRIDPOS(A,N) (MESH_MIN_##A + N * (MESH_##A##_DIST))
 
   const float
@@ -97,7 +97,7 @@ void unified_bed_leveling::reset() {
   #if ENABLED(EXTENSIBLE_UI)
     GRID_LOOP(x, y) ExtUI::onMeshUpdate(x, y, 0);
   #endif
-  if (was_enabled) report_current_position();
+  if (was_enabled) motion.report_position();
 }
 
 void unified_bed_leveling::invalidate() {
@@ -177,8 +177,8 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
   SERIAL_ECHOPGM("\nBed Topography Report");
   if (human) {
     SERIAL_ECHOLNPGM(":\n");
-    serial_echo_xy(4, MESH_MIN_X, MESH_MAX_Y);
-    serial_echo_xy(twixt, MESH_MAX_X, MESH_MAX_Y);
+    serial_echo_xy(4, mesh_min.x, mesh_max.y);
+    serial_echo_xy(twixt, mesh_max.x, mesh_max.y);
     SERIAL_EOL();
     serial_echo_column_labels(eachsp - 2);
   }
@@ -188,7 +188,7 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
   // Add XY probe offset from extruder because probe.probe_at_point() subtracts them when
   // moving to the XY position to be measured. This ensures better agreement between
   // the current Z position after G28 and the mesh values.
-  const xy_int8_t curr = closest_indexes(xy_pos_t(current_position) + probe.offset_xy);
+  const xy_int8_t curr = closest_indexes(xy_pos_t(motion.position) + probe.offset_xy);
 
   if (!lcd) SERIAL_EOL();
   for (int8_t j = (GRID_MAX_POINTS_Y) - 1; j >= 0; j--) {
@@ -236,8 +236,8 @@ void unified_bed_leveling::display_map(const uint8_t map_type) {
   if (human) {
     serial_echo_column_labels(eachsp - 2);
     SERIAL_EOL();
-    serial_echo_xy(4, MESH_MIN_X, MESH_MIN_Y);
-    serial_echo_xy(twixt, MESH_MAX_X, MESH_MIN_Y);
+    serial_echo_xy(4, mesh_min.x, mesh_min.y);
+    serial_echo_xy(twixt, mesh_max.x, mesh_min.y);
     SERIAL_EOL();
     SERIAL_EOL();
   }

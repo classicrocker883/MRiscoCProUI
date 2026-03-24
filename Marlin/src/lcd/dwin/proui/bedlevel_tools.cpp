@@ -23,13 +23,13 @@
 
 #if ALL(DWIN_LCD_PROUI, HAS_LEVELING)
 
+#include "bedlevel_tools.h"
+
 #include "../../marlinui.h"
 #include "../../../feature/bedlevel/bedlevel.h"
 #include "../../../module/probe.h"
 #include "../../../gcode/gcode.h"
 #include "../../../module/planner.h"
-
-#include "bedlevel_tools.h"
 
 #define DEBUG_OUT ENABLED(DEBUG_LEVELING_FEATURE)
 #include "../../../core/debug_out.h"
@@ -93,7 +93,7 @@ bool drawing_mesh = false;
 #endif
 
 void BedLevelToolsClass::manual_value_update(const uint8_t mesh_x, const uint8_t mesh_y, const bool reset/*=false*/) {
-  const float zval = reset ? 0.0f : current_position.z;
+  const float zval = reset ? 0.0f : motion.position.z;
   queue.inject(TS(F("M421I"), mesh_x, F("J"), mesh_y, F("Z"), p_float_t(zval, 3)));
   planner.synchronize();
 }
@@ -107,8 +107,8 @@ void BedLevelToolsClass::manual_move(const uint8_t mesh_x, const uint8_t mesh_y,
     gcode.process_subcommands_now(TS(F("G42F4000I"), mesh_x, F("J"), mesh_y));
   }
   planner.synchronize();
-  current_position.z = goto_mesh_value ? bedlevel.z_values[mesh_x][mesh_y] : Z_CLEARANCE_BETWEEN_PROBES;
-  planner.buffer_line(current_position, homing_feedrate(Z_AXIS), active_extruder);
+  motion.position.z = goto_mesh_value ? bedlevel.z_values[mesh_x][mesh_y] : Z_CLEARANCE_BETWEEN_PROBES;
+  planner.buffer_line(motion.position, motion.homing_feedrate(Z_AXIS), motion.extruder);
   planner.synchronize();
   if (!zmove) HMI_ReturnScreen();
 }
@@ -163,10 +163,12 @@ float BedLevelToolsClass::get_min_value() {
 
 // Return 'true' if mesh is good and within LCD limits
 bool BedLevelToolsClass::meshValidate() {
-  TERN_(PROUI_MESH_EDIT, if ((MESH_MAX_X <= MESH_MIN_X) || (MESH_MAX_Y <= MESH_MIN_Y)) return false;)
+  if (mesh_max.x <= mesh_min.x || mesh_max.y <= mesh_min.y)
+    return false;
   GRID_LOOP(x, y) {
     const float z = bedlevel.z_values[x][y];
-    if (isnan(z) || !WITHIN(z, Z_OFFSET_MIN, Z_OFFSET_MAX)) return false;
+    if (isnan(z) || TERN0(HAS_PROUI_MESH_EDIT, !WITHIN(z, Z_OFFSET_MIN, Z_OFFSET_MAX)))
+      return false;
   }
   return true;
 }

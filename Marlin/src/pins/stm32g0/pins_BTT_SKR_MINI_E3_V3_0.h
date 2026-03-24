@@ -203,7 +203,7 @@
    * All pins are labeled as printed on DWIN PCB. Connect TX-TX, A-A and so on.
    */
 
-  CONTROLLER_WARNING("BTT_SKR_MINI_E3_V3_0", "DWIN_CREALITY_LCD", " Requires a custom cable.")
+  CONTROLLER_WARNING("BTT_SKR_MINI_E3_V3_0", "DWIN_LCD_PROUI", " Requires a custom cable.")
 
   #define BEEPER_PIN                 EXP1_02_PIN
   #define BTN_EN1                    EXP1_08_PIN

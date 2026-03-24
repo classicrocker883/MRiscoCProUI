@@ -574,7 +574,6 @@
 // #define DISABLE_U
 // #define DISABLE_V
 // #define DISABLE_W
-// #define DISABLE_REDUCED_ACCURACY_WARNING
 // #define DISABLE_E
 // #define DISABLE_OTHER_EXTRUDERS
 // #define INVERT_X_DIR false

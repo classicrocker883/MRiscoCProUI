@@ -340,9 +340,18 @@
 // #define FT_MOTION
 // #define FTM_IS_DEFAULT_MOTION
 // #define FT_MOTION_MENU
+// #define NO_STANDARD_MOTION
 // #define FTM_HOME_AND_PROBE
 // #define FTM_DYNAMIC_FREQ
 // #define FTM_DEFAULT_DYNFREQ_MODE dynFreqMode_DISABLED
+// #define FTM_SHAPER_ZV
+// #define FTM_SHAPER_ZVD
+// #define FTM_SHAPER_ZVDD
+// #define FTM_SHAPER_ZVDDD
+// #define FTM_SHAPER_EI
+// #define FTM_SHAPER_2HEI
+// #define FTM_SHAPER_3HEI
+// #define FTM_SHAPER_MZV
 // #define FTM_DEFAULT_SHAPER_X      ftMotionShaper_NONE
 // #define FTM_SHAPING_DEFAULT_FREQ_X   37.0f
 // #define FTM_SHAPING_ZETA_X            0.1f
@@ -374,6 +383,10 @@
 // #define FTM_BUFFER_SIZE             128
 // #define FTM_FS                     1000
 // #define FTM_MIN_SHAPE_FREQ           20
+// #define FTM_DIR_CHANGE_HOLD_X
+// #define FTM_DIR_CHANGE_HOLD_Y
+// #define FTM_DIR_CHANGE_HOLD_Z
+// #define FTM_DIR_CHANGE_HOLD_E
 // #define INPUT_SHAPING_X
 // #define INPUT_SHAPING_Y
 // #define INPUT_SHAPING_Z
@@ -478,6 +491,7 @@
 // #define DIGIPOT_USE_RAW_VALUES
 // #define DIGIPOT_I2C_ADDRESS_A 0x2C
 // #define DIGIPOT_I2C_ADDRESS_B 0x2D
+// #define DISABLE_REDUCED_ACCURACY_WARNING
 // #define MANUAL_FEEDRATE { 60*60, 60*60, 10*60, 2*60 }
 // #define FINE_MANUAL_MOVE 0.025
 // #define MANUAL_E_MOVES_RELATIVE
@@ -567,6 +581,7 @@
 // #define PROGRESS_MSG_ONCE
 // #define LCD_PROGRESS_BAR_TEST
 // #define SD_SPI_SPEED SPI_HALF_SPEED
+// #define REINIT_NOISY_LCD
 // #define SD_DETECT_STATE HIGH
 // #define SD_IGNORE_AT_STARTUP
 // #define SDCARD_READONLY
@@ -602,16 +617,16 @@
 // #define POWER_LOSS_RECOVER_ZHOME
 // #define POWER_LOSS_ZHOME_POS { 0, 0 }
 // #define SDCARD_SORT_ALPHA
-// #define SDSORT_REVERSE     false
-// #define SDSORT_LIMIT       80
-// #define SDSORT_FOLDERS     -1
-// #define SDSORT_GCODE       true
-// #define SDSORT_USES_RAM    true
-// #define SDSORT_USES_STACK  false
-// #define SDSORT_CACHE_NAMES true
+// #define SDSORT_QUICK           true
+// #define SDSORT_REVERSE         false
+// #define SDSORT_LIMIT           80
+// #define SDSORT_FOLDERS        -1
+// #define SDSORT_GCODE           true
+// #define SDSORT_USES_STACK      false
+// #define SDSORT_USES_RAM        true
+// #define SDSORT_CACHE_NAMES   true
 // #define SDSORT_DYNAMIC_RAM true
 // #define SDSORT_CACHE_VFATS 2
-// #define SDSORT_QUICK       true
 // #define UTF_FILENAME_SUPPORT
 // #define LONG_FILENAME_HOST_SUPPORT
 // #define LONG_FILENAME_WRITE_SUPPORT
@@ -1493,8 +1508,10 @@
 // #define GANTRY_CALIBRATION_COMMANDS_PRE   ""
 // #define GANTRY_CALIBRATION_COMMANDS_POST  "G28"
 // #define FREEZE_FEATURE
-// #define FREEZE_PIN 41
-// #define FREEZE_STATE LOW
+// #define FREEZE_PIN   -1
+// #define FREEZE_STATE  LOW
+// #define SOFT_FEED_HOLD
+// #define FREEZE_JERK     2
 // #define MAX7219_DEBUG
 // #define MAX7219_CLK_PIN   64
 // #define MAX7219_DIN_PIN   57

@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: 'cron'
       cronjob: '0 12 8,23 * *'
-    target-branch: '2026-January'
+    target-branch: '2026-March'
     commit-message:
       prefix: 'Update - GH Actions'
 

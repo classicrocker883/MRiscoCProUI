@@ -560,14 +560,6 @@ namespace DWINUI {
     Draw_Checkbox(textcolor, backcolor, x, y, checked);
   }
 
-  // Color Interpolator
-  //  val : Interpolator minv..maxv
-  //  minv : Minimum value
-  //  maxv : Maximum value
-  //  color1 : Start color
-  //  color2 : End color
-  uint16_t ColorInt(int16_t val, int16_t minv, int16_t maxv, uint16_t color1, uint16_t color2);
-
   // ------------------------- Buttons ------------------------------//
 
   void Draw_Select_Box(uint16_t xpos, uint16_t ypos);
@@ -592,8 +584,8 @@ namespace DWINUI {
   //  x: abscissa of the center of the circle
   //  y: ordinate of the center of the circle
   //  r: circle radius
-  void Draw_FillCircle(uint16_t bcolor, uint16_t x, uint16_t y, uint8_t r);
-  inline void Draw_FillCircle(uint16_t bcolor, uint8_t r) {
+  void Draw_FillCircle(const uint16_t bcolor, const uint16_t x, const uint16_t y, const uint8_t r);
+  inline void Draw_FillCircle(const uint16_t bcolor, const uint8_t r) {
     Draw_FillCircle(bcolor, cursor.x, cursor.y, r);
   }
 

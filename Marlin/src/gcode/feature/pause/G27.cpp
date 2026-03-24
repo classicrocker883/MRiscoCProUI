@@ -49,8 +49,8 @@ void GcodeSuite::G27() {
   const uint8_t pval = parser.byteval('P');
   switch (pval) {
     case 3: break;
-    case 4: if (axis_is_trusted(X_AXIS) && axis_is_trusted(Y_AXIS)) break;
-    default: if (homing_needed_error()) return;
+    case 4: if (motion.axis_is_trusted(X_AXIS) && motion.axis_is_trusted(Y_AXIS)) break;
+    default: if (motion.homing_needed_error()) return;
   }
   nozzle.park(pval);
   TERN_(SOVOL_SV06_RTS, RTS_MoveAxisHoming());

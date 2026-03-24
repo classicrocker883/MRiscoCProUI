@@ -20,7 +20,7 @@
  * For commercial applications additional licenses can be requested
  */
 
-#include "../../../inc/MarlinConfig.h"
+#include "../../../inc/MarlinConfigPre.h"
 
 #if ENABLED(DWIN_LCD_PROUI) && ANY(PROUI_TUNING_GRAPH, PROUI_ITEM_PLOT)
 
