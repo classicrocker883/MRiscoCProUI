@@ -130,63 +130,6 @@
 
 #endif
 
-//
-// Primitives supporting precompiler REPEAT
-//
-#define FIRST( a,...)     a
-#define SECOND(a,b,...)   b
-#define THIRD( a,b,c,...) c
-
-// Defer expansion
-#define EMPTY()
-#define DEFER( M) M EMPTY()
-#define DEFER2(M) M EMPTY EMPTY()()
-#define DEFER3(M) M EMPTY EMPTY EMPTY()()()
-#define DEFER4(M) M EMPTY EMPTY EMPTY EMPTY()()()()
-
-// Force define expansion
-#define EVAL1(V...)    V
-#define EVAL2(V...)    EVAL1(EVAL1(V))
-#define EVAL4(V...)    EVAL2(EVAL2(V))
-#define EVAL8(V...)    EVAL4(EVAL4(V))
-#define EVAL16(V...)   EVAL8(EVAL8(V))
-#define EVAL32(V...)   EVAL16(EVAL16(V))
-#define EVAL64(V...)   EVAL32(EVAL32(V))
-#define EVAL128(V...)  EVAL64(EVAL64(V))
-#define EVAL256(V...)  EVAL128(EVAL128(V))
-#define EVAL512(V...)  EVAL256(EVAL256(V))
-#define EVAL1024(V...) EVAL512(EVAL512(V))
-#define EVAL2048(V...) EVAL1024(EVAL1024(V))
-#define EVAL4096(V...) EVAL2048(EVAL2048(V))
-#define EVAL(V...)     EVAL16(V)
-
-// Concatenate symbol names, without or with pre-expansion
-#define _CAT(a,V...) a##V
-#define CAT( a,V...) _CAT(a,V)
-
-#define IS_PROBE(V...) SECOND(V, 0)     // Get the second item passed, or 0
-#define PROBE() ~, 1                    // Second item will be 1 if this is passed
-#define _NOT_0 PROBE()
-#define NOT(x) IS_PROBE(_CAT(_NOT_, x)) //   NOT('0') gets '1'. Anything else gets '0'.
-#define _BOOL(x) NOT(NOT(x))            // _BOOL('0') gets '0'. Anything else gets '1'.
-
-#define _IF_ELSE(TF) _CAT(_IF_, TF)
-#define IF_ELSE(TF) _IF_ELSE(_BOOL(TF))
-
-#define EMIT(V...) V
-#define OMIT(...)
-
-#define _IF_1(V...) V OMIT
-#define _IF_0(...)    EMIT
-
-#define _END_OF_ARGUMENTS_() 0
-#define HAS_ARGS(V...) _BOOL(FIRST(_END_OF_ARGUMENTS_ V)())
-
-// Simple Inline IF Macros, friendly to use in other macro definitions
-#define IF(O, A, B) ((O) ? (A) : (B))
-#define IF_0(O, A) IF(O, A, 0)
-#define IF_1(O, A) IF(O, A, 1)
-
 // Use NUM_ARGS(__VA_ARGS__) to get the number of variadic arguments
 #define _NUM_ARGS(_,n,m,l,k,j,i,h,g,f,e,d,c,b,a,Z,Y,X,W,V,U,T,S,R,Q,P,O,N,M,L,K,J,I,H,G,F,E,D,C,B,A,OUT,...) OUT
 #define NUM_ARGS(...) _NUM_ARGS(0,__VA_ARGS__,40,39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
@@ -240,6 +183,47 @@
 #define  _DO_N(W,C,N,...) __DO_N(W,C,N,__VA_ARGS__)
 #define   DO(W,C,...)     (_DO_N(W,C,NUM_ARGS(__VA_ARGS__),__VA_ARGS__))
 
+// Concatenate symbol names, without or with pre-expansion
+#define _CAT(a,V...) a##V
+#define CAT( a,V...) _CAT(a,V)
+
+//
+// Primitives supporting precompiler REPEAT
+//
+#define FIRST( a,...)     a
+#define SECOND(a,b,...)   b
+#define THIRD( a,b,c,...) c
+
+#define IS_PROBE(V...) SECOND(V, 0)     // Get the second item passed, or 0
+#define PROBE() ~, 1                    // Second item will be 1 if this is passed
+#define _NOT_0 PROBE()
+#define NOT(x) IS_PROBE(_CAT(_NOT_, x)) //   NOT('0') gets '1'. Anything else gets '0'.
+#define _BOOL(x) NOT(NOT(x))            // _BOOL('0') gets '0'. Anything else gets '1'.
+
+#define _IF_ELSE(TF) _CAT(_IF_, TF)
+#define IF_ELSE(TF) _IF_ELSE(_BOOL(TF))
+
+#define EMIT(V...) V
+#define OMIT(...)
+
+#define _IF_1(V...) V OMIT
+#define _IF_0(...)    EMIT
+
+#define _END_OF_ARGUMENTS_() 0
+#define HAS_ARGS(V...) _BOOL(FIRST(_END_OF_ARGUMENTS_ V)())
+
+// Simple Inline IF Macros, friendly to use in other macro definitions
+#define IF(O, A, B) ((O) ? (A) : (B))
+#define IF_0(O, A) IF(O, A, 0)
+#define IF_1(O, A) IF(O, A, 1)
+
+// Defer expansion
+#define EMPTY()
+#define DEFER( M) M EMPTY()
+#define DEFER2(M) M EMPTY EMPTY()()
+#define DEFER3(M) M EMPTY EMPTY EMPTY()()()
+#define DEFER4(M) M EMPTY EMPTY EMPTY EMPTY()()()()
+
 // Recognize "true" values: blank, 1, 0x1, true
 #define _ISENA_     ~,1
 #define _ISENA_1    ~,1
@@ -265,17 +249,12 @@
 #define TERN( O,A,B)        _TERN(_ENA_1(O),B,A)    // OPTION ? 'A' : 'B'
 #define TERN0(O,A)          _TERN(_ENA_1(O),0,A)    // OPTION ? 'A' : '0'
 #define TERN1(O,A)          _TERN(_ENA_1(O),1,A)    // OPTION ? 'A' : '1'
-#define _TERN(E,V...)       __TERN(_CAT(T_,E),V)    // Prepend 'T_' to get 'T_0' or 'T_1'
-#define __TERN(T,V...)      ___TERN(_CAT(_NO,T),V)  // Prepend '_NO' to get '_NOT_0' or '_NOT_1'
-#define ___TERN(P,V...)     THIRD(P,V)              // If first argument has a comma, A. Else B.
 #define IF_DISABLED(O,A)    TERN(O,,A)
-
-// "Ternary" that emits or omits the given content
-#define EMIT(V...) V
-#define OMIT(...)
 
 // Call G(...) or swallow with OMIT(...)
 #define TERF(O,G)           _TERN(_ENA_1(O),OMIT,G) // OPTION ? 'G' : 'OMIT'    ; Usage: TERF(OPTION, CALLTHIS)(ARGS...)
+
+// "Ternary" that emits or omits the given content
 #define TERN_(O,A)          TERF(O,EMIT)(A)         // OPTION ? 'A' : '<nul>'   ; Usage: TERN_(OPTION, EMITTHIS)
 
 // Macros to conditionally emit array items and function arguments
@@ -316,6 +295,14 @@
 #define HEXCHR(a)           (NUMERIC(a) ? (a) - '0' : WITHIN(a, 'a', 'f') ? ((a) - 'a' + 10)  : WITHIN(a, 'A', 'F') ? ((a) - 'A' + 10) : -1)
 #define NUMERIC_SIGNED(a)   (NUMERIC(a) || (a) == '-' || (a) == '+')
 #define DECIMAL_SIGNED(a)   (DECIMAL(a) || (a) == '-' || (a) == '+')
+
+// Array shorthand
+#define COUNT(a)            (sizeof(a)/sizeof(*a))
+#define ZERO(a)             memset((void*)a,0,sizeof(a))
+#define COPY(a,b) do{ \
+    static_assert(sizeof(a[0]) == sizeof(b[0]), "COPY: '" STRINGIFY(a) "' and '" STRINGIFY(b) "' types (sizes) don't match!"); \
+    memcpy(&a[0],&b[0],_MIN(sizeof(a),sizeof(b))); \
+  }while(0)
 
 // Expansion of some code
 #define CODE_16(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,...) A; B; C; D; E; F; G; H; I; J; K; L; M; N; O; P
@@ -703,6 +690,22 @@
 #define SUB10(N) SUB5(SUB5(N))
 #define DIFF(A,B) _CAT(SUB,A)(B)
 
+// Force define expansion
+#define EVAL1(V...)    V
+#define EVAL2(V...)    EVAL1(EVAL1(V))
+#define EVAL4(V...)    EVAL2(EVAL2(V))
+#define EVAL8(V...)    EVAL4(EVAL4(V))
+#define EVAL16(V...)   EVAL8(EVAL8(V))
+#define EVAL32(V...)   EVAL16(EVAL16(V))
+#define EVAL64(V...)   EVAL32(EVAL32(V))
+#define EVAL128(V...)  EVAL64(EVAL64(V))
+#define EVAL256(V...)  EVAL128(EVAL128(V))
+#define EVAL512(V...)  EVAL256(EVAL256(V))
+#define EVAL1024(V...) EVAL512(EVAL512(V))
+#define EVAL2048(V...) EVAL1024(EVAL1024(V))
+#define EVAL4096(V...) EVAL2048(EVAL2048(V))
+#define EVAL(V...)     EVAL16(V)
+
 //
 // REPEAT core macros. Recurse N times with ascending I.
 //
@@ -800,11 +803,3 @@
 #define _UI_E3S1PRO     107
 #define _DGUS_UI_IS(N) || (CAT(_UI_, DGUS_LCD_UI) == CAT(_UI_, N))
 #define DGUS_UI_IS(V...) (0 MAP(_DGUS_UI_IS, V))
-
-// Array shorthand
-#define COUNT(a)            (sizeof(a)/sizeof(*a))
-#define ZERO(a)             memset((void*)a,0,sizeof(a))
-#define COPY(a,b) do{ \
-    static_assert(sizeof(a[0]) == sizeof(b[0]), "COPY: '" STRINGIFY(a) "' and '" STRINGIFY(b) "' types (sizes) don't match!"); \
-    memcpy(&a[0],&b[0],_MIN(sizeof(a),sizeof(b))); \
-  }while(0)

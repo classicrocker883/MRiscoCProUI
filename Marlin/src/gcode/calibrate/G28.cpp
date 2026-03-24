@@ -378,10 +378,10 @@ void GcodeSuite::G28() {
 
         #if ENABLED(CV_LASER_MODULE)
           // Check for any lateral motion that might require clearance
-          const bool may_skate = !laser_device.is_laser_device() && (seenR || NUM_AXIS_GANG(doX, || doY, || TERN0(Z_SAFE_HOMING, doZ), || doI, || doJ, || doK, || doU, || doV, || doW));
+          const bool may_skate = !laser_device.is_laser_device() || (seenR || NUM_AXIS_ANY(doX, || doY, || TERN0(Z_SAFE_HOMING, doZ), || doI, || doJ, || doK, || doU, || doV, || doW));
         #else
           // Check for any lateral motion that might require clearance
-          const bool may_skate = seenR && NUM_AXIS_ANY(doX, doY, TERN0(Z_SAFE_HOMING, doZ), doI, doJ, doK, doU, doV, doW);
+          const bool may_skate = seenR || NUM_AXIS_ANY(doX, doY, TERN0(Z_SAFE_HOMING, doZ), doI, doJ, doK, doU, doV, doW);
         #endif
 
         if (seenR && z_homing_height == 0) {
