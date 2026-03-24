@@ -181,7 +181,7 @@ void PrepareRefreshMenu();
 void UpdateMenu(MenuClass* &menu);
 
 // Redraw the current Menu if it is valid
-void ReDrawMenu(bool force = false);
+void ReDrawMenu(bool force=false);
 
 // Redraw selected menu item
 void ReDrawItem();

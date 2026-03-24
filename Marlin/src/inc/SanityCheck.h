@@ -417,7 +417,7 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
  * SD File Sorting
  */
 #if ENABLED(SDCARD_SORT_ALPHA)
-  #if NONE(EXTENSIBLE_UI, HAS_MARLINUI_MENU, DWIN_CREALITY_LCD, DWIN_LCD_PROUI)
+  #if NONE(EXTENSIBLE_UI, HAS_MARLINUI_MENU, DWIN_LCD_PROUI)
     #error "SDCARD_SORT_ALPHA requires an LCD that supports it. (It doesn't apply to M20, etc.)"
   #elif SDSORT_LIMIT > 256
     #error "SDSORT_LIMIT must be 256 or smaller."
@@ -1603,15 +1603,13 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
     static_assert(Z_AFTER_HOMING >= 5, "Z_AFTER_HOMING must be >= 5.");
   #endif
 
-  #if DISABLED(DWIN_LCD_PROUI)
-    #if MULTIPLE_PROBING > 0 || EXTRA_PROBING > 0
-      #if MULTIPLE_PROBING == 0
-        #error "EXTRA_PROBING requires MULTIPLE_PROBING."
-      #elif MULTIPLE_PROBING < 2
-        #error "MULTIPLE_PROBING must be 2 or more."
-      #elif MULTIPLE_PROBING <= EXTRA_PROBING
-        #error "EXTRA_PROBING must be less than MULTIPLE_PROBING."
-      #endif
+  #if DISABLED(DWIN_LCD_PROUI) && (MULTIPLE_PROBING > 0 || EXTRA_PROBING > 0)
+    #if MULTIPLE_PROBING == 0
+      #error "EXTRA_PROBING requires MULTIPLE_PROBING."
+    #elif MULTIPLE_PROBING < 2
+      #error "MULTIPLE_PROBING must be 2 or more."
+    #elif MULTIPLE_PROBING <= EXTRA_PROBING
+      #error "EXTRA_PROBING must be less than MULTIPLE_PROBING."
     #endif
   #endif
 
@@ -1962,7 +1960,7 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
 #if ENABLED(DUAL_X_CARRIAGE)
   #if EXTRUDERS < 2
     #error "DUAL_X_CARRIAGE requires 2 (or more) extruders."
-  #elif ANY(CORE_IS_XY, CORE_IS_XZ, MARKFORGED_XY, MARKFORGED_YX)
+  #elif HAS_REAL_X
     #error "DUAL_X_CARRIAGE cannot be used with COREXY, COREYX, COREXZ, COREZX, MARKFORGED_YX, or MARKFORGED_XY."
   #elif !GOOD_AXIS_PINS(X2)
     #error "DUAL_X_CARRIAGE requires X2 stepper pins to be defined."
@@ -2917,19 +2915,7 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
 /**
  * Ender-3 V2 controller has some limitations
  */
-#if ENABLED(DWIN_CREALITY_LCD)
-  #if !HAS_MEDIA
-    #error "DWIN_CREALITY_LCD requires SDSUPPORT to be enabled."
-  #elif ANY(PID_EDIT_MENU, PID_AUTOTUNE_MENU)
-    #error "DWIN_CREALITY_LCD does not support PID_EDIT_MENU or PID_AUTOTUNE_MENU."
-  #elif ANY(MPC_EDIT_MENU, MPC_AUTOTUNE_MENU)
-    #error "DWIN_CREALITY_LCD does not support MPC_EDIT_MENU or MPC_AUTOTUNE_MENU."
-  #elif ENABLED(LCD_BED_TRAMMING)
-    #error "DWIN_CREALITY_LCD does not support LCD_BED_TRAMMING."
-  #elif ALL(LCD_BED_LEVELING, PROBE_MANUALLY)
-    #error "DWIN_CREALITY_LCD does not support LCD_BED_LEVELING with PROBE_MANUALLY."
-  #endif
-#elif ENABLED(DWIN_LCD_PROUI)
+#if ENABLED(DWIN_LCD_PROUI)
   #if !HAS_MEDIA
     #error "DWIN_LCD_PROUI requires SDSUPPORT to be enabled."
   #elif ALL(LCD_BED_LEVELING, PROBE_MANUALLY)

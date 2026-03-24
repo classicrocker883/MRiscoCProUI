@@ -32,20 +32,12 @@ constexpr uint8_t DEF_GRID_MAX_POINTS = TERN(HAS_MESH, GRID_MAX_POINTS_X, 3);
 #ifndef   MESH_INSET
   #define MESH_INSET 10
 #endif
-#define MESH_MIN_X_ (MESH_INSET)
-#define MESH_MIN_Y_ (MESH_INSET)
-#define MESH_MAX_X_ ((X_BED_SIZE) - (MESH_INSET))
-#define MESH_MAX_Y_ ((Y_BED_SIZE) - (MESH_INSET))
-constexpr uint16_t DEF_MESH_MIN_X = MESH_MIN_X_;
-constexpr uint16_t DEF_MESH_MAX_X = MESH_MAX_X_;
-constexpr uint16_t DEF_MESH_MIN_Y = MESH_MIN_Y_;
-constexpr uint16_t DEF_MESH_MAX_Y = MESH_MAX_Y_;
 constexpr uint16_t DEF_Z_PROBE_FEEDRATE_SLOW = Z_PROBE_FEEDRATE_SLOW;
 constexpr bool DEF_INVERT_E0_DIR = INVERT_E0_DIR;
 #ifndef MULTIPLE_PROBING
   #define MULTIPLE_PROBING 2
 #endif
-#define DEF_FIL_MOTION_SENSOR ENABLED(FILAMENT_MOTION_SENSOR)
+constexpr bool DEF_FIL_MOTION_SENSOR = ENABLED(FILAMENT_MOTION_SENSOR);
 #if DISABLED(FILAMENT_RUNOUT_SENSOR) // must be defined as opposite FIL_RUNOUT_STATE in Configuration.h
   #if MOTHERBOARD == BOARD_CREALITY_V427 || MOTHERBOARD == BOARD_CREALITY_V24S1_301F4 || MOTHERBOARD == BOARD_CREALITY_V24S1_301 || MOTHERBOARD == BOARD_VOXELAB_AQUILA || MOTHERBOARD == BOARD_AQUILA_V101
     #define FIL_RUNOUT_STATE LOW
@@ -56,20 +48,21 @@ constexpr bool DEF_INVERT_E0_DIR = INVERT_E0_DIR;
   #endif
 #endif
 
-#if ENABLED(PROUI_MESH_EDIT)
-  typedef struct {
-    float mesh_min_x = DEF_MESH_MIN_X;
-    float mesh_max_x = DEF_MESH_MAX_X;
-    float mesh_min_y = DEF_MESH_MIN_Y;
-    float mesh_max_y = DEF_MESH_MAX_Y;
-  } MeshSet_t;
-  extern MeshSet_t meshSet;
-#endif
-
 /**
  * ProUI Extras
  */
 #if PROUI_EX
+
+#define HAS_TOOLBAR 1
+
+#if HAS_TOOLBAR
+  constexpr uint8_t TBMaxOpt = 5;      // Amount of shortcuts on screen
+  #if HAS_BED_PROBE
+    #define DEF_TBOPT {1, 7, 6, 2, 4}  // Default shorcuts for ABL/UBL
+  #else
+    #define DEF_TBOPT {1, 5, 4, 2, 3}; // Default shortcuts for MM
+  #endif
+#endif
 
 #ifndef LOW
   #define LOW  0x0
@@ -97,10 +90,10 @@ typedef struct {
   int16_t  y_max_pos  = DEF_Y_MAX_POS;
   int16_t  z_max_pos  = DEF_Z_MAX_POS;
   uint8_t grid_max_points = DEF_GRID_MAX_POINTS;
-  float mesh_min_x = DEF_MESH_MIN_X;
-  float mesh_max_x = DEF_MESH_MAX_X;
-  float mesh_min_y = DEF_MESH_MIN_Y;
-  float mesh_max_y = DEF_MESH_MAX_Y;
+  float mesh_min_x;
+  float mesh_max_x;
+  float mesh_min_y;
+  float mesh_max_y;
   uint16_t zprobefeedslow = DEF_Z_PROBE_FEEDRATE_SLOW;
   uint8_t multiple_probing = MULTIPLE_PROBING;
   bool Invert_E0 = DEF_INVERT_E0_DIR;
@@ -186,6 +179,10 @@ extern ProUIClass ProEx;
 
 #undef LOW
 #undef HIGH
+
+#elif HAS_MESH
+
+  #define PROUI_GRID_PNTS 1
 
 #endif // PROUI_EX
 

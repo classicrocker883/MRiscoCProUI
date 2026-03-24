@@ -328,7 +328,7 @@ void Draw_MaxAccel_Menu();
 #endif
 #if HAS_MESH
   void Draw_MeshSet_Menu();
-  #if ENABLED(PROUI_MESH_EDIT)
+  #if HAS_PROUI_MESH_EDIT
     void Draw_MeshInset_Menu();
     void Draw_EditMesh_Menu();
     void ApplyMeshInset();

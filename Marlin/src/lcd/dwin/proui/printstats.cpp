@@ -23,12 +23,12 @@
 
 #if ALL(DWIN_LCD_PROUI, PRINTCOUNTER)
 
+#include "dwin_popup.h"
 #include "printstats.h"
 
 #include "../../../MarlinCore.h"
-#include "../../marlinui.h"
 #include "../../../module/printcounter.h"
-#include "dwin_popup.h"
+#include "../../marlinui.h"
 
 PrintStats printStats;
 

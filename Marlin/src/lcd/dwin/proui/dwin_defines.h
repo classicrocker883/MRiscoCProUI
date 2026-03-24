@@ -21,6 +21,9 @@
 #pragma once
 
 #include "../../../inc/MarlinConfigPre.h"
+#include <stddef.h>
+#include "../../../core/types.h"
+#include "proui.h"
 
 //#define DEBUG_DWIN 1
 //#define TJC_DISPLAY         // Enable for TJC display
@@ -28,10 +31,12 @@
 #define TITLE_CENTERED        // Center Menu Title Text
 
 #if HAS_MESH
-  #define PROUI_MESH_EDIT     // Add a menu to edit mesh inset + points
   #define Z_OFFSET_MIN -3.0 // (mm)
   #define Z_OFFSET_MAX  3.0 // (mm)
 #endif
+
+#define HAS_FEEDRATE_EDIT 1 // Feedrate percentage
+#define HAS_FLOW_EDIT 1     // Flow percentage
 
 #if ENABLED(HYBRID_THRESHOLD)
   #define HYBRID_THRESHOLD_MENU // Enable Hybrid Threshold menu
@@ -102,28 +107,13 @@
 #define DEF_BEDPIDT PREHEAT_1_TEMP_BED
 #define DEF_CHAMBERPIDT PREHEAT_1_TEMP_CHAMBER
 #define DEF_PIDCYCLES 5
-#define EXT active_extruder
+#define EXT motion.extruder
 
 //=============================================================================
 // Only for Professional Firmware UI extensions
 //=============================================================================
 
 #if PROUI_EX
-
-  #include <stddef.h>
-  #include "../../../core/types.h"
-
-  #define HAS_TOOLBAR 1
-  #if HAS_TOOLBAR
-    constexpr uint8_t TBMaxOpt = 5;      // Amount of shortcuts on screen
-    #if HAS_BED_PROBE
-      #define DEF_TBOPT {1, 7, 6, 2, 4}  // Default shorcuts for ABL/UBL
-    #else
-      #define DEF_TBOPT {1, 5, 4, 2, 3}; // Default shortcuts for MM
-    #endif
-  #endif
-
-  #include "proui.h"
 
   #undef X_BED_SIZE
   #undef Y_BED_SIZE
@@ -157,26 +147,8 @@
     #undef  INVERT_E0_DIR
     #define INVERT_E0_DIR PRO_data.Invert_E0
   #endif
-#if ENABLED(PROUI_MESH_EDIT)
-  #undef  MESH_MIN_X
-  #undef  MESH_MAX_X
-  #undef  MESH_MIN_Y
-  #undef  MESH_MAX_Y
-  #define MESH_MIN_X (float)PRO_data.mesh_min_x
-  #define MESH_MAX_X (float)PRO_data.mesh_max_x
-  #define MESH_MIN_Y (float)PRO_data.mesh_min_y
-  #define MESH_MAX_Y (float)PRO_data.mesh_max_y
-#endif
 
 #else
-
-  #if HAS_MESH
-    #define PROUI_GRID_PNTS 1
-  #endif
-
-  #include <stddef.h>
-  #include "../../../core/types.h"
-  #include "proui.h"
 
 // ProUI extra feature redefines
   #if PROUI_GRID_PNTS
@@ -195,15 +167,5 @@
     #undef  INVERT_E0_DIR
     #define INVERT_E0_DIR HMI_data.Invert_E0
   #endif
-#if ENABLED(PROUI_MESH_EDIT)
-  #undef  MESH_MIN_X
-  #undef  MESH_MAX_X
-  #undef  MESH_MIN_Y
-  #undef  MESH_MAX_Y
-  #define MESH_MIN_X (float)meshSet.mesh_min_x
-  #define MESH_MAX_X (float)meshSet.mesh_max_x
-  #define MESH_MIN_Y (float)meshSet.mesh_min_y
-  #define MESH_MAX_Y (float)meshSet.mesh_max_y
-#endif
 
 #endif // PROUI_EX

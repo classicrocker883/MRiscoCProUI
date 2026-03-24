@@ -3262,7 +3262,7 @@
     #define ENDSTOPPULLUP_ZMIN_PROBE
   #endif
   #ifndef XY_PROBE_FEEDRATE
-    #define XY_PROBE_FEEDRATE ((homing_feedrate_mm_m.x + homing_feedrate_mm_m.y) / 2)
+    #define XY_PROBE_FEEDRATE ((motion.homing_feedrate_mm_m.x + motion.homing_feedrate_mm_m.y) / 2)
   #endif
   #ifndef NOZZLE_TO_PROBE_OFFSET
     #define NOZZLE_TO_PROBE_OFFSET { 0, 0, 0 }
@@ -3427,7 +3427,7 @@
 /**
  * Default mesh area is an area with an inset margin on the print area.
  */
-#if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
+#if HAS_MESH
   #if IS_KINEMATIC
     // Probing points may be verified at compile time within the radius
     // using static_assert(HYPOT2(X2-X1,Y2-Y1)<=sq(PRINTABLE_RADIUS),"bad probe point!")
@@ -3436,6 +3436,11 @@
     #define _MESH_MIN_Y (Y_MIN_BED + _MESH_INSET)
     #define _MESH_MAX_X (X_MAX_BED - _MESH_INSET)
     #define _MESH_MAX_Y (Y_MAX_BED - _MESH_INSET)
+  #elif ENABLED(DWIN_LCD_PROUI)
+    #define _MESH_MIN_X (_MESH_INSET)
+    #define _MESH_MIN_Y (_MESH_INSET)
+    #define _MESH_MAX_X ((X_BED_SIZE) - (_MESH_INSET))
+    #define _MESH_MAX_Y ((Y_BED_SIZE) - (_MESH_INSET))
   #else
     // Boundaries for Cartesian probing based on set limits
     #define _MESH_MIN_X (_MAX(X_MIN_BED + _MESH_INSET, X_MIN_POS)) // UBL is careful not to probe off the bed. It doesn't

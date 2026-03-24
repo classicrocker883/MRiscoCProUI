@@ -25,6 +25,7 @@ public:
   static float max, min;
   static void DrawMeshGrid(const uint8_t csizex, const uint8_t csizey);
   static void DrawMeshPoint(const uint8_t x, const uint8_t y, const float z);
+  static void DrawMeshPoint(const xy_int8_t xy, const float z) { DrawMeshPoint(uint8_t(xy.x), uint8_t(xy.y), z); }
   static void Draw(const bool withsave=false, const bool redraw=true);
   static void DrawMesh(const bed_mesh_t zval, const uint8_t csizex, const uint8_t csizey);
 };

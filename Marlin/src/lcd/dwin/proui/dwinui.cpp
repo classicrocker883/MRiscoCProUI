@@ -244,30 +244,16 @@ void DWINUI::Draw_Button(uint8_t id, uint16_t x, uint16_t y) {
 //  x: the abscissa of the center of the circle
 //  y: ordinate of the center of the circle
 //  r: circle radius
-void DWINUI::Draw_FillCircle(uint16_t bcolor, uint16_t x, uint16_t y, uint8_t r) {
+void DWINUI::Draw_FillCircle(const uint16_t bcolor, const uint16_t x, const uint16_t y, const uint8_t r) {
+  const uint16_t r2 = sq(r);
   DWIN_Draw_Line(bcolor, x - r, y, x + r, y);
-  uint16_t b = 1;
-  while (b <= r) {
-    uint16_t a = SQRT(sq(r) - sq(b));
+
+  const uint8_t step = TERN(TJC_DISPLAY, 2, 1);
+  for (uint16_t b = step; b <= r; b += step) {
+    const uint16_t a = SQRT(r2 - sq(b));
     DWIN_Draw_Line(bcolor, x - a, y + b, x + a, y + b);
     DWIN_Draw_Line(bcolor, x - a, y - b, x + a, y - b);
-    b += TERN(TJC_DISPLAY, 2, 1);
   }
-}
-
-// Color Interpolator
-//  val : Interpolator minv..maxv
-//  minv : Minimum value
-//  maxv : Maximum value
-//  color1 : Start color
-//  color2 : End color
-uint16_t DWINUI::ColorInt(int16_t val, int16_t minv, int16_t maxv, uint16_t color1, uint16_t color2) {
-  uint8_t B, G, R;
-  const float n = (float)(val - minv) / (maxv - minv + 1);
-  R = (1.0f - n) * GetRColor(color1) + n * GetRColor(color2);
-  G = (1.0f - n) * GetGColor(color1) + n * GetGColor(color2);
-  B = (1.0f - n) * GetBColor(color1) + n * GetBColor(color2);
-  return RGB(R, G, B);
 }
 
 // Color Interpolator through Red->Orange->Yellow->Green->Blue (Pro UI)
