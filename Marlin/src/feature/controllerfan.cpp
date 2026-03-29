@@ -89,18 +89,18 @@ void ControllerFan::set_fan_speed(const uint8_t s) {
 }
 
 void ControllerFan::update() {
-  static millis_t lastComponentOn = 0,  // Last time a stepper, heater, etc. was turned on
-                  nextFanCheck = 0;     // Last time the state was checked
+  static millis_t lastComponentOn = 0, // Last time a stepper, heater, etc. was turned on
+                  nextFanCheck = 0;    // Last time the state was checked
   const millis_t ms = millis();
   if (ELAPSED(ms, nextFanCheck)) {
     nextFanCheck = ms + 2500UL; // Not a time critical function, so only check every 2.5s
 
     /**
      * If any triggers for the controller fan are true...
-     *   - At least one stepper driver is enabled
-     *   - The heated bed (MOSFET) is enabled
-     *   - TEMP_SENSOR_BOARD is reporting >= CONTROLLER_FAN_MIN_BOARD_TEMP
-     *   - TEMP_SENSOR_SOC is reporting >= CONTROLLER_FAN_MIN_SOC_TEMP
+     *  - At least one stepper driver is enabled
+     *  - The heated bed (MOSFET) is enabled
+     *  - TEMP_SENSOR_BOARD is reporting >= CONTROLLER_FAN_MIN_BOARD_TEMP
+     *  - TEMP_SENSOR_SOC is reporting >= CONTROLLER_FAN_MIN_SOC_TEMP
      */
     const ena_mask_t axis_mask = TERN(CONTROLLER_FAN_USE_Z_ONLY, _BV(Z_AXIS), (ena_mask_t)~TERN0(CONTROLLER_FAN_IGNORE_Z, _BV(Z_AXIS)));
     if ( (stepper.axis_enabled.bits & axis_mask)
@@ -113,12 +113,12 @@ void ControllerFan::update() {
       #ifdef CONTROLLER_FAN_MIN_SOC_TEMP
         || thermalManager.wholeDegSoc() >= CONTROLLER_FAN_MIN_SOC_TEMP
       #endif
-    ) lastComponentOn = ms; //... set time to NOW so the fan will turn on
+    ) lastComponentOn = ms; //... Set time to NOW so the fan will turn on
 
     /**
      * Fan Settings. Set fan > 0:
-     *  - If AutoMode is on and hot components have been powered for CONTROLLERFAN_IDLE_TIME seconds.
-     *  - If System is on idle and idle fan speed settings is activated.
+     *  - If AutoMode is on and hot components have been powered for CONTROLLERFAN_IDLE_TIME seconds
+     *  - If System is on idle and idle fan speed settings is activated
      */
     set_fan_speed(
       settings.auto_mode && lastComponentOn && PENDING(ms, lastComponentOn, SEC_TO_MS(settings.duration))
@@ -127,32 +127,25 @@ void ControllerFan::update() {
 
     speed = CALC_FAN_SPEED(speed);
 
-    #if ENABLED(FAN_KICKSTART_EDITABLE)
+    #if ENABLED(FAN_KICKSTART_EDITABLE) || defined(FAN_KICKSTART_TIME)
       static millis_t fan_kick_end = 0;
-      if (speed > FAN_OFF_PWM && kickstart.settings.enabled) {
-        if (!fan_kick_end) {
-          fan_kick_end = ms + kickstart.settings.duration;
-          speed = map(kickstart.settings.speed, 0, 255, 0, CONTROLLERFAN_SPEED_MAX);
-          nextFanCheck = ms + 20UL; // Reduce update interval for controller fn check while Kickstart is active.
-        }
-        else if (PENDING(ms, fan_kick_end)) {
-          speed = map(kickstart.settings.speed, 0, 255, 0, CONTROLLERFAN_SPEED_MAX);
-          nextFanCheck = ms + 20UL; // Reduce update interval for controller fn check while Kickstart is active.
-        }
-      }
-      else
-        fan_kick_end = 0;
-    #elif FAN_KICKSTART_TIME
-      static millis_t fan_kick_end = 0;
-      if (speed > FAN_OFF_PWM) {
-        if (!fan_kick_end) {
-          fan_kick_end = ms + FAN_KICKSTART_TIME;
-          speed = FAN_KICKSTART_POWER;
-          nextFanCheck = ms + 20UL; // Reduce update interval for controller fn check while Kickstart is active.
-        }
-        else if (PENDING(ms, fan_kick_end)) {
-          speed = FAN_KICKSTART_POWER;
-          nextFanCheck = ms + 20UL; // Reduce update interval for controller fn check while Kickstart is active.
+
+      #if ENABLED(FAN_KICKSTART_EDITABLE)
+        const bool     kick_enabled  = kickstart.settings.enabled;
+        const uint16_t kick_duration = kickstart.settings.duration;
+        const uint8_t  kick_speed    = map(kickstart.settings.speed, 0, 255, 0, CONTROLLERFAN_SPEED_MAX);
+      #else
+        constexpr bool     kick_enabled  = true;
+        constexpr uint16_t kick_duration = FAN_KICKSTART_TIME;
+        constexpr uint8_t  kick_speed    = FAN_KICKSTART_POWER;
+      #endif
+
+      if (speed > FAN_OFF_PWM && kick_enabled) {
+        if (!fan_kick_end || PENDING(ms, fan_kick_end)) {
+          if (!fan_kick_end)
+            fan_kick_end = ms + kick_duration; // May be longer based on slow update interval for controller fn check. Sets minimum
+          speed = kick_speed;
+          nextFanCheck = ms + 20UL; // Reduce update interval while Kickstart is active
         }
       }
       else
@@ -165,7 +158,7 @@ void ControllerFan::update() {
     } while (0)
 
     #if ENABLED(FAN_SOFT_PWM)
-      soft_pwm_speed = speed >> 1;   // Controller Fan Soft PWM uses 0-127 as 0-100% so cut the 0-255 range in half.
+      soft_pwm_speed = speed >> 1; // Controller Fan Soft PWM uses 0-127 as 0-100% so cut the 0-255 range in half.
     #else
       SET_CONTROLLER_FAN();
       #if PIN_EXISTS(CONTROLLER_FAN2)

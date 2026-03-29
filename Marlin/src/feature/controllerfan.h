@@ -81,9 +81,9 @@ extern ControllerFan controllerFan;
 #if ENABLED(FAN_KICKSTART_EDITABLE)
 
   typedef struct {
-    uint8_t   speed;        // 0-255 (fullspeed); Fans first start speed
-    uint16_t  duration;  // Duration in milliseconds for the fan to run at kickstart speed
-    bool      enabled;
+    uint8_t  speed;    // 0-255 (fullspeed); Fans first start speed
+    uint16_t duration; // Duration in milliseconds for the fan to run at kickstart speed
+    bool     enabled;
   } kickstart_settings_t;
 
 #ifndef FAN_KICKSTART_TIME
@@ -118,7 +118,7 @@ extern Kickstart kickstart;
 #if ENABLED(AUTO_FAN_EDITABLE)
 
   typedef struct {
-    uint8_t extruder_temp,  // Auto fans temperature thresholds
+    uint8_t extruder_temp, // Auto fans temperature thresholds
             chamber_temp,
             cooler_temp;
   } autofans_settings_t;
