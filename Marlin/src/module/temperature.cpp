@@ -906,7 +906,6 @@ void Temperature::factory_reset() {
 
             const float delta_t = t_high - t_low,
                         total_t = t_high + t_low;
-
             if (total_t) bias += LROUND(float(d) * delta_t / total_t);
             LIMIT(bias, 20, max_pow - 20);
             d = (bias > max_pow >> 1) ? max_pow - 1 - bias : bias;

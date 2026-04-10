@@ -311,10 +311,10 @@
 #endif
 
 /**
- * SCARA cannot use SLOWDOWN and requires QUICKHOME
+ * SCARA cannot use SLOWDOWN
  * Printable radius assumes joints can fully extend
  *
- * TPARA cannot use SLOWDOWN nor QUICKHOME
+ * TPARA cannot use SLOWDOWN nor QUICK_HOME
  * Printable radius assumes joints can't fully extend
  * AXEL_TPARA is assigned a default Home Position unless overridden
  */
@@ -332,7 +332,6 @@
       #define MANUAL_Z_HOME_POS (TPARA_ARM_Z_HOME_POS + TPARA_TCP_OFFSET_Z - TPARA_OFFSET_Z)
     #endif
   #else
-    #define QUICK_HOME
     #define PRINTABLE_RADIUS (SCARA_LINKAGE_1 + SCARA_LINKAGE_2)
   #endif
 #endif
@@ -3203,6 +3202,7 @@
 #endif
 
 #if !HAS_PREHEAT
+  #define PREHEAT_COUNT 0
   #undef PREHEAT_SHORTCUT_MENU_ITEM
   #undef DGUS_PREHEAT_UI
 #endif
