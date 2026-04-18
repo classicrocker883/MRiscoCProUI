@@ -7,9 +7,9 @@
     "context": "..",
     "args": {
       // Update 'VARIANT' to pick a Python version: 3, 3.10, 3.9, 3.8, 3.7, 3.6
-      // Append -bullseye or -buster to pin to an OS version.
-      // Use -bullseye variants on local on arm64/Apple Silicon.
-      "VARIANT": "3.10-bullseye",
+      // Append -trixie or -bookworm to pin to an OS version.
+      // Use -trixie variants on local on arm64/Apple Silicon.
+      "VARIANT": "3.14-trixie",
       // Options
       "NODE_VERSION": "none"
       // "NODE_VERSION": "lts/*"
@@ -56,4 +56,7 @@
 
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   // , "remoteUser": "vscode"
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  , "postCreateCommand": "git fetch --unshallow || true && git config pull.rebase false"
 }
