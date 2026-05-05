@@ -308,18 +308,18 @@
 // #define DELTA_TOWER_ANGLE_TRIM { 0.0, 0.0, 0.0 }
 // #define DELTA_RADIUS_TRIM_TOWER       { 0.0, 0.0, 0.0 }
 // #define DELTA_DIAGONAL_ROD_TRIM_TOWER { 0.0, 0.0, 0.0 }
-// #define MORGAN_SCARA
-// #define MP_SCARA
+// #define SCARA
 // #define DEFAULT_SEGMENTS_PER_SECOND 200
-// #define SCARA_LINKAGE_1 150
-// #define SCARA_LINKAGE_2 150
-// #define SCARA_OFFSET_X  100
-// #define SCARA_OFFSET_Y  -56
-// #define DEBUG_SCARA_KINEMATICS
-// #define FEEDRATE_SCALING
+// #define SCARA_LINKAGE_1    135
+// #define SCARA_LINKAGE_2    135
+// #define SCARA_OFFSET_X       0
+// #define SCARA_OFFSET_Y    -150
 // #define MIDDLE_DEAD_ZONE_R   0
-// #define SCARA_OFFSET_THETA1  12
-// #define SCARA_OFFSET_THETA2 131
+// #define SCARA_ELBOW_DIR 1
+// #define SCARA_CROSSTALK_FACTOR (40.0/60.0)
+// #define SCARA_HOME_THETA   -40
+// #define SCARA_HOME_PSI     160
+// #define SCARA_CALIBRATION
 // #define AXEL_TPARA
 // #define DEBUG_TPARA_KINEMATICS
 // #define DEFAULT_SEGMENTS_PER_SECOND 200

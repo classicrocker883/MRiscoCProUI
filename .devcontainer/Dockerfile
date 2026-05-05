@@ -1,12 +1,19 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.187.0/containers/python-3/.devcontainer/base.Dockerfile
 
 # [Choice] Python version: 3, 3.9, 3.8, 3.7, 3.6
-ARG VARIANT="3.9.0-buster"
-FROM python:${VARIANT}
+ARG VARIANT="3.14-trixie"
+# FROM python:${VARIANT}
+FROM mcr.microsoft.com/devcontainers/python:${VARIANT}
 
 # [Option] Install Node.js
 ARG INSTALL_NODE="true"
 ARG NODE_VERSION="lts/*"
+
+# Install sudo first (standard python images usually don't have it)
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends sudo \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 RUN if [ "${INSTALL_NODE}" = "true" ]; then su vscode -c "umask 0002 && . /usr/local/share/nvm/nvm.sh && nvm install ${NODE_VERSION} 2>&1"; fi
 
 # [Optional] If your pip requirements rarely change, uncomment this section to add them to the image.

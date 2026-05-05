@@ -279,7 +279,23 @@ public:
   static float pgm_read_any(const float *p)   { return TERN(__IMXRT1062__, *p, pgm_read_float(p)); }
   static int8_t pgm_read_any(const int8_t *p) { return TERN(__IMXRT1062__, *p, pgm_read_byte(p)); }
 
-  #if 0 // ENABLED(DWIN_LCD_PROUI)
+  #if PROUI_EX //&& __STM32F1__ && !defined(VOXELAB_N32)
+    #define XYZ_DEFS(T, NAME, OPT) \
+      static T NAME(const AxisEnum axis) { \
+        switch (axis) { \
+          TERN_(HAS_X_AXIS, case X_AXIS: return X_##OPT;) \
+          TERN_(HAS_Y_AXIS, case Y_AXIS: return Y_##OPT;) \
+          TERN_(HAS_Z_AXIS, case Z_AXIS: return Z_##OPT;) \
+          TERN_(HAS_I_AXIS, case I_AXIS: return I_##OPT;) \
+          TERN_(HAS_J_AXIS, case J_AXIS: return J_##OPT;) \
+          TERN_(HAS_K_AXIS, case K_AXIS: return K_##OPT;) \
+          TERN_(HAS_U_AXIS, case U_AXIS: return U_##OPT;) \
+          TERN_(HAS_V_AXIS, case V_AXIS: return V_##OPT;) \
+          TERN_(HAS_W_AXIS, case W_AXIS: return W_##OPT;) \
+          default:     return T(0); \
+        } \
+      }
+  #elif 0 // ENABLED(DWIN_LCD_PROUI)
     #define XYZ_DEFS(T, NAME, OPT) \
       static T NAME(const AxisEnum axis) { \
         const XYZval<T> NAME##_P = NUM_AXIS_ARRAY(X_##OPT, Y_##OPT, Z_##OPT, I_##OPT, J_##OPT, K_##OPT, U_##OPT, V_##OPT, W_##OPT); \
