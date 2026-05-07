@@ -181,7 +181,9 @@ void SetRetractSpeed();
   #define _DOPREHEAT(N) void DoPreheat##N();
   REPEAT_1(PREHEAT_COUNT, _DOPREHEAT)
 #endif
-void DoCoolDown();
+#if HAS_HOTEND || HAS_HEATED_BED
+  void DoCoolDown();
+#endif
 #if ENABLED(BAUD_RATE_GCODE)
   void SetBaud115K();
   void SetBaud250K();

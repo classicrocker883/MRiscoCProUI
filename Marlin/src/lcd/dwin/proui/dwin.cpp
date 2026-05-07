@@ -2039,7 +2039,9 @@ void DWIN_Print_Finished() {
   }
   if (!HMI_flag.abort_flag) {
     planner.finish_and_disable();
-    DoCoolDown();
+    #if HAS_HOTEND || HAS_HEATED_BED
+      DoCoolDown();
+    #endif
   }
   TERN_(HAS_LEVELING, set_bed_leveling_enabled(false);)
   HMI_flag.abort_flag = false;
@@ -2499,7 +2501,9 @@ void AutoHome() { queue.inject_P(G28_STR); }
   REPEAT_1(PREHEAT_COUNT, _DoPreheat)
 #endif
 
-void DoCoolDown() { thermalManager.cooldown(); }
+#if HAS_HOTEND || HAS_HEATED_BED
+  void DoCoolDown() { thermalManager.cooldown(); }
+#endif
 
 bool EnableLiveMove = false;
 void SetLiveMove() { Toggle_Chkb_Line(EnableLiveMove); }
@@ -3359,7 +3363,9 @@ void Draw_Prepare_Menu() {
       #define _ITEM_PREHEAT(N) MENU_ITEM(ICON_Preheat##N, MSG_PREHEAT_##N, onDrawMenuItem, DoPreheat##N);
       REPEAT_1(PREHEAT_COUNT, _ITEM_PREHEAT)
     #endif
-    MENU_ITEM(ICON_Cool, MSG_COOLDOWN, onDrawMenuItem, DoCoolDown);
+    #if HAS_HOTEND || HAS_HEATED_BED
+      MENU_ITEM(ICON_Cool, MSG_COOLDOWN, onDrawMenuItem, DoCoolDown);
+    #endif
     #if HAS_ZOFFSET_ITEM
       MENU_ITEM(ICON_SetZOffset, MSG_PROBE_WIZARD, onDrawSubMenu, Draw_ZOffsetWiz_Menu);
     #endif

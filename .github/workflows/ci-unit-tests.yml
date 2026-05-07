@@ -8,7 +8,7 @@ name: CI - Unit Tests
 on:
   pull_request:
     branches:
-      - 2026-March
+      - 2026-April
     paths-ignore:
       - configurations/**
       - display assets/**
@@ -22,7 +22,7 @@ on:
       - "**/*.md"
   push:
     branches:
-      - 2026-March
+      - 2026-April
     paths-ignore:
       - configurations/**
       - display assets/**
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v6.0.2
 
       - name: Cache pip
-        uses: actions/cache@v5.0.4
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-unit-v1-${{ hashFiles('**/requirements.txt') }}
@@ -59,7 +59,7 @@ jobs:
             ${{ runner.os }}-pip-unit-v1-
 
       - name: Cache PlatformIO
-        uses: actions/cache@v5.0.4
+        uses: actions/cache@v5.0.5
         with:
           path: |
             ~/.platformio
