@@ -44,7 +44,7 @@ def get_source_parameters(source_type, mbranch, requested_branch, config_path_ar
     if source_type == "mrisco":
         repo_url = "https://github.com/classicrocker883/MRiscoCProUI.git"
         config_folder = "configurations"
-        cbranch = (mbranch if mbranch and mbranch.startswith("2026-") else "2026-April")
+        cbranch = (mbranch if mbranch and mbranch.startswith("2026-") else "2026-May")
         config_path_prefix = ""
     elif source_type == "marlin":
         repo_url = "https://github.com/MarlinFirmware/Configurations.git"
