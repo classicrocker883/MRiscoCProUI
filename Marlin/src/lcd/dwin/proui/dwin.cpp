@@ -2624,7 +2624,7 @@ void ApplyMove() {
   void SetProbeZSpeed()  { SetPIntOnClick(60, 1000); }
   #if DISABLED(BD_SENSOR)
     void ApplyProbeMultiple() { TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing = MenuData.Value; }
-    void SetProbeMultiple() { SetIntOnClick(1, 4, TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing, ApplyProbeMultiple); }
+    void SetProbeMultiple() { SetIntOnClick(1, 10, TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing, ApplyProbeMultiple); }
   #endif
 
   #if ENABLED(Z_MIN_PROBE_REPEATABILITY_TEST)
