@@ -3345,6 +3345,7 @@ void Draw_Tramming_Menu() {
   checkkey = Menu;
   if (SET_MENU(TrammingMenu, MSG_BED_TRAMMING, 10)) {
     BACK_ITEM(Draw_Prepare_Menu);
+    MENU_ITEM(ICON_HomeZ,  MSG_AUTO_HOME_Z, onDrawMenuItem, HomeZ);
     #if ENABLED(PROUI_ITEM_TRAM)
       #if HAS_BED_PROBE
         MENU_ITEM(ICON_Tram, MSG_TRAMMING_WIZARD, onDrawMenuItem, TramwizStart);
@@ -3359,7 +3360,6 @@ void Draw_Tramming_Menu() {
     MENU_ITEM(ICON_AxisTR, MSG_TRAM_BR, onDrawMenuItem, []{ (void)tram(2); });
     MENU_ITEM(ICON_AxisTL, MSG_TRAM_BL, onDrawMenuItem, []{ (void)tram(3); });
     MENU_ITEM(ICON_AxisC,  MSG_TRAM_C,  onDrawMenuItem, []{ (void)tram(4); });
-    MENU_ITEM(ICON_HomeZ,  MSG_AUTO_HOME_Z, onDrawMenuItem, HomeZ);
   }
   UpdateMenu(TrammingMenu);
 }
@@ -4386,6 +4386,10 @@ void Draw_MaxAccel_Menu() {
     if (SET_MENU(HomingMenu, MSG_HOMING, 9)) {
       BACK_ITEM(Draw_Prepare_Menu);
       MENU_ITEM(ICON_Homing, MSG_AUTO_HOME, onDrawMenuItem, AutoHome);
+      #if ENABLED(NOZZLE_PARK_FEATURE)
+        MENU_ITEM(ICON_Park, MSG_FILAMENT_PARK_ENABLED, onDrawMenuItem, ParkHead);
+      #endif
+      MENU_ITEM(ICON_MoveZ, MSG_TOOL_CHANGE_ZLIFT, onDrawMenuItem, RaiseHead);
       #if HAS_X_AXIS
         MENU_ITEM(ICON_HomeX, MSG_AUTO_HOME_X, onDrawMenuItem, HomeX);
       #endif
@@ -4395,10 +4399,6 @@ void Draw_MaxAccel_Menu() {
       #if HAS_Z_AXIS
         MENU_ITEM(ICON_HomeZ, MSG_AUTO_HOME_Z, onDrawMenuItem, HomeZ);
       #endif
-      #if ENABLED(NOZZLE_PARK_FEATURE)
-        MENU_ITEM(ICON_Park, MSG_FILAMENT_PARK_ENABLED, onDrawMenuItem, ParkHead);
-      #endif
-      MENU_ITEM(ICON_MoveZ, MSG_TOOL_CHANGE_ZLIFT, onDrawMenuItem, RaiseHead);
       #if ENABLED(MESH_BED_LEVELING)
         EDIT_ITEM(ICON_ZAfterHome, MSG_Z_AFTER_HOME, onDrawPInt8Menu, SetZAfterHoming, &HMI_data.z_after_homing);
       #endif
