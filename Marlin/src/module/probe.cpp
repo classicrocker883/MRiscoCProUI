@@ -943,9 +943,6 @@ bool Probe::probe_down_to_z(const float z, const feedRate_t fr_mm_s) {
         DEBUG_ECHOLNPGM("> try_to_probe(..., ", z_probe_low_point, ", ", fr_mm_s, ", ...)");
       }
 
-      // Tare the probe, if supported
-      if (TERN0(PROBE_TARE, tare())) return true;
-
       // Do a first probe at the fast speed
       const bool probe_fail = probe_down_to_z(z_probe_low_point, fr_mm_s),              // No probe trigger?
                  early_fail = (scheck && motion.position.z > zoffs + error_tolerance); // Probe triggered too high?
@@ -980,10 +977,18 @@ bool Probe::probe_down_to_z(const float z, const feedRate_t fr_mm_s) {
     // Raise to give the probe clearance
     motion.do_z_clearance(z1 + (Z_CLEARANCE_MULTI_PROBE));
 
-    float probes_z_sum = 0;
-    for (uint8_t p = 0; p < TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing - 1; p++) {
+    const uint8_t mp = TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing;
+
+    // Return a weighted average of the fast and slow probes
+    float measured_z;
+
+    if (mp == 1) {
+      // Use single probe result
+      measured_z = z1;
+    }
+    else if (mp == 2) {
       // If the probe won't tare, return
-      if (TERN0(PROBE_TARE, tare())) return true;
+      if (TERN0(PROBE_TARE, tare())) return NAN;
 
       // Probe downward slowly to find the bed
       if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Slow Probe:");
@@ -991,15 +996,72 @@ bool Probe::probe_down_to_z(const float z, const feedRate_t fr_mm_s) {
 
       TERN_(MEASURE_BACKLASH_WHEN_PROBING, backlash.measure_with_probe());
 
-      const float z = DIFF_TERN(HAS_DELTA_SENSORLESS_PROBING, motion.position.z, largest_sensorless_adj);
-      probes_z_sum += z;
-      // Small Z raise after probe
-      motion.do_z_clearance(z + (Z_CLEARANCE_MULTI_PROBE));
-    }
+      const float z2 = DIFF_TERN(HAS_DELTA_SENSORLESS_PROBING, motion.position.z, largest_sensorless_adj);
 
-    // Return a weighted average of the fast and slow probes
-    const float measured_z = (TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing > 1) ?
-    (probes_z_sum * 3.0f + z1 * 2.0f) * 0.2f : z1;
+      if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("2nd Probe Z:", z2, " Discrepancy:", z1 - z2);
+
+      // Keep the legacy fast/slow weighted average for 2 probes
+      measured_z = (z2 * 3.0f + z1 * 2.0f) * 0.2f;
+    }
+    else {
+      // 3+ probes: Collect and sort all slow probes, then trim outliers
+      float probes_z_sum = 0;
+      float probes[10]; // UI-selected multiple probing counts
+
+      const uint8_t slow_count = mp - 1;
+
+      for (uint8_t p = 0; p < slow_count; p++) {
+        if (TERN0(PROBE_TARE, tare())) return NAN;
+
+        // Probe downward slowly to find the bed
+        if (DEBUGGING(LEVELING)) DEBUG_ECHOLNPGM("Slow Probe:");
+        if (try_to_probe(PSTR("SLOW"), z_probe_low_point, motion.z_probe_slow_mm_s, sanity_check)) return NAN;
+
+        TERN_(MEASURE_BACKLASH_WHEN_PROBING, backlash.measure_with_probe());
+
+        const float z = DIFF_TERN(HAS_DELTA_SENSORLESS_PROBING, motion.position.z, largest_sensorless_adj);
+
+        for (uint8_t i = 0; i <= p; ++i) {                            // Iterate the saved Zs to insert the new Z
+          if (i == p || probes[i] > z) {                              // Last index or new Z is smaller than this Z
+            for (int8_t m = p; --m >= i;) probes[m + 1] = probes[m];  // Shift items down after the insertion point
+            probes[i] = z;                                            // Insert the new Z measurement
+            break;                                                    // Only one to insert. Done!
+          }
+        }
+
+        // Small Z raise after all but the last slow probe
+        if (p < slow_count - 1)
+          motion.do_z_clearance(z + (Z_CLEARANCE_MULTI_PROBE));
+      }
+
+      // Take the center value (or average the two middle values) as the median
+      const uint8_t half = (slow_count - 1) / 2;
+      const float median = (slow_count & 1) ? probes[half] : (probes[half] + probes[half + 1]) * 0.5f;
+
+      uint8_t min_avg_idx = 0, max_avg_idx = slow_count - 1;
+
+      // Remove values farthest from the median
+      if (slow_count >= 5) {
+        min_avg_idx++;
+        max_avg_idx--;
+      }
+      else if (slow_count > 2) {
+        if (ABS(probes[max_avg_idx] - median) > ABS(probes[min_avg_idx] - median))
+          max_avg_idx--;
+        else
+          min_avg_idx++;
+      }
+
+      // Return the average value of all remaining probes.
+      for (uint8_t i = min_avg_idx; i <= max_avg_idx; ++i)
+        probes_z_sum += probes[i];
+
+      const uint8_t kept = (max_avg_idx - min_avg_idx) + 1;
+
+      // Blend the fast probe with the filtered slow-probe average
+      const float slow_avg = probes_z_sum / kept;
+      measured_z = (slow_avg * 3.0f + z1 * 2.0f) * 0.2f;
+    }
 
     return DIFF_TERN(HAS_HOTEND_OFFSET, measured_z, motion.active_hotend_offset().z);
   }
