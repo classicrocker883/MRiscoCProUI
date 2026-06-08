@@ -20,7 +20,7 @@ jobs:
         temp:    [true,false]
         t5:      [true,false]
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
       - name: Set up node
         uses: actions/setup-node@v6.4.0
         with:
@@ -110,7 +110,7 @@ jobs:
         temp:    [true,false]
         t5:      [true,false]
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
       - name: Set up node
         uses: actions/setup-node@v6.4.0
         with:
@@ -196,7 +196,7 @@ jobs:
         temp:    [true,false]
         t5:      [true,false]
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
       - name: Set up node
         uses: actions/setup-node@v6.4.0
         with:
@@ -294,7 +294,7 @@ jobs:
           - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
       - name: Set up node
         uses: actions/setup-node@v6.4.0
         with:
@@ -417,7 +417,7 @@ jobs:
           - t5:  true
             t13: true
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v6.0.3
       - name: Set up node
         uses: actions/setup-node@v6.4.0
         with:
