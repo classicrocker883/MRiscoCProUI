@@ -443,6 +443,7 @@
 // #define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 // #define USE_PROBE_FOR_Z_HOMING
 // #define Z_MIN_PROBE_PIN PB1
+// #define USE_PIN_27_BOARD
 // #define PROBE_MANUALLY
 // #define FIX_MOUNTED_PROBE
 // #define NOZZLE_AS_PROBE

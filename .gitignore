@@ -181,3 +181,4 @@ tags
 .env
 desktop.ini
 !MarlinSimulator.exe
+schema.json
