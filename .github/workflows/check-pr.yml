@@ -8,6 +8,8 @@ name: Bad PR Target
 on:
   pull_request_target:
     types: [opened]
+    branches:
+    - 2026-*
 
 jobs:
   bad_target:
