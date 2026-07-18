@@ -37,31 +37,28 @@
  *  D         : Set auto mode idle duration
  *
  * Examples:
- *   M710                   ; Report current Settings
- *   M710 R                 ; Reset SIAD to defaults
- *   M710 I64               ; Set controller fan Idle Speed to 25%
- *   M710 S255              ; Set controller fan Active Speed to 100%
- *   M710 S0                ; Set controller fan Active Speed to OFF
- *   M710 I255 A0           ; Set controller fan Idle Speed to 100% with Auto Mode OFF
- *   M710 I127 A1 S255 D160 ; Set controller fan idle speed 50%, AutoMode On, Fan speed 100%, duration to 160 Secs
+ *   M710                    : Report current Settings
+ *   M710 R                  : Reset SIAD to defaults
+ *   M710 S255               : Set controller fan Active Speed to 100%
+ *   M710 S0                 : Set controller fan Active Speed to OFF
+ *   M710 I64                : Set controller fan Idle Speed to 25%
+ *   M710 I255 A0            : Set controller fan Idle Speed to 100% with Auto Mode OFF
+ *   M710 I127 A1 S255 D160  : Set controller fan idle speed 50%, AutoMode On, Fan speed 100%, duration to 160 Secs
  */
 void GcodeSuite::M710() {
   if (!parser.seen("ADIRS")) return M710_report();
 
-  if (parser.seen_test('R'))
-    controllerFan.reset();
+  const bool seenR = parser.seen_test('R');
+  const bool seenS = parser.seenval('S');
+  const bool seenI = parser.seenval('I');
+  const bool seenA = parser.seenval('A');
+  const bool seenD = parser.seenval('D');
 
-  if (parser.seenval('S'))
-    controllerFan.settings.active_speed = parser.value_byte();
-
-  if (parser.seenval('I'))
-    controllerFan.settings.idle_speed = parser.value_byte();
-
-  if (parser.seenval('A'))
-    controllerFan.settings.auto_mode = parser.value_bool();
-
-  if (parser.seenval('D'))
-    controllerFan.settings.duration = parser.value_ushort();
+  if (seenR) controllerFan.reset();
+  if (seenS) controllerFan.settings.active_speed = parser.value_byte();
+  if (seenI) controllerFan.settings.idle_speed = parser.value_byte();
+  if (seenA) controllerFan.settings.auto_mode = parser.value_bool();
+  if (seenD) controllerFan.settings.duration = parser.value_ushort();
 }
 
 void GcodeSuite::M710_report(const bool forReplay/*=true*/) {

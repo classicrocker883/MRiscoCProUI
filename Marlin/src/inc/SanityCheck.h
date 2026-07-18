@@ -1073,7 +1073,7 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
 #endif
 
 // Fan Kickstart power
-#if FAN_KICKSTART_TIME
+#ifdef FAN_KICKSTART_TIME
   #if ENABLED(FAN_KICKSTART_LINEAR) && FAN_KICKSTART_POWER != 255
     #error "FAN_KICKSTART_LINEAR requires a FAN_KICKSTART_POWER of 255."
   #elif !WITHIN(FAN_KICKSTART_POWER, 64, 255)
@@ -1085,7 +1085,7 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
  * Synchronous M106/M107 checks
  */
 #if ENABLED(LASER_SYNCHRONOUS_M106_M107)
-  #if FAN_KICKSTART_TIME
+  #ifdef FAN_KICKSTART_TIME
     #error "FAN_KICKSTART_TIME must be 0 with LASER_SYNCHRONOUS_M106_M107 (because the laser will always come on at FULL power)."
   #elif FAN_MIN_PWM
     #error "FAN_MIN_PWM must be 0 with LASER_SYNCHRONOUS_M106_M107 (otherwise the laser will never turn OFF)."

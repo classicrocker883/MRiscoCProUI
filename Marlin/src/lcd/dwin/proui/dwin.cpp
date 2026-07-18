@@ -88,6 +88,10 @@
   #include "../../../feature/tmc_util.h"
 #endif
 
+#if ANY(CONTROLLER_FAN_MENU, FAN_KICKSTART_MENU, AUTO_FAN_MENU)
+  #include "../../../feature/controllerfan.h"
+#endif
+
 #if ANY(HAS_GCODE_PREVIEW, CV_LASER_MODULE)
   #include "gcode_preview.h"
 #endif
@@ -141,6 +145,9 @@
   #define MAX_TMC_CURRENT 3000
 #endif
 
+#if ENABLED(CONTROLLER_FAN_MENU)
+  #define MAX_FAN_IDLE 4800
+#endif
 #if ANY(TJC_DISPLAY, DACAI_DISPLAY)
   #define HOME_AND_KILL_ICON ICON_BLTouch
 #else
@@ -315,6 +322,18 @@ MenuClass *MaxAccelMenu = nullptr;
 #endif
 #if HAS_TRINAMIC_CONFIG
   MenuClass *TrinamicConfigMenu = nullptr;
+#endif
+#if ANY(CONTROLLER_FAN_MENU, AUTO_FAN_MENU, FAN_KICKSTART_MENU)
+  MenuClass *AdvancedFanMenu = nullptr;
+#endif
+#if ENABLED(CONTROLLER_FAN_MENU)
+  MenuClass *ControllerFanMenu = nullptr;
+#endif
+#if ENABLED(FAN_KICKSTART_MENU)
+  MenuClass *KickstartMenu = nullptr;
+#endif
+#if ENABLED(AUTO_FAN_MENU)
+  MenuClass *AutofanMenu = nullptr;
 #endif
 #if ENABLED(CV_LASER_MODULE)
   MenuClass *LaserSettings = nullptr;
@@ -2728,6 +2747,25 @@ void ApplyMove() {
   void SetFanSpeed() { SetIntOnClick(0, 255, thermalManager.fan_speed[EXT], ApplyFanSpeed); }
 #endif
 
+#if ENABLED(CONTROLLER_FAN_MENU)
+  void SetControllerFanAutoOn()    { FLIP(controllerFan.settings.auto_mode); PrepareRefreshMenu(); Draw_ControllerFan_menu(); }
+  void SetControllerFanIdleSpeed() { SetIntOnClick(0, 255,          controllerFan.settings.idle_speed,   []{ controllerFan.settings.idle_speed   = MenuData.Value; }); }
+  void SetControllerFanSpeed()     { SetIntOnClick(0, 255,          controllerFan.settings.active_speed, []{ controllerFan.settings.active_speed = MenuData.Value; }); }
+  void SetControllerFanDuration()  { SetIntOnClick(1, MAX_FAN_IDLE, controllerFan.settings.duration,     []{ controllerFan.settings.duration     = MenuData.Value; }); }
+#endif
+
+#if ENABLED(FAN_KICKSTART_MENU)
+  void SetKickstartEnabled()  { FLIP(kickstart.settings.enabled); PrepareRefreshMenu(); Draw_Kickstart_menu(); }
+  void SetKickstartSpeed()    { SetIntOnClick((FAN_MIN_PWM > 96 ? FAN_MIN_PWM : 96), FAN_MAX_PWM, kickstart.settings.speed, []{ kickstart.settings.speed = MenuData.Value; }); }
+  void SetKickstartDuration() { SetIntOnClick(10, 1500, kickstart.settings.duration, []{ kickstart.settings.duration = MenuData.Value; }); }
+#endif
+
+#if ENABLED(AUTO_FAN_MENU)
+  void SetExtruderFanThreshold() { SetIntOnClick(10, 120, autofans.settings.extruder_temp, []{ autofans.settings.extruder_temp = MenuData.Value; }); }
+  void SetChamberFanThreshold()  { SetIntOnClick(10,  80, autofans.settings.chamber_temp,  []{ autofans.settings.chamber_temp  = MenuData.Value; }); }
+  void SetCoolerFanThreshold()   { SetIntOnClick(10, 100, autofans.settings.cooler_temp,   []{ autofans.settings.cooler_temp   = MenuData.Value; }); }
+#endif
+
 #if ENABLED(SHOW_SPEED_IND)
   void SetSpdInd() {
     Toggle_Chkb_Line(HMI_data.SpdInd);
@@ -3809,6 +3847,70 @@ void Draw_Tune_Menu() {
 
 #endif
 
+#if ANY(CONTROLLER_FAN_MENU, AUTO_FAN_MENU, FAN_KICKSTART_MENU)
+
+  void Draw_AdvancedFan_menu() {
+    checkkey = Menu;
+    if (SET_MENU(AdvancedFanMenu, MSG_FANS_SETTINGS, 1 PLUS_TERN0(FAN_KICKSTART_MENU, 1) PLUS_TERN0(CONTROLLER_FAN_MENU, 1) PLUS_TERN0(AUTO_FAN_MENU, 3))) {
+      #if NONE(AUTO_BED_LEVELING_UBL, AUTO_BED_LEVELING_BILINEAR, MESH_BED_LEVELING)
+        BACK_ITEM(Draw_AdvancedSettings_Menu);
+      #else
+        BACK_ITEM(Draw_Advanced_Menu);
+      #endif
+      #if ENABLED(CONTROLLER_FAN_MENU)
+        MENU_ITEM(ICON_FanSpeed, MSG_CONTROLLER_FAN, onDrawSubMenu, Draw_ControllerFan_menu);
+      #endif
+      #if ENABLED(FAN_KICKSTART_MENU)
+        MENU_ITEM(ICON_Motion, MSG_FAN_KICKSTART, onDrawSubMenu, Draw_Kickstart_menu);
+      #endif
+      #if (ENABLED(AUTO_FAN_MENU))
+        #if HAS_E_AUTO_FAN
+          EDIT_ITEM(ICON_Temperature, MSG_FAN_EXTRUDER_TEMP, onDrawPInt8Menu, SetExtruderFanThreshold, &autofans.settings.extruder_temp);
+        #endif
+        #if HAS_AUTO_CHAMBER_FAN
+          EDIT_ITEM(ICON_Temperature, MSG_FAN_CHAMBER_TEMP, onDrawPInt8Menu, SetChamberFanThreshold, &autofans.settings.chamber_temp);
+        #endif
+        #if HAS_AUTO_COOLER_FAN
+          EDIT_ITEM(ICON_Temperature, MSG_FAN_COOLER_TEMP, onDrawPInt8Menu, SetCoolerFanThreshold, &autofans.settings.cooler_temp);
+        #endif
+      #endif
+    }
+    UpdateMenu(AdvancedFanMenu);
+  }
+
+  #if ENABLED(CONTROLLER_FAN_MENU)
+  void Draw_ControllerFan_menu() {
+    checkkey = Menu;
+    if (SET_MENU(ControllerFanMenu, MSG_CONTROLLER_FAN, 5)) {
+      BACK_ITEM(Draw_AdvancedFan_menu);
+      EDIT_ITEM(ICON_FanSpeed, MSG_CONTROLLER_FAN_AUTO_ON, onDrawChkbMenu, SetControllerFanAutoOn, &controllerFan.settings.auto_mode);
+      EDIT_ITEM(ICON_FanSpeed, MSG_CONTROLLER_FAN_IDLE_SPEED, onDrawPInt8Menu, SetControllerFanIdleSpeed, &controllerFan.settings.idle_speed);
+      if (controllerFan.settings.auto_mode) {
+        EDIT_ITEM(ICON_FanSpeed, MSG_CONTROLLER_FAN_SPEED, onDrawPInt8Menu, SetControllerFanSpeed, &controllerFan.settings.active_speed);
+        EDIT_ITEM(ICON_RemainTime, MSG_CONTROLLER_FAN_DURATION, onDrawPIntMenu, SetControllerFanDuration, &controllerFan.settings.duration);
+      }
+    }
+    UpdateMenu(ControllerFanMenu);
+  }
+  #endif
+
+  #if ENABLED(FAN_KICKSTART_MENU)
+  void Draw_Kickstart_menu() {
+    checkkey = Menu;
+    if (SET_MENU(KickstartMenu, MSG_FAN_KICKSTART, 4)) {
+      BACK_ITEM(Draw_AdvancedFan_menu);
+      EDIT_ITEM(ICON_Motion, MSG_FAN_KICKSTART_ENABLE, onDrawChkbMenu, SetKickstartEnabled, &kickstart.settings.enabled);
+      if (kickstart.settings.enabled) {
+        EDIT_ITEM(ICON_FanSpeed, MSG_FAN_KICKSTART_POWER, onDrawPInt8Menu, SetKickstartSpeed, &kickstart.settings.speed);
+        EDIT_ITEM(ICON_RemainTime, MSG_FAN_KICKSTART_DURATION, onDrawPIntMenu, SetKickstartDuration, &kickstart.settings.duration);
+      }
+    }
+    UpdateMenu(KickstartMenu);
+  }
+  #endif
+
+#endif
+
 void Draw_Motion_Menu() {
   checkkey = Menu;
   if (SET_MENU(MotionMenu, MSG_MOTION, 11)) {
@@ -4876,6 +4978,9 @@ void Draw_AdvancedSettings_Menu() {
     #if HAS_TRINAMIC_CONFIG
       MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
     #endif
+    #if ANY(CONTROLLER_FAN_MENU, AUTO_FAN_MENU, FAN_KICKSTART_MENU)
+      MENU_ITEM(ICON_FanSpeed, MSG_FANS_SETTINGS, onDrawSubMenu, Draw_AdvancedFan_menu);
+    #endif
     #if ENABLED(PRINTCOUNTER)
       MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);
     #endif
@@ -4938,6 +5043,9 @@ void Draw_AdvancedSettings_Menu() {
       EDIT_ITEM(ICON_File, MSG_MEDIA_UPDATE, onDrawChkbMenu, SetMediaAutoMount, &HMI_data.MediaAutoMount);
       #if HAS_TRINAMIC_CONFIG
         MENU_ITEM(ICON_TMCSet, MSG_TMC_DRIVERS, onDrawSubMenu, Draw_TrinamicConfig_menu);
+      #endif
+      #if ANY(CONTROLLER_FAN_MENU, AUTO_FAN_MENU, FAN_KICKSTART_MENU)
+        MENU_ITEM(ICON_FanSpeed, MSG_FANS_SETTINGS, onDrawSubMenu, Draw_AdvancedFan_menu);
       #endif
       #if ENABLED(PRINTCOUNTER)
         MENU_ITEM(ICON_PrintStatsReset, MSG_INFO_PRINT_COUNT_RESET, onDrawSubMenu, printStatsReset);

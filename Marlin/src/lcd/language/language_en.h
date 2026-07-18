@@ -652,6 +652,14 @@ namespace LanguageNarrow_en {
   LSTR MSG_CONTROLLER_FAN_AUTO_ON         = _UxGT("Auto Mode");
   LSTR MSG_CONTROLLER_FAN_SPEED           = _UxGT("Active Speed");
   LSTR MSG_CONTROLLER_FAN_DURATION        = _UxGT("Idle Period");
+  LSTR MSG_FANS_SETTINGS                  = _UxGT("Fans Settings");
+  LSTR MSG_FAN_KICKSTART                  = _UxGT("Fan Kickstart");
+  LSTR MSG_FAN_KICKSTART_ENABLE           = _UxGT("Enable Kickstart");
+  LSTR MSG_FAN_KICKSTART_DURATION         = _UxGT("Kickstart Time");
+  LSTR MSG_FAN_KICKSTART_POWER            = _UxGT("Kickstart Power");
+  LSTR MSG_FAN_EXTRUDER_TEMP              = _UxGT("Extruder Fan Temp");
+  LSTR MSG_FAN_CHAMBER_TEMP               = _UxGT("Chamber Fan Temp");
+  LSTR MSG_FAN_COOLER_TEMP                = _UxGT("Cooler Fan Temp");
   LSTR MSG_PID_CYCLE                      = _UxGT("PID Cycles");
   LSTR MSG_PID_AUTOTUNE_DONE              = _UxGT("PID Tuning Done");
   LSTR MSG_PID_AUTOTUNE_FAILED            = _UxGT("Autotune Failed!");
@@ -682,7 +690,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_INFO_SIZE                      = _UxGT("Size");
   LSTR MSG_INFO_FWVERSION                 = _UxGT("Firmware Version");
   LSTR MSG_INFO_BUILD                     = _UxGT("Build Info");
-  LSTR MSG_POWER_MONITOR                  = _UxGT("Power monitor");
+  LSTR MSG_POWER_MONITOR                  = _UxGT("Power Monitor");
   LSTR MSG_CURRENT                        = _UxGT("Current");
   LSTR MSG_VOLTAGE                        = _UxGT("Voltage");
   LSTR MSG_POWER                          = _UxGT("Power");
@@ -736,7 +744,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_LASER_COOLING                  = _UxGT("Laser Cooling...");
   LSTR MSG_MESH_DONE                      = _UxGT("Mesh Probing Done");
   LSTR MSG_HOTEND_IDLE_TIMEOUT            = _UxGT("Hotend Idle Timeout");
-  LSTR MSG_FAN_SPEED_FAULT                = _UxGT("Fan speed fault");
+  LSTR MSG_FAN_SPEED_FAULT                = _UxGT("Fan Speed Fault");
   LSTR MSG_COLORS_GET                     = _UxGT("Get Color");
   LSTR MSG_COLORS_SELECT                  = _UxGT("Select Colors");
   LSTR MSG_COLORS_APPLIED                 = _UxGT("Colors Applied");
@@ -745,7 +753,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_COLORS_BLUE                    = _UxGT("Blue");
   LSTR MSG_COLORS_WHITE                   = _UxGT("White");
   LSTR MSG_UI_LANGUAGE                    = _UxGT("UI Language");
-  LSTR MSG_SOUND_ENABLE                   = _UxGT("Enable sound");
+  LSTR MSG_SOUND_ENABLE                   = _UxGT("Enable Sound");
   LSTR MSG_LOCKSCREEN                     = _UxGT("Lock Screen");
   LSTR MSG_LOCKSCREEN_LOCKED              = _UxGT("Printer is Locked,");
   LSTR MSG_LOCKSCREEN_UNLOCK              = _UxGT("Scroll to Unlock");

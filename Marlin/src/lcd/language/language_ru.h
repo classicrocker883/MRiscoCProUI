@@ -589,6 +589,14 @@ namespace LanguageNarrow_ru {
   LSTR MSG_CONTROLLER_FAN_AUTO_ON         = _UxGT("Автовключение");                            // Auto Mode
   LSTR MSG_CONTROLLER_FAN_SPEED           = _UxGT("Рабочие обороты");                          // Active Speed
   LSTR MSG_CONTROLLER_FAN_DURATION        = _UxGT("Период простоя");                           // Idle Period
+  LSTR MSG_FANS_SETTINGS                  = _UxGT("Настройки кулеров");                        // Fans Settings
+  LSTR MSG_FAN_KICKSTART                  = _UxGT("Кик-старт");                                // Fan Kickstart
+  LSTR MSG_FAN_KICKSTART_ENABLE           = _UxGT("Кик-старт вкл");                            // Enable Kickstart
+  LSTR MSG_FAN_KICKSTART_DURATION         = _UxGT("Длительность");                             // Kickstart Time
+  LSTR MSG_FAN_KICKSTART_POWER            = _UxGT("Мощность");                                 // Kickstart Power
+  LSTR MSG_FAN_EXTRUDER_TEMP              = _UxGT("Порог кулера экстр.");                      // Extruder Fan Temp
+  LSTR MSG_FAN_CHAMBER_TEMP               = _UxGT("Порог кулера камеры");                      // Chamber Fan Temp
+  LSTR MSG_FAN_COOLER_TEMP                = _UxGT("Порог кулера лазера");                      // Cooler Fan Temp
   LSTR MSG_PID_CYCLE                      = _UxGT("Циклы PID");                                // PID Cycles
   LSTR MSG_PID_AUTOTUNE_DONE              = _UxGT("Калибр.PID выполнена");                     // PID tuning done
   LSTR MSG_PID_AUTOTUNE_FAILED            = _UxGT("Автонастройка PID не удалась!");            // Autotune failed!
