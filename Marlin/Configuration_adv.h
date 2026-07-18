@@ -587,6 +587,25 @@
 // @section fans
 
 /**
+ * Part Cooling Fan Pins
+ * Override the default part cooling fan pins for each fan index.
+ * Allows remapping which physical fan pin is used for part cooling.
+ * By default: FAN0 -> FAN0_PIN, FAN1 -> FAN1_PIN, etc.
+ */
+//#define PART_COOLING_FAN0_PIN   FAN0_PIN
+//#define PART_COOLING_FAN1_PIN   FAN1_PIN
+//#define PART_COOLING_FAN2_PIN   FAN2_PIN
+//#define PART_COOLING_FAN3_PIN   FAN3_PIN
+//#define PART_COOLING_FAN4_PIN   FAN4_PIN
+//#define PART_COOLING_FAN5_PIN   FAN5_PIN
+//#define PART_COOLING_FAN6_PIN   FAN6_PIN
+//#define PART_COOLING_FAN7_PIN   FAN7_PIN
+//#define PART_COOLING_FAN8_PIN   FAN8_PIN
+//#define PART_COOLING_FAN9_PIN   FAN9_PIN
+//#define PART_COOLING_FAN10_PIN  FAN10_PIN
+//#define PART_COOLING_FAN11_PIN  FAN11_PIN
+
+/**
  * Controller Fan
  * To cool down the stepper drivers and MOSFETs.
  *
@@ -1227,8 +1246,6 @@
   #define FTM_SHAPING_ZETA_E            0.03f   // Zeta used by input shapers for E axis
   #define FTM_SHAPING_V_TOL_E           0.05f   // Vibration tolerance used by EI input shapers for E axis
 
-  //#define FTM_RESONANCE_TEST                  // Sine sweep motion for resonance study
-
   //#define FTM_SMOOTHING                       // Smoothing can reduce artifacts and make steppers quieter
                                                 // on sharp corners, but too much will round corners.
   #if ENABLED(FTM_SMOOTHING)
@@ -1243,15 +1260,28 @@
 
   #define FTM_POLYS                             // Disable POLY5/6 to save ~3k of Flash. Preserves TRAPEZOIDAL.
   #if ENABLED(FTM_POLYS)
-    #define FTM_TRAJECTORY_TYPE TRAPEZOIDAL     // Block acceleration profile (TRAPEZOIDAL, POLY5, POLY6)
-                                                // TRAPEZOIDAL: Continuous Velocity. Max acceleration is respected.
-                                                // POLY5:       Like POLY6 with 1.5x but uses less CPU.
-                                                // POLY6:       Continuous Acceleration (aka S_CURVE).
-                                                // POLY trajectories not only reduce resonances without rounding corners, but also
-                                                // reduce extruder strain due to linear advance.
-
     #define FTM_POLY6_ACCELERATION_OVERSHOOT 1.875f // Max acceleration overshoot factor for POLY6 (1.25 to 1.875)
   #endif
+
+  /**
+   * FTM Constant-Jolt Trajectory (7-phase S-curve).
+   * Jolt is the rate of change of acceleration, not related to Marlin's "classic jerk."
+   * Ramps acceleration gradually so max acceleration is limited by max speed and distance traveled.
+   */
+  //#define FTM_CONSTANT_JOLT
+  #if ENABLED(FTM_CONSTANT_JOLT)
+    #define FTM_DEFAULT_JOLT 250.0f         // (m/s³) Default jolt for constant-jolt trajectory.
+                                            // Higher values print faster at the cost of increased resonance and extruder stress
+  #endif
+
+  // Block acceleration profile
+  // :[ 'TRAPEZOIDAL', 'POLY5', 'POLY6', 'CONSTANT_JOLT' ]
+  #define FTM_TRAJECTORY_TYPE TRAPEZOIDAL   //   TRAPEZOIDAL: Continuous Velocity. Max acceleration is respected.
+                                            //         POLY5: Like POLY6 with 1.5x but uses less CPU. Requires FTM_POLYS.
+                                            //         POLY6: Continuous Acceleration (aka S_CURVE). Requires FTM_POLYS.
+                                            // CONSTANT_JOLT: 7-phase S-curve. Requires FTM_CONSTANT_JOLT.
+                                            // POLY trajectories not only reduce resonances without rounding corners, but
+                                            // also reduce extruder strain due to linear advance.
 
   /**
    * Advanced configuration
@@ -1316,6 +1346,10 @@
   //#define SHAPING_MIN_FREQ  20.0      // (Hz) By default the minimum of the shaping frequencies. Override to affect SRAM usage.
   //#define SHAPING_MAX_STEPRATE 10000  // By default the maximum total step rate of the shaped axes. Override to affect SRAM usage.
   #define SHAPING_MENU                  // Add a menu to the LCD to set shaping parameters.
+#endif
+
+#if ANY(INPUT_SHAPING_X, INPUT_SHAPING_Y, INPUT_SHAPING_Z, FTM_SHAPER_ZV, FTM_SHAPER_ZVD, FTM_SHAPER_ZVDD, FTM_SHAPER_ZVDDD, FTM_SHAPER_EI, FTM_SHAPER_2HEI, FTM_SHAPER_3HEI, FTM_SHAPER_MZV)
+  //#define RESONANCE_TEST              // Sine sweep motion for resonance study
 #endif
 
 // @section motion

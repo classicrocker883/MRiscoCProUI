@@ -181,6 +181,18 @@
 // #define TEMP_SENSOR_AD595_GAIN    1.0
 // #define TEMP_SENSOR_AD8495_OFFSET 0.0
 // #define TEMP_SENSOR_AD8495_GAIN   1.0
+// #define PART_COOLING_FAN0_PIN   FAN0_PIN
+// #define PART_COOLING_FAN1_PIN   FAN1_PIN
+// #define PART_COOLING_FAN2_PIN   FAN2_PIN
+// #define PART_COOLING_FAN3_PIN   FAN3_PIN
+// #define PART_COOLING_FAN4_PIN   FAN4_PIN
+// #define PART_COOLING_FAN5_PIN   FAN5_PIN
+// #define PART_COOLING_FAN6_PIN   FAN6_PIN
+// #define PART_COOLING_FAN7_PIN   FAN7_PIN
+// #define PART_COOLING_FAN8_PIN   FAN8_PIN
+// #define PART_COOLING_FAN9_PIN   FAN9_PIN
+// #define PART_COOLING_FAN10_PIN  FAN10_PIN
+// #define PART_COOLING_FAN11_PIN  FAN11_PIN
 // #define USE_CONTROLLER_FAN
 // #define CONTROLLER_FAN_PIN -1
 // #define CONTROLLER_FAN2_PIN -1
@@ -370,7 +382,6 @@
 // #define FTM_SHAPING_DEFAULT_FREQ_E   21.0f
 // #define FTM_SHAPING_ZETA_E            0.03f
 // #define FTM_SHAPING_V_TOL_E           0.05f
-// #define FTM_RESONANCE_TEST
 // #define FTM_SMOOTHING
 // #define FTM_MAX_SMOOTHING_TIME      0.10f
 // #define FTM_SMOOTHING_TIME_X        0.00f
@@ -378,8 +389,10 @@
 // #define FTM_SMOOTHING_TIME_Z        0.00f
 // #define FTM_SMOOTHING_TIME_E        0.02f
 // #define FTM_POLYS
-// #define FTM_TRAJECTORY_TYPE TRAPEZOIDAL
 // #define FTM_POLY6_ACCELERATION_OVERSHOOT 1.875f
+// #define FTM_CONSTANT_JOLT
+// #define FTM_DEFAULT_JOLT 250.0f
+// #define FTM_TRAJECTORY_TYPE TRAPEZOIDAL
 // #define FTM_BUFFER_SIZE             128
 // #define FTM_FS                     1000
 // #define FTM_MIN_SHAPE_FREQ           20
@@ -399,6 +412,7 @@
 // #define SHAPING_MIN_FREQ  20.0
 // #define SHAPING_MAX_STEPRATE 10000
 // #define SHAPING_MENU
+// #define RESONANCE_TEST
 // #define AXIS_RELATIVE_MODES { false, false, false, false }
 // #define MULTI_NOZZLE_DUPLICATION
 // #define STEP_STATE_X HIGH
