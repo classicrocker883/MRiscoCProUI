@@ -44,7 +44,7 @@ def get_source_parameters(source_type, mbranch, requested_branch, config_path_ar
     if source_type == "mrisco":
         repo_url = "https://github.com/classicrocker883/MRiscoCProUI.git"
         config_folder = "configurations"
-        cbranch = (mbranch if mbranch and mbranch.startswith("2026-") else "2026-April")
+        cbranch = (mbranch if mbranch and mbranch.startswith("2026-") else "2026-July")
         config_path_prefix = ""
     elif source_type == "marlin":
         repo_url = "https://github.com/MarlinFirmware/Configurations.git"
@@ -110,6 +110,13 @@ def copy_config_files(branch, config_path, dest_dir, repo_url, config_folder):
     if not src_dir.exists():
         return False
 
+    # Validate that configuration files were actually found
+    found_any = any((src_dir / fname).exists() for fname in CONFIG_FILES)
+    if not found_any:
+        print(f"ERROR: No configuration files found for path '{config_path}' (branch: {branch}).")
+        print(f"  Verify the path and branch names are correct.")
+        sys.exit(1)
+
     for fname in CONFIG_FILES:
         src_file = src_dir / fname
         if src_file.exists():
@@ -123,6 +130,18 @@ def fetch_config_files(branch, config_path, dest_dir, repo_url, config_folder):
     org_repo = "/".join(repo_url.split("/")[-2:])[:-4]
     config_path_url = config_path.replace(" ", "%20")
     base_url = f"https://raw.githubusercontent.com/{org_repo}/{branch}/{config_folder}/{config_path_url}"
+    probe_url = f"{base_url}/Configuration.h"
+    try:
+        with urllib.request.urlopen(urllib.request.Request(probe_url, method='HEAD')):
+            pass
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print(f"ERROR: Configurations path not found.")
+            print(f"  Path:   {config_path}")
+            print(f"  Branch: {branch}")
+            print(f"  URL:    https://raw.githubusercontent.com/{org_repo}/{branch}/{config_folder}/{config_path}")
+            print(f"  Verify the path and branch names are correct and try again.")
+        raise
 
     copied_count = 0
     for file in CONFIG_FILES:

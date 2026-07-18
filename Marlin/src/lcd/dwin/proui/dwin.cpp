@@ -2624,7 +2624,7 @@ void ApplyMove() {
   void SetProbeZSpeed()  { SetPIntOnClick(60, 1000); }
   #if DISABLED(BD_SENSOR)
     void ApplyProbeMultiple() { TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing = MenuData.Value; }
-    void SetProbeMultiple() { SetIntOnClick(1, 4, TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing, ApplyProbeMultiple); }
+    void SetProbeMultiple() { SetIntOnClick(1, 10, TERN(PROUI_EX, PRO_data, HMI_data).multiple_probing, ApplyProbeMultiple); }
   #endif
 
   #if ENABLED(Z_MIN_PROBE_REPEATABILITY_TEST)
@@ -2973,15 +2973,24 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
     probe.stow();
     HMI_SaveProcessID(NothingToDo); // Before home disable user input
     marlin.user_resume();
-    zval[0][0] = tram(0, false); // First tram point can do Homing
-    MeshViewer.DrawMeshGrid(2, 2);
-    MeshViewer.DrawMeshPoint(0, 0, zval[0][0]);
-    zval[1][0] = tram(1, false);
-    MeshViewer.DrawMeshPoint(1, 0, zval[1][0]);
-    zval[1][1] = tram(2, false);
-    MeshViewer.DrawMeshPoint(1, 1, zval[1][1]);
-    zval[0][1] = tram(3, false);
-    MeshViewer.DrawMeshPoint(0, 1, zval[0][1]);
+
+    constexpr float TRAM_ZERO_TOLERANCE = 0.015f;
+    const uint8_t coords[4][2] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
+    for (uint8_t i = 0; i < 4; ++i) {
+      const uint8_t x = coords[i][0];
+      const uint8_t y = coords[i][1];
+
+      zval[x][y] = tram(i, false);
+
+      // Snap-to-zero
+      if (fabsf(zval[x][y]) <= TRAM_ZERO_TOLERANCE) {
+        zval[x][y] = 0.00f;
+      }
+
+      if (i == 0) MeshViewer.DrawMeshGrid(2, 2);
+      MeshViewer.DrawMeshPoint(x, y, zval[x][y]);
+    }
+
     probe.stow();
 
     if (HMI_data.CalcAvg) {
@@ -3345,6 +3354,7 @@ void Draw_Tramming_Menu() {
   checkkey = Menu;
   if (SET_MENU(TrammingMenu, MSG_BED_TRAMMING, 10)) {
     BACK_ITEM(Draw_Prepare_Menu);
+    MENU_ITEM(ICON_HomeZ,  MSG_AUTO_HOME_Z, onDrawMenuItem, HomeZ);
     #if ENABLED(PROUI_ITEM_TRAM)
       #if HAS_BED_PROBE
         MENU_ITEM(ICON_Tram, MSG_TRAMMING_WIZARD, onDrawMenuItem, TramwizStart);
@@ -3359,7 +3369,6 @@ void Draw_Tramming_Menu() {
     MENU_ITEM(ICON_AxisTR, MSG_TRAM_BR, onDrawMenuItem, []{ (void)tram(2); });
     MENU_ITEM(ICON_AxisTL, MSG_TRAM_BL, onDrawMenuItem, []{ (void)tram(3); });
     MENU_ITEM(ICON_AxisC,  MSG_TRAM_C,  onDrawMenuItem, []{ (void)tram(4); });
-    MENU_ITEM(ICON_HomeZ,  MSG_AUTO_HOME_Z, onDrawMenuItem, HomeZ);
   }
   UpdateMenu(TrammingMenu);
 }
@@ -4386,6 +4395,10 @@ void Draw_MaxAccel_Menu() {
     if (SET_MENU(HomingMenu, MSG_HOMING, 9)) {
       BACK_ITEM(Draw_Prepare_Menu);
       MENU_ITEM(ICON_Homing, MSG_AUTO_HOME, onDrawMenuItem, AutoHome);
+      #if ENABLED(NOZZLE_PARK_FEATURE)
+        MENU_ITEM(ICON_Park, MSG_FILAMENT_PARK_ENABLED, onDrawMenuItem, ParkHead);
+      #endif
+      MENU_ITEM(ICON_MoveZ, MSG_TOOL_CHANGE_ZLIFT, onDrawMenuItem, RaiseHead);
       #if HAS_X_AXIS
         MENU_ITEM(ICON_HomeX, MSG_AUTO_HOME_X, onDrawMenuItem, HomeX);
       #endif
@@ -4395,10 +4408,6 @@ void Draw_MaxAccel_Menu() {
       #if HAS_Z_AXIS
         MENU_ITEM(ICON_HomeZ, MSG_AUTO_HOME_Z, onDrawMenuItem, HomeZ);
       #endif
-      #if ENABLED(NOZZLE_PARK_FEATURE)
-        MENU_ITEM(ICON_Park, MSG_FILAMENT_PARK_ENABLED, onDrawMenuItem, ParkHead);
-      #endif
-      MENU_ITEM(ICON_MoveZ, MSG_TOOL_CHANGE_ZLIFT, onDrawMenuItem, RaiseHead);
       #if ENABLED(MESH_BED_LEVELING)
         EDIT_ITEM(ICON_ZAfterHome, MSG_Z_AFTER_HOME, onDrawPInt8Menu, SetZAfterHoming, &HMI_data.z_after_homing);
       #endif

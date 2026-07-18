@@ -570,6 +570,7 @@
  * ================================================================
  *  Analog Thermocouple Boards
  * ================================================================
+ *   -18 : ADS1118 with Thermocouple, e.g., Mightyboard rev G/H
  *    -4 : AD8495 with Thermocouple
  *    -1 : AD595  with Thermocouple
  *
@@ -1504,6 +1505,13 @@
  *    - Normally-open (NO) also connect to 5V.
  */
 //#define Z_MIN_PROBE_PIN PB1 // Pin 32 is the RAMPS default
+
+/**
+ * Use Pin 27 adapter (on the EXP port) for probe (and BEEPER).
+ * Also enable USE_PROBE_FOR_Z_HOMING for older BLTouch/3DTouch
+ * connected to Z_MIN_PIN.
+ */
+//#define USE_PIN_27_BOARD
 
 /**
  * Probe Type

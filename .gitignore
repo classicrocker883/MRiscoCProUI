@@ -30,6 +30,7 @@ out-csv/
 out-language/
 *.gen
 *.sublime-workspace
+.cache/
 
 # npm
 node_modules/
@@ -180,3 +181,4 @@ tags
 .env
 desktop.ini
 !MarlinSimulator.exe
+schema.json

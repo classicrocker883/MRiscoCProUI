@@ -8,10 +8,10 @@ name: CI - Validate Source Files
 on:
   pull_request:
     branches:
-      - 2026-April
+      - 2026-July
   push:
     branches:
-      - 2026-April
+      - 2026-July
 
 jobs:
   validate_source_files:
@@ -22,10 +22,10 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
 
       - name: Cache node_modules
-        uses: actions/cache@v5.0.5
+        uses: actions/cache@v6.1.0
         with:
           path: node_modules
           key: ${{ runner.os }}-npm-lines-v1-${{ hashFiles('**/package-lock.json') }}

@@ -9,12 +9,12 @@ name: CI - Validate boards.h
 on:
   pull_request:
     branches:
-      - 2026-April
+      - 2026-July
     paths:
       - "Marlin/src/core/boards.h"
   push:
     branches:
-      - 2026-April
+      - 2026-July
     paths:
       - "Marlin/src/core/boards.h"
 
@@ -27,10 +27,10 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
 
       - name: Cache pip
-        uses: actions/cache@v5.0.5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-validation-v1-${{ hashFiles('**/requirements.txt') }}
@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-pip-validation-v1-
 
       - name: Select Python 3.13
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v6.3.0
         with:
           python-version: "3.13"
           architecture: "x64"
