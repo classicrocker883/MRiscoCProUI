@@ -263,7 +263,7 @@ void DWIN_RebootScreen();
   void DWIN_MeshViewer();
   #if ENABLED(MESH_BED_LEVELING)
     void ManualMeshSave();
-  #elif ENABLED(AUTO_BED_LEVELING_UBL)
+  #elif ALL(AUTO_BED_LEVELING_UBL, HAS_MESH_STORAGE)
     void UBLMeshSave();
   #endif
   #if USE_GRID_MESHVIEWER
