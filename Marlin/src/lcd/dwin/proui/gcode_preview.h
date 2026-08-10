@@ -47,7 +47,8 @@ typedef struct {
 #endif
   char name[13] = ""; // 8.3 + null
   uint32_t thumbstart;
-  int thumbsize, thumbheight, thumbwidth;
+  uint16_t thumbsize;
+  int thumbheight, thumbwidth;
   float time,
   filament,
   layer,

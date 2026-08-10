@@ -211,6 +211,10 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
   void ChangeFilament();
   void Goto_FilamentPurge();
+  #if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
+    void LoadFilament();
+    void UnloadFilament();
+  #endif
 #endif
 void Goto_PrintProcess();
 void Goto_Main_Menu();
