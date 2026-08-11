@@ -25,7 +25,7 @@ I designed and made it to be used for upgrading the hotend.**
 
 [Fantastic Filament Guide](https://www.thingiverse.com/thing:4974802) for Aquila <img src="https://cdn.thingiverse.com/assets/46/79/c1/80/14/card_preview_FantasticFilamentGuideAquilaL.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780) <img src="https://cdn.thingiverse.com/assets/73/1e/84/38/f1/card_preview_Pi_Zero_Case_holder.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780) <img src="https://cdn.thingiverse.com/assets/4a/4c/79/92/6f/Pi_Zero_Case.png" style="float:left;width:40px;height:40px;" align="left"/>
 
 ---
 
