@@ -344,20 +344,20 @@ The fork for H32|HC32 firmware is maintained by [@shadow578](https://github.com/
 
 Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
 
+- [Marlin Firmware](https://marlinfw.org/) is an Open Source project and owned and maintained by the maker community.
+- VS Code is an IDE program owned and maintained by Microsoft.
+
 <br>
 
 ## Star History
 
-<a id="starchart" href="https://star-history.com/#classicrocker883/MRiscoCProUI&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date" />
-    <img height=320 alt="Star History Chart" src="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date" />
-  </picture>
+<a href="https://star-history.dera.page/#classicrocker883/MRiscoCProUI&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=classicrocker883/MRiscoCProUI&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=classicrocker883/MRiscoCProUI&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=classicrocker883/MRiscoCProUI&type=date&legend=top-left" />
+ </picture>
 </a>
-
-- [Marlin Firmware](https://marlinfw.org/) is an Open Source project and owned and maintained by the maker community.
-- VS Code is an IDE program owned and maintained by Microsoft.
 
 <br>
 
