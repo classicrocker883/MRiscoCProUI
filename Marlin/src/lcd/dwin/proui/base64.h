@@ -128,7 +128,7 @@ uint16_t decode_base64_length(unsigned char input[]) {
 uint16_t decode_base64_length(unsigned char input[], uint16_t input_length) {
   unsigned char *start = input;
 
-  while (base64_to_binary(input[0]) < 64 && (unsigned char)(input - start) < input_length) {
+  while ((uint16_t)(input - start) < input_length && base64_to_binary(input[0]) < 64) {
     ++input;
   }
 
