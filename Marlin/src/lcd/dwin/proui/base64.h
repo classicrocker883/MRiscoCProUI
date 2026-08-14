@@ -19,7 +19,7 @@
  *     ascii code of base64 character. If byte is >= 64, then there is not corresponding base64 character
  *     and 255 is returned
  */
-unsigned char binary_to_base64(unsigned char v);
+uint8_t binary_to_base64(uint8_t v);
 
 /* base64_to_binary:
  *   Description:
@@ -29,7 +29,7 @@ unsigned char binary_to_base64(unsigned char v);
  *   Returns:
  *     6-bit binary value
  */
-unsigned char base64_to_binary(unsigned char c);
+uint8_t base64_to_binary(uint8_t c);
 
 /* encode_base64_length:
  *   Description:
@@ -51,8 +51,8 @@ uint16_t encode_base64_length(uint16_t input_length);
  *   Returns:
  *     Number of bytes of binary data in input
  */
-uint16_t decode_base64_length(unsigned char input[]);
-uint16_t decode_base64_length(unsigned char input[], uint16_t input_length);
+uint16_t decode_base64_length(uint8_t input[]);
+uint16_t decode_base64_length(uint8_t input[], uint16_t input_length);
 
 /* encode_base64:
  *   Description:
@@ -64,7 +64,7 @@ uint16_t decode_base64_length(unsigned char input[], uint16_t input_length);
  *   Returns:
  *     Length of encoded string in bytes (not including null terminator)
  */
-uint16_t encode_base64(unsigned char input[], uint16_t input_length, unsigned char output[]);
+uint16_t encode_base64(uint8_t input[], uint16_t input_length, uint8_t output[]);
 
 /* decode_base64:
  *   Description:
@@ -76,10 +76,10 @@ uint16_t encode_base64(unsigned char input[], uint16_t input_length, unsigned ch
  *   Returns:
  *     Number of bytes in the decoded binary
  */
-uint16_t decode_base64(unsigned char input[], unsigned char output[]);
-uint16_t decode_base64(unsigned char input[], uint16_t input_length, unsigned char output[]);
+uint16_t decode_base64(uint8_t input[], uint8_t output[]);
+uint16_t decode_base64(uint8_t input[], uint16_t input_length, uint8_t output[]);
 
-unsigned char binary_to_base64(unsigned char v) {
+uint8_t binary_to_base64(uint8_t v) {
   // Capital letters - 'A' is ascii 65 and base64 0
   if (v < 26) return v + 'A';
 
@@ -98,7 +98,7 @@ unsigned char binary_to_base64(unsigned char v) {
   return 64;
 }
 
-unsigned char base64_to_binary(unsigned char c) {
+uint8_t base64_to_binary(uint8_t c) {
   // Capital letters - 'A' is ascii 65 and base64 0
   if ('A' <= c && c <= 'Z') return c - 'A';
 
@@ -121,12 +121,12 @@ uint16_t encode_base64_length(uint16_t input_length) {
   return (input_length + 2)/3*4;
 }
 
-uint16_t decode_base64_length(unsigned char input[]) {
+uint16_t decode_base64_length(uint8_t input[]) {
   return decode_base64_length(input, -1);
 }
 
-uint16_t decode_base64_length(unsigned char input[], uint16_t input_length) {
-  unsigned char *start = input;
+uint16_t decode_base64_length(uint8_t input[], uint16_t input_length) {
+  uint8_t *start = input;
 
   while ((uint16_t)(input - start) < input_length && base64_to_binary(input[0]) < 64) {
     ++input;
@@ -136,7 +136,7 @@ uint16_t decode_base64_length(unsigned char input[], uint16_t input_length) {
   return input_length / 4 * 3 + (input_length % 4 ? input_length % 4 - 1 : 0);
 }
 
-uint16_t encode_base64(unsigned char input[], uint16_t input_length, unsigned char output[]) {
+uint16_t encode_base64(uint8_t input[], uint16_t input_length, uint8_t output[]) {
   uint16_t full_sets = input_length / 3;
 
   // While there are still full sets of 24 bits...
@@ -173,11 +173,11 @@ uint16_t encode_base64(unsigned char input[], uint16_t input_length, unsigned ch
   return encode_base64_length(input_length);
 }
 
-uint16_t decode_base64(unsigned char input[], unsigned char output[]) {
+uint16_t decode_base64(uint8_t input[], uint8_t output[]) {
   return decode_base64(input, -1, output);
 }
 
-uint16_t decode_base64(unsigned char input[], uint16_t input_length, unsigned char output[]) {
+uint16_t decode_base64(uint8_t input[], uint16_t input_length, uint8_t output[]) {
   uint16_t output_length = decode_base64_length(input, input_length);
 
   // While there are still full sets of 24 bits...
