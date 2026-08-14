@@ -41,10 +41,13 @@
 #if ENABLED(TJC_DISPLAY)
   #define THUMBWIDTH  180
   #define THUMBHEIGHT 180
+  #define THUMB_MAX_ENCODED_BYTES 15000u
 #else
   #define THUMBWIDTH  200
   #define THUMBHEIGHT 200
+  #define THUMB_MAX_ENCODED_BYTES 15000u
 #endif
+#define THUMB_MAX_DECODED_BYTES (3 * THUMB_MAX_ENCODED_BYTES / 4 + 3)
 
 // `getLine`, `getValue`, `getFileHeader`
 // ??? what they do... Maybe Laser related?
@@ -92,6 +95,8 @@ bool Preview::hasPreview() {
   uint32_t indx = 0;
   uint32_t prev_indx = 0;
   float tmp = 0;
+  // Avoid large static buffers — stream-decode base64 directly to SRAM.
+  uint16_t sram_addr = 0;
 
   fileprop.clears();
   fileprop.setnames(card.filename);
@@ -151,23 +156,91 @@ bool Preview::hasPreview() {
   // Exit if there isn't a thumbnail
   if (!fileprop.thumbsize) {
     card.closefile();
+    fileprop.thumbwidth = fileprop.thumbheight = 0;
     LCD_MESSAGE_F("Invalid Thumbnail Size");
     return false;
   }
 
-  uint8_t buf64[fileprop.thumbsize + 1];
-  uint16_t nread = 0;
-  while (nread < fileprop.thumbsize) {
-    const uint8_t c = card.get();
-    if (!ISEOL(c) && c != ';' && c != ' ')
-      buf64[nread++] = c;
+  if (fileprop.thumbsize > THUMB_MAX_ENCODED_BYTES) {
+    card.closefile();
+    fileprop.thumbsize = fileprop.thumbwidth = fileprop.thumbheight = 0;
+    LCD_MESSAGE_F("Thumbnail too large");
+    return false;
+  }
+
+  // Pre-check decoded size to avoid wasting time decoding data that won't fit
+  const uint32_t estimated_decoded = (3u * (uint32_t)fileprop.thumbsize) / 4u + 3u;
+  if (estimated_decoded > 0x7FFFu) {
+    card.closefile();
+    fileprop.thumbsize = fileprop.thumbwidth = fileprop.thumbheight = 0;
+    LCD_MESSAGE_F("Thumbnail too large for SRAM");
+    return false;
+  }
+
+  // Decode in buffered chunks using the shared `decode_base64()` helper.
+  // Keep ENC_CHUNK small to limit stack usage and pad the final chunk.
+  const uint16_t ENC_CHUNK = 256; // Must be multiple of 4 for full chunks
+  uint8_t encbuf[ENC_CHUNK];
+  uint16_t ecount = 0;
+  uint32_t encoded_read = 0;
+  uint8_t decbuf[(ENC_CHUNK * 3) / 4 + 8];
+
+  // Reuse `buf` as a temporary read buffer to minimize extra RAM.
+  int16_t nread;
+  while (encoded_read < (uint32_t)fileprop.thumbsize) {
+    nread = card.read(buf, sizeof(buf));
+    if (nread <= 0) break;
+    for (int16_t i = 0; i < nread && encoded_read < (uint32_t)fileprop.thumbsize; ++i) {
+      const uint8_t c = buf[i];
+      if (ISEOL(c) || c == ';' || c == ' ') continue;
+      encbuf[ecount++] = c;
+      encoded_read++;
+
+      if (ecount >= ENC_CHUNK) {
+        uint16_t dlen = decode_base64(encbuf, ecount, decbuf);
+        if (!dlen) {
+          card.closefile();
+          fileprop.thumbsize = fileprop.thumbwidth = fileprop.thumbheight = 0;
+          LCD_MESSAGE_F("Invalid Thumbnail Data");
+          return false;
+        }
+        if (sram_addr + dlen > 0x7FFF) {
+          card.closefile();
+          fileprop.thumbsize = fileprop.thumbwidth = fileprop.thumbheight = 0;
+          LCD_MESSAGE_F("Thumbnail too large for SRAM");
+          return false;
+        }
+        DWINUI::WriteToSRAM((uint16_t)sram_addr, dlen, decbuf);
+        sram_addr += dlen;
+        ecount = 0;
+      }
+    }
+  }
+
+  // Decode any remaining encoded chars (pad to multiple of 4)
+  if (ecount > 0) {
+    uint16_t padded = ecount;
+    const uint8_t pad = (4 - (padded & 3)) & 3;
+    for (uint8_t i = 0; i < pad; ++i) encbuf[padded++] = '=';
+    uint16_t dlen = decode_base64(encbuf, padded, decbuf);
+    if (!dlen) {
+      card.closefile();
+      fileprop.thumbsize = fileprop.thumbwidth = fileprop.thumbheight = 0;
+      LCD_MESSAGE_F("Invalid Thumbnail Data");
+      return false;
+    }
+    if (sram_addr + dlen > 0x7FFF) {
+      card.closefile();
+      fileprop.thumbsize = fileprop.thumbwidth = fileprop.thumbheight = 0;
+      LCD_MESSAGE_F("Thumbnail too large for SRAM");
+      return false;
+    }
+    DWINUI::WriteToSRAM((uint16_t)sram_addr, dlen, decbuf);
+    sram_addr += dlen;
   }
   card.closefile();
-  buf64[nread] = '\0';
 
-  uint8_t thumbdata[3 + 3 * (fileprop.thumbsize / 4)];  // Reserve space for the JPEG thumbnail
-  fileprop.thumbsize = decode_base64(buf64, thumbdata);
-  DWINUI::WriteToSRAM(0x00, fileprop.thumbsize, thumbdata);
+  fileprop.thumbsize = sram_addr; // Decoded size
 
   fileprop.thumbwidth = THUMBWIDTH;
   fileprop.thumbheight = THUMBHEIGHT;

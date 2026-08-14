@@ -25,7 +25,7 @@ I designed and made it to be used for upgrading the hotend.**
 
 [Fantastic Filament Guide](https://www.thingiverse.com/thing:4974802) for Aquila <img src="https://cdn.thingiverse.com/assets/46/79/c1/80/14/card_preview_FantasticFilamentGuideAquilaL.png" style="float:left;width:40px;height:40px;" align="left"/>
 
-[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780) <img src="https://cdn.thingiverse.com/assets/73/1e/84/38/f1/card_preview_Pi_Zero_Case_holder.png" style="float:left;width:40px;height:40px;" align="left"/>
+[Raspberry Pi Zero Case Mount 30mm case width](https://www.thingiverse.com/thing:5166780) <img src="https://cdn.thingiverse.com/assets/4a/4c/79/92/6f/Pi_Zero_Case.png" style="float:left;width:40px;height:40px;" align="left"/>
 
 ---
 
@@ -344,20 +344,20 @@ The fork for H32|HC32 firmware is maintained by [@shadow578](https://github.com/
 
 Marlin is maintained mainly by [@thinkyhead](https://github.com/thinkyhead)
 
+- [Marlin Firmware](https://marlinfw.org/) is an Open Source project and owned and maintained by the maker community.
+- VS Code is an IDE program owned and maintained by Microsoft.
+
 <br>
 
 ## Star History
 
-<a id="starchart" href="https://star-history.com/#classicrocker883/MRiscoCProUI&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date" />
-    <img height=320 alt="Star History Chart" src="https://api.star-history.com/svg?repos=classicrocker883/MRiscoCProUI&type=Date" />
-  </picture>
+<a href="https://star-history.dera.page/#classicrocker883/MRiscoCProUI&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=classicrocker883/MRiscoCProUI&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=classicrocker883/MRiscoCProUI&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=classicrocker883/MRiscoCProUI&type=date&legend=top-left" />
+ </picture>
 </a>
-
-- [Marlin Firmware](https://marlinfw.org/) is an Open Source project and owned and maintained by the maker community.
-- VS Code is an IDE program owned and maintained by Microsoft.
 
 <br>
 
