@@ -3060,7 +3060,7 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
   }
 
   // Trammingwizard Popup
-  void PopUp_StartTramwiz() { Popup_ConfirmCancel(TERN(TJC_DISPLAY, ICON_BLTouch, ICON_Printer_0), GET_TEXT_F(MSG_TRAMMING_WIZARD_POPUP)); }
+  void PopUp_StartTramwiz() { Popup_ConfirmCancel(HOME_AND_KILL_ICON, GET_TEXT_F(MSG_TRAMMING_WIZARD_POPUP)); }
   void OnClick_StartTramwiz() {
     if (HMI_flag.select_flag) {
       if (HMI_data.FullManualTramming) {
