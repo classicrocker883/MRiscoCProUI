@@ -673,9 +673,9 @@ void Goto_PrintDone() {
 void Draw_Main_Menu() {
   DWINUI::ClearMainArea();
   #if ENABLED(CV_LASER_MODULE)
-    Title.ShowCaption(laser_device.is_laser_device() ? "Laser Engraver" : CUSTOM_MACHINE_NAME);
+    Title.ShowCaption(laser_device.is_laser_device() ? "Laser Engraver" : MACHINE_NAME);
   #else
-    Title.ShowCaption(CUSTOM_MACHINE_NAME);
+    Title.ShowCaption(MACHINE_NAME);
   #endif
   DWINUI::Draw_Icon(ICON_LOGO, 71, 52); // CREALITY logo
   ICON_Print();
@@ -1150,7 +1150,7 @@ void Draw_Info_Menu() {
   sprintf_P(machine_size, PSTR("%ix%ix%i"), (int16_t)X_BED_SIZE, (int16_t)Y_BED_SIZE, (int16_t)Z_MAX_POS);
 
   DWINUI::Draw_CenteredString( 92, GET_TEXT_F(MSG_INFO_MACHINENAME));
-  DWINUI::Draw_CenteredString(112, CUSTOM_MACHINE_NAME);
+  DWINUI::Draw_CenteredString(112, MACHINE_NAME);
   DWINUI::Draw_CenteredString(145, GET_TEXT_F(MSG_INFO_SIZE));
   DWINUI::Draw_CenteredString(165, machine_size);
 
