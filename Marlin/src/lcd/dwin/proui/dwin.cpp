@@ -1343,7 +1343,7 @@ void HMI_Init() {
       #define BOOTSCREEN_TIMEOUT 1100
     #endif
     DWINUI::Draw_Box(1, Color_Black, { 5, 220, DWIN_WIDTH - 5, DWINUI::fontHeight() });
-    DWINUI::Draw_CenteredString(font8x16, Color_White, 220, F(MACHINE_NAME));
+    DWINUI::Draw_CenteredString(Color_White, 220, F(MACHINE_NAME));
     for (uint16_t t = 15; t <= 257; t += 11) {
       DWINUI::Draw_Icon(ICON_Bar, 15, 260);
       DWIN_Draw_Rectangle(1, HMI_data.Background_Color, t, 260, 257, 280);
