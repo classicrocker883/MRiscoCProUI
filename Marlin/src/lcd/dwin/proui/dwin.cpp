@@ -438,7 +438,7 @@ void OnClick_PauseOrStop() {
 // Draw status line
 void DWIN_DrawStatusLine(PGM_P text) {
   DWIN_Draw_Rectangle(1, HMI_data.StatusBg_Color, 0, STATUS_Y, DWIN_WIDTH, STATUS_Y + 20);
-  if (text) { DWINUI::Draw_CenteredString(HMI_data.StatusTxt_Color, STATUS_Y + 2, text); }
+  if (text) { DWINUI::Draw_CenteredString(HMI_data.StatusTxt_Color, STATUS_Y + 2, F(text)); }
 }
 
 // Clear & reset status line
@@ -585,7 +585,7 @@ void DWIN_Print_Header(PGM_P const cstr/*=nullptr*/) {
   }
   if (checkkey == PrintProcess || checkkey == PrintDone) {
     DWIN_Draw_Rectangle(1, HMI_data.Background_Color, 0, 60, DWIN_WIDTH, 60 + 16);
-    DWINUI::Draw_CenteredString(60, headertxt);
+    DWINUI::Draw_CenteredString(60, F(headertxt));
   }
 }
 
@@ -673,9 +673,9 @@ void Goto_PrintDone() {
 void Draw_Main_Menu() {
   DWINUI::ClearMainArea();
   #if ENABLED(CV_LASER_MODULE)
-    Title.ShowCaption(laser_device.is_laser_device() ? "Laser Engraver" : CUSTOM_MACHINE_NAME);
+    Title.ShowCaption(laser_device.is_laser_device() ? "Laser Engraver" : F(MACHINE_NAME));
   #else
-    Title.ShowCaption(CUSTOM_MACHINE_NAME);
+    Title.ShowCaption(F(MACHINE_NAME));
   #endif
   DWINUI::Draw_Icon(ICON_LOGO, 71, 52); // CREALITY logo
   ICON_Print();
@@ -1150,9 +1150,9 @@ void Draw_Info_Menu() {
   sprintf_P(machine_size, PSTR("%ix%ix%i"), (int16_t)X_BED_SIZE, (int16_t)Y_BED_SIZE, (int16_t)Z_MAX_POS);
 
   DWINUI::Draw_CenteredString( 92, GET_TEXT_F(MSG_INFO_MACHINENAME));
-  DWINUI::Draw_CenteredString(112, CUSTOM_MACHINE_NAME);
+  DWINUI::Draw_CenteredString(112, F(MACHINE_NAME));
   DWINUI::Draw_CenteredString(145, GET_TEXT_F(MSG_INFO_SIZE));
-  DWINUI::Draw_CenteredString(165, machine_size);
+  DWINUI::Draw_CenteredString(165, F(machine_size));
 
   for (uint8_t i = 0; i < 2; ++i) {
     DWINUI::Draw_Icon(ICON_Step + i, ICOX, 90 + i * MLINE);
@@ -1343,7 +1343,7 @@ void HMI_Init() {
       #define BOOTSCREEN_TIMEOUT 1100
     #endif
     DWINUI::Draw_Box(1, Color_Black, { 5, 220, DWIN_WIDTH - 5, DWINUI::fontHeight() });
-    DWINUI::Draw_CenteredString(3, Color_White, 220, F(MACHINE_NAME));
+    DWINUI::Draw_CenteredString(Color_White, 220, F(MACHINE_NAME));
     for (uint16_t t = 15; t <= 257; t += 11) {
       DWINUI::Draw_Icon(ICON_Bar, 15, 260);
       DWIN_Draw_Rectangle(1, HMI_data.Background_Color, t, 260, 257, 280);
@@ -2276,8 +2276,8 @@ void __Os Init(){
   char ver[25];
   sprintf_P(ver, PSTR("Version: %s"), SHORT_BUILD_VERSION);
   DWINUI::Draw_CenteredString(2, Color_Cyan, 230, TERN(PROUI_EX, F("MRiscoC ProUI-EX"), F("MRiscoC ProUI")));
-  DWINUI::Draw_CenteredString((fontid_t)2, Color_White, 260, F(ver));
-  DWINUI::Draw_CenteredString(false, 1, Color_White, DWINUI::backcolor, 280, STRING_DISTRIBUTION_DATE);
+  DWINUI::Draw_CenteredString(font10x20, Color_White, 260, F(ver));
+  DWINUI::Draw_CenteredString(false, 1, Color_White, DWINUI::backcolor, 280, F(STRING_DISTRIBUTION_DATE));
   DWINUI::Draw_CenteredString(2, 0xffe0, 305, F("ClassicRocker883"));
   DWIN_UpdateLCD();
   safe_delay(300);
@@ -3044,7 +3044,7 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
       DWINUI::Draw_CenteredString(120, GET_TEXT_F(MSG_CORNERS_NOT_LEVELED));
       DWINUI::Draw_CenteredString(140, GET_TEXT_F(MSG_KNOB_ADJUSTMENT_REQUIRED));
       DWINUI::Draw_CenteredString((s ? Color_Green : Color_Error_Red), 160, (s ? GET_TEXT_F(MSG_LOWER) : GET_TEXT_F(MSG_RAISE)));
-      DWINUI::Draw_CenteredString(HMI_data.StatusTxt_Color, 180, plabel);
+      DWINUI::Draw_CenteredString(HMI_data.StatusTxt_Color, 180, F(plabel));
     }
     DWINUI::Draw_Button(BTN_Continue, 86, 305, true);
     checkkey = Menu;
@@ -4380,11 +4380,11 @@ void Draw_MaxAccel_Menu() {
       EDIT_ITEM(ICON_Fade, MSG_XATC_UPDATE_Z_OFFSET, onDrawPFloat2Menu, SetZOffset, &BABY_Z_VAR);
 
       DWINUI::Draw_Icon(ICON_Info, ICOX, 100 + 3 * MLINE);
-      DWINUI::Draw_CenteredString(263, "For Best Results:\n");
+      DWINUI::Draw_CenteredString(263, F("For Best Results:\n"));
       DWINUI::Draw_Icon(ICON_HotendTemp, ICOX + 206, 100 + 3 * MLINE);
 
       DWINUI::Draw_Icon(ICON_More, ICOX - 2, 92 + 4 * MLINE);
-      DWINUI::Draw_CenteredString(308, "Have Nozzle Touch Bed");
+      DWINUI::Draw_CenteredString(308, F("Have Nozzle Touch Bed"));
       DWINUI::Draw_Icon(ICON_Cancel, ICOX + 206, 92 + 4 * MLINE);
       DWIN_Draw_HLine(HMI_data.SplitLine_Color, 16, MYPOS(4 + 2), 240);
 
