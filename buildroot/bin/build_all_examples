@@ -102,7 +102,7 @@ shift $((OPTIND - 1))
 
 # Assume import-2.1.x if no --base or --branch is given.
 # If no --base is supplied, one will be created.
-[[ -z $BRANCH && -z $CBASE ]] && BRANCH=2026-August
+[[ -z $BRANCH && -z $CBASE ]] && BRANCH=2026-September
 
 # Exit with helpful usage information
 ((EXIT_USAGE)) && { usage ; let EXIT_USAGE-- ; exit $EXIT_USAGE ; }

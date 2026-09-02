@@ -1101,15 +1101,6 @@ void Motion::blocking_move(const xy_pos_t &raw, const feedRate_t fr_mm_s/*=0.0f*
    * Move Z to Z_POST_CLEARANCE,
    * The axis is allowed to move down.
    */
-  void Motion::do_move_after_z_homing() {
-    DEBUG_SECTION(mzah, "do_move_after_z_homing", DEBUGGING(LEVELING));
-    #ifdef Z_POST_CLEARANCE
-      do_z_clearance(Z_POST_CLEARANCE, true);
-    #elif ENABLED(USE_PROBE_FOR_Z_HOMING)
-      probe.move_z_after_probing();
-    #endif
-  }
-
   #if ALL(DWIN_LCD_PROUI, INDIVIDUAL_AXIS_HOMING_SUBMENU, MESH_BED_LEVELING)
     #include "../lcd/dwin/proui/dwin.h"
     #define Z_POST_CLEARANCE HMI_data.z_after_homing
@@ -1118,6 +1109,11 @@ void Motion::blocking_move(const xy_pos_t &raw, const feedRate_t fr_mm_s/*=0.0f*
   #else
     #define Z_POST_CLEARANCE Z_CLEARANCE_FOR_HOMING
   #endif
+
+  void Motion::do_move_after_z_homing() {
+    DEBUG_SECTION(mzah, "do_move_after_z_homing", DEBUGGING(LEVELING));
+    do_z_clearance(Z_POST_CLEARANCE, true);
+  }
 
   void Motion::do_z_post_clearance() { do_z_clearance(Z_POST_CLEARANCE); }
 
@@ -2745,7 +2741,7 @@ void Motion::prepare_line_to_destination() {
           #endif
         }
 
-      #endif // NUM_Z_STEPPERS >= 3
+      #endif // Z_MULTI_ENDSTOPS
 
       // Reset flags for X, Y, Z motor locking
       switch (axis) {

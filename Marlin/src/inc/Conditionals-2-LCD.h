@@ -262,7 +262,7 @@
   #define IS_ULTIPANEL 1
   /// NOTE: that IS_ULTIPANEL leads to HAS_WIRED_LCD
 
-  #if HAS_MEDIA && DISABLED(LCD_PROGRESS_BAR)
+  #if HAS_MEDIA && !defined(LCD_PROGRESS_BAR)
     #define LCD_PROGRESS_BAR
   #endif
   #if ENABLED(TFTGLCD_PANEL_I2C)

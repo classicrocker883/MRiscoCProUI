@@ -149,7 +149,7 @@ def main():
     if mbranch.startswith("2026-"):
         cref = mbranch
     else:
-        cref = "2026-August"
+        cref = "2026-September"
 
     if len(sys.argv) > 1:
         arg = sys.argv[1]
