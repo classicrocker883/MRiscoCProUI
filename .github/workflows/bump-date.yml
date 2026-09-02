@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Check out 2026-September
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           ref: 2026-September
 
