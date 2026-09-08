@@ -857,8 +857,8 @@ void update_variable() {
 
   #if HAS_FAN
     static uint8_t _fanspeed = 0;
-    const bool _new_fanspeed = _fanspeed != thermalManager.fan_speed[EXT];
-    if (_new_fanspeed) { _fanspeed = thermalManager.fan_speed[EXT]; }
+    const bool _new_fanspeed = _fanspeed != fans[0].speed;
+    if (_new_fanspeed) { _fanspeed = fans[0].speed; }
   #endif
 
   if (IsMenu(TuneMenu) || IsMenu(TemperatureMenu)) {
@@ -1131,7 +1131,7 @@ void DWIN_Draw_Dashboard() {
 
   #if HAS_FAN
     DWINUI::Draw_Icon(ICON_FanSpeed, 187, 383);
-    DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 195 + 2 * STAT_CHR_W, 384, thermalManager.fan_speed[EXT]);
+    DWINUI::Draw_Int(DWIN_FONT_STAT, HMI_data.Indicator_Color, HMI_data.Background_Color, 3, 195 + 2 * STAT_CHR_W, 384, fans[0].speed);
   #endif
 
   #if HAS_ZOFFSET_ITEM
@@ -1546,7 +1546,7 @@ void EachMomentUpdate() {
   }
 
   void UBLSmartFillMesh() {
-    for (uint8_t x = 0; x < GRID_MAX_POINTS_X; ++x) bedlevel.smart_mesh_fill();
+    bedlevel.smart_mesh_fill();
     LCD_MESSAGE(MSG_UBL_MESH_FILLED);
   }
 
@@ -2731,7 +2731,7 @@ void ApplyMove() {
 
 #if HAS_FAN
   void ApplyFanSpeed() { thermalManager.set_fan_speed(0, MenuData.Value); TERN_(LASER_SYNCHRONOUS_M106_M107, planner.buffer_sync_block(BLOCK_BIT_SYNC_FANS);)}
-  void SetFanSpeed() { SetIntOnClick(0, 255, thermalManager.fan_speed[EXT], ApplyFanSpeed); }
+  void SetFanSpeed() { SetIntOnClick(0, 255, fans[0].speed, ApplyFanSpeed); }
 #endif
 
 #if ENABLED(SHOW_SPEED_IND)
@@ -3638,7 +3638,7 @@ void Draw_Tune_Menu() {
       BedTargetItem = EDIT_ITEM(ICON_BedTemp, MSG_UBL_SET_TEMP_BED, onDrawPIntMenu, SetBedTemp, &thermalManager.temp_bed.target);
     #endif
     #if HAS_FAN
-      FanSpeedItem = EDIT_ITEM(ICON_FanSpeed, MSG_FAN_SPEED, onDrawPInt8Menu, SetFanSpeed, &thermalManager.fan_speed[EXT]);
+      FanSpeedItem = EDIT_ITEM(ICON_FanSpeed, MSG_FAN_SPEED, onDrawPInt8Menu, SetFanSpeed, &fans[0].speed);
     #endif
     #if HAS_ZOFFSET_ITEM && ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
       EDIT_ITEM(ICON_Zoffset, MSG_ZOFFSET, onDrawPFloat2Menu, SetZOffset, &BABY_Z_VAR);
@@ -3920,7 +3920,7 @@ void Draw_Temperature_Menu() {
       BedTargetItem = EDIT_ITEM(ICON_BedTemp, MSG_UBL_SET_TEMP_BED, onDrawPIntMenu, SetBedTemp, &thermalManager.temp_bed.target);
     #endif
     #if HAS_FAN
-      FanSpeedItem = EDIT_ITEM(ICON_FanSpeed, MSG_FAN_SPEED, onDrawPInt8Menu, SetFanSpeed, &thermalManager.fan_speed[EXT]);
+      FanSpeedItem = EDIT_ITEM(ICON_FanSpeed, MSG_FAN_SPEED, onDrawPInt8Menu, SetFanSpeed, &fans[0].speed);
     #endif
     #if MANY(PIDTEMP, PIDTEMPBED, PIDTEMPCHAMBER, MPCTEMP) // w/ Bed + Hotend + Chamber (PID/MPC)
       MENU_ITEM(ICON_Temperature, MSG_PID_SETTINGS, onDrawSubMenu, Draw_PID_Menu);
