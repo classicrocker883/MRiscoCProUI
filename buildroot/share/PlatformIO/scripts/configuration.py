@@ -157,7 +157,7 @@ def get_pr_number():
 
 def configurations_branch_exists(branch):
     request = Request(
-        f"https://api.github.com/repos/MarlinFirmware/Configurations/git/ref/heads/{branch}",
+        f"https://api.github.com/repos/classicrocker883/MRiscoCProUI/git/ref/heads/{branch}",
         headers={"Accept": "application/vnd.github+json", "User-Agent": "Marlin-configuration"}
     )
     try:
@@ -172,7 +172,7 @@ def default_configurations_branch():
         branch = f"pr-{pr_number}"
         if configurations_branch_exists(branch):
             return branch
-    return "bugfix-2.1.x"
+    return "2026-September"
 
 # Fetch configuration files from GitHub given the path.
 # Return True if any files were fetched.
