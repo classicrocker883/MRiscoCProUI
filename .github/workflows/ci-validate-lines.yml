@@ -18,26 +18,21 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions:
+  contents: read
+
 jobs:
   validate_source_files:
     name: Validate Source Files
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Check out the PR
         uses: actions/checkout@v7.0.1
 
-      - name: Cache node_modules
-        uses: actions/cache@v6.1.0
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-lines-v1-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-lines-
-
       - name: Validate text file formatting
         run: |
-          npm install --save-dev prettier
           make validate-lines -j

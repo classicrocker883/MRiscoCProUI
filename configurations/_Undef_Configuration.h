@@ -1033,7 +1033,7 @@
 // #undef TJC_DISPLAY
 // #undef PROUI_EX
 // #undef CV_LASER_MODULE
-// #undef HAS_GCODE_PREVIEW
+// #undef PROUI_GCODE_PREVIEW
 // #undef DISABLE_TUNING_GRAPH
 // #undef HAS_ESDIAG
 // #undef HAS_CGCODE

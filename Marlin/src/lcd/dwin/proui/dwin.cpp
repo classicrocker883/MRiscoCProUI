@@ -51,7 +51,7 @@
   #include "../../../feature/host_actions.h"
 #endif
 
-#if ANY(HAS_MESH, HAS_BED_PROBE)
+#if HAS_MESH || (HAS_LEVELING && HAS_ZOFFSET_ITEM)
   #include "../../../feature/bedlevel/bedlevel.h"
   #include "bedlevel_tools.h"
 #endif
@@ -88,7 +88,7 @@
   #include "../../../feature/tmc_util.h"
 #endif
 
-#if ANY(HAS_GCODE_PREVIEW, CV_LASER_MODULE)
+#if ANY(PROUI_GCODE_PREVIEW, CV_LASER_MODULE)
   #include "gcode_preview.h"
 #endif
 
@@ -634,7 +634,7 @@ void Draw_PrintDone() {
   Title.ShowCaption(GET_TEXT_F(MSG_PRINT_DONE));
   DWINUI::ClearMainArea();
   DWIN_Print_Header();
-  #if HAS_GCODE_PREVIEW
+  #if PROUI_GCODE_PREVIEW
     const bool haspreview = preview.valid();
     if (haspreview) {
       preview.show();
@@ -1930,24 +1930,8 @@ void DWIN_HomingDone() {
     #elif ENABLED(MESH_BED_LEVELING)
       Draw_AdvancedSettings_Menu();
     #endif
-
-    #if ENABLED(PREHEAT_BEFORE_LEVELING)
-      #if HAS_BED_PROBE
-        if (!DEBUGGING(DRYRUN)) { probe.preheat_for_probing(LEVELING_NOZZLE_TEMP, HMI_data.BedLevT); }
-      #else
-        #if HAS_HOTEND
-          if (!DEBUGGING(DRYRUN) && thermalManager.degTargetHotend(EXT) < LEVELING_NOZZLE_TEMP) {
-            thermalManager.setTargetHotend(LEVELING_NOZZLE_TEMP, 0);
-            thermalManager.wait_for_hotend(EXT);
-          }
-        #endif
-        #if HAS_HEATED_BED
-          if (!DEBUGGING(DRYRUN) && thermalManager.degTargetBed() < HMI_data.BedLevT) {
-            thermalManager.setTargetBed(HMI_data.BedLevT);
-            thermalManager.wait_for_bed_heating();
-          }
-        #endif
-      #endif
+    #if ALL(AUTO_BED_LEVELING_UBL, PREHEAT_BEFORE_LEVELING)
+      if (!DEBUGGING(DRYRUN)) thermalManager.preheat_for_leveling();
     #endif
   }
 
@@ -1982,7 +1966,7 @@ void DWIN_HomingDone() {
 void DWIN_Print_Started() {
   DEBUG_ECHOPGM("DWIN_Print_Started: ");
   DEBUG_ECHOLN(SD_Printing() ? "SD Card" : "USB");
-  TERN_(HAS_GCODE_PREVIEW, if (Host_Printing()) { preview.invalidate(); })
+  TERN_(PROUI_GCODE_PREVIEW, if (Host_Printing()) { preview.invalidate(); })
   TERN_(SET_PROGRESS_PERCENT, ui.progress_reset();)
   TERN_(SET_REMAINING_TIME, ui.reset_remaining_time();)
   TERN_(SET_INTERACTION_TIME, ui.reset_interaction_time();)
@@ -2038,7 +2022,7 @@ void DWIN_Print_Finished() {
     if (!fileprop.isConfig)
   #endif
   Goto_PrintDone();
-  OPTCODE(HAS_GCODE_PREVIEW, fileprop.clears())
+  OPTCODE(PROUI_GCODE_PREVIEW, fileprop.clears())
 }
 
 // Print was aborted
@@ -2150,9 +2134,6 @@ void DWIN_SetDataDefaults() {
     HMI_data.ExtMinT = EXTRUDE_MINTEMP;
     ApplyExtMinT();
   #endif
-  #if ALL(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
-    HMI_data.BedLevT = LEVELING_BED_TEMP;
-  #endif
   TERN_(PROUI_ITEM_ENC, ui.rev_rate = false;)
   TERN_(BAUD_RATE_GCODE, HMI_data.Baud250K = (BAUDRATE == 250000);)
   TERN_(PROUI_ITEM_TRAM, HMI_data.CalcAvg = true;)
@@ -2173,7 +2154,7 @@ void DWIN_SetDataDefaults() {
     TERN_(LED_COLOR_PRESETS, leds.set_default();)
     ApplyLEDColor();
   #endif
-  TERN_(HAS_GCODE_PREVIEW, HMI_data.EnablePreview = true;)
+  TERN_(PROUI_GCODE_PREVIEW, HMI_data.EnablePreview = true;)
   TERN_(PROUI_ITEM_ABRT, HMI_data.auto_abort = false;)
   TERN_(PROUI_ITEM_CONF, HMI_data.auto_confirm = true;)
   #if PROUI_EX
@@ -2455,7 +2436,7 @@ void AutoHome() { queue.inject_P(G28_STR); }
 
 #if HAS_ZOFFSET_ITEM
 
-  void ApplyZOffset() { (void)settings.save(); }
+  void ApplyZOffset() { TERN_(EEPROM_SETTINGS, (void)settings.save()); }
   void LiveZOffset() {
     #if ANY(BABYSTEP_ZPROBE_OFFSET, JUST_BABYSTEP)
       const float step_zoffset = roundf((MenuData.Value * 0.01f) * planner.settings.axis_steps_per_mm[Z_AXIS]) - babystep.accum;
@@ -2847,7 +2828,7 @@ void ApplyMove() {
   }
 #endif // HAS_LOCKSCREEN
 
-#if HAS_GCODE_PREVIEW
+#if PROUI_GCODE_PREVIEW
   void SetPreview() { Toggle_Chkb_Line(HMI_data.EnablePreview); }
   void OnClick_ConfirmToPrint() {
     DWIN_ResetStatusLine();
@@ -2879,7 +2860,7 @@ void Goto_ConfirmToPrint() {
     else
       LaserOn(false); // If it is not laser file turn off laser mode
   #endif
-  #if HAS_GCODE_PREVIEW
+  #if PROUI_GCODE_PREVIEW
     if (HMI_data.EnablePreview) {
       Goto_Popup(preview.drawFromSD, OnClick_ConfirmToPrint);
       return;
@@ -4486,7 +4467,7 @@ void Draw_MaxAccel_Menu() {
     }
   #endif
 
-  #if ALL(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
+  #if HAS_LEVELING_TEMP_EDIT
     void SetBedLevT() { SetPIntOnClick(MIN_BEDTEMP, MAX_BEDTEMP); }
   #endif
 
@@ -4603,8 +4584,8 @@ void Draw_MaxAccel_Menu() {
       #if HAS_PROUI_MESH_EDIT
         MENU_ITEM(ICON_ProbeMargin, MSG_MESH_INSET, onDrawSubMenu, Draw_MeshInset_Menu);
       #endif
-      #if ALL(HAS_HEATED_BED, PREHEAT_BEFORE_LEVELING)
-        EDIT_ITEM(ICON_Temperature, MSG_UBL_SET_TEMP_BED, onDrawPIntMenu, SetBedLevT, &HMI_data.BedLevT);
+      #if HAS_LEVELING_TEMP_EDIT
+        EDIT_ITEM(ICON_Temperature, MSG_UBL_SET_TEMP_BED, onDrawPIntMenu, SetBedLevT, &thermalManager.leveling_temp.bed);
       #endif
       #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
         EDIT_ITEM(ICON_Fade, MSG_Z_FADE_HEIGHT, onDrawPFloatMenu, SetMeshFadeHeight, &planner.z_fade_height);
@@ -4871,7 +4852,7 @@ void Draw_AdvancedSettings_Menu() {
       EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.tick_on);
       EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on);
     #endif
-    #if HAS_GCODE_PREVIEW
+    #if PROUI_GCODE_PREVIEW
       EDIT_ITEM(ICON_File, MSG_HAS_PREVIEW, onDrawChkbMenu, SetPreview, &HMI_data.EnablePreview);
     #endif
     #if ENABLED(BAUD_RATE_GCODE)
@@ -4934,7 +4915,7 @@ void Draw_AdvancedSettings_Menu() {
         EDIT_ITEM(ICON_Sound, MSG_TICK, onDrawChkbMenu, SetEnableTick, &ui.tick_on);
         EDIT_ITEM(ICON_Sound, MSG_SOUND_ENABLE, onDrawChkbMenu, SetEnableSound, &ui.sound_on);
       #endif
-      #if HAS_GCODE_PREVIEW
+      #if PROUI_GCODE_PREVIEW
         EDIT_ITEM(ICON_File, MSG_HAS_PREVIEW, onDrawChkbMenu, SetPreview, &HMI_data.EnablePreview);
       #endif
       #if ENABLED(BAUD_RATE_GCODE)

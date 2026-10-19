@@ -6,8 +6,12 @@
 name: Bump Distribution Date
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 12 */2 * *'
+
+permissions:
+  contents: write
 
 jobs:
   bump_date:
@@ -15,6 +19,7 @@ jobs:
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Check out 2026-October

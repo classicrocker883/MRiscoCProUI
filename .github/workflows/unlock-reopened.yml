@@ -9,14 +9,25 @@ on:
   issues:
     types: [reopened]
 
+permissions:
+  issues: write
+
 jobs:
   unlock:
     name: Unlock Reopened
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - uses: OSDKDev/unlock-issues@v1.2.3
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Unlock Reopened Issue
+      uses: actions/github-script@v9.0.0
+      with:
+        script: |
+          if (!context.payload.issue.locked) return;
+          await github.rest.issues.unlock({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number
+          });

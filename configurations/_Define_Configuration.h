@@ -1033,7 +1033,7 @@
 // #define TJC_DISPLAY
 // #define PROUI_EX 1
 // #define CV_LASER_MODULE
-// #define HAS_GCODE_PREVIEW 1
+// #define PROUI_GCODE_PREVIEW 1
 // #define DISABLE_TUNING_GRAPH 0
 // #define HAS_ESDIAG 1
 // #define HAS_CGCODE 1

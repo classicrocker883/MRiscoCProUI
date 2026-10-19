@@ -33,7 +33,7 @@ void CError();
   void C35();
 #endif
 void C108();
-#if HAS_GCODE_PREVIEW
+#if PROUI_GCODE_PREVIEW
   void C250();
 #endif
 #if HAS_LOCKSCREEN

@@ -9,12 +9,16 @@ on:
   pull_request_target:
     types: [opened]
 
+permissions:
+  pull-requests: write
+
 jobs:
   bad_target:
     name: Bad PR Target
     if: github.repository == 'classicrocker883/MRiscoCProUI' && github.event.pull_request.base.ref != '2026-October'
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - uses: superbrothers/close-pull-request@v3.1.2

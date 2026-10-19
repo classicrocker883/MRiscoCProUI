@@ -23,24 +23,20 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions:
+  contents: read
+
 jobs:
   validate_pins_files:
     name: Validate boards.h
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Check out the PR
         uses: actions/checkout@v7.0.1
-
-      - name: Cache pip
-        uses: actions/cache@v6.1.0
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-validation-v1-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-validation-v1-
 
       - name: Select Python 3.13
         uses: actions/setup-python@v7.0.0

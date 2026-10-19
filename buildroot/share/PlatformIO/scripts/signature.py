@@ -711,8 +711,8 @@ f"""/**
                     import yaml
                 except ImportError:
                     env.Execute(env.VerboseAction(
-                        '$PYTHONEXE -m pip install "pyyaml"',
-                        "Installing YAML for schema.yml export"
+                        '"$PYTHONEXE" -m pip install "pyyaml"',
+                        "Installing YAML for schema.yml export",
                     ))
                     import yaml
                 schema.dump_yaml(conf_schema, build_path / "schema.yml")

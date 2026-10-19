@@ -29,7 +29,7 @@
 
 #include "../../../inc/MarlinConfigPre.h"
 
-#if ALL(DWIN_LCD_PROUI, HAS_GCODE_PREVIEW)
+#if ALL(DWIN_LCD_PROUI, PROUI_GCODE_PREVIEW)
 
 #include "gcode_preview.h"
 
@@ -297,4 +297,4 @@ void Preview::show() {
   DWIN_ICON_Show(xpos, ypos, 0x00);
 }
 
-#endif // DWIN_LCD_PROUI && HAS_GCODE_PREVIEW
+#endif // DWIN_LCD_PROUI && PROUI_GCODE_PREVIEW

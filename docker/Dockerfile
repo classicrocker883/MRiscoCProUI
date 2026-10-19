@@ -28,9 +28,6 @@ RUN python3 -m pip install --upgrade pip
 # Install platformio toolchain / framework and pyyaml
 RUN pip install -U platformio PyYaml wheel
 
-# Upgrade platformio using development version / branch
-RUN pio upgrade --dev
-
 # Set working directory
 WORKDIR /code
 

@@ -40,6 +40,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions:
+  contents: read
+
 jobs:
   # This runs all unit tests as a single job. While it should be possible to break this up into
   # multiple jobs, they currently run quickly and finish long before the compilation tests.
@@ -50,29 +53,22 @@ jobs:
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Check out the PR
         uses: actions/checkout@v7.0.1
 
-      - name: Cache pip
-        uses: actions/cache@v6.1.0
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-unit-v1-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-unit-v1-
-
-      - name: Cache PlatformIO
-        uses: actions/cache@v6.1.0
+      - name: Restore PlatformIO cache
+        id: pio-cache
+        uses: actions/cache/restore@v6.1.0
         with:
           path: |
             ~/.platformio
-            .pio/build
             .pio/libdeps
-          key: ${{ runner.os }}-pio-tests-v1-${{ hashFiles('**/lockfiles', '**/platformio.ini') }}
+          key: ${{ runner.os }}-pio-unit-v1-${{ hashFiles('ini/*.ini', 'platformio.ini') }}
           restore-keys: |
-            ${{ runner.os }}-pio-tests-v1-
+            ${{ runner.os }}-pio-unit-v1-
 
       - name: Select Python 3.13
         uses: actions/setup-python@v7.0.0
@@ -82,10 +78,19 @@ jobs:
 
       - name: Install PlatformIO
         run: |
-          python3 -m pip install -U pip wheel platformio
-          pio upgrade --dev
+          pip install -U platformio
           pio pkg update --global
 
       - name: Run All Unit Tests
         run: |
           make unit-test-all-local
+
+      # Only push builds refresh the cache, so PR runs can't fill the repo cache quota
+      - name: Save PlatformIO cache
+        if: github.event_name == 'push' && steps.pio-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: |
+            ~/.platformio
+            .pio/libdeps
+          key: ${{ steps.pio-cache.outputs.cache-primary-key }}

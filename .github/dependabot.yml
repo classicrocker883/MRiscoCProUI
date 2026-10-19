@@ -1,4 +1,10 @@
+#
+# dependabot.yml
+# Keep GitHub Actions versions current
+#
+
 version: 2
+
 updates:
   - package-ecosystem: 'github-actions'
     directory: '/'
@@ -8,7 +14,6 @@ updates:
     target-branch: '2026-October'
     commit-message:
       prefix: 'Update - GH Actions'
-
     groups:
       github-actions-all:
         patterns:

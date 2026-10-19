@@ -6,8 +6,12 @@
 name: Lock Closed Issues
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 1 1 */2 *'
+
+permissions:
+  issues: write
 
 jobs:
   lock:
@@ -15,6 +19,7 @@ jobs:
     if: github.repository == 'classicrocker883/MRiscoCProUI'
 
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: dessant/lock-threads@v6.0.2

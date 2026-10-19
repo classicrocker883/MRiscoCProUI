@@ -85,7 +85,7 @@ void C108() {
   DONE_BUZZ(true);
 }
 
-#if HAS_GCODE_PREVIEW
+#if PROUI_GCODE_PREVIEW
   // Enable or disable preview screen
   void C250() {
     if (parser.seenval('P')) {
@@ -123,7 +123,7 @@ void custom_gcode(const int16_t codenum) {
       case 35: C35(); break;           // Launch bed tramming wizard
     #endif
     case 108: C108(); break;           // Cancel a Wait for User without an Emergecy Parser
-    #if HAS_GCODE_PREVIEW
+    #if PROUI_GCODE_PREVIEW
       case 250: C250(); break;         // Enable or disable preview screen
     #endif
     #if HAS_LOCKSCREEN
