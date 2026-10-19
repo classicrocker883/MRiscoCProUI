@@ -230,6 +230,12 @@
 // :[0, 1, 2, 3, 4, 5, 6, 7, 8]
 #define EXTRUDERS 1
 
+// Drive the E axis with two synchronized steppers
+//#define E_DUAL_STEPPER_DRIVERS
+#if ENABLED(E_DUAL_STEPPER_DRIVERS)
+  //#define INVERT_E1_VS_E0_DIR       // E direction signals are opposites
+#endif
+
 // Generally expected filament diameter (1.75, 2.85, 3.0, ...). Used for Volumetric, Filament Width Sensor, etc.
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
 
@@ -275,7 +281,7 @@
 
 /**
  * Two separate X-carriages with extruders that connect to a moving part
- * via a solenoid docking mechanism. Requires SOL1_PIN and SOL2_PIN.
+ * via a solenoid docking mechanism. Requires SOL0_PIN and SOL1_PIN.
  */
 //#define PARKING_EXTRUDER
 
@@ -2126,7 +2132,7 @@
       //#define FILAMENT_SWITCH_AND_MOTION      // Define separate pins below to sense motion
       #if ENABLED(FILAMENT_SWITCH_AND_MOTION)
 
-        #define FILAMENT_MOTION_DISTANCE_MM 3.0 // (mm) Missing distance required to trigger runout
+        #define FILAMENT_MOTION_DISTANCE_MM 3.0 // (mm) Missing distance required to trigger runout (0 = no jam detection)
 
         #define NUM_MOTION_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_MOTION#_PIN for each.
         //#define FIL_MOTION1_PIN    -1
@@ -2237,8 +2243,9 @@
  */
 //#define PREHEAT_BEFORE_LEVELING
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
-  #define LEVELING_NOZZLE_TEMP 175   // (°C) Only applies to E0 at this time
-  #define LEVELING_BED_TEMP     50
+  #define LEVELING_NOZZLE_TEMP     175   // (°C) Only applies to E0 at this time
+  #define LEVELING_BED_TEMP         50
+  //#define LEVELING_HEAT_SOAK_TIME 60   // (s) Time to wait for heat soak after heaters reach temperature
 #endif
 
 /**
@@ -3380,8 +3387,12 @@
  *  - Download https://github.com/CrealityOfficial/Ender-3S1/archive/3S1_Plus_Screen.zip
  *  - Copy the downloaded DWIN_SET folder to the SD card.
  *
- * CREALITY_TOUCH
- *  - CR-6 OEM touch screen. A DWIN display with touch.
+ * CR10SPROV2 (T5UID1)
+ *  - Stock Creality CR-10S Pro V2 screen. Uses the screen's factory DWIN_SET.
+ *
+ * SERMOON_D1 (T5L)
+ *  - Download https://www.crealitycloud.com/downloads/firmware/sermoon-series/sermoon-d1
+ *  - Copy the DWIN_SET folder from the firmware package to the SD card.
  *
  * Flash display with DGUS Displays for Marlin:
  *  - Format the SD card to FAT32 with an allocation size of 4kb.
@@ -3389,7 +3400,7 @@
  *  - Plug the microSD card into the back of the display.
  *  - Boot the display and wait for the update to complete.
  *
- * :[ 'ORIGIN', 'FYSETC', 'HYPRECY', 'MKS', 'RELOADED', 'IA_CREALITY', 'E3S1PRO', 'CREALITY_TOUCH' ]
+ * :[ 'ORIGIN', 'FYSETC', 'HYPRECY', 'MKS', 'RELOADED', 'IA_CREALITY', 'E3S1PRO', 'CR10SPROV2', 'SERMOON_D1' ]
  */
 //#define DGUS_LCD_UI ORIGIN
 #if DGUS_UI_IS(MKS)
@@ -3429,6 +3440,11 @@
 //#define ANYCUBIC_LCD_VYPER
 
 //
+// Touch-screen LCD for Anycubic Kobra
+//
+//#define ANYCUBIC_LCD_KOBRA
+
+//
 // Sovol SV-06 Resistive Touch Screen
 //
 //#define SOVOL_SV06_RTS
@@ -3437,6 +3453,12 @@
 // 320x240 Nextion 2.8" serial TFT Resistive Touch Screen NX3224T028
 //
 //#define NEXTION_TFT
+
+//
+// Elegoo Neptune 3 Pro / Plus / Max TJC Touch Screen
+// Requires a 6x6 (Pro), 7x7 (Plus), or 7x9 (Max) bilinear leveling grid.
+//
+//#define ELEGOO_NEPTUNE_3_TFT
 
 //
 // Third-party or vendor-customized controller interfaces.
@@ -3463,6 +3485,11 @@
 // https://github.com/makerbase-mks/MKS-TFT-Hardware/tree/master/MKS%20TS35
 //
 //#define MKS_TS35_V2_0
+
+//
+// MKS TS24-R V2.1 (2.4" 320x240 ST7789V) as shipped with the MKS DLC32
+//
+//#define MKS_TS24_R_V2_1
 
 //
 // 320x240, 2.4", FSMC Display From MKS
@@ -3537,6 +3564,11 @@
 //#define BTT_TFT35_SPI_V1_0
 
 //
+// 240x320, 2.8", SPI Stock Display with Rotary Encoder from Prusa MINI
+//
+//#define PRUSA_MINI_LCD
+
+//
 // Generic TFT with detailed options
 //
 //#define TFT_GENERIC
@@ -3579,6 +3611,8 @@
    * :['NOTOSANS', 'UNIFONT', 'HELVETICA']
    */
   #define TFT_FONT  NOTOSANS
+  //#define TFT_FONT_LARGE    // Use larger fonts for better visibility. (TFT_RES_1024x600 with NOTOSANS or UNIFONT)
+  //#define TFT_NO_TINY_FONT  // Eschew the small numerical font used for meshes to recover Flash space.
 
   /**
    * TFT Theme for Color UI. Choose one of the following or add a new one to 'Marlin/src/lcd/tft/themes' directory
@@ -3630,7 +3664,7 @@
 
   #define PROUI_EX 1            // Extended UI features (15152 bytes of flash)
   //#define CV_LASER_MODULE
-  #define HAS_GCODE_PREVIEW 1
+  #define PROUI_GCODE_PREVIEW 1
   #define DISABLE_TUNING_GRAPH 0// PID/MPC Tuning Plot Graph (1624 bytes of flash)
   #define HAS_ESDIAG 1          // View End-stop switch continuity (560 bytes of flash)
   #define HAS_CGCODE 1          // Extra Gcode options (3320 bytes of flash)

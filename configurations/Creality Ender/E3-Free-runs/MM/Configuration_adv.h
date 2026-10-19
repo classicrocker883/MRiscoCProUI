@@ -306,9 +306,10 @@
  * temperature of the air in the room, and the firmware will keep
  * the heater on.
  *
- * The solution: Once the temperature reaches the target, start observing.
- * If the temperature stays too far below the target (hysteresis) for too
- * long (period), the firmware will halt the machine as a safety precaution.
+ * The solution: Once the temperature is within the hysteresis of the target,
+ * start observing. If the temperature stays too far below the target
+ * (hysteresis) for too long (period), the firmware will halt the machine as
+ * a safety precaution.
  *
  * If you get false positives for "Thermal Runaway", increase
  * THERMAL_PROTECTION_HYSTERESIS and/or THERMAL_PROTECTION_PERIOD
@@ -329,9 +330,9 @@
    * Whenever an M104, M109, or M303 increases the target temperature, the
    * firmware will wait for the WATCH_TEMP_PERIOD to expire. If the temperature
    * hasn't increased by WATCH_TEMP_INCREASE degrees, the machine is halted and
-   * requires a hard reset. This test restarts with any M104/M109/M303, but only
-   * if the current temperature is far enough below the target for a reliable
-   * test.
+   * requires a hard reset. This test restarts with any M104/M109/M303 and
+   * repeats until the temperature is within THERMAL_PROTECTION_HYSTERESIS of
+   * the target, where Thermal Runaway protection takes over.
    *
    * If you get false positives for "Heating failed", increase WATCH_TEMP_PERIOD
    * and/or decrease WATCH_TEMP_INCREASE. WATCH_TEMP_INCREASE should not be set
@@ -944,12 +945,6 @@
       #define Z4_ENDSTOP_ADJUSTMENT 0 // Z4 offset relative to Z endstop
     #endif
   #endif
-#endif
-
-// Drive the E axis with two synchronized steppers
-//#define E_DUAL_STEPPER_DRIVERS
-#if ENABLED(E_DUAL_STEPPER_DRIVERS)
-  //#define INVERT_E1_VS_E0_DIR       // E direction signals are opposites
 #endif
 
 // @section extruder
@@ -1614,52 +1609,61 @@
   #define FEEDRATE_CHANGE_BEEP_FREQUENCY 440
 #endif
 
-/**
- * Probe Offset Wizard
- * Add a Probe Z Offset calibration option to the LCD menu.
- * Use this helper to get a perfect 'M851 Z' probe offset.
- * When launched this powerful wizard:
- *  - Measures the bed height at the configured position with the probe.
- *  - Moves the nozzle to the same position for a "paper" measurement.
- *  - The difference is used to set the probe Z offset.
- */
-#if HAS_BED_PROBE && ANY(HAS_MARLINUI_MENU, HAS_TFT_LVGL_UI)
-  #define PROBE_OFFSET_WIZARD
-  #if ENABLED(PROBE_OFFSET_WIZARD)
-    /**
-     * Enable to init the Probe Z-Offset when starting the Wizard.
-     * Use a height slightly above the estimated nozzle-to-probe Z offset.
-     * For example, with an offset of -5, consider a starting height of -4.
-     */
-    #define PROBE_OFFSET_WIZARD_START_Z -1.0
+#if HAS_BED_PROBE
 
-    // Set a convenient position to do the calibration (probing point and nozzle/bed-distance)
-    #define PROBE_OFFSET_WIZARD_XY_POS { X_CENTER, Y_CENTER }
+  #if HAS_MARLINUI_MENU
+    #define PROBE_DEPLOY_STOW_MENU    // Show Deploy / Stow Probe options in the Motion menu.
   #endif
-#endif
 
-#if HAS_MARLINUI_MENU
-
-  #if HAS_BED_PROBE
-
-    // Show Deploy / Stow Probe options in the Motion menu.
-    #define PROBE_DEPLOY_STOW_MENU
-
-    // Add calibration in the Probe Offsets menu to compensate for X-axis twist.
-    //#define X_AXIS_TWIST_COMPENSATION
-    #if ENABLED(X_AXIS_TWIST_COMPENSATION)
+  /**
+   * Probe Offset Wizard
+   * Add a Probe Z Offset calibration option to the LCD menu.
+   * Use this helper to get a perfect 'M851 Z' probe offset.
+   * When launched this powerful wizard:
+   *  - Measures the bed height at the configured position with the probe.
+   *  - Moves the nozzle to the same position for a "paper" measurement.
+   *  - The difference is used to set the probe Z offset.
+   */
+  #if ANY(HAS_MARLINUI_MENU, HAS_TFT_LVGL_UI)
+    //#define PROBE_OFFSET_WIZARD
+    #if ENABLED(PROBE_OFFSET_WIZARD)
       /**
        * Enable to init the Probe Z-Offset when starting the Wizard.
        * Use a height slightly above the estimated nozzle-to-probe Z offset.
        * For example, with an offset of -5, consider a starting height of -4.
        */
-      #define XATC_START_Z 0.0
-      #define XATC_MAX_POINTS 3             // Number of points to probe in the wizard
-      #define XATC_Y_POSITION Y_CENTER      // (mm) Y position to probe
-      #define XATC_Z_OFFSETS { 0, 0, 0 }    // Z offsets for X axis sample points
-    #endif
+      //#define PROBE_OFFSET_WIZARD_START_Z -4.0
 
-  #endif // HAS_BED_PROBE
+      // Set a convenient position to do the calibration (probing point and nozzle/bed-distance)
+      //#define PROBE_OFFSET_WIZARD_XY_POS { X_CENTER, Y_CENTER }
+    #endif
+  #endif
+
+  /**
+   * M423 X-Axis Twist Compensation
+   * If probing with an off-center probe produces an unreliable mesh, it may be
+   * a twisted X axis. Use this feature to measure and compensate.
+   */
+  //#define X_AXIS_TWIST_COMPENSATION
+  #if ENABLED(X_AXIS_TWIST_COMPENSATION)
+    #define XATC_MAX_POINTS  3          // Number of points to probe in the wizard
+    #define XATC_Z_OFFSETS { 0, 0, 0 }  // Z offsets for X axis sample points
+
+    // Add calibration to the Probe Offsets menu in MarlinUI
+    #if HAS_MARLINUI_MENU
+      /**
+       * Set non-zero to init the Probe Z-Offset when starting the Wizard.
+       * Use an offset slightly higher than the estimated nozzle-to-probe Z offset.
+       * For example, with an offset of -5, consider a starting offset of -4.
+       */
+      #define XATC_START_Z    0.0
+      #define XATC_Y_POSITION Y_CENTER      // (mm) Y position to probe
+    #endif
+  #endif
+
+#endif // HAS_BED_PROBE
+
+#if HAS_MARLINUI_MENU
 
   // Include a page of printer information in the LCD Main Menu
   #define LCD_INFO_MENU
@@ -3574,7 +3578,7 @@
   #define MONITOR_DRIVER_STATUS
 
   #if ENABLED(MONITOR_DRIVER_STATUS)
-    #define CURRENT_STEP_DOWN     50  // (mA)
+    #define CURRENT_STEP_DOWN     50  // (mA) Do not exceed the desired minimum current
     #define REPORT_CURRENT_CHANGE
     #define STOP_ON_ERROR
   #endif
@@ -3614,16 +3618,43 @@
   #define E7_HYBRID_THRESHOLD     30
 
   /**
+   * Use a separate Hybrid Threshold while homing each axis.
+   * TMC2209 and TMC2240 home with StallGuard4, which only works in stealthChop.
+   * Set the threshold above the homing feedrate, or 0 to stay in stealthChop.
+   * M913 H X/Y/Z to live tune the setting
+   */
+  //#define HOMING_HYBRID_THRESHOLD
+  #if ENABLED(HOMING_HYBRID_THRESHOLD)
+    #define X_HOMING_HYBRID_THRESHOLD    0  // (mm/s) 0 = Stay in stealthChop
+    #define X2_HOMING_HYBRID_THRESHOLD   0
+    #define Y_HOMING_HYBRID_THRESHOLD    0
+    #define Y2_HOMING_HYBRID_THRESHOLD   0
+    #define Z_HOMING_HYBRID_THRESHOLD    0
+    #define Z2_HOMING_HYBRID_THRESHOLD   0
+    #define Z3_HOMING_HYBRID_THRESHOLD   0
+    #define Z4_HOMING_HYBRID_THRESHOLD   0
+    #define I_HOMING_HYBRID_THRESHOLD    0  // [linear=mm/s, rotational=°/s]
+    #define J_HOMING_HYBRID_THRESHOLD    0  // [linear=mm/s, rotational=°/s]
+    #define K_HOMING_HYBRID_THRESHOLD    0  // [linear=mm/s, rotational=°/s]
+    #define U_HOMING_HYBRID_THRESHOLD    0  // (mm/s)
+    #define V_HOMING_HYBRID_THRESHOLD    0
+    #define W_HOMING_HYBRID_THRESHOLD    0
+  #endif
+
+  /**
    * Use StallGuard to home / probe X, Y, Z.
    *
    * TMC2130, TMC2160, TMC2209, TMC2240, TMC2660, TMC5130, and TMC5160 only
    * Connect the stepper driver's DIAG1 pin to the X/Y endstop pin.
-   * X, Y, and Z homing will always be done in spreadCycle mode.
+   * (TMC2240 signals a stall on DIAG0.)
+   * TMC2209 and TMC2240 home in stealthChop mode using StallGuard4.
+   * Other drivers home in spreadCycle mode using StallGuard2.
+   * With HYBRID_THRESHOLD use HOMING_HYBRID_THRESHOLD to stay in stealthChop while homing.
    *
    * X/Y/Z_STALL_SENSITIVITY is the default stall threshold.
    * Use M914 X Y Z to set the stall threshold at runtime:
    *
-   *  Sensitivity  TMC2209        Others
+   *  Sensitivity  TMC2209/2240   Others
    *    HIGHEST        255         -64    (Too sensitive => False positive)
    *    LOWEST          0           63    (Too insensitive => No trigger)
    *

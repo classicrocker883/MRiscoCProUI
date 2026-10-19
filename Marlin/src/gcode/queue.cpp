@@ -547,8 +547,8 @@ void GCodeQueue::get_serial_commands() {
               case 112:
                 marlin.kill(FPSTR(M112_KILL_STR), nullptr, true);
                 break;
-              case 401:
-                motion.quickstop_stepper();
+              case 401: // M410 in the queue completes the stop
+                planner.quick_stop();
                 break;
             }
             break;

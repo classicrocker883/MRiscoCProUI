@@ -929,7 +929,7 @@ inline uint16_t nr_sd_menu_items() {
   return _MIN(card.get_num_items() + !card.flag.workDirIsRoot, MENU_MAX_ITEMS);
 }
 
-void make_name_without_ext(char *dst, char *src, size_t maxlen=MENU_CHAR_LIMIT) {
+void makeNameWithoutExt(char *dst, char *src, size_t maxlen=MENU_CHAR_LIMIT) {
   size_t pos = strlen(src); // Index of ending nul
 
   // For files, remove the extension
@@ -993,7 +993,7 @@ void onClickSDItem() {
 }
 
 #if ENABLED(SCROLL_LONG_FILENAMES)
-  char shift_name[LONG_FILENAME_LENGTH + 1] = "";
+  char shift_name[LONG_FILENAME_BYTES + 1] = "";
 
   void Draw_SDItem_Shifted(uint8_t &shift) {
     // Shorten to the available space
@@ -1024,7 +1024,7 @@ void onClickSDItem() {
       if (selected >= 1 + hasUpDir) {
         const int8_t filenum = selected - 1 - hasUpDir; // Skip "Back" and ".."
         card.selectFileByIndexSorted(filenum);
-        make_name_without_ext(shift_name, card.longest_filename(), LONG_FILENAME_LENGTH);
+        makeNameWithoutExt(shift_name, card.longest_filename(), LONG_FILENAME_BYTES);
         shift_len = strlen(shift_name);
         shift_amt = 0;
       }
@@ -1050,7 +1050,7 @@ void onDrawFileName(MenuItemClass* menuitem, int8_t line) {
   else {
     uint8_t icon;
     card.selectFileByIndexSorted(menuitem->pos - is_subdir - 1);
-    make_name_without_ext(shift_name, card.longest_filename());
+    makeNameWithoutExt(shift_name, card.longest_filename());
     icon = card.flag.filenameIsDir ? ICON_Folder : card.fileIsBinary() ? ICON_Binary : ICON_File;
     Draw_Menu_Line(line, icon, shift_name);
   }
@@ -4199,8 +4199,8 @@ void Draw_MaxAccel_Menu() {
 
   #if ENABLED(MPC_EDIT_MENU)
     void SetHeaterPower() { SetPFloatOnClick(1, 200, 1); }
-    void SetBlkHeatCapacity() { SetPFloatOnClick(0, 40, 2); }
-    void SetSensorResponse() { SetPFloatOnClick(0, 1, 4); }
+    void SetBlkHeatCapacity() { SetPFloatOnClick(0.01f, 40, 2); }
+    void SetSensorResponse() { SetPFloatOnClick(0.0001f, 1, 4); }
     void SetAmbientXfer() { SetPFloatOnClick(0, 1, 4); }
     #if ENABLED(MPC_INCLUDE_FAN)
       void onDrawFanAdj(MenuItemClass* menuitem, int8_t line) { onDrawFloatMenu(menuitem, line, 4, thermalManager.temp_hotend[EXT].fanCoefficient()); }

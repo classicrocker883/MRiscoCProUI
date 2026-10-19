@@ -567,6 +567,7 @@ namespace LanguageNarrow_en {
   LSTR MSG_TMC_ENCURRENT                  = _UxGT("* Driver Current");
   LSTR MSG_TMC_HOMING_CURRENT             = _UxGT("Homing Current");
   LSTR MSG_TMC_HYBRID_THRS                = STR_HYBRID_THRESHOLD;
+  LSTR MSG_TMC_HOMING_HYBRID_THRS         = _UxGT("Homing Hybrid Thrs");
   LSTR MSG_TMC_AHYBRID_THRS               = STR_A _UxGT(" " STR_HYBRID_THRESHOLD);
   LSTR MSG_TMC_BHYBRID_THRS               = STR_B _UxGT(" " STR_HYBRID_THRESHOLD);
   LSTR MSG_TMC_CHYBRID_THRS               = STR_C _UxGT(" " STR_HYBRID_THRESHOLD);
