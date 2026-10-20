@@ -1,7 +1,3 @@
-/* Dual pad pin name */
-PC_2_C     = PC_2  | PDUAL,
-PC_3_C     = PC_3  | PDUAL,
-
 /* SYS_WKUP */
 #ifdef PWR_WAKEUP_PIN1
 SYS_WKUP1 = PA_0, /* SYS_WKUP0 */

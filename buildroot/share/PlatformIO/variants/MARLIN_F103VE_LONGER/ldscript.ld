@@ -114,8 +114,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  /* (READONLY) keeps these out of the RWX LOAD segment. Requires GCC 11+ / binutils 2.38+ */
-  .preinit_array (READONLY) : {
+  .preinit_array : {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
@@ -123,7 +122,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .init_array (READONLY) : {
+  .init_array : {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__init_array_start = .);
     KEEP (*(SORT(.init_array.*)))
@@ -132,7 +131,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .fini_array (READONLY) : {
+  .fini_array : {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__fini_array_start = .);
     KEEP (*(SORT(.fini_array.*)))
