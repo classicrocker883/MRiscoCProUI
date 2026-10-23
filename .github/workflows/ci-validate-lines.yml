@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Validate text file formatting
         run: |

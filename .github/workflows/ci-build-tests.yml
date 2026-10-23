@@ -198,13 +198,13 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Check out the PR
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Select Python 3.13
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
           architecture: "x64"
@@ -229,7 +229,7 @@ jobs:
 
       - name: Restore PlatformIO cache
         id: pio-cache
-        uses: actions/cache/restore@v6.1.0
+        uses: actions/cache/restore@v6
         with:
           path: ~/.platformio
           key: ${{ runner.os }}-pio-v2-${{ steps.cache-group.outputs.name }}
@@ -237,7 +237,7 @@ jobs:
       # Libraries are installed per env, so each target keeps its own cache
       - name: Restore library cache
         id: lib-cache
-        uses: actions/cache/restore@v6.1.0
+        uses: actions/cache/restore@v6
         with:
           path: .pio/libdeps
           key: ${{ runner.os }}-libdeps-v1-${{ matrix.test-platform }}-${{ hashFiles('ini/*.ini', 'platformio.ini') }}
@@ -263,14 +263,14 @@ jobs:
       # Only push builds refresh the caches, so PR runs can't fill the repo cache quota
       - name: Save PlatformIO cache
         if: github.event_name == 'push' && steps.pio-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6.1.0
+        uses: actions/cache/save@v6
         with:
           path: ~/.platformio
           key: ${{ steps.pio-cache.outputs.cache-primary-key }}
 
       - name: Save library cache
         if: github.event_name == 'push' && steps.lib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6.1.0
+        uses: actions/cache/save@v6
         with:
           path: .pio/libdeps
           key: ${{ steps.lib-cache.outputs.cache-primary-key }}
