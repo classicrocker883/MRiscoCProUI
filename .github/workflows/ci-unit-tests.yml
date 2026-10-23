@@ -57,11 +57,11 @@ jobs:
 
     steps:
       - name: Check out the PR
-        uses: actions/checkout@v7.0.1
+        uses: actions/checkout@v7
 
       - name: Restore PlatformIO cache
         id: pio-cache
-        uses: actions/cache/restore@v6.1.0
+        uses: actions/cache/restore@v6
         with:
           path: |
             ~/.platformio
@@ -71,7 +71,7 @@ jobs:
             ${{ runner.os }}-pio-unit-v1-
 
       - name: Select Python 3.13
-        uses: actions/setup-python@v7.0.0
+        uses: actions/setup-python@v6
         with:
           python-version: "3.13"
           architecture: "x64"
@@ -88,7 +88,7 @@ jobs:
       # Only push builds refresh the cache, so PR runs can't fill the repo cache quota
       - name: Save PlatformIO cache
         if: github.event_name == 'push' && steps.pio-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v6.1.0
+        uses: actions/cache/save@v6
         with:
           path: |
             ~/.platformio
