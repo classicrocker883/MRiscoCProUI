@@ -22,12 +22,12 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - name: Check out 2026-October
+      - name: Check out 2026-November
         uses: actions/checkout@v7.0.1
         with:
-          ref: 2026-October
+          ref: 2026-November
 
-      - name: Bump Date (2026-October)
+      - name: Bump Date (2026-November)
         run: |
           if [[ ! "$( git log -1 --pretty=%B )" =~ ^\[cron\] ]]; then
             shopt -s globstar && \

@@ -172,7 +172,7 @@ def default_configurations_branch():
         branch = f"pr-{pr_number}"
         if configurations_branch_exists(branch):
             return branch
-    return "2026-October"
+    return "2026-November"
 
 # Fetch configuration files from GitHub given the path.
 # Return True if any files were fetched.

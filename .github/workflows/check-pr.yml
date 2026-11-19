@@ -15,7 +15,7 @@ permissions:
 jobs:
   bad_target:
     name: Bad PR Target
-    if: github.repository == 'classicrocker883/MRiscoCProUI' && github.event.pull_request.base.ref != '2026-October'
+    if: github.repository == 'classicrocker883/MRiscoCProUI' && github.event.pull_request.base.ref != '2026-November'
 
     runs-on: ubuntu-latest
     timeout-minutes: 10
