@@ -1085,18 +1085,25 @@ void CardReader::report_status(TERN_(QUIETER_AUTO_REPORT_SD_STATUS, const bool i
 // Write a command to the log file
 //
 void CardReader::write_command(char * const buf) {
-  char *begin = buf,
-       *npos = nullptr,
-       *end = buf + strlen(buf) - 1;
+  char *begin = buf, *end = buf + strlen(buf);
 
   myfile.writeError = false;
-  if ((npos = strchr(buf, 'N'))) {
-    begin = strchr(npos, ' ') + 1;
-    end = strchr(npos, '*') - 1;
+  if (*buf == 'N') {
+    char * const space = strchr(buf, ' '), * const checksum = strrchr(buf, '*');
+    if (!space || !checksum || space >= checksum) {
+      SERIAL_ERROR_MSG(STR_SD_ERR_WRITE_TO_FILE);
+      return;
+    }
+    begin = space + 1;
+    end = checksum;
   }
-  end[1] = '\r';
-  end[2] = '\n';
-  end[3] = '\0';
+  if (end - buf > MAX_CMD_SIZE - 3) {
+    SERIAL_ERROR_MSG(STR_SD_ERR_WRITE_TO_FILE);
+    return;
+  }
+  *end++ = '\r';
+  *end++ = '\n';
+  *end = '\0';
   myfile.write(begin);
 
   if (myfile.writeError) SERIAL_ERROR_MSG(STR_SD_ERR_WRITE_TO_FILE);

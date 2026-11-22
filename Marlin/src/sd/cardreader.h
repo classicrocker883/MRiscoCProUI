@@ -251,7 +251,7 @@ public:
   static bool isPrinting()         { return flag.sdprinting; }
   static bool isStillPrinting()    { return flag.sdprinting && !flag.abort_sd_printing; }
   static bool isStillFetching()    { return isStillPrinting() && !flag.sdprintdone; }
-  static bool isPaused()           { return isFileOpen() && !isPrinting(); }
+  static bool isPaused()           { return isFileOpen() && !isPrinting() && !flag.saving; }
   #if HAS_PRINT_PROGRESS_PERMYRIAD
     static uint16_t permyriadDone() {
       if (flag.sdprintdone) return 10000;
