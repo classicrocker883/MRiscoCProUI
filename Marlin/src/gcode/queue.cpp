@@ -536,22 +536,27 @@ void GCodeQueue::get_serial_commands() {
           }
         }
 
-        // Process critical commands early
-        parser.parse(command);
-        switch (parser.command_letter) {
-          case 'M':
-            switch (parser.codenum) {
-              case 108:
-                marlin.end_waiting();
-                break;
-              case 112:
-                marlin.kill(FPSTR(M112_KILL_STR), nullptr, true);
-                break;
-              case 401: // M410 in the queue completes the stop
-                planner.quick_stop();
-                break;
-            }
-            break;
+        // Parsing modifies its input, so preserve the checksummed line for the queue.
+        // Commands being uploaded to media must not be executed.
+        if (!TERN0(HAS_MEDIA, card.flag.saving && !card.flag.logging)) {
+          char early_command[MAX_CMD_SIZE];
+          strcpy(early_command, command);
+          parser.parse(early_command);
+          switch (parser.command_letter) {
+            case 'M':
+              switch (parser.codenum) {
+                case 108:
+                  marlin.end_waiting();
+                  break;
+                case 112:
+                  marlin.kill(FPSTR(M112_KILL_STR), nullptr, true);
+                  break;
+                case 410: // M410 in the queue completes the stop
+                  planner.quick_stop();
+                  break;
+              }
+              break;
+          }
         }
 
         #if NO_TIMEOUTS > 0
