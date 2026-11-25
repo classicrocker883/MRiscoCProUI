@@ -458,8 +458,10 @@ uint32_t GetHash(char * str) {
 void DWIN_CheckStatusMessage() {
   static MString<>::hash_t old_hash = 0x0000;
   const MString<>::hash_t hash = ui.status_message.hash();
-  hash_changed = hash != old_hash;
-  old_hash = hash;
+  if (hash != old_hash) {
+    hash_changed = true; // Cleared after the message is drawn
+    old_hash = hash;
+  }
 }
 
 // Draw status_message
@@ -2220,7 +2222,8 @@ void DWIN_CopySettingsFrom(PGM_P const buff) {
   DWINUI::SetColors(HMI_data.Text_Color, HMI_data.Background_Color, HMI_data.TitleBg_Color);
   TERN_(PREVENT_COLD_EXTRUSION, ApplyExtMinT();)
   motion.feedrate_percentage = 100;
-  TERN_(BAUD_RATE_GCODE, if (HMI_data.Baud250K) { SetBaud250K(); } else { SetBaud115K(); })
+  // Only change the baud rate if the stored choice differs from the configured BAUDRATE
+  TERN_(BAUD_RATE_GCODE, if (HMI_data.Baud250K != (BAUDRATE == 250000)) SetBaudRate();)
   TERN_(PROUI_MEDIASORT, card.setSortOn(HMI_data.MediaSort ? TERN(SDSORT_REVERSE, AS_REV, AS_FWD) : AS_OFF);)
   #if ALL(LED_CONTROL_MENU, HAS_COLOR_LEDS)
     leds.set_color(
@@ -2450,7 +2453,7 @@ void AutoHome() { queue.inject_P(G28_STR); }
     SetPFloatOnClick(PROBE_OFFSET_ZMIN, PROBE_OFFSET_ZMAX, 2, ApplyZOffset, LiveZOffset);
   }
   void SetMoveZto0() {
-    TERN_(HAS_LEVELING, set_bed_leveling_enabled(false);)
+    TERN_(HAS_LEVELING, set_bed_leveling_enabled(false);) // Go to the true Z0, even if G28 re-enabled leveling
     gcode.process_subcommands_now(TS(F("G28XYO\nG28Z\nG0F5000X"), X_CENTER, F("Y"), Y_CENTER, F("\nG0Z0F300\nM400")));
     ui.reset_status();
   }
@@ -2920,9 +2923,9 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
     if (HMI_data.FullManualTramming) {
       gcode.process_subcommands_now(TS(
         #if ENABLED(LCD_BED_TRAMMING)
-          F("G90\nG0F600Z" STRINGIFY(BED_TRAMMING_Z_HOP) "\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z" STRINGIFY(BED_TRAMMING_HEIGHT))
+          F("G90\nG0F600Z"), p_float_t((BED_TRAMMING_HEIGHT) + (BED_TRAMMING_Z_HOP), 1), F("\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z"), p_float_t(BED_TRAMMING_HEIGHT, 2)
         #else
-          F("G90\nG0F600Z" STRINGIFY(Z_CLEARANCE_BETWEEN_PROBES) "\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z0")
+          F("G90\nG0F600Z"), p_float_t(Z_CLEARANCE_BETWEEN_PROBES, 1), F("\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z")
         #endif
       ));
       planner.synchronize();
@@ -2941,9 +2944,9 @@ TERN(HAS_BED_PROBE, float, void) tram(uint8_t point OPTARG(HAS_BED_PROBE, bool s
   #else // !HAS_BED_PROBE
     gcode.process_subcommands_now(TS(
       #if ENABLED(LCD_BED_TRAMMING)
-        F("G90\nG0F600Z" STRINGIFY(BED_TRAMMING_Z_HOP) "\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z" STRINGIFY(BED_TRAMMING_HEIGHT))
+        F("G90\nG0F600Z"), p_float_t((BED_TRAMMING_HEIGHT) + (BED_TRAMMING_Z_HOP), 1), F("\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z"), p_float_t(BED_TRAMMING_HEIGHT, 2)
       #else
-        F("G90\nG0F600Z" STRINGIFY(Z_CLEARANCE_BETWEEN_PROBES) "\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z0")
+        F("G90\nG0F600Z"), p_float_t(Z_CLEARANCE_BETWEEN_PROBES, 1), F("\nG0F5000X"), p_float_t(xpos, 1), F("Y"), p_float_t(ypos, 1), F("\nG0F600Z")
       #endif
     ));
     planner.synchronize();
@@ -4012,19 +4015,16 @@ void Draw_MaxAccel_Menu() {
     if (SET_MENU(HomingFRMenu, MSG_HOMING_FEEDRATE, 4 PLUS_TERN0(HAS_BED_PROBE, 1))) {
       BACK_ITEM(Draw_Motion_Menu);
       #if HAS_X_AXIS
-        uint16_t xhome = static_cast<uint16_t>(motion.homing_feedrate_mm_m.x);
-        EDIT_ITEM(ICON_MaxSpeedJerkX, MSG_HOMING_FEEDRATE_X, onDrawPIntMenu, SetHomingX, &xhome);
+        EDIT_ITEM(ICON_MaxSpeedJerkX, MSG_HOMING_FEEDRATE_X, onDrawPFloatAsIntMenu, SetHomingX, &motion.homing_feedrate_mm_m.x);
       #endif
       #if HAS_Y_AXIS
-        uint16_t yhome = static_cast<uint16_t>(motion.homing_feedrate_mm_m.y);
-        EDIT_ITEM(ICON_MaxSpeedJerkY, MSG_HOMING_FEEDRATE_Y, onDrawPIntMenu, SetHomingY, &yhome);
+        EDIT_ITEM(ICON_MaxSpeedJerkY, MSG_HOMING_FEEDRATE_Y, onDrawPFloatAsIntMenu, SetHomingY, &motion.homing_feedrate_mm_m.y);
       #endif
       #if HAS_Z_AXIS
-        uint16_t zhome = static_cast<uint16_t>(motion.homing_feedrate_mm_m.z);
-        EDIT_ITEM(ICON_MaxSpeedJerkZ, MSG_HOMING_FEEDRATE_Z, onDrawPIntMenu, SetHomingZ, &zhome);
+        EDIT_ITEM(ICON_MaxSpeedJerkZ, MSG_HOMING_FEEDRATE_Z, onDrawPFloatAsIntMenu, SetHomingZ, &motion.homing_feedrate_mm_m.z);
       #endif
       #if HAS_BED_PROBE
-        EDIT_ITEM(ICON_ProbeZSpeed, MSG_Z_FEED_RATE, onDrawPIntMenu, SetProbeZSpeed, TERN(PROUI_EX, &PRO_data, &HMI_data).zprobefeedslow);
+        EDIT_ITEM(ICON_ProbeZSpeed, MSG_Z_FEED_RATE, onDrawPFloatAsIntMenu, SetProbeZSpeed, TERN(PROUI_EX, &PRO_data, &HMI_data).zprobefeedslow);
       #endif
     }
     UpdateMenu(HomingFRMenu);

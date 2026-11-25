@@ -108,6 +108,11 @@ void onDrawIntMenu(MenuItemClass* menuitem, int8_t line, int32_t value) {
   Draw_Menu_IntValue(HMI_data.Background_Color, line, 4, value);
 }
 
+// Draw a float feedrate (mm/min) as an integer
+void onDrawPFloatAsIntMenu(MenuItemClass* menuitem, int8_t line) {
+  onDrawIntMenu(menuitem, line, LROUND(*(float*)static_cast<MenuItemPtrClass*>(menuitem)->value));
+}
+
 void onDrawPIntMenu(MenuItemClass* menuitem, int8_t line) {
   const int16_t value = *(int16_t*)static_cast<MenuItemPtrClass*>(menuitem)->value;
   onDrawIntMenu(menuitem, line, value);

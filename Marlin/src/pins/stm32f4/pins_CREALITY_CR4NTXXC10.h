@@ -241,7 +241,7 @@
     #define BEEPER_PIN               EXP1_01_PIN
   #endif
 
-#elif ENABLED(DWIN_LCD_PROUI)
+#elif ANY(HAS_DWIN_E3V2, IS_DWIN_MARLINUI)
 
   // DWIN ENCODER LCD
   #define BTN_ENC                    EXP1_05_PIN

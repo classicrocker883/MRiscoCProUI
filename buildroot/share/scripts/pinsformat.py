@@ -2,7 +2,7 @@
 """
 Formatter script for pins_MYPINS.h files
 
-Usage: pinsformat.py [-h] [-v] [infile] [outfile]
+Usage: pinsformat.py [infile] [outfile]
 
 With no parameters convert STDIN to STDOUT
 """

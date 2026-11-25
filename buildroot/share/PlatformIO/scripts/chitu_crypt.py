@@ -2,6 +2,7 @@
 # chitu_crypt.py
 # Customizations for Chitu boards
 #
+
 import pioutil
 if pioutil.is_pio_build():
     import struct, uuid, marlin
@@ -68,7 +69,7 @@ if pioutil.is_pio_build():
 
         xor_crc = 0xEF3D4323
 
-        # The input file is exepcted to be in chunks of 0x800,
+        # The input file is expected to be in chunks of 0x800,
         # so round the size
         while len(input_file) % block_size != 0:
             input_file.extend(b"0x0")

@@ -10,7 +10,7 @@ https://reprap.org/wiki/Temperature_Sensor_v2.0
 
 Usage: python3 createTemperatureLookupMarlin.py [options]
 
-Optional arguments:
+Options:
   -h, --help        Show this help
   --rp=...          Pull-up resistor
   --t1=ttt:rrr      Low temperature temperature:resistance point (around 25 degC)

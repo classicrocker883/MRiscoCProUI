@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2026 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -29,6 +29,9 @@
  * Date: 2023/03/27
  * Original code from https://github.com/CrealityOfficial/Ender-3S1
 */
+
+//////////////////////////////////////////////////////////////////////////////
+/*
 
 #if ENABLED(CCLOUD_PRINT_SUPPORT)
 
@@ -99,4 +102,22 @@ void GcodeSuite::M79()
 }
 
 #endif
-////////////////////////////////////////////////////////////////////////////////
+*////////////////////////////////////////////////////////////////////////////////
+
+#if ENABLED(CREALITY_RTS)
+
+#include "../gcode.h"
+
+#include "../../lcd/rts/lcd_rts.h"
+
+/**
+ * M79: cloud print statistics
+ */
+void GcodeSuite::M79() {
+  if (parser.seenval('S')) RTS_CloudCommand(cloudCommand_t(parser.value_int()));
+  if (parser.seenval('T')) RTS_SetStatsFR(parser.value_feedrate());
+  if (parser.seenval('C')) RTS_SetStatsTime(parser.value_celsius());
+  if (parser.seenval('D')) RTS_SetStatsRemain(parser.value_celsius());
+}
+
+#endif // CREALITY_RTS

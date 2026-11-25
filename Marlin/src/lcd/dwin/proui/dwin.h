@@ -185,6 +185,7 @@ void SetRetractSpeed();
   void DoCoolDown();
 #endif
 #if ENABLED(BAUD_RATE_GCODE)
+  void SetBaudRate();
   void SetBaud115K();
   void SetBaud250K();
 #endif

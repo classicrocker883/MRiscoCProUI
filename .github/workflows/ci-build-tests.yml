@@ -87,8 +87,10 @@ jobs:
           #- SAMD21_minitronics20
 
           # ESP32
-          #- esp32
+          #- esp32_idf3
+          #- esp32_idf4
           #- mks_tinybee
+          #- mks_dlc32_v2_1
 
           # Teensy 2
           #- at90usb1286_cdc
@@ -138,11 +140,13 @@ jobs:
           #- LERDGEK
           #- LERDGEX
           #- mks_e3d_v2
+          #- mks_robin_nano_v3
           #- mks_robin_pro2
           #- Opulo_Lumen_REV3
           #- rumba32
           - STM32F401RC_btt
           - STM32F401RC_creality
+          #- STM32F401RE_creality
           - STM32F401RE_freeruns
           #- STM32F407VE_black
           #- I3DBEEZ9_V1
@@ -178,7 +182,8 @@ jobs:
           #- N32G455RE_voxelab_maple
 
           # STM32G0
-          - STM32G0B1RE_btt
+          #- STM32G0B1RE_btt
+          #- STM32G0B1RE_manta_btt
 
           # HC32
           - HC32F460C_aquila_101
@@ -186,8 +191,13 @@ jobs:
           #- HC32F460E_kobra_go
           #- HC32F460E_kobra_neo
 
+          # AT32
+          #- WANHAO_0327001
+          #- EASYTHREED_ET4000_PLUS
+
           # GD32F3
           #- GD32F303RE_creality_mfl
+          #- GD32F303RG_kobra2_neo_mfl
 
           # GD32F1
           #- GD32F103RC_aquila_mfl

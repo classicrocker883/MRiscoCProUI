@@ -22,7 +22,8 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
-#if ENABLED(TFT_COLOR_UI)
+// The NOVIN3DP galaxy UI (lcd/tft/galaxy) replaces this file's screens
+#if ENABLED(TFT_COLOR_UI) && DISABLED(NOVIN3DP_GALAXY_UI)
 
 #include "ui_common.h"
 
@@ -65,8 +66,8 @@ void MarlinUI::tft_idle() {
   #if ENABLED(TOUCH_SCREEN)
     if (TERN0(HAS_DISPLAY_SLEEP, lcd_sleep_task())) return;
     if (draw_menu_navigation) {
-      add_control(NAVIGATION_PAGE_UP_X, NAVIGATION_PAGE_UP_Y, PAGE_UP, imgPageUp, encoderTopLine > 0);
-      add_control(NAVIGATION_PAGE_DOWN_X, NAVIGATION_PAGE_DOWN_Y, PAGE_DOWN, imgPageDown, encoderTopLine + LCD_HEIGHT < screen_items);
+      add_control(NAVIGATION_PAGE_UP_X, NAVIGATION_PAGE_UP_Y, PAGE_UP, imgPageUp, menuTopIndex > 0);
+      add_control(NAVIGATION_PAGE_DOWN_X, NAVIGATION_PAGE_DOWN_Y, PAGE_DOWN, imgPageDown, menuTopIndex + LCD_HEIGHT < screen_items);
       add_control(NAVIGATION_BACK_X, NAVIGATION_BACK_Y, BACK, imgBack);
       draw_menu_navigation = false;
     }
@@ -116,7 +117,8 @@ void MarlinUI::tft_idle() {
     if ((BOOTSCREEN_TIMEOUT) > sofar) safe_delay((BOOTSCREEN_TIMEOUT) - sofar);
     clear_for_drawing();
   }
-#endif
+
+#endif // SHOW_BOOTSCREEN
 
 void MarlinUI::draw_kill_screen() {
   tft.queue.reset();
@@ -678,8 +680,10 @@ void MenuEditItemBase::draw_edit_screen(FSTR_P const ftpl, const char * const va
   //ui.defer_status_screen(); // Should already be done by MarlinUI
   TERN_(TOUCH_SCREEN, touch.clear());
 
-  tft.canvas(0, 0, TFT_WIDTH, TFT_HEIGHT);
-  tft.set_background(COLOR_BACKGROUND);
+  #if ENABLED(TOUCH_SCREEN)
+    // The knob ended a keypad entry. Clear the screen once to remove CANC / DONE.
+    if (keypad_entered && !keypad_editing()) { keypad_clear(); ui.refresh(); }
+  #endif
 
   // Only menu item edits get the keypad. Babystep, Move Axis, etc. have no value range to apply it to.
   // Tall displays show it below the slider. Others toggle between slider and keypad.

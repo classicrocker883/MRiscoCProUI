@@ -36,7 +36,7 @@
  */
 
 // Change EEPROM version if the structure changes
-#define EEPROM_VERSION "V90"
+#define EEPROM_VERSION "V91"
 #define EEPROM_OFFSET 100
 
 // Check the integrity of data offsets.
@@ -46,10 +46,22 @@
 
 #include "settings.h"
 
+#if ENABLED(NOVIN3DP_GALAXY_UI)
+  #include "../lcd/tft/galaxy/gx_core.h"
+#endif
+
 #include "endstops.h"
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
+
+#if ENABLED(MKS_WIFI_MODULE)
+  #include "../feature/mks_wifi/wifi_module.h"
+#endif
+
+#if ENABLED(CREALITY_RTS)
+  #include "../lcd/rts/lcd_rts.h"
+#endif
 
 #include "../lcd/marlinui.h"
 #include "../libs/vector_3.h"   // for matrix_3x3
@@ -105,7 +117,9 @@
   #include "../feature/power_monitor.h"
 #endif
 
-#include "../feature/pause.h"
+#if ENABLED(CONFIGURE_FILAMENT_CHANGE)
+  #include "../feature/pause.h"
+#endif
 
 #if ENABLED(BACKLASH_COMPENSATION)
   #include "../feature/backlash.h"
@@ -456,6 +470,10 @@ typedef struct SettingsDataStruct {
   //
   uint8_t lcd_brightness;                               // M256 B
 
+  #if ENABLED(NOVIN3DP_GALAXY_UI)
+    xyze_feedrate_t gx_manual_feedrate_mm_m;            // Galaxy UI manual move feedrates (mm/min)
+  #endif
+
   //
   // Display Sleep
   //
@@ -767,6 +785,21 @@ typedef struct SettingsDataStruct {
   //
   #if ENABLED(GCODE_MACROS_IN_EEPROM)
     char gcode_macros[GCODE_MACROS_SLOTS][GCODE_MACROS_SLOT_SIZE + 1];
+  #endif
+
+  //
+  // MKS_WIFI_MODULE
+  //
+  #if ENABLED(MKS_WIFI_MODULE)
+    mks_wifi_settings_t mks_wifi_settings;              // M587 S P
+  #endif
+
+  //
+  // Creality RTS
+  //
+  #if ENABLED(CREALITY_RTS)
+    bool wifi_enable_flag;        // M194 S
+    bool rts_sound_on;            // Screen sound button
   #endif
 
 } SettingsData;
@@ -1446,6 +1479,11 @@ void MarlinSettings::postprocess() {
       EEPROM_WRITE(lcd_brightness);
     }
 
+    #if ENABLED(NOVIN3DP_GALAXY_UI)
+      _FIELD_TEST(gx_manual_feedrate_mm_m);
+      EEPROM_WRITE(gx_manual_feedrate_mm_m);
+    #endif
+
     //
     // Display Sleep
     //
@@ -1914,6 +1952,12 @@ void MarlinSettings::postprocess() {
       EEPROM_WRITE(ui.language);
     #endif
 
+    #if ENABLED(CREALITY_RTS)
+      _FIELD_TEST(wifi_enable_flag);
+      EEPROM_WRITE(wifi_enable_flag);
+      EEPROM_WRITE(rts_sound_on);
+    #endif
+
     //
     // Model Predictive Control
     //
@@ -1984,6 +2028,14 @@ void MarlinSettings::postprocess() {
     #if ENABLED(GCODE_MACROS_IN_EEPROM)
       _FIELD_TEST(gcode_macros);
       EEPROM_WRITE(gcode.macros);
+    #endif
+
+    //
+    // MKS WiFi module
+    //
+    #if ENABLED(MKS_WIFI_MODULE)
+      _FIELD_TEST(mks_wifi_settings);
+      EEPROM_WRITE(mks_wifi);
     #endif
 
     //
@@ -2059,7 +2111,7 @@ void MarlinSettings::postprocess() {
     EEPROM_Error eeprom_error = ERR_EEPROM_NOERR;
 
     const EEPROM_Error check = check_version();
-    if (check == ERR_EEPROM_NOPROM) return eeprom_error;
+    if (check == ERR_EEPROM_NOPROM) return check; // Nothing loaded, so the caller must apply defaults
 
     uint16_t stored_crc;
 
@@ -2611,6 +2663,15 @@ void MarlinSettings::postprocess() {
         TERN_(HAS_LCD_BRIGHTNESS, if (!validating) ui.brightness = lcd_brightness);
       }
 
+      #if ENABLED(NOVIN3DP_GALAXY_UI)
+      {
+        xyze_feedrate_t gx_fr;
+        _FIELD_TEST(gx_manual_feedrate_mm_m);
+        EEPROM_READ(gx_fr);
+        if (!validating) gx_manual_feedrate_mm_m = gx_fr;
+      }
+      #endif
+
       //
       // Display Sleep
       //
@@ -3137,6 +3198,12 @@ void MarlinSettings::postprocess() {
       }
       #endif
 
+      #if ENABLED(CREALITY_RTS)
+        _FIELD_TEST(wifi_enable_flag);
+        EEPROM_READ(wifi_enable_flag);
+        EEPROM_READ(rts_sound_on);
+      #endif
+
       //
       // Model Predictive Control
       //
@@ -3256,6 +3323,14 @@ void MarlinSettings::postprocess() {
       #endif
 
       //
+      // MKS WiFi module
+      //
+      #if ENABLED(MKS_WIFI_MODULE)
+        _FIELD_TEST(mks_wifi_settings);
+        EEPROM_READ(mks_wifi);
+      #endif
+
+      //
       // Validate Final Size and CRC
       //
       const uint16_t eeprom_total = eeprom_index - (EEPROM_OFFSET);
@@ -3357,7 +3432,8 @@ void MarlinSettings::postprocess() {
     #endif
     validating = false;
 
-    if (err) ui.eeprom_alert(err);
+    // A missing EEPROM was already reported, and can't be fixed from the LCD
+    if (err && err != ERR_EEPROM_NOPROM) ui.eeprom_alert(err);
 
     return (err == ERR_EEPROM_NOERR);
   }
@@ -3392,13 +3468,16 @@ void MarlinSettings::postprocess() {
     }
 
     // Otherwise reset settings to default "factory settings"
-    reset();
 
-    // Options to overwrite the EEPROM on error
     #if ANY(EEPROM_AUTO_INIT, EEPROM_INIT_NOW)
-      (void)init_eeprom();
-      LCD_MESSAGE(MSG_EEPROM_INITIALIZED);
-      SERIAL_ECHO_MSG(STR_EEPROM_INITIALIZED);
+      // Overwrite the EEPROM data on error. Defaults are applied even if it can't be written.
+      if (init_eeprom()) {
+        LCD_MESSAGE(MSG_EEPROM_INITIALIZED);
+        SERIAL_ECHO_MSG(STR_EEPROM_INITIALIZED);
+      }
+    #else
+      // The user can write settings to EEPROM later
+      reset();
     #endif
 
     return false;
@@ -3484,7 +3563,38 @@ void MarlinSettings::postprocess() {
         #else
           int16_t z_mesh_store[GRID_MAX_POINTS_X][GRID_MAX_POINTS_Y];
         #endif
-        uint8_t * const dest = (uint8_t*)&z_mesh_store;
+
+        persistentStore.access_start();
+        uint16_t status = persistentStore.read_data(pos, dest, MESH_STORE_SIZE, &crc);
+        persistentStore.access_finish();
+
+        #if ENABLED(OPTIMIZED_MESH_STORAGE)
+          if (into) {
+            float z_values[GRID_MAX_POINTS_X][GRID_MAX_POINTS_Y];
+            bedlevel.set_mesh_from_store(z_mesh_store, z_values);
+            memcpy(into, z_values, sizeof(z_values));
+          }
+          else
+            bedlevel.set_mesh_from_store(z_mesh_store, bedlevel.z_values);
+        #endif
+
+        #if ENABLED(DWIN_LCD_PROUI)
+          if (!into) {  // Only validate the live mesh
+            status = !bedLevelTools.meshValidate();
+            if (status) {
+              bedlevel.invalidate();
+              LCD_MESSAGE(MSG_UBL_MESH_INVALID);
+            }
+            else
+              ui.status_printf(0, GET_TEXT_F(MSG_MESH_LOADED), slot);
+          }
+        #endif
+
+        if (status) SERIAL_ECHOLNPGM("?Unable to load mesh data.");
+        else        DEBUG_ECHOLNPGM("Mesh loaded from slot ", slot);
+
+        EEPROM_FINISH();
+
       #else
         uint8_t * const dest = into ? (uint8_t*)into : (uint8_t*)&bedlevel.z_values;
       #endif
@@ -3906,6 +4016,7 @@ void MarlinSettings::reset() {
   // LCD Brightness
   //
   TERN_(HAS_LCD_BRIGHTNESS, ui.brightness = LCD_BRIGHTNESS_DEFAULT);
+  TERN_(NOVIN3DP_GALAXY_UI, gx_reset_manual_feedrate());
 
   //
   // Display Sleep
@@ -4050,6 +4161,12 @@ void MarlinSettings::reset() {
       stepper.set_digipot_current(q, tmp_motor_current_setting[q]);
   #endif
 
+  #if ENABLED(CREALITY_RTS)
+    ui.language = 1; // 0:Chinese, 1:English
+    wifi_enable_flag = true;
+    rts_sound_on = true;
+  #endif
+
   //
   // Adaptive Step Smoothing state
   //
@@ -4148,6 +4265,11 @@ void MarlinSettings::reset() {
   // G-code Macros
   //
   TERN_(GCODE_MACROS_IN_EEPROM, gcode.reset_macros());
+
+  //
+  // MKS WiFi module
+  //
+  TERN_(MKS_WIFI_MODULE, mks_wifi_reset_settings());
 
   //
   // Hotend Idle Timeout
@@ -4515,6 +4637,11 @@ void MarlinSettings::reset() {
     #endif
 
     //
+    // M587 MKS WiFi module
+    //
+    TERN_(MKS_WIFI_MODULE, gcode.M587_report(forReplay));
+
+    //
     // M414 UI Language
     //
     TERN_(HAS_MULTI_LANGUAGE, gcode.M414_report(forReplay));
@@ -4534,6 +4661,13 @@ void MarlinSettings::reset() {
     //
     #if ALL(PROUI_EX, HAS_CGCODE)
       custom_gcode_report(forReplay);
+    #endif
+
+    #if ENABLED(CREALITY_RTS)
+      CONFIG_ECHO_HEADING("WIFI Enabled");
+      CONFIG_ECHO_MSG("  M194 S", wifi_enable_flag);
+      CONFIG_ECHO_HEADING("Screen Sound (set with the screen's sound button)");
+      CONFIG_ECHO_MSG("  ; ", rts_sound_on ? F("on") : F("off"));
     #endif
   }
 

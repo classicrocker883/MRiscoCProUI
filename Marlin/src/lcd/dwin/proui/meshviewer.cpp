@@ -84,8 +84,8 @@ void MeshViewerClass::DrawMeshPoint(const uint8_t x, const uint8_t y, const floa
     switch (v) {
       case -999 ... -100: // -9.99 .. -1.00 || 1.00 .. 9.99
       case  100 ...  999: DWINUI::Draw_Signed_Float(Title.meshfont, 1, 1, xp - 3 * fs, fy, z); break;
-      case  -99 ...   -1: sprintf_P(msg, PSTR("-.%2i"), -v); break; // -0.99 .. -0.01 mm
-      case    1 ...   99: sprintf_P(msg, PSTR( ".%2i"),  v); break; //  0.01 ..  0.99 mm
+      case  -99 ...   -1: sprintf_P(msg, PSTR("-.%02i"), -v); break; // -0.99 .. -0.01 mm
+      case    1 ...   99: sprintf_P(msg, PSTR( ".%02i"),  v); break; //  0.01 ..  0.99 mm
       default:
         DWIN_Draw_String(false, Title.meshfont, DWINUI::textcolor, DWINUI::backcolor, xp - 4, fy, "0");
         return;

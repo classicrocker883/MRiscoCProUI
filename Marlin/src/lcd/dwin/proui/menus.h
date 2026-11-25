@@ -129,6 +129,7 @@ void onDrawMeshPoints(MenuItemClass* menuitem, int8_t line);
 void onDrawMenuItem(MenuItemClass* menuitem, int8_t line);
 void onDrawSubMenu(MenuItemClass* menuitem, int8_t line);
 void onDrawIntMenu(MenuItemClass* menuitem, int8_t line, int32_t value);
+void onDrawPFloatAsIntMenu(MenuItemClass* menuitem, int8_t line);
 void onDrawPIntMenu(MenuItemClass* menuitem, int8_t line);
 void onDrawPInt8Menu(MenuItemClass* menuitem, int8_t line);
 void onDrawPInt32Menu(MenuItemClass* menuitem, int8_t line);

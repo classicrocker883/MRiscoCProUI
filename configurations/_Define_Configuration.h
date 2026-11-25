@@ -1048,7 +1048,6 @@
 // #define PROUI_ITEM_JD
 // #define PROUI_ITEM_ADVK
 // #define SHOW_REAL_POS
-// #define CCLOUD_PRINT_SUPPORT
 // #define PROUI_ITEM_TRAM
 // #define PROUI_MEDIASORT
 // #define PROUI_ITEM_ENC

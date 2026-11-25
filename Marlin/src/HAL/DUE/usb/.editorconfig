@@ -1,5 +1,0 @@
-# editorconfig.org
-
-[{*.c,*.cpp,*.h}]
-indent_style = tab
-indent_size = 4
