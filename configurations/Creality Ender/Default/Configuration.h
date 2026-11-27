@@ -82,11 +82,12 @@
 /**
  * Select the serial port on the board to use for communication with the host.
  * This allows the connection of wireless adapters (for instance) to non-default port pins.
- * Serial port -1 is the USB emulated serial port, if available.
+ * Serial port -1 is the USB emulated serial port, if available (ESP32-S2/S3: the native USB port).
  * Serial port -2 is the built-in Bluetooth (Classic SPP) on ESP32, not together with WiFi.
+ * ESP32: Serial port -3 is the WiFi serial port (WIFISUPPORT or ESP3D_WIFISUPPORT).
  * NOTE: The first serial port (-1 or 0) will always be used by the Arduino bootloader.
  *
- * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+ * :[-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
  */
 #define SERIAL_PORT 1
 #define NO_AUTO_ASSIGN_WARNING  // Disable serial warnings
@@ -109,8 +110,8 @@
 /**
  * Select a secondary serial port on the board to use for communication with the host.
  * -2 is Ethernet on Teensy 4.1 boards, and the built-in Bluetooth (Classic SPP) on ESP32.
- * ESP3D_WIFISUPPORT requires -1, which carries G-code from ESP3D to Marlin.
- * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+ * ESP3D_WIFISUPPORT requires a serial port set to -3, which carries G-code from ESP3D to Marlin.
+ * :[-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
  */
 //#define SERIAL_PORT_2 -1
 //#define BAUDRATE_2 250000   // :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000] Enable to override BAUDRATE
@@ -118,8 +119,8 @@
 /**
  * Select a third serial port on the board to use for communication with the host.
  * Currently supported for AVR, DUE, SAMD51, LPC1768/9, STM32/STM32F1/HC32, and Teensy 4.x,
- * and ESP32 for Bluetooth (-2).
- * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+ * and ESP32 (-2 Bluetooth, -3 the WiFi serial port; ESP32-S2/S3: -1, the native USB port).
+ * :[-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
  */
 //#define SERIAL_PORT_3 1
 //#define BAUDRATE_3 250000   // :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000] Enable to override BAUDRATE
@@ -653,12 +654,14 @@
   #define TEMP_RESIDENCY_TIME         10  // (seconds) Time to wait for hotend to "settle" in M109
   #define TEMP_WINDOW                  1  // (°C) Temperature proximity for the "temperature reached" timer
   #define TEMP_HYSTERESIS              3  // (°C) Temperature proximity considered "close enough" to the target
+  //#define TEMP_SETTLE_BAND           3  // (°C) Time in range (TEMP_RESIDENCY_TIME, heat soak) counts from when the hotend gets this close to the target. (Default: TEMP_HYSTERESIS)
 #endif
 
 #if TEMP_SENSOR_BED
   #define TEMP_BED_RESIDENCY_TIME     10  // (seconds) Time to wait for bed to "settle" in M190
   #define TEMP_BED_WINDOW              1  // (°C) Temperature proximity for the "temperature reached" timer
   #define TEMP_BED_HYSTERESIS          3  // (°C) Temperature proximity considered "close enough" to the target
+  //#define TEMP_BED_SETTLE_BAND       3  // (°C) Time in range (TEMP_BED_RESIDENCY_TIME, heat soak) counts from when the bed gets this close to the target. (Default: TEMP_BED_HYSTERESIS)
 #endif
 
 #if TEMP_SENSOR_CHAMBER
@@ -1046,6 +1049,17 @@
   #define PEN_UP_DOWN_MENU                // Add "Pen Up" and "Pen Down" to the MarlinUI menu
 #endif
 
+// @section pancakebot
+
+/**
+ * PancakeBot
+ *  - Batter Pump on the fan output (M106 / M107) stops while the print is paused.
+ *  - LEDs that show SD printing and SD card errors.
+ *
+ * Use with the PancakeBot board and PANCAKEBOT_PANEL.
+ */
+//#define PANCAKEBOT
+
 // @section delta
 
 /**
@@ -1073,6 +1087,10 @@
   #if ENABLED(DELTA_AUTO_CALIBRATION)
     // Default number of probe points : n*n (1 -> 7)
     #define DELTA_CALIBRATION_DEFAULT_POINTS 4
+
+    // Add G33 'L' to solve by least squares, as in RepRapFirmware, and optionally calibrate the diagonal rod.
+    // The factors to adjust are chosen by the 'L' value: 3 (endstops), 4 (+ radius), 6 (+ tower angles), 7 (+ diagonal rod)
+    //#define DELTA_CALIBRATION_LEAST_SQUARES
   #endif
 
   #if ANY(DELTA_AUTO_CALIBRATION, DELTA_CALIBRATION_MENU)
@@ -2587,6 +2605,7 @@
 #if ENABLED(EEPROM_SETTINGS)
   #define EEPROM_AUTO_INIT    // Init EEPROM automatically on any errors
   #define EEPROM_INIT_NOW     // Init EEPROM on first boot after a new build
+  //#define EEPROM_AUTOSAVE_AFTER 5000  // (ms) Save settings this long after they're edited on a supporting LCD, once not printing.
 #endif
 
 // @section host
@@ -3223,6 +3242,12 @@
 //#define MAKRPANEL
 
 //
+// PancakeBot Panel with a 128x32 ST7565 graphic display and 4 push buttons.
+// Up / Down / Select / Back. Use with the PancakeBot board and PANCAKEBOT.
+//
+//#define PANCAKEBOT_PANEL
+
+//
 // Adafruit ST7565 Full Graphic Controller.
 // https://github.com/eboston/Adafruit-ST7565-Full-Graphic-Controller/
 //
@@ -3426,13 +3451,18 @@
  *  - Download https://www.crealitycloud.com/downloads/firmware/sermoon-series/sermoon-v1
  *  - Copy the DWIN_SET folder from the firmware package to the SD card.
  *
+ * CREALITY_TOUCH
+ *  - Creality CR-6 SE touch screen. Requires CR-6 Community touch screen firmware v61 or newer.
+ *  - Download https://github.com/CR6Community/CR-6-touchscreen/releases
+ *  - Copy the DWIN_SET folder from the release to the SD card.
+ *
  * Flash display with DGUS Displays for Marlin:
  *  - Format the SD card to FAT32 with an allocation size of 4kb.
  *  - Download files as specified for your type of display.
  *  - Plug the microSD card into the back of the display.
  *  - Boot the display and wait for the update to complete.
  *
- * :[ 'ORIGIN', 'FYSETC', 'HYPRECY', 'MKS', 'RELOADED', 'IA_CREALITY', 'E3S1PRO', 'CR10SPROV2', 'SERMOON_D1', 'SERMOON_V1' ]
+ * :[ 'ORIGIN', 'FYSETC', 'HYPRECY', 'MKS', 'RELOADED', 'IA_CREALITY', 'E3S1PRO', 'CR10SPROV2', 'SERMOON_D1', 'SERMOON_V1', 'CREALITY_TOUCH' ]
  */
 //#define DGUS_LCD_UI ORIGIN
 #if DGUS_UI_IS(MKS)
@@ -3483,7 +3513,7 @@
 
 //
 // Creality Resistive Touch Screen
-// As found in the Creality CR-6 S1
+// As found in the Creality Ender-5 S1
 //
 //#define CREALITY_RTS
 #if ENABLED(CREALITY_RTS)

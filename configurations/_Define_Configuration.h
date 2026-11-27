@@ -19,6 +19,8 @@
 // #define RS485_SERIAL_PORT 1
 // #define M485_PROTOCOL 1
 // #define RS485_BUS_BUFFER_SIZE 128
+// #define CAN_BUS
+// #define CAN_BITRATE 1000000
 // #define BLUETOOTH
 // #define CUSTOM_MACHINE_NAME "Aquila"
 // #define CONFIGURABLE_MACHINE_NAME
@@ -58,6 +60,8 @@
 // #define AXIS9_NAME 'W'
 // #define AXIS9_ROTATES
 // #define EXTRUDERS 1
+// #define E_DUAL_STEPPER_DRIVERS
+// #define INVERT_E1_VS_E0_DIR
 // #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75
 // #define SINGLENOZZLE
 // #define SINGLENOZZLE_STANDBY_TEMP
@@ -175,9 +179,11 @@
 // #define TEMP_RESIDENCY_TIME         10
 // #define TEMP_WINDOW                  1
 // #define TEMP_HYSTERESIS              3
+// #define TEMP_SETTLE_BAND           3
 // #define TEMP_BED_RESIDENCY_TIME     10
 // #define TEMP_BED_WINDOW              1
 // #define TEMP_BED_HYSTERESIS          3
+// #define TEMP_BED_SETTLE_BAND       3
 // #define TEMP_CHAMBER_RESIDENCY_TIME 10
 // #define TEMP_CHAMBER_WINDOW          1
 // #define TEMP_CHAMBER_HYSTERESIS      3
@@ -293,12 +299,14 @@
 // #define POLARGRAPH_MAX_BELT_LEN  1035.0
 // #define DEFAULT_SEGMENTS_PER_SECOND 5
 // #define PEN_UP_DOWN_MENU
+// #define PANCAKEBOT
 // #define DELTA
 // #define DEFAULT_SEGMENTS_PER_SECOND 200
 // #define DELTA_HOME_TO_SAFE_ZONE
 // #define DELTA_CALIBRATION_MENU
 // #define DELTA_AUTO_CALIBRATION
 // #define DELTA_CALIBRATION_DEFAULT_POINTS 4
+// #define DELTA_CALIBRATION_LEAST_SQUARES
 // #define PROBE_MANUALLY_STEP 0.05
 // #define PRINTABLE_RADIUS       140.0
 // #define DELTA_DIAGONAL_ROD 250.0
@@ -732,8 +740,9 @@
 // #define RESTORE_LEVELING_AFTER_G28
 // #define ENABLE_LEVELING_AFTER_G28
 // #define PREHEAT_BEFORE_LEVELING
-// #define LEVELING_NOZZLE_TEMP 175
-// #define LEVELING_BED_TEMP     50
+// #define LEVELING_NOZZLE_TEMP     175
+// #define LEVELING_BED_TEMP         50
+// #define LEVELING_HEAT_SOAK_TIME 60
 // #define DEBUG_LEVELING_FEATURE
 // #define MANUAL_PROBE_START_Z 0.2
 // #define ENABLE_LEVELING_FADE_HEIGHT
@@ -748,10 +757,12 @@
 // #define G26_XY_FEEDRATE         20
 // #define G26_XY_FEEDRATE_TRAVEL 100
 // #define G26_RETRACT_MULTIPLIER   1.0
+// #define MAX_SAVED_MESHES    5
 // #define GRID_MAX_POINTS_X 5
 // #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 // #define MESH_INSET 10
 // #define PROBE_Y_FIRST
+// #define PROBE_Z0_BEFORE_G29
 // #define EXTRAPOLATE_BEYOND_GRID
 // #define ABL_BILINEAR_SUBDIVISION
 // #define BILINEAR_SUBDIVISIONS 3
@@ -808,6 +819,7 @@
 // #define Z_SAFE_HOMING_X_POINT X_CENTER
 // #define Z_SAFE_HOMING_Y_POINT Y_CENTER
 // #define Z_SAFE_HOMING_POINT_ABSOLUTE
+// #define PRECISE_Z_HOMING
 // #define HOMING_FEEDRATE_MM_M { (60*60), (60*60), (8*60) }
 // #define EDITABLE_HOMING_FEEDRATE
 // #define VALIDATE_HOMING_ENDSTOPS
@@ -831,6 +843,7 @@
 // #define EEPROM_BOOT_SILENT
 // #define EEPROM_AUTO_INIT
 // #define EEPROM_INIT_NOW
+// #define EEPROM_AUTOSAVE_AFTER 5000
 // #define HOST_KEEPALIVE_FEATURE
 // #define DEFAULT_KEEPALIVE_INTERVAL 5
 // #define BUSY_WHILE_HEATING
@@ -948,6 +961,7 @@
 // #define WYH_L12864
 // #define MINIPANEL
 // #define MAKRPANEL
+// #define PANCAKEBOT_PANEL
 // #define ELB_FULL_GRAPHIC_CONTROLLER
 // #define BQ_LCD_SMART_CONTROLLER
 // #define CARTESIO_UI
@@ -993,11 +1007,18 @@
 // #define ANYCUBIC_LCD_I3MEGA
 // #define ANYCUBIC_LCD_GCODE_EXT
 // #define ANYCUBIC_LCD_VYPER
+// #define ANYCUBIC_LCD_KOBRA
 // #define SOVOL_SV06_RTS
+// #define CREALITY_RTS
+// #define CREALITY_WIFI
+// #define MENU_RESET_WIFI
 // #define NEXTION_TFT
+// #define ELEGOO_NEPTUNE_3_TFT
+// #define PANELDUE
 // #define EXTENSIBLE_UI
 // #define EXTUI_LOCAL_BEEPER
 // #define MKS_TS35_V2_0
+// #define MKS_TS24_R_V2_1
 // #define MKS_ROBIN_TFT24
 // #define MKS_ROBIN_TFT28
 // #define MKS_ROBIN_TFT32
@@ -1011,6 +1032,7 @@
 // #define ANET_ET5_TFT35
 // #define BIQU_BX_TFT70
 // #define BTT_TFT35_SPI_V1_0
+// #define PRUSA_MINI_LCD
 // #define TFT_GENERIC
 // #define TFT_DRIVER AUTO
 // #define TFT_INTERFACE_FSMC
@@ -1023,10 +1045,15 @@
 // #define TFT_COLOR_UI
 // #define TFT_LVGL_UI
 // #define TFT_FONT  NOTOSANS
+// #define TFT_FONT_LARGE
+// #define TFT_NO_TINY_FONT
 // #define TFT_THEME BLACK_MARLIN
 // #define TFT_SHARED_IO
 // #define COMPACT_MARLIN_BOOT_LOGO
-// #define MKS_WIFI_MODULE
+// #define NOVIN3DP_GALAXY_UI
+// #define GALAXY_TOUCH_BEEP
+// #define GALAXY_HOME_ICONS_FLAT
+// #define GALAXY_FAST_SPI
 // #define TFT_ROTATION TFT_NO_ROTATION
 // #define DWIN_LCD_PROUI
 // #define DACAI_DISPLAY
@@ -1048,6 +1075,7 @@
 // #define PROUI_ITEM_JD
 // #define PROUI_ITEM_ADVK
 // #define SHOW_REAL_POS
+// #define CCLOUD_PRINT_SUPPORT
 // #define PROUI_ITEM_TRAM
 // #define PROUI_MEDIASORT
 // #define PROUI_ITEM_ENC

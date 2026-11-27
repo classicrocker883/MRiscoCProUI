@@ -5,8 +5,8 @@
 # Usage: ./buildroot/share/scripts/apply_patch.sh
 # Run script in the root folder.
 #
-# Automatically generate patch files from uncommitted changes (pulled and ready to Merge)
-# in 'Marlin/Configuration|_adv.h' and apply them to all files in 'configurations/'.
+# Automatically generate patch files from uncommitted changes in the source
+# configuration files and apply them to matching files in 'configurations/'.
 #
 
 # --- Configuration ---
@@ -20,10 +20,11 @@ NC='\033[0m' # No Color
 BASE_DIR="configurations"
 
 # Array of files to process.
-# Format: "target_filename|marlin_path|strip_level"
+# Format: "target_filename|source_path|strip_level"
+# Incase of missed update, use "Configuration.h|configurations/Voxelab Aquila/UBL/Configuration.h|4"
 FILE_DETAILS=(
-    "Configuration.h|Marlin/Configuration.h|2"
-    "Configuration-MP.h|Marlin/Configuration.h|2"
+    "Configuration.h|configurations/Voxelab Aquila/UBL/Configuration.h|4"
+    "Configuration-MP.h|configurations/Voxelab Aquila/UBL/Configuration.h|4"
     "Configuration_adv.h|Marlin/Configuration_adv.h|2"
 )
 
@@ -40,7 +41,7 @@ check_command() {
 # Function to display usage
 usage() {
     echo -e "${GREEN}Usage: $0${NC}"
-    echo "This script automatically generates patches from uncommitted changes in Marlin/ and applies them to all files in the '$BASE_DIR' directory tree."
+    echo "This script automatically generates patches from uncommitted changes in the source configuration files and applies them to matching files in the '$BASE_DIR' directory tree."
     echo ""
     exit 0
 }
@@ -76,33 +77,33 @@ declare -A GENERATED_PATCHES
 FILE_DETAILS_UPDATED=()
 
 for DETAIL in "${FILE_DETAILS[@]}"; do
-    IFS='|' read -r TARGET_FILENAME MARLIN_PATH STRIP_LEVEL <<< "$DETAIL"
+    IFS='|' read -r TARGET_FILENAME SOURCE_PATH STRIP_LEVEL <<< "$DETAIL"
 
-    PATCH_SOURCE_KEY="${MARLIN_PATH//\//_}"
+    PATCH_SOURCE_KEY="${SOURCE_PATH//\//_}"
     PATCH_FILE="${PATCH_SOURCE_KEY}.patch.tmp"
 
     if [[ -z "${GENERATED_PATCHES[$PATCH_SOURCE_KEY]}" ]]; then
 
-        echo "Generating patch for $MARLIN_PATH -> $PATCH_FILE"
+        echo "Generating patch for $SOURCE_PATH -> $PATCH_FILE"
 
-        if git diff HEAD "$MARLIN_PATH" > "$PATCH_FILE"; then
+        if git diff HEAD "$SOURCE_PATH" > "$PATCH_FILE"; then
 
             if [ -s "$PATCH_FILE" ]; then
                 echo -e "${GREEN}✅ Patch generated successfully.${NC}"
                 GENERATED_PATCHES[$PATCH_SOURCE_KEY]="$PATCH_FILE"
             else
-                echo -e "${YELLOW}⚠️ Warning: No uncommitted changes found in $MARLIN_PATH. Patch file is empty.${NC}"
+                echo -e "${YELLOW}⚠️ Warning: No uncommitted changes found in $SOURCE_PATH. Patch file is empty.${NC}"
                 rm -f "$PATCH_FILE"
                 GENERATED_PATCHES[$PATCH_SOURCE_KEY]=""
             fi
         else
-            echo -e "${RED}❌ Error: Failed to generate git diff for $MARLIN_PATH. Check file path.${NC}"
+            echo -e "${RED}❌ Error: Failed to generate git diff for $SOURCE_PATH. Check file path.${NC}"
             GENERATED_PATCHES[$PATCH_SOURCE_KEY]=""
         fi
     fi
 
     FINAL_PATCH_FILE="${GENERATED_PATCHES[$PATCH_SOURCE_KEY]}"
-    FILE_DETAILS_UPDATED+=("$TARGET_FILENAME|$FINAL_PATCH_FILE|$STRIP_LEVEL|$MARLIN_PATH")
+    FILE_DETAILS_UPDATED+=("$TARGET_FILENAME|$FINAL_PATCH_FILE|$STRIP_LEVEL|$SOURCE_PATH")
 
 done
 
@@ -114,7 +115,7 @@ echo -e "${YELLOW}PHASE 2: 🛠️ Applying Generated Patch Files in '$BASE_DIR'
 echo -e "${YELLOW}==========================================================${NC}"
 
 for DETAIL in "${FILE_DETAILS[@]}"; do
-    IFS='|' read -r TARGET_FILENAME PATCH_FILE STRIP_LEVEL MARLIN_PATH <<< "$DETAIL"
+    IFS='|' read -r TARGET_FILENAME PATCH_FILE STRIP_LEVEL SOURCE_PATH <<< "$DETAIL"
 
     if [ -z "$PATCH_FILE" ]; then
         echo "Skipping application for $TARGET_FILENAME (no patch generated)."
@@ -122,11 +123,16 @@ for DETAIL in "${FILE_DETAILS[@]}"; do
     fi
 
     FULL_PATCH_PATH="$SCRIPT_DIR/$PATCH_FILE"
-    EXPECTED_PATCH_FILENAME=$(basename "$MARLIN_PATH")
+    EXPECTED_PATCH_FILENAME=$(basename "$SOURCE_PATH")
 
     echo -e "\n--- Processing: ${YELLOW}$TARGET_FILENAME${NC} with patch $PATCH_FILE ---"
 
     find "$BASE_DIR" -type f -name "$TARGET_FILENAME" -print0 | while IFS= read -r -d $'\0' TARGET_FILE_PATH; do
+        if [[ "$TARGET_FILE_PATH" == "$SOURCE_PATH" ]]; then
+            echo -e "  -> Skipping source file: ${TARGET_FILE_PATH}"
+            continue
+        fi
+
         echo -e "  -> Applying patch to: ${TARGET_FILE_PATH}"
 
         TARGET_DIR=$(dirname "$TARGET_FILE_PATH")
