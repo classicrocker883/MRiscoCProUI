@@ -62,7 +62,7 @@ bool FilamentMonitorBase::enabled = true,
     #endif
   #endif
   #if ENABLED(FILAMENT_SWITCH_AND_MOTION)
-    bool RunoutResponseDelayed::ignore_motion = false;
+    Flags<NUM_RUNOUT_SENSORS> RunoutResponseDelayed::ignore_motion; // = 0
     float RunoutResponseDelayed::motion_distance_mm = FILAMENT_MOTION_DISTANCE_MM;
   #endif
 #else

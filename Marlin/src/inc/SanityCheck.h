@@ -573,8 +573,6 @@ static_assert(COUNT(arm) == LOGICAL_AXES, "AXIS_RELATIVE_MODES must contain " _L
     #error "ADVANCED_PAUSE_FEATURE requires NOZZLE_PARK_FEATURE."
   #elif !defined(FILAMENT_UNLOAD_PURGE_FEEDRATE)
     #error "ADVANCED_PAUSE_FEATURE requires FILAMENT_UNLOAD_PURGE_FEEDRATE."
-  #elif ENABLED(EXTRUDER_RUNOUT_PREVENT)
-    #error "EXTRUDER_RUNOUT_PREVENT is incompatible with ADVANCED_PAUSE_FEATURE."
   #elif ENABLED(PARK_HEAD_ON_PAUSE) && NONE(HAS_MEDIA, IS_NEWPANEL, EMERGENCY_PARSER)
     #error "PARK_HEAD_ON_PAUSE requires HAS_MEDIA, EMERGENCY_PARSER, or an LCD controller."
   #elif ENABLED(HOME_BEFORE_FILAMENT_CHANGE) && DISABLED(PAUSE_PARK_NO_STEPPER_TIMEOUT)
@@ -1136,6 +1134,24 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
     #error "FAN_KICKSTART_LINEAR requires a FAN_KICKSTART_POWER of 255."
   #elif !WITHIN(FAN_KICKSTART_POWER, 64, 255)
     #error "FAN_KICKSTART_POWER must be an integer from 64 to 255."
+  #endif
+#endif
+
+/**
+ * PancakeBot
+ */
+#if ENABLED(PANCAKEBOT)
+  #if !PIN_EXISTS(PANCAKEBOT_WORKING_LED) || !PIN_EXISTS(PANCAKEBOT_SD_ERROR_LED)
+    #error "PANCAKEBOT requires PANCAKEBOT_WORKING_LED_PIN and PANCAKEBOT_SD_ERROR_LED_PIN."
+  #elif !HAS_MEDIA
+    #error "PANCAKEBOT requires SDSUPPORT."
+  #endif
+#endif
+#if ENABLED(PANCAKEBOT_PANEL)
+  #if !defined(DOGLCD_SCK) || !defined(DOGLCD_MOSI) || !defined(DOGLCD_CS) || !defined(DOGLCD_A0)
+    #error "PANCAKEBOT_PANEL requires DOGLCD_SCK, DOGLCD_MOSI, DOGLCD_CS, and DOGLCD_A0."
+  #elif !defined(BTN_UP) || !defined(BTN_DOWN) || !defined(BTN_ENC)
+    #error "PANCAKEBOT_PANEL requires BTN_UP, BTN_DOWN, and BTN_ENC."
   #endif
 #endif
 
@@ -2363,6 +2379,15 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
 #endif
 
 /**
+ * Settle bands must not be wider than the hysteresis that ends them
+ */
+#if HAS_TEMP_HOTEND && TEMP_SETTLE_BAND > TEMP_HYSTERESIS
+  #error "TEMP_SETTLE_BAND must not be greater than TEMP_HYSTERESIS."
+#elif HAS_HEATED_BED && TEMP_BED_SETTLE_BAND > TEMP_BED_HYSTERESIS
+  #error "TEMP_BED_SETTLE_BAND must not be greater than TEMP_BED_HYSTERESIS."
+#endif
+
+/**
  * Required thermistor 66 (Dyze Design / Trianglelab T-D500) settings
  * https://docs.dyzedesign.com/hotends.html#_500-%C2%B0c-thermistor
  */
@@ -3051,6 +3076,13 @@ static_assert(NUM_SERVOS <= NUM_SERVO_PLUGS, "NUM_SERVOS (or some servo index) i
   #endif
 #elif ENABLED(AUTO_REPORT_FANS)
   #error "AUTO_REPORT_FANS requires one or more fans with a tachometer pin."
+#endif
+
+/**
+ * EEPROM autosave needs a positive delay
+ */
+#if defined(EEPROM_AUTOSAVE_AFTER) && EEPROM_AUTOSAVE_AFTER <= 0
+  #error "EEPROM_AUTOSAVE_AFTER must be greater than 0 milliseconds."
 #endif
 
 /**
@@ -4516,8 +4548,8 @@ static_assert(_PLUS_TEST(3), "DEFAULT_MAX_ACCELERATION values must be positive."
   #error "Enable only one of WIFISUPPORT or ESP3D_WIFISUPPORT."
 #elif ENABLED(ESP3D_WIFISUPPORT) && DISABLED(ARDUINO_ARCH_ESP32)
   #error "ESP3D_WIFISUPPORT requires an ESP32 motherboard."
-#elif ENABLED(ESP3D_WIFISUPPORT) && (!defined(SERIAL_PORT_2) || SERIAL_PORT_2 != -1)
-  #error "ESP3D_WIFISUPPORT requires SERIAL_PORT_2 -1, which carries G-code from ESP3D to Marlin."
+#elif ENABLED(ESP3D_WIFISUPPORT) && SERIAL_PORT != -3 && (!defined(SERIAL_PORT_2) || SERIAL_PORT_2 != -3) && (!defined(SERIAL_PORT_3) || SERIAL_PORT_3 != -3)
+  #error "ESP3D_WIFISUPPORT requires a serial port set to -3 (e.g., SERIAL_PORT_2 -3), which carries G-code from ESP3D to Marlin."
 #endif
 
 // Only the native ESP32 WiFi needs credentials at compile time. An add-on module

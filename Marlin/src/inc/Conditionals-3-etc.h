@@ -523,7 +523,7 @@
 #if !HAS_LEVELING || ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
   #undef PROBE_MANUALLY
 #endif
-#if ENABLED(PREHEAT_BEFORE_LEVELING) && ANY(DWIN_LCD_PROUI, ELEGOO_NEPTUNE_3_TFT)
+#if ENABLED(PREHEAT_BEFORE_LEVELING) && ANY(DWIN_LCD_PROUI, ELEGOO_NEPTUNE_3_TFT, DGUS_LCD_UI_CREALITY_TOUCH)
   #define HAS_LEVELING_TEMP_EDIT 1
 #endif
 #if ANY(HAS_BED_PROBE, PROBE_MANUALLY, MESH_BED_LEVELING)
@@ -658,6 +658,11 @@
 #if ANY(SCARA, AXEL_TPARA)
   #define IS_SCARA 1              // Linear Motion derives from SCARA kinematics
 #endif
+// The PancakeBot batter pump is on the fan output and must stop while paused
+#if ENABLED(PANCAKEBOT) && DISABLED(ADVANCED_PAUSE_FANS_PAUSE)
+  #define ADVANCED_PAUSE_FANS_PAUSE
+#endif
+
 #if ANY(IS_SCARA, DELTA, POLARGRAPH, POLAR)
   #define IS_KINEMATIC 1          // Linear Motion derives from kinematic conversion and segmentation
 #else

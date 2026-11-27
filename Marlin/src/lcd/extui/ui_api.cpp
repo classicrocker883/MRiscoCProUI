@@ -133,6 +133,7 @@ namespace ExtUI {
   WEAK_EXTUI void onPrinterKilled(FSTR_P const, FSTR_P const) {}
   WEAK_EXTUI void onPrintTimerStarted() {}
   WEAK_EXTUI void onPrintTimerPaused() {}
+  WEAK_EXTUI bool onResumeRequest() { return false; }
   WEAK_EXTUI void onPrintTimerStopped() {}
   WEAK_EXTUI void onPrintDone() {}
   WEAK_EXTUI void onFilamentRunout(const extruder_t) {}
@@ -355,7 +356,12 @@ namespace ExtUI {
       #if HAS_HEATED_CHAMBER
         case CHAMBER: return GET_TEMP_ADJUSTMENT(thermalManager.degChamber());
       #endif
-      default: return GET_TEMP_ADJUSTMENT(thermalManager.degHotend(heater - H0));
+      default:
+        #if HAS_HOTEND
+          return GET_TEMP_ADJUSTMENT(thermalManager.degHotend(heater - H0));
+        #else
+          return 0.0f;
+        #endif
     }
   }
 
@@ -371,12 +377,34 @@ namespace ExtUI {
       #if HAS_HEATED_CHAMBER
         case CHAMBER: return GET_TEMP_ADJUSTMENT(thermalManager.degTargetChamber());
       #endif
-      default: return GET_TEMP_ADJUSTMENT(thermalManager.degTargetHotend(heater - H0));
+      default:
+        #if HAS_HOTEND
+          return GET_TEMP_ADJUSTMENT(thermalManager.degTargetHotend(heater - H0));
+        #else
+          return 0.0f;
+        #endif
     }
   }
 
   celsius_t getTargetTemp_celsius(const extruder_t extruder) {
     return GET_TEMP_ADJUSTMENT(thermalManager.degTargetHotend(extruder - E0));
+  }
+
+  bool getReachedTargetTemp(const heater_t heater) {
+    switch (heater) {
+      #if HAS_HEATED_BED
+        case BED: return thermalManager.bedReachedTarget();
+      #endif
+      #if HAS_HEATED_CHAMBER
+        case CHAMBER: return thermalManager.chamberReachedTarget();
+      #endif
+      default:
+        return TERN0(HAS_HOTEND, thermalManager.hotendReachedTarget(heater - H0));
+    }
+  }
+
+  bool getReachedTargetTemp(const extruder_t extruder) {
+    return thermalManager.hotendReachedTarget(extruder - E0);
   }
 
   //

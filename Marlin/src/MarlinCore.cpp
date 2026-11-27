@@ -257,6 +257,10 @@
   #include "feature/power.h"
 #endif
 
+#if ENABLED(PANCAKEBOT)
+  #include "feature/pancakebot.h"
+#endif
+
 #if ENABLED(EASYTHREED_UI)
   #include "feature/easythreed_ui.h"
 #endif
@@ -734,6 +738,7 @@ void Marlin::manage_inactivity(const bool no_stepper_sleep/*=false*/) {
     if (thermalManager.degHotend(motion.extruder) > (EXTRUDER_RUNOUT_MINTEMP)
       && ELAPSED(ms, gcode.previous_move_ms, SEC_TO_MS(EXTRUDER_RUNOUT_SECONDS))
       && !planner.has_blocks_queued()
+      && !paused_for_filament_change  // Don't extrude while filament is being changed
     ) {
       const int8_t e_stepper = TERN(HAS_SWITCHING_EXTRUDER, motion.extruder / 2, motion.extruder);
       const bool e_off = !stepper.AXIS_IS_ENABLED(E_AXIS, e_stepper);
@@ -852,6 +857,9 @@ void Marlin::idle(const bool no_stepper_sleep/*=false*/) {
   // Check network connection
   TERN_(HAS_ETHERNET, ethernet.check());
 
+  // PancakeBot LEDs
+  TERN_(PANCAKEBOT, pancakebot.idle());
+
   // Handle Power-Loss Recovery
   #if ENABLED(POWER_LOSS_RECOVERY) && PIN_EXISTS(POWER_LOSS)
     if (card.isStillPrinting()) recovery.outage();
@@ -875,6 +883,11 @@ void Marlin::idle(const bool no_stepper_sleep/*=false*/) {
 
   // Update the Print Job Timer state
   TERN_(PRINTCOUNTER, print_job_timer.tick());
+
+  // Save settings after a change that requested it
+  #if EEPROM_AUTOSAVE_AFTER > 0
+    settings.autosave_task();
+  #endif
 
   // Update the Beeper queue
   TERN_(HAS_BEEPER, buzzer.tick());
@@ -1359,6 +1372,11 @@ void setup() {
     powerManager.init();
   #endif
 
+  #if ENABLED(PANCAKEBOT)
+    SETUP_LOG("PANCAKEBOT");
+    pancakebot.init();
+  #endif
+
   #if ENABLED(POWER_LOSS_RECOVERY)
     SETUP_RUN(recovery.setup());
   #endif
@@ -1397,6 +1415,11 @@ void setup() {
 
   // Some HAL need precise delay adjustment
   calibrate_delay_loop();
+
+  // Start the I2C bus before other I2C features
+  #if ENABLED(EXPERIMENTAL_I2CBUS)
+    SETUP_RUN(i2c.init());
+  #endif
 
   // Init buzzer pin(s)
   #if HAS_BEEPER
