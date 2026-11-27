@@ -31,7 +31,6 @@
 */
 
 //////////////////////////////////////////////////////////////////////////////
-/*
 
 #if ENABLED(CCLOUD_PRINT_SUPPORT)
 
@@ -102,7 +101,9 @@ void GcodeSuite::M79()
 }
 
 #endif
-*////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+/*
 
 #if ENABLED(CREALITY_RTS)
 
@@ -112,7 +113,7 @@ void GcodeSuite::M79()
 
 /**
  * M79: cloud print statistics
- */
+ *
 void GcodeSuite::M79() {
   if (parser.seenval('S')) RTS_CloudCommand(cloudCommand_t(parser.value_int()));
   if (parser.seenval('T')) RTS_SetStatsFR(parser.value_feedrate());
@@ -121,3 +122,4 @@ void GcodeSuite::M79() {
 }
 
 #endif // CREALITY_RTS
+/////////////////////*

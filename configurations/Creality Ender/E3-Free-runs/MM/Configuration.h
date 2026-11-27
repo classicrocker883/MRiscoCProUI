@@ -3742,7 +3742,7 @@
   //#define PROUI_ITEM_JD       // Juntion Deviation item in Tune Menu (only if JD is enabled)
   #define PROUI_ITEM_ADVK       // Linear Advance item in Tune Menu (only if LA is enabled)
   #define SHOW_REAL_POS
-  #define CREALITY_RTS          // Menu item: enable/disable Creality Cloud Print Support (192 bytes of flash)
+  #define CCLOUD_PRINT_SUPPORT  // Menu item: enable/disable Creality Cloud Print Support (192 bytes of flash)
   #define PROUI_ITEM_TRAM       // Menu item: enable Tramming Wizard (2304 bytes of flash)
   #define PROUI_MEDIASORT       // Menu item: enable/disable file list sorting (104 bytes of flash)
   #define PROUI_ITEM_ENC        // Menu item: enable to reverse encoder direction (144 bytes of flash)
